@@ -32,5 +32,5 @@
                  ; entity _HAS_ position -> HAS :Entity/body ALWAYS
                  ; => ENTITY DEFINE DATA SHAPE
                  ; => CREATURE/PROJECTILE/ITEM DEFINE
-                 (:body/position (:entity/body source))
-                 (:body/position (:entity/body target)))))
+                 (:entity/position source)
+                 (:entity/position target))))

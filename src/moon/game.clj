@@ -145,14 +145,7 @@
 
 (q/defrecord Record [])
 
-(q/defrecord EntityRecord [entity/body])
-
-(q/defrecord BodyRecord [body/position
-                         body/width
-                         body/height
-                         body/collides?
-                         body/z-order
-                         body/rotation-angle])
+(q/defrecord EntityRecord [])
 
 (def minimum-size 0.39)
 
@@ -192,10 +185,10 @@
        (filter #(raycaster/line-of-sight? raycaster entity @%))
        (remove #(:entity/player? @%))))
 
-(defn projectile-start-point [body direction size]
-  (v2/add (:body/position body)
+(defn projectile-start-point [entity direction size]
+  (v2/add (:entity/position entity)
           (v2/scale direction
-                    (+ (/ (:body/width body) 2) size 0.1))))
+                    (+ (/ (:entity/width entity) 2) size 0.1))))
 
 (defn- add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
@@ -295,8 +288,8 @@
    effect-ctx
    ctx]
   (let [raycaster (get-raycaster ctx)
-        source-p (:body/position (:entity/body @(effect-ctx/get-source effect-ctx)))
-        target-p (:body/position (:entity/body @(effect-ctx/get-target effect-ctx)))]
+        source-p (:entity/position @(effect-ctx/get-source effect-ctx))
+        target-p (:entity/position @(effect-ctx/get-target effect-ctx))]
     (and (not (let [[start1,target1,start2,target2] (v2/double-ray-endpositions source-p
                                                                                target-p
                                                                                (:projectile/size projectile))]
@@ -312,8 +305,8 @@
 
 (defmethod effect-useful? :effects/target-entity
   [[_ {:keys [maxrange]}] effect-ctx _ctx]
-  (body/in-range? (:entity/body @(effect-ctx/get-source effect-ctx))
-                  (:entity/body @(effect-ctx/get-target effect-ctx))
+  (body/in-range? @(effect-ctx/get-source effect-ctx)
+                  @(effect-ctx/get-target effect-ctx)
                   maxrange))
 
 (defmethod effect-useful? :effects.target/audiovisual
@@ -456,31 +449,22 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
-(defn- create-component-body
-  [{[x y] :position
-    :keys [position
-           width
-           height
-           collides?
-           z-order
-           rotation-angle]}
-   _ctx]
-  (assert position)
-  (assert width)
-  (assert height)
-  (assert (>= width  (if collides? minimum-size 0)))
-  (assert (>= height (if collides? minimum-size 0)))
-  (assert (or (boolean? collides?) (nil? collides?)))
-  (assert ((set z-orders) z-order))
-  (assert (or (nil? rotation-angle)
-              (<= 0 rotation-angle 360)))
-  (map->BodyRecord
-   {:position (mapv float position)
-    :width  (float width)
-    :height (float height)
-    :collides? collides?
-    :z-order z-order
-    :rotation-angle (or rotation-angle 0)}))
+(defn- prepare-entity-geometry [entity]
+  (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
+    (assert position)
+    (assert width)
+    (assert height)
+    (assert (>= width  (if collides? minimum-size 0)))
+    (assert (>= height (if collides? minimum-size 0)))
+    (assert (or (boolean? collides?) (nil? collides?)))
+    (assert ((set z-orders) z-order))
+    (assert (or (nil? rotation-angle)
+                (<= 0 rotation-angle 360)))
+    (assoc entity
+           :entity/position (mapv float position)
+           :entity/width (float width)
+           :entity/height (float height)
+           :entity/rotation-angle (or rotation-angle 0))))
 
 (defn- create-component-delete-after-duration
   [duration ctx]
@@ -498,7 +482,6 @@
 
 (def k->create-component
   {:entity/animation create-component-animation
-   :entity/body create-component-body
    :entity/delete-after-duration create-component-delete-after-duration
    :entity/projectile-collision create-component-projectile-collision
    :entity/stats create-component-stats})
@@ -836,7 +819,7 @@
 (defn- item-place-position [ctx player-entity]
   (let [world-mouse-position (get-world-mouse-position ctx)]
     (assert world-mouse-position)
-    (let [player-position (:body/position (:entity/body player-entity))
+    (let [player-position (:entity/position player-entity)
           maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
       (v2/add player-position
               (v2/scale (v2/direction player-position world-mouse-position)
@@ -975,6 +958,7 @@
                          (assoc m k (create-component ctx k v)))
                        {}
                        entity)
+        entity (prepare-entity-geometry entity)
         entity (merge (map->EntityRecord {}) entity)
         eid (atom entity)]
     (register-eid! ctx eid)
@@ -985,23 +969,21 @@
   (assert creature-property)
   (spawn-entity! ctx
                  (-> creature-property
-                     (assoc :entity/body
-                            (let [{:keys [body/width body/height]} (:entity/body creature-property)]
-                              {:position position
-                               :width width
-                               :height height
-                               :collides? true
-                               :z-order :z-order/ground}))
+                     (assoc :entity/position position
+                            :entity/collides? true
+                            :entity/z-order (if (:entity/flying? creature-property)
+                                              :z-order/flying
+                                              :z-order/ground))
                      (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
                      (m/safe-merge components))))
 
 (defn- spawn-effect! [ctx position components]
   (spawn-entity! ctx
                  (assoc components
-                        :entity/body {:width 0.5
-                                      :height 0.5
-                                      :z-order :z-order/effect
-                                      :position position})))
+                        :entity/width 0.5
+                        :entity/height 0.5
+                        :entity/z-order :z-order/effect
+                        :entity/position position)))
 
 (defn- spawn-alert! [ctx position faction duration]
   (spawn-effect! ctx position
@@ -1011,10 +993,10 @@
 
 (defn- spawn-item! [ctx position item]
   (spawn-entity! ctx
-                 {:entity/body {:position position
-                                :width 0.75
-                                :height 0.75
-                                :z-order :z-order/on-ground}
+                 {:entity/position position
+                  :entity/width 0.75
+                  :entity/height 0.75
+                  :entity/z-order :z-order/on-ground
                   :entity/image (:entity/image item)
                   :entity/item item
                   :entity/clickable {:type :clickable/item
@@ -1035,11 +1017,11 @@
            projectile/size
            projectile/piercing?]}]
   (spawn-entity! ctx
-                 {:entity/body {:position position
-                                :width size
-                                :height size
-                                :z-order :z-order/flying
-                                :rotation-angle (v2/angle-from-vector direction)}
+                 {:entity/position position
+                  :entity/width size
+                  :entity/height size
+                  :entity/z-order :z-order/flying
+                  :entity/rotation-angle (v2/angle-from-vector direction)
                   :entity/movement {:direction direction :speed speed}
                   :entity/image image
                   :entity/faction faction
@@ -1152,7 +1134,7 @@
 (defn- state-exit-npc-sleeping
   [_ eid ctx]
   (swap! eid add-text-effect (get-elapsed-time ctx) "[WHITE]!" 1)
-  (spawn-alert! ctx (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2))
+  (spawn-alert! ctx (:entity/position @eid) (:entity/faction @eid) 0.2))
 
 (defn- state-exit-npc-moving
   [_ eid _ctx]
@@ -1195,7 +1177,7 @@
   [[_ projectile] effect-ctx ctx]
   (let [source (effect-ctx/get-source effect-ctx)]
     (spawn-projectile! ctx
-                       {:position (projectile-start-point (:entity/body @source)
+                       {:position (projectile-start-point @source
                                                           (effect-ctx/get-target-direction effect-ctx)
                                                           (:projectile/size projectile))
                         :direction (effect-ctx/get-target-direction effect-ctx)
@@ -1224,8 +1206,8 @@
         source* @source]
     (doseq [target (affected-targets active-entities raycaster source*)]
       (spawn-line! ctx
-                   {:start (:body/position (:entity/body source*))
-                    :end (:body/position (:entity/body @target))
+                   {:start (:entity/position source*)
+                    :end (:entity/position @target)
                     :duration 0.05
                     :color (:colors/target-all-line colors)
                     :thick? true})
@@ -1241,12 +1223,12 @@
   (let [source (effect-ctx/get-source effect-ctx)
         target (effect-ctx/get-target effect-ctx)
         colors (get-colors ctx)
-        body        (:entity/body @source)
-        target-body (:entity/body @target)]
+        body        @source
+        target-body @target]
     (if (body/in-range? body target-body maxrange)
       (do (spawn-line! ctx
                        {:start (body/start-point body target-body)
-                        :end (:body/position target-body)
+                        :end (:entity/position target-body)
                         :duration 0.05
                         :color (:colors/target-entity-line colors)
                         :thick? true})
@@ -1257,7 +1239,7 @@
 
 (defmethod handle-effect :effects.target/audiovisual
   [[_ audiovisual] effect-ctx ctx]
-  (audiovisual! ctx (:body/position (:entity/body @(effect-ctx/get-target effect-ctx))) audiovisual))
+  (audiovisual! ctx (:entity/position @(effect-ctx/get-target effect-ctx)) audiovisual))
 
 (defmethod handle-effect :effects.target/convert
   [_ effect-ctx _ctx]
@@ -1302,7 +1284,7 @@
        (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
        (swap! target add-text-effect elapsed-time dmg-text 0.3)
        (handle-fsm-event! ctx target (if (zero? new-hp-val) :kill :alert))
-       (audiovisual! ctx (:body/position (:entity/body target*)) :audiovisuals/damage)))))
+       (audiovisual! ctx (:entity/position target*) :audiovisuals/damage)))))
 
 (defmethod handle-effect :effects.target/kill
   [_ effect-ctx ctx]
@@ -1613,21 +1595,22 @@
   [image entity ctx]
   (draw-fn-texture-region ctx
                           (textures/texture-region (get-textures ctx) image)
-                          (:body/position (:entity/body entity))
+                          (:entity/position entity)
                           {:center? true
-                           :rotation (or (:body/rotation-angle (:entity/body entity))
+                           :rotation (or (:entity/rotation-angle entity)
                                          0)}))
 
 (defn- render-clickable
   [{:keys [text]}
-   {:keys [entity/body
+   {:keys [entity/position
+           entity/height
            entity/mouseover?]}
    _ctx]
   (when (and mouseover? text)
-    (let [[x y] (:body/position body)]
+    (let [[x y] position]
       (draw-fn-text _ctx {:text text
                           :x x
-                          :y (+ y (/ (:body/height body) 2))
+                          :y (+ y (/ height 2))
                           :up? true}))))
 
 (defn- render-animation
@@ -1643,17 +1626,19 @@
 
 (defn- render-line-render
   [{:keys [thick? end color]}
-   {:keys [entity/body]}
+   {:keys [entity/position]}
    ctx]
-  (let [position (:body/position body)]
-    (if thick?
-      (draw-with-line-width! ctx 4 #(draw-fn-line % position end color))
-      (draw-fn-line ctx position end color))))
+  (if thick?
+    (draw-with-line-width! ctx 4 #(draw-fn-line % position end color))
+    (draw-fn-line ctx position end color)))
 
 (defn- render-mouseover
   [_
-   {:keys [entity/body
-           entity/faction]}
+   {:keys [entity/position
+           entity/width
+           entity/height
+           entity/faction]
+    :as entity}
    ctx]
   (let [colors (get-colors ctx)
         player @(get-player-eid ctx)
@@ -1664,17 +1649,17 @@
                     :else
                     (:colors/neutral-color colors))]
     (draw-with-line-width! ctx 5
-                           #(draw-fn-ellipse % (:body/position body)
-                                              (/ (:body/width body) 2)
-                                              (/ (:body/height body) 2)
+                           #(draw-fn-ellipse % position
+                                              (/ width 2)
+                                              (/ height 2)
                                               color))))
 
 (defn- render-npc-sleeping
-  [_ {:keys [entity/body]} ctx]
-  (let [[x y] (:body/position body)]
+  [_ {:keys [entity/position entity/height]} ctx]
+  (let [[x y] position]
     (draw-fn-text ctx {:text "zzz"
                        :x x
-                       :y (+ y (/ (:body/height body) 2))
+                       :y (+ y (/ height 2))
                        :up? true})))
 
 (defn- render-player-item-on-cursor
@@ -1692,7 +1677,7 @@
   (let [colors (get-colors ctx)
         ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
-      (let [{:keys [body/position body/width body/height]} (:entity/body entity)
+      (let [{:keys [entity/position entity/width entity/height]} entity
             [x y] position
             x (- x (/ width  2))
             y (+ y (/ height 2))
@@ -1708,22 +1693,22 @@
 
 (defn- render-string-effect
   [{:keys [text]} entity ctx]
-  (let [[x y] (:body/position (:entity/body entity))]
+  (let [[x y] (:entity/position entity)]
     (draw-fn-text ctx {:text text
                        :x x
                        :y (+ y
-                             (/ (:body/height (:entity/body entity)) 2)
+                             (/ (:entity/height entity) 2)
                              (* 5 world-unit-scale))
                        :scale 2
                        :up? true})))
 
 (defn- render-stunned
-  [_ {:keys [entity/body]} ctx]
-  (draw-fn-circle ctx (:body/position body) 0.5 (:colors/stunned (get-colors ctx))))
+  [_ {:keys [entity/position]} ctx]
+  (draw-fn-circle ctx position 0.5 (:colors/stunned (get-colors ctx))))
 
 (defn- render-temp-modifier
   [_ entity ctx]
-  (draw-fn-filled-circle ctx (:body/position (:entity/body entity)) 0.5 (:colors/temp-modifier (get-colors ctx))))
+  (draw-fn-filled-circle ctx (:entity/position entity) 0.5 (:colors/temp-modifier (get-colors ctx))))
 
 (defmulti effect-render
   (fn [[k _v] _effect-ctx _ctx]
@@ -1742,8 +1727,8 @@
         source* @source]
     (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
       (draw-fn-line ctx
-                    (:body/position (:entity/body source*))
-                    (:body/position (:entity/body target*))
+                    (:entity/position source*)
+                    (:entity/position target*)
                     (:colors/target-all-render colors)))))
 
 (defmethod effect-render :effects/target-entity
@@ -1753,8 +1738,8 @@
   (when-let [target (effect-ctx/get-target effect-ctx)]
     (let [source (effect-ctx/get-source effect-ctx)
           colors (get-colors ctx)
-          body        (:entity/body @source)
-          target-body (:entity/body @target)]
+          body        @source
+          target-body @target]
       (draw-fn-line ctx
                     (body/start-point body target-body)
                     (body/end-point body target-body maxrange)
@@ -1773,9 +1758,9 @@
         radius active-skill-radius
         action-counter-ratio (timer/ratio elapsed-time counter)
         texture-region (textures/texture-region textures image)
-        [x y] (:body/position (:entity/body entity))
+        [x y] (:entity/position entity)
         y (+ (float y)
-             (float (/ (:body/height (:entity/body entity)) 2))
+             (float (/ (:entity/height entity) 2))
              (float 0.15))
         center [x (+ y radius)]]
     (draw-fn-filled-circle ctx center radius (:colors/active-skill-circle colors))
@@ -2149,12 +2134,12 @@
 
 (defn player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
-                                 (:body/position (:entity/body @mouseover-eid)))
+                                 (:entity/position @mouseover-eid))
                             world-mouse-position)]
     {:effect/source player-eid
      :effect/target mouseover-eid
      :effect/target-position target-position
-     :effect/target-direction (v2/direction (:body/position (:entity/body @player-eid))
+     :effect/target-direction (v2/direction (:entity/position @player-eid)
                                          target-position)}))
 
 (defn- choose-skill [ctx entity effect-ctx]
@@ -2181,8 +2166,8 @@
     {:effect/source eid
      :effect/target target
      :effect/target-direction (when target
-                                (body/direction (:entity/body entity)
-                                                (:entity/body @target)))}))
+                                (body/direction entity
+                                                @target))}))
 
 (defn- update-effect-ctx
   [raycaster effect-ctx]
@@ -2218,7 +2203,7 @@
    ctx]
   (when (timer/stopped? (get-elapsed-time ctx) counter)
     (swap! eid assoc :entity/destroyed? true)
-    (doseq [friendly-eid (->> {:position (:body/position (:entity/body @eid))
+    (doseq [friendly-eid (->> {:position (:entity/position @eid)
                                :radius 4}
                               (world/circle->entities (get-world ctx))
                               (filter #(= (:entity/faction @%) faction)))]
@@ -2259,12 +2244,12 @@
         hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                         (not= (:entity/faction entity)
                                               (:entity/faction @%))
-                                        (:body/collides? (:entity/body @%))
-                                        (body/overlaps? (:entity/body entity)
-                                                        (:entity/body @%)))
+                                        (:entity/collides? @%)
+                                        (body/overlaps? entity
+                                                        @%))
                                   (world/entities-at-touched-tiles world entity)))
         destroy? (or (and hit-entity (not piercing?))
-                     (world/blocked-at-touched-tiles? world entity (:body/z-order (:entity/body entity))))]
+                     (world/blocked-at-touched-tiles? world entity (:entity/z-order entity)))]
     (when hit-entity
       (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
              (conj already-hit-bodies hit-entity)))
@@ -2342,13 +2327,13 @@
                 (zero? speed))
     (let [world (get-world ctx)
           movement (assoc movement :delta-time (get-delta-time ctx))
-          body (:entity/body @eid)]
-      (when-let [body (if (:body/collides? body)
+          body @eid]
+      (when-let [body (if (:entity/collides? body)
                          (world/try-move-solid-body world body (:entity/id @eid) movement)
-                         (update body :body/position v2/move movement))]
-        (swap! eid assoc-in [:entity/body :body/position] (:body/position body))
+                         (update body :entity/position v2/move movement))]
+        (swap! eid assoc :entity/position (:entity/position body))
         (when rotate-in-movement-direction?
-          (swap! eid assoc-in [:entity/body :body/rotation-angle]
+          (swap! eid assoc :entity/rotation-angle
                  (v2/angle-from-vector direction)))
         (relocate-eid! ctx eid)
         nil))))
@@ -2604,10 +2589,10 @@
         new-eid (if (mouseover-actor ctx)
                   nil
                   (let [player @player-eid
-                        hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
+                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
                                      (world/point->entities (get-world ctx) position))]
                     (->> render-z-order
-                         (coll/sort-by-order hits #(:body/z-order (:entity/body @%)))
+                         (coll/sort-by-order hits #(:entity/z-order @%))
                          reverse
                          (filter #(raycaster/line-of-sight? raycaster player @%))
                          first)))]
@@ -2642,7 +2627,7 @@
 (defn set-camera-position
   [ctx]
   (orthographic-camera/set-position! (viewport/get-camera (get-world-viewport ctx))
-                                     (:body/position (:entity/body @(get-player-eid ctx))))
+                                     (:entity/position @(get-player-eid ctx)))
   ctx)
 
 (defn clear-screen [ctx]
@@ -2718,7 +2703,7 @@
 
 (defn draw-entity-rectangle!
   [ctx entity color-float-bits]
-  (let [{:keys [body/position body/width body/height]} (:entity/body entity)
+  (let [{:keys [entity/position entity/width entity/height]} entity
         [x y] [(- (position 0) (/ width 2))
                (- (position 1) (/ height 2))]]
     (draw-fn-rectangle ctx x y width height color-float-bits)))
@@ -2736,7 +2721,7 @@
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (raycaster/line-of-sight? raycaster player entity)))]
-    (doseq [[z-order entities] (coll/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
+    (doseq [[z-order entities] (coll/sort-by-order (group-by :entity/z-order entities)
                                                 first
                                                 render-z-order)
             render-layer render-layers
@@ -2747,7 +2732,7 @@
           (when show-body-bounds?
             (draw-entity-rectangle! ctx
                                     entity
-                                    (if (:body/collides? (:entity/body entity))
+                                    (if (:entity/collides? entity)
                                       (:colors/debug-body-outline-collides colors)
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
@@ -2807,8 +2792,8 @@
            (:entity/clickable @mouseover-eid))
       [:interaction-state/clickable-mouseover-eid
        {:clicked-eid mouseover-eid
-        :in-click-range? (< (v2/distance (:body/position (:entity/body @player-eid))
-                                        (:body/position (:entity/body @mouseover-eid)))
+        :in-click-range? (< (v2/distance (:entity/position @player-eid)
+                                        (:entity/position @mouseover-eid))
                             (:entity/click-distance-tiles @player-eid))}]
 
       :else
@@ -2953,7 +2938,7 @@
 (def k->destroy
   {:entity/destroy-audiovisual
    (fn [audiovisuals-id eid ctx]
-     (audiovisual! ctx (:body/position (:entity/body @eid)) audiovisuals-id))})
+     (audiovisual! ctx (:entity/position @eid) audiovisuals-id))})
 
 (defn remove-destroyed-entities
   [ctx]

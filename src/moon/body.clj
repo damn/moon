@@ -3,43 +3,43 @@
             [moon.v2 :as v2]
             [moon.rectangle :as moon-rectangle]))
 
-(defn direction [body other-body]
-  (v2/direction (:body/position body)
-                (:body/position other-body)))
+(defn direction [entity other-entity]
+  (v2/direction (:entity/position entity)
+                (:entity/position other-entity)))
 
-(defn start-point [body target-body]
-  (v2/add (:body/position body)
-          (v2/scale (direction body target-body)
-                    (/ (:body/width body) 2))))
+(defn start-point [entity target-entity]
+  (v2/add (:entity/position entity)
+          (v2/scale (direction entity target-entity)
+                    (/ (:entity/width entity) 2))))
 
-(defn end-point [body target-body maxrange]
-  (v2/add (start-point body target-body)
-          (v2/scale (direction body target-body)
+(defn end-point [entity target-entity maxrange]
+  (v2/add (start-point entity target-entity)
+          (v2/scale (direction entity target-entity)
                     maxrange)))
 
-(defn in-range? [body target-body maxrange]
-  (< (- (float (v2/distance (:body/position body)
-                            (:body/position target-body)))
-        (float (/ (:body/width body)  2))
-        (float (/ (:body/width target-body) 2)))
+(defn in-range? [entity target-entity maxrange]
+  (< (- (float (v2/distance (:entity/position entity)
+                            (:entity/position target-entity)))
+        (float (/ (:entity/width entity)  2))
+        (float (/ (:entity/width target-entity) 2)))
      (float maxrange)))
 
 (defn rectangle
-  [{:keys [body/position
-           body/width
-           body/height]}]
+  [{:keys [entity/position
+           entity/width
+           entity/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
     (gdx-rectangle/create x y width height)))
 
-(defn overlaps? [body other-body]
-  (gdx-rectangle/overlaps (rectangle body)
-                          (rectangle other-body)))
+(defn overlaps? [entity other-entity]
+  (gdx-rectangle/overlaps (rectangle entity)
+                          (rectangle other-entity)))
 
 (defn touched-tiles
-  [{:keys [body/position
-           body/width
-           body/height]}]
+  [{:keys [entity/position
+           entity/width
+           entity/height]}]
   (moon-rectangle/touched-tiles
    {:x (- (position 0) (/ width  2))
     :y (- (position 1) (/ height 2))

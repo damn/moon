@@ -22,14 +22,14 @@
     (swap! eid assoc :entity/id id)
     (swap! (get-entity-ids world) assoc id eid))
 
-  (assert (:entity/body @eid))
+  (assert (:entity/position @eid))
   (content-grid/update-entity! (get-content-grid world) eid)
 
-  (assert (:entity/body @eid))
-  (when (:body/collides? (:entity/body @eid))
-    (assert (grid/valid-position? (get-grid world) (:entity/body @eid) (:entity/id @eid))))
+  (assert (:entity/position @eid))
+  (when (:entity/collides? @eid)
+    (assert (grid/valid-position? (get-grid world) @eid (:entity/id @eid))))
   (grid/set-touched-cells! (get-grid world) eid)
-  (when (:body/collides? (:entity/body @eid))
+  (when (:entity/collides? @eid)
     (grid/set-occupied-cells! (get-grid world) eid))
   nil)
 
@@ -38,7 +38,7 @@
     (swap! (get-entity-ids world) dissoc id)
     (content-grid/remove-entity! (get-content-grid world) eid)
     (grid/remove-from-touched-cells! (get-grid world) eid)
-    (when (:body/collides? (:entity/body @eid))
+    (when (:entity/collides? @eid)
       (grid/remove-from-occupied-cells! (get-grid world) eid)))
   nil)
 
@@ -46,7 +46,7 @@
   (content-grid/update-entity! (get-content-grid world) eid)
   (grid/remove-from-touched-cells! (get-grid world) eid)
   (grid/set-touched-cells! (get-grid world) eid)
-  (when (:body/collides? (:entity/body @eid))
+  (when (:entity/collides? @eid)
     (grid/remove-from-occupied-cells! (get-grid world) eid)
     (grid/set-occupied-cells! (get-grid world) eid))
   nil)
@@ -70,7 +70,7 @@
   (grid/circle->entities (get-grid world) circle))
 
 (defn- touched-tile-cells [world entity]
-  (map deref (g2d/get-cells (get-grid world) (body/touched-tiles (:entity/body entity)))))
+  (map deref (g2d/get-cells (get-grid world) (body/touched-tiles entity))))
 
 (defn entities-at-touched-tiles [world entity]
   (grid/entities (touched-tile-cells world entity)))

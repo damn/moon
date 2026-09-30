@@ -76,8 +76,9 @@
     {:image/file "images/toad-horned-3.png"}
     {:image/file "images/toad-horned-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/24
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/toad,
   :entity/stats
@@ -98,8 +99,9 @@
     {:image/file "images/goblin-warrior-3.png"}
     {:image/file "images/goblin-warrior-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 29/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 29/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/goblin,
   :entity/stats
@@ -124,8 +126,9 @@
     {:image/file "images/lizardman-blue-shaman-3.png"}
     {:image/file "images/lizardman-blue-shaman-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 37/48, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 37/48
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lizardman-blue,
   :entity/stats
@@ -146,8 +149,9 @@
     {:image/file "images/barbarian-f-3.png"}
     {:image/file "images/barbarian-f-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/barbarian,
   :entity/stats
@@ -168,8 +172,9 @@
     {:image/file "images/mummy-3.png"}
     {:image/file "images/mummy-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 31/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 31/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/mummy,
   :entity/stats
@@ -190,8 +195,9 @@
     {:image/file "images/helion-3.png"}
     {:image/file "images/helion-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -213,8 +219,9 @@
     {:image/file "images/priest-3.png"}
     {:image/file "images/priest-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 17/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 17/24
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -235,8 +242,9 @@
     {:image/file "images/lizardman-green-spear-3.png"}
     {:image/file "images/lizardman-green-spear-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 13/16, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 13/16
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lizardman-green,
   :entity/stats
@@ -257,8 +265,9 @@
     {:image/file "images/dwarf-cleric-3.png"}
     {:image/file "images/dwarf-cleric-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 9/16, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 9/16
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dwarf,
   :entity/stats
@@ -279,8 +288,9 @@
     {:image/file "images/thief-3.png"}
     {:image/file "images/thief-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -301,8 +311,9 @@
     {:image/file "images/lizardman-green-shaman-3.png"}
     {:image/file "images/lizardman-green-shaman-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 37/48, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 37/48
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lizardman-green,
   :entity/stats
@@ -323,8 +334,9 @@
     {:image/file "images/beholder-3.png"}
     {:image/file "images/beholder-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 19/24, :body/width 5/6},
+  :entity/flying? true
+  :entity/height 19/24
+  :entity/width 5/6,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/beholder,
   :entity/stats
@@ -345,8 +357,9 @@
     {:image/file "images/spider-brown-3.png"}
     {:image/file "images/spider-brown-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/48, :body/width 13/24},
+  :entity/flying? false
+  :entity/height 19/48
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/spider,
   :entity/stats
@@ -367,8 +380,9 @@
     {:image/file "images/vampire-lord-3.png"}
     {:image/file "images/vampire-lord-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 17/24,
   :entity/inventory #{},
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/vampire,
@@ -390,8 +404,9 @@
     {:image/file "images/witch-3.png"}
     {:image/file "images/witch-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -412,8 +427,9 @@
     {:image/file "images/minstrel-f-3.png"}
     {:image/file "images/minstrel-f-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -434,8 +450,9 @@
     {:image/file "images/lady-b-3.png"}
     {:image/file "images/lady-b-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -456,8 +473,9 @@
     {:image/file "images/dwarf-3.png"}
     {:image/file "images/dwarf-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 9/16, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 9/16
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dwarf,
   :entity/stats
@@ -478,8 +496,9 @@
     {:image/file "images/elemental-air-3.png"}
     {:image/file "images/elemental-air-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 7/12},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elemental,
   :entity/stats
@@ -500,8 +519,9 @@
     {:image/file "images/beetle-fire-3.png"}
     {:image/file "images/beetle-fire-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/12, :body/width 1/2},
+  :entity/flying? false
+  :entity/height 5/12
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/beetle,
   :entity/stats
@@ -522,8 +542,9 @@
     {:image/file "images/warrior-f-3.png"}
     {:image/file "images/warrior-f-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -544,8 +565,9 @@
     {:image/file "images/golem-mud-3.png"}
     {:image/file "images/golem-mud-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/golem,
   :entity/stats
@@ -566,8 +588,9 @@
     {:image/file "images/merchant-f-3.png"}
     {:image/file "images/merchant-f-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 29/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 29/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -588,8 +611,9 @@
     {:image/file "images/minstrel-m-3.png"}
     {:image/file "images/minstrel-m-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -610,7 +634,9 @@
     {:image/file "images/spirit-greater-3.png"}
     {:image/file "images/spirit-greater-4.png"}),
    :animation/looping? true},
-  :entity/body {:body/flying? true, :body/height 5/6, :body/width 3/4},
+  :entity/flying? true
+  :entity/height 5/6
+  :entity/width 3/4,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/spirit,
   :entity/stats
@@ -631,8 +657,9 @@
     {:image/file "images/knight-3.png"}
     {:image/file "images/knight-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -657,8 +684,9 @@
     {:image/file "images/zombie-b-3.png"}
     {:image/file "images/zombie-b-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/zombie,
   :entity/stats
@@ -679,8 +707,9 @@
     {:image/file "images/demon-green-3.png"}
     {:image/file "images/demon-green-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 19/24},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 19/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/demon,
   :entity/stats
@@ -701,8 +730,9 @@
     {:image/file "images/drow-wizard-3.png"}
     {:image/file "images/drow-wizard-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/drow,
   :entity/stats
@@ -723,8 +753,9 @@
     {:image/file "images/goblin-shaman-3.png"}
     {:image/file "images/goblin-shaman-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/goblin,
   :entity/stats
@@ -745,8 +776,9 @@
     {:image/file "images/beetle-giant-3.png"}
     {:image/file "images/beetle-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 13/24, :body/width 7/12},
+  :entity/flying? false
+  :entity/height 13/24
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/beetle,
   :entity/stats
@@ -767,8 +799,9 @@
     {:image/file "images/prisoner-b-3.png"}
     {:image/file "images/prisoner-b-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -789,8 +822,9 @@
     {:image/file "images/dwarf-mage-3.png"}
     {:image/file "images/dwarf-mage-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 7/12, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 7/12
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dwarf,
   :entity/stats
@@ -811,8 +845,9 @@
     {:image/file "images/bird-hawk-3.png"}
     {:image/file "images/bird-hawk-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 35/48, :body/width 13/24},
+  :entity/flying? true
+  :entity/height 35/48
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/bird,
   :entity/stats
@@ -833,8 +868,9 @@
     {:image/file "images/pixie-b-3.png"}
     {:image/file "images/pixie-b-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 3/4, :body/width 13/24},
+  :entity/flying? true
+  :entity/height 3/4
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/pixie,
   :entity/stats
@@ -855,8 +891,9 @@
     {:image/file "images/lady-a-3.png"}
     {:image/file "images/lady-a-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -877,8 +914,9 @@
     {:image/file "images/drow-3.png"}
     {:image/file "images/drow-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/drow,
   :entity/stats
@@ -899,8 +937,9 @@
     {:image/file "images/goblin-3.png"}
     {:image/file "images/goblin-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 29/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 29/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/goblin,
   :entity/stats
@@ -921,8 +960,9 @@
     {:image/file "images/wolf-black-3.png"}
     {:image/file "images/wolf-black-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/8, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 5/8
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wolf,
   :entity/stats
@@ -943,8 +983,9 @@
     {:image/file "images/bird-crow-3.png"}
     {:image/file "images/bird-crow-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 35/48, :body/width 13/24},
+  :entity/flying? true
+  :entity/height 35/48
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/bird,
   :entity/stats
@@ -965,8 +1006,9 @@
     {:image/file "images/demon-red-3.png"}
     {:image/file "images/demon-red-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 19/24},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 19/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/demon,
   :entity/stats
@@ -987,8 +1029,9 @@
     {:image/file "images/pixie-a-3.png"}
     {:image/file "images/pixie-a-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 3/4, :body/width 13/24},
+  :entity/flying? true
+  :entity/height 3/4
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/pixie,
   :entity/stats
@@ -1009,8 +1052,9 @@
     {:image/file "images/archer-3.png"}
     {:image/file "images/archer-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 2/3,
   :entity/skills #{:skills/bow :skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1031,8 +1075,9 @@
     {:image/file "images/rat-giant-3.png"}
     {:image/file "images/rat-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 41/48},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 41/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/rat,
   :entity/stats
@@ -1053,8 +1098,9 @@
     {:image/file "images/lord-a-3.png"}
     {:image/file "images/lord-a-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 17/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 17/24
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1075,8 +1121,9 @@
     {:image/file "images/wraith-black-3.png"}
     {:image/file "images/wraith-black-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wraith,
   :entity/stats
@@ -1097,8 +1144,9 @@
     {:image/file "images/wraith-red-3.png"}
     {:image/file "images/wraith-red-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wraith,
   :entity/stats
@@ -1119,8 +1167,9 @@
     {:image/file "images/golem-fire-3.png"}
     {:image/file "images/golem-fire-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/6, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 5/6
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/golem,
   :entity/stats
@@ -1141,7 +1190,9 @@
     {:image/file "images/wisp-ancient-3.png"}
     {:image/file "images/wisp-ancient-4.png"}),
    :animation/looping? true},
-  :entity/body {:body/flying? true, :body/height 3/4, :body/width 5/8},
+  :entity/flying? true
+  :entity/height 3/4
+  :entity/width 5/8,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wisp,
   :entity/stats
@@ -1162,8 +1213,9 @@
     {:image/file "images/troll-3.png"}
     {:image/file "images/troll-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/troll,
   :entity/stats
@@ -1184,8 +1236,9 @@
     {:image/file "images/wraith-blue-3.png"}
     {:image/file "images/wraith-blue-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wraith,
   :entity/stats
@@ -1206,8 +1259,9 @@
     {:image/file "images/beetle-fire-giant-3.png"}
     {:image/file "images/beetle-fire-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 13/24, :body/width 7/12},
+  :entity/flying? false
+  :entity/height 13/24
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/beetle,
   :entity/stats
@@ -1228,8 +1282,9 @@
     {:image/file "images/lizardman-blue-spear-3.png"}
     {:image/file "images/lizardman-blue-spear-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 13/16, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 13/16
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lizardman-blue,
   :entity/stats
@@ -1250,8 +1305,9 @@
     {:image/file "images/dark-knight-3.png"}
     {:image/file "images/dark-knight-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 2/3,
   :entity/skills #{:skills/spawn :skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1272,8 +1328,9 @@
     {:image/file "images/wolf-brown-3.png"}
     {:image/file "images/wolf-brown-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 7/12, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 7/12
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wolf,
   :entity/stats
@@ -1294,8 +1351,9 @@
     {:image/file "images/demon-blue-3.png"}
     {:image/file "images/demon-blue-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 19/24},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 19/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/demon,
   :entity/stats
@@ -1316,8 +1374,9 @@
     {:image/file "images/moth-red-3.png"}
     {:image/file "images/moth-red-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 31/48, :body/width 1/2},
+  :entity/flying? true
+  :entity/height 31/48
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/moth,
   :entity/stats
@@ -1338,8 +1397,9 @@
     {:image/file "images/prisoner-c-3.png"}
     {:image/file "images/prisoner-c-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1360,8 +1420,9 @@
     {:image/file "images/mimic-3.png"}
     {:image/file "images/mimic-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 9/16, :body/width 1/2},
+  :entity/flying? false
+  :entity/height 9/16
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/mimic,
   :entity/stats
@@ -1382,8 +1443,9 @@
     {:image/file "images/lizardman-green-3.png"}
     {:image/file "images/lizardman-green-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lizardman-green,
   :entity/stats
@@ -1404,8 +1466,9 @@
     {:image/file "images/paladin-3.png"}
     {:image/file "images/paladin-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1426,8 +1489,9 @@
     {:image/file "images/dragon-green-3.png"}
     {:image/file "images/dragon-green-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/6, :body/width 23/24},
+  :entity/flying? false
+  :entity/height 5/6
+  :entity/width 23/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dragon,
   :entity/stats
@@ -1448,8 +1512,9 @@
     {:image/file "images/rat-3.png"}
     {:image/file "images/rat-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 23/48, :body/width 31/48},
+  :entity/flying? false
+  :entity/height 23/48
+  :entity/width 31/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/rat,
   :entity/stats
@@ -1470,8 +1535,9 @@
     {:image/file "images/elemental-vorpal-3.png"}
     {:image/file "images/elemental-vorpal-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 7/12},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elemental,
   :entity/stats
@@ -1492,8 +1558,9 @@
     {:image/file "images/zombie-a-3.png"}
     {:image/file "images/zombie-a-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/zombie,
   :entity/stats
@@ -1514,8 +1581,9 @@
     {:image/file "images/dragon-blue-3.png"}
     {:image/file "images/dragon-blue-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/6, :body/width 23/24},
+  :entity/flying? false
+  :entity/height 5/6
+  :entity/width 23/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dragon,
   :entity/stats
@@ -1536,8 +1604,9 @@
     {:image/file "images/spider-black-3.png"}
     {:image/file "images/spider-black-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/48, :body/width 13/24},
+  :entity/flying? false
+  :entity/height 19/48
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/spider,
   :entity/stats
@@ -1558,8 +1627,9 @@
     {:image/file "images/ogre-3.png"}
     {:image/file "images/ogre-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/ogre,
   :entity/stats
@@ -1580,8 +1650,9 @@
     {:image/file "images/wizard-3.png"}
     {:image/file "images/wizard-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills
   #{:skills/meditation :skills/projectile :skills/melee-attack},
   :entity/species :species/human,
@@ -1603,8 +1674,9 @@
     {:image/file "images/elemental-earth-3.png"}
     {:image/file "images/elemental-earth-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 7/12},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elemental,
   :entity/stats
@@ -1625,8 +1697,9 @@
     {:image/file "images/dragon-shadow-3.png"}
     {:image/file "images/dragon-shadow-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/6, :body/width 23/24},
+  :entity/flying? false
+  :entity/height 5/6
+  :entity/width 23/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dragon,
   :entity/stats
@@ -1647,8 +1720,9 @@
     {:image/file "images/banshee-3.png"}
     {:image/file "images/banshee-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 2/3},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/banshee,
   :entity/stats
@@ -1669,8 +1743,9 @@
     {:image/file "images/warrior-m-3.png"}
     {:image/file "images/warrior-m-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1691,8 +1766,9 @@
     {:image/file "images/moth-white-3.png"}
     {:image/file "images/moth-white-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 31/48, :body/width 1/2},
+  :entity/flying? true
+  :entity/height 31/48
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/moth,
   :entity/stats
@@ -1713,8 +1789,9 @@
     {:image/file "images/bird-dove-3.png"}
     {:image/file "images/bird-dove-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 35/48, :body/width 13/24},
+  :entity/flying? true
+  :entity/height 35/48
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/bird,
   :entity/stats
@@ -1735,8 +1812,9 @@
     {:image/file "images/lizardman-blue-3.png"}
     {:image/file "images/lizardman-blue-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lizardman-blue,
   :entity/stats
@@ -1757,8 +1835,9 @@
     {:image/file "images/dragon-red-3.png"}
     {:image/file "images/dragon-red-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/6, :body/width 23/24},
+  :entity/flying? false
+  :entity/height 5/6
+  :entity/width 23/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dragon,
   :entity/stats
@@ -1779,8 +1858,9 @@
     {:image/file "images/spider-brown-giant-3.png"}
     {:image/file "images/spider-brown-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 31/48, :body/width 5/6},
+  :entity/flying? false
+  :entity/height 31/48
+  :entity/width 5/6,
   :entity/skills #{:skills/slow :skills/melee-attack},
   :entity/species :species/spider,
   :entity/stats
@@ -1801,7 +1881,9 @@
     {:image/file "images/spirit-3.png"}
     {:image/file "images/spirit-4.png"}),
    :animation/looping? true},
-  :entity/body {:body/flying? true, :body/height 3/4, :body/width 1/2},
+  :entity/flying? true
+  :entity/height 3/4
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/spirit,
   :entity/stats
@@ -1822,8 +1904,9 @@
     {:image/file "images/lich-3.png"}
     {:image/file "images/lich-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/lich,
   :entity/stats
@@ -1844,8 +1927,9 @@
     {:image/file "images/skeleton-archer-3.png"}
     {:image/file "images/skeleton-archer-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 37/48, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 37/48
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/skeleton,
   :entity/stats
@@ -1866,8 +1950,9 @@
     {:image/file "images/ogre-mystic-3.png"}
     {:image/file "images/ogre-mystic-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/ogre,
   :entity/stats
@@ -1888,7 +1973,9 @@
     {:image/file "images/bone-dragon-3.png"}
     {:image/file "images/bone-dragon-4.png"}),
    :animation/looping? true},
-  :entity/body {:body/flying? false, :body/height 1, :body/width 1},
+  :entity/flying? false
+  :entity/height 1
+  :entity/width 1,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/dragon,
   :entity/stats
@@ -1909,8 +1996,9 @@
     {:image/file "images/golem-metal-3.png"}
     {:image/file "images/golem-metal-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/golem,
   :entity/stats
@@ -1931,8 +2019,9 @@
     {:image/file "images/elemental-fire-3.png"}
     {:image/file "images/elemental-fire-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 7/12},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elemental,
   :entity/stats
@@ -1953,8 +2042,9 @@
     {:image/file "images/templar-3.png"}
     {:image/file "images/templar-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 41/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 41/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -1975,7 +2065,9 @@
     {:image/file "images/wisp-3.png"}
     {:image/file "images/wisp-4.png"}),
    :animation/looping? true},
-  :entity/body {:body/flying? true, :body/height 5/8, :body/width 1/2},
+  :entity/flying? true
+  :entity/height 5/8
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/wisp,
   :entity/stats
@@ -1996,8 +2088,9 @@
     {:image/file "images/snake-giant-3.png"}
     {:image/file "images/snake-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 5/6},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 5/6,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/snake,
   :entity/stats
@@ -2018,8 +2111,9 @@
     {:image/file "images/minotaur-3.png"}
     {:image/file "images/minotaur-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/minotaur,
   :entity/stats
@@ -2040,8 +2134,9 @@
     {:image/file "images/valkyrie-a-3.png"}
     {:image/file "images/valkyrie-a-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 17/24},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/valkyrie,
   :entity/stats
@@ -2062,8 +2157,9 @@
     {:image/file "images/toad-green-3.png"}
     {:image/file "images/toad-green-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/12, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 5/12
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/toad,
   :entity/stats
@@ -2084,8 +2180,9 @@
     {:image/file "images/vampire-3.png"}
     {:image/file "images/vampire-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 17/24,
   :entity/inventory
   #{:items/chain-leg
     :items/studded-helm
@@ -2132,8 +2229,9 @@
     {:image/file "images/moth-black-3.png"}
     {:image/file "images/moth-black-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 31/48, :body/width 1/2},
+  :entity/flying? true
+  :entity/height 31/48
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/moth,
   :entity/stats
@@ -2154,8 +2252,9 @@
     {:image/file "images/monk-3.png"}
     {:image/file "images/monk-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 35/48},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 35/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2176,8 +2275,9 @@
     {:image/file "images/lord-b-3.png"}
     {:image/file "images/lord-b-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 17/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 17/24
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2198,8 +2298,9 @@
     {:image/file "images/warden-3.png"}
     {:image/file "images/warden-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2220,8 +2321,9 @@
     {:image/file "images/druid-3.png"}
     {:image/file "images/druid-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2242,8 +2344,9 @@
     {:image/file "images/elf-wizard-3.png"}
     {:image/file "images/elf-wizard-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 31/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 31/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elf,
   :entity/stats
@@ -2264,8 +2367,9 @@
     {:image/file "images/skeleton-mage-3.png"}
     {:image/file "images/skeleton-mage-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/skeleton,
   :entity/stats
@@ -2286,8 +2390,9 @@
     {:image/file "images/halfling-fighter-3.png"}
     {:image/file "images/halfling-fighter-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 7/12, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 7/12
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/halfling,
   :entity/stats
@@ -2308,8 +2413,9 @@
     {:image/file "images/skeleton-warrior-3.png"}
     {:image/file "images/skeleton-warrior-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/skeleton,
   :entity/stats
@@ -2330,8 +2436,9 @@
     {:image/file "images/halfling-thief-3.png"}
     {:image/file "images/halfling-thief-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/8, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 5/8
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/halfling,
   :entity/stats
@@ -2352,8 +2459,9 @@
     {:image/file "images/barbarian-m-3.png"}
     {:image/file "images/barbarian-m-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 17/24, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 17/24
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/barbarian,
   :entity/stats
@@ -2374,8 +2482,9 @@
     {:image/file "images/elf-bowman-3.png"}
     {:image/file "images/elf-bowman-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 37/48, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 37/48
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elf,
   :entity/stats
@@ -2396,8 +2505,9 @@
     {:image/file "images/beetle-3.png"}
     {:image/file "images/beetle-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/12, :body/width 1/2},
+  :entity/flying? false
+  :entity/height 5/12
+  :entity/width 1/2,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/beetle,
   :entity/stats
@@ -2418,7 +2528,9 @@
     {:image/file "images/bat-giant-3.png"}
     {:image/file "images/bat-giant-4.png"}),
    :animation/looping? true},
-  :entity/body {:body/flying? true, :body/height 3/4, :body/width 5/6},
+  :entity/flying? true
+  :entity/height 3/4
+  :entity/width 5/6,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/bat,
   :entity/stats
@@ -2439,8 +2551,9 @@
     {:image/file "images/toad-blue-3.png"}
     {:image/file "images/toad-blue-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/12, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 5/12
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/toad,
   :entity/stats
@@ -2461,8 +2574,9 @@
     {:image/file "images/golem-stone-3.png"}
     {:image/file "images/golem-stone-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 35/48, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 35/48
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/golem,
   :entity/stats
@@ -2484,8 +2598,9 @@
     {:image/file "images/necromancer-3.png"}
     {:image/file "images/necromancer-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2506,8 +2621,9 @@
     {:image/file "images/spider-black-giant-3.png"}
     {:image/file "images/spider-black-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/8, :body/width 5/6},
+  :entity/flying? false
+  :entity/height 5/8
+  :entity/width 5/6,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/spider,
   :entity/stats
@@ -2528,8 +2644,9 @@
     {:image/file "images/valkyrie-b-3.png"}
     {:image/file "images/valkyrie-b-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 3/4, :body/width 17/24},
+  :entity/flying? true
+  :entity/height 3/4
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/valkyrie,
   :entity/stats
@@ -2550,8 +2667,9 @@
     {:image/file "images/bat-3.png"}
     {:image/file "images/bat-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 31/48, :body/width 13/24},
+  :entity/flying? true
+  :entity/height 31/48
+  :entity/width 13/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/bat,
   :entity/stats
@@ -2572,8 +2690,9 @@
     {:image/file "images/snake-3.png"}
     {:image/file "images/snake-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 25/48, :body/width 31/48},
+  :entity/flying? false
+  :entity/height 25/48
+  :entity/width 31/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/snake,
   :entity/stats
@@ -2598,8 +2717,9 @@
     {:image/file "images/flies-3.png"}
     {:image/file "images/flies-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 5/8, :body/width 25/48},
+  :entity/flying? true
+  :entity/height 5/8
+  :entity/width 25/48,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/flies,
   :entity/stats
@@ -2620,8 +2740,9 @@
     {:image/file "images/prisoner-a-3.png"}
     {:image/file "images/prisoner-a-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2642,8 +2763,9 @@
     {:image/file "images/beholder-deep-3.png"}
     {:image/file "images/beholder-deep-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 19/24, :body/width 5/6},
+  :entity/flying? true
+  :entity/height 19/24
+  :entity/width 5/6,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/beholder,
   :entity/stats
@@ -2664,8 +2786,9 @@
     {:image/file "images/skeleton-3.png"}
     {:image/file "images/skeleton-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/8, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 5/8
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/skeleton,
   :entity/stats
@@ -2686,8 +2809,9 @@
     {:image/file "images/elemental-water-3.png"}
     {:image/file "images/elemental-water-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? true, :body/height 13/16, :body/width 7/12},
+  :entity/flying? true
+  :entity/height 13/16
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elemental,
   :entity/stats
@@ -2708,8 +2832,9 @@
     {:image/file "images/cultist-3.png"}
     {:image/file "images/cultist-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2730,8 +2855,9 @@
     {:image/file "images/mummy-pharao-3.png"}
     {:image/file "images/mummy-pharao-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 11/16, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 11/16
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/mummy,
   :entity/stats
@@ -2752,8 +2878,9 @@
     {:image/file "images/halfling-wizard-3.png"}
     {:image/file "images/halfling-wizard-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 2/3, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 2/3
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/halfling,
   :entity/stats
@@ -2774,8 +2901,9 @@
     {:image/file "images/drow-bowman-3.png"}
     {:image/file "images/drow-bowman-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 19/24, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 19/24
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/drow,
   :entity/stats
@@ -2796,8 +2924,9 @@
     {:image/file "images/worm-giant-3.png"}
     {:image/file "images/worm-giant-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 17/24, :body/width 5/6},
+  :entity/flying? false
+  :entity/height 17/24
+  :entity/width 5/6,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/worm,
   :entity/stats
@@ -2818,8 +2947,9 @@
     {:image/file "images/merchant-m-3.png"}
     {:image/file "images/merchant-m-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 5/8, :body/width 2/3},
+  :entity/flying? false
+  :entity/height 5/8
+  :entity/width 2/3,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/human,
   :entity/stats
@@ -2840,8 +2970,9 @@
     {:image/file "images/elf-3.png"}
     {:image/file "images/elf-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 17/24, :body/width 11/16},
+  :entity/flying? false
+  :entity/height 17/24
+  :entity/width 11/16,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/elf,
   :entity/stats
@@ -2862,8 +2993,9 @@
     {:image/file "images/worm-3.png"}
     {:image/file "images/worm-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 1/2, :body/width 7/12},
+  :entity/flying? false
+  :entity/height 1/2
+  :entity/width 7/12,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/worm,
   :entity/stats
@@ -2884,8 +3016,9 @@
     {:image/file "images/halfling-sling-3.png"}
     {:image/file "images/halfling-sling-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 7/12, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 7/12
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/halfling,
   :entity/stats
@@ -2906,8 +3039,9 @@
     {:image/file "images/golem-ice-3.png"}
     {:image/file "images/golem-ice-4.png"}),
    :animation/looping? true},
-  :entity/body
-  {:body/flying? false, :body/height 3/4, :body/width 17/24},
+  :entity/flying? false
+  :entity/height 3/4
+  :entity/width 17/24,
   :entity/skills #{:skills/melee-attack},
   :entity/species :species/golem,
   :entity/stats

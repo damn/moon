@@ -94,8 +94,8 @@
 (defn entities [cells]
   (into #{} (mapcat :entities) cells))
 
-(defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
-  (assert (:body/collides? body))
+(defn valid-position? [g2d {:keys [entity/z-order] :as body} entity-id]
+  (assert (:entity/collides? body))
   (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> cells*
@@ -103,12 +103,12 @@
               (not-any? (fn [other-entity]
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)
-                                 (:body/collides? (:entity/body other-entity))
-                                 (body/overlaps? (:entity/body other-entity)
+                                 (:entity/collides? other-entity)
+                                 (body/overlaps? other-entity
                                                  body)))))))))
 
 (defn try-move [grid body entity-id movement]
-  (let [new-body (update body :body/position v2/move movement)]
+  (let [new-body (update body :entity/position v2/move movement)]
     (when (valid-position? grid new-body entity-id)
       new-body)))
 
@@ -120,31 +120,31 @@
         (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
 (defn nearest-enemy [grid entity]
-  (nearest-entity @(grid (mapv int (:body/position (:entity/body entity))))
+  (nearest-entity @(grid (mapv int (:entity/position entity)))
                     (faction/enemy (:entity/faction entity))))
 
 (defn nearest-enemy-distance [grid entity]
-  (nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))
+  (nearest-entity-distance @(grid (mapv int (:entity/position entity)))
                                (faction/enemy (:entity/faction entity))))
 
 (defn body->occupied-cells
-  [grid {:keys [body/position
-                body/width
-                body/height]
+  [grid {:keys [entity/position
+                entity/width
+                entity/height]
          :as body}]
   (if (or (> (float width) 1) (> (float height) 1))
     (g2d/get-cells grid (body/touched-tiles body))
     [(grid (mapv int position))]))
 
 (defn set-occupied-cells! [grid eid]
-  (let [cells (body->occupied-cells grid (:entity/body @eid))]
+  (let [cells (body->occupied-cells grid @eid)]
     (doseq [cell cells]
       (assert (not (get (:occupied @cell) eid)))
       (swap! cell update :occupied conj eid))
     (swap! eid assoc :entity/occupied-cells cells)))
 
 (defn set-touched-cells! [grid eid]
-  (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]
+  (let [cells (g2d/get-cells grid (body/touched-tiles @eid))]
     (assert (not-any? nil? cells))
     (swap! eid assoc :entity/touched-cells cells)
     (doseq [cell cells]
@@ -216,7 +216,7 @@
 
 (defn point->entities [g2d pos]
   (when-let [cell (g2d (mapv int pos))]
-    (filter #(gdx-rectangle/contains (body/rectangle (:entity/body @%)) (first pos) (second pos))
+    (filter #(gdx-rectangle/contains (body/rectangle @%) (first pos) (second pos))
             (:entities @cell))))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
@@ -229,20 +229,20 @@
          (map deref)
          entities
          (filter #(circle/overlaps gdx-circle
-                                        (body/rectangle (:entity/body @%)))))))
+                                        (body/rectangle @%))))))
 
 (defn inside-cell? [grid entity cell]
-  (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body entity)))]
+  (let [cells (g2d/get-cells grid (body/touched-tiles entity))]
     (and (= 1 (count cells))
          (= cell (first cells)))))
 
 (defn find-direction [grid eid]
-  (let [position (:body/position (:entity/body @eid))
+  (let [position (:entity/position @eid)
         own-cell (grid (mapv int position))
         {:keys [target-entity target-cell]} (find-next-cell grid eid own-cell)]
     (cond
       target-entity
-      (v2/direction position (:body/position (:entity/body @target-entity)))
+      (v2/direction position (:entity/position @target-entity))
 
       (nil? target-cell)
       nil
@@ -270,7 +270,7 @@
   [grid pf-cache faction entities max-iterations]
   (let [tiles->entities (let [entities (filter #(= (:entity/faction @%) faction)
                                                entities)]
-                          (zipmap (map #(mapv int (:body/position (:entity/body @%))) entities)
+                          (zipmap (map #(mapv int (:entity/position @%)) entities)
                                   entities))
         last-state   [faction :tiles->entities]
         marked-cells [faction :marked-cells]]

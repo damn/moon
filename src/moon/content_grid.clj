@@ -18,8 +18,8 @@
            cell-h]}
    eid]
   (let [{:keys [moon.content-grid/content-cell
-                entity/body]} @eid
-        [x y] (:body/position body)
+                entity/position]} @eid
+        [x y] position
         new-cell (get grid [(int (/ x cell-w))
                             (int (/ y cell-h))])]
     (when-not (= content-cell new-cell)

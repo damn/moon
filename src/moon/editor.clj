@@ -144,7 +144,9 @@
    :entity/animation
    :entity/species
    :creature/level
-   :entity/body
+   :entity/width
+   :entity/height
+   :entity/flying?
    :item/slot
    :projectile/speed
    :projectile/max-range

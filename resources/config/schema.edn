@@ -22,13 +22,9 @@
  :entity/species [:s/qualified-keyword {:namespace :species}],
  :creature/level [:s/number :pos-int],
 
- :body/width [:s/number :pos],
- :body/height [:s/number :pos],
- :body/flying? [:s/boolean],
-
- :entity/body [:s/map [:body/width
-                       :body/height
-                       :body/flying?]],
+ :entity/width [:s/number :pos],
+ :entity/height [:s/number :pos],
+ :entity/flying? [:s/boolean],
 
  :stats/hp             [:s/number :pos-int],
  :stats/movement-speed [:s/number :pos],
@@ -93,7 +89,9 @@
                                 :property/pretty-name
                                 :entity/species
                                 :creature/level
-                                :entity/body
+                                :entity/width
+                                :entity/height
+                                :entity/flying?
                                 :entity/animation
                                 :entity/skills
                                 [:entity/inventory    {:optional true}]

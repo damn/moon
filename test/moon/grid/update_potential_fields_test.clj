@@ -9,7 +9,7 @@
                                        (filter   #(:entity/faction @%))
                                        (group-by #(:entity/faction @%)))]
            [faction
-            (zipmap (map #(mapv int (:body/position (:entity/body @%))) entities)
+            (zipmap (map #(mapv int (:entity/position @%)) entities)
                     entities)])))
 
  (def max-iterations 1)
