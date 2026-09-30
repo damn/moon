@@ -817,7 +817,7 @@
                 (spawn-entity! ctx (spawn-item (item-place-position (:entity/position entity)
                                                                     world-mouse-position
                                                                     (- (:entity/click-distance-tiles entity) 0.1))
-                                               item)))
+                                               item))))
 
             :player-moving
             (do (swap! eid dissoc :entity/movement)
