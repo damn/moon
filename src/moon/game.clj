@@ -3143,79 +3143,6 @@
     (stage/draw! stage)
     (:stage/ctx stage)))
 
-(defn create [app]
-  (-> (create-bootstrap app)
-      create-batch
-      create-audio
-      create-shape-drawer-texture
-      create-shape-drawer
-      create-skin
-      create-stage
-      create-init-tooltip
-      create-cursors
-      create-textures
-      create-world-viewport
-      create-default-font
-      create-context
-      create-game-config
-      create-db
-      create-stage-actors
-      create-tiled-map
-      create-world
-      create-explored-tile-corners
-      create-raycaster
-      create-spawn-player
-      create-player-eid
-      create-spawn-creatures
-      create-dissoc-files))
-
-(defn dispose-audio! [ctx]
-  (audio/dispose! (:ctx/audio ctx)))
-
-(defn dispose [ctx]
-  (dispose-audio! ctx)
-  (dispose-batch! ctx)
-  (dispose-cursors! ctx)
-  (dispose-default-font! ctx)
-  (dispose-shape-drawer-texture! ctx)
-  (dispose-skin! ctx)
-  (dispose-textures! ctx)
-  (dispose-tiled-map! ctx))
-
-(defn render [ctx]
-  (-> ctx
-      stage-ctx
-      render-validate
-      update-mouse-positions
-      update-mouseover-eid
-      check-debug-viewer
-      set-active-entities
-      set-camera-position
-      clear-screen
-      render-draw-tiled-map
-      draw-on-world-viewport
-      assoc-interaction-state
-      set-cursor
-      handle-player-input
-      dissoc-interaction-state
-      assoc-paused
-      when-not-paused
-      remove-destroyed-entities
-      window-camera-controls
-      update-draw-stage
-      render-validate))
-
-(defn resize-stage-viewport! [ctx width height]
-  (viewport/update! (:stage/viewport (:ctx/stage ctx)) width height true))
-
-(defn resize-world-viewport! [ctx width height]
-  (viewport/update! (:ctx/world-viewport ctx) width height false))
-
-(defn resize
-  [ctx width height]
-  (resize-stage-viewport! ctx width height)
-  (resize-world-viewport! ctx width height))
-
 (def state (atom nil))
 
 (defn -main []
@@ -3223,13 +3150,69 @@
   (Lwjgl3Application.
     (reify ApplicationListener
       (create [_]
-        (reset! state (create Gdx/app)))
+        (reset! state
+                (-> (create-bootstrap Gdx/app)
+                    create-batch
+                    create-audio
+                    create-shape-drawer-texture
+                    create-shape-drawer
+                    create-skin
+                    create-stage
+                    create-init-tooltip
+                    create-cursors
+                    create-textures
+                    create-world-viewport
+                    create-default-font
+                    create-context
+                    create-game-config
+                    create-db
+                    create-stage-actors
+                    create-tiled-map
+                    create-world
+                    create-explored-tile-corners
+                    create-raycaster
+                    create-spawn-player
+                    create-player-eid
+                    create-spawn-creatures
+                    create-dissoc-files)))
       (dispose [_]
-        (dispose @state))
+        (let [ctx @state]
+          (dispose-audio! ctx)
+          (dispose-batch! ctx)
+          (dispose-cursors! ctx)
+          (dispose-default-font! ctx)
+          (dispose-shape-drawer-texture! ctx)
+          (dispose-skin! ctx)
+          (dispose-textures! ctx)
+          (dispose-tiled-map! ctx)))
       (render [_]
-        (swap! state render))
+        (swap! state
+               (fn [ctx]
+                 (-> ctx
+                     stage-ctx
+                     render-validate
+                     update-mouse-positions
+                     update-mouseover-eid
+                     check-debug-viewer
+                     set-active-entities
+                     set-camera-position
+                     clear-screen
+                     render-draw-tiled-map
+                     draw-on-world-viewport
+                     assoc-interaction-state
+                     set-cursor
+                     handle-player-input
+                     dissoc-interaction-state
+                     assoc-paused
+                     when-not-paused
+                     remove-destroyed-entities
+                     window-camera-controls
+                     update-draw-stage
+                     render-validate))))
       (resize [_ width height]
-        (resize @state width height))
+        (let [ctx @state]
+          (viewport/update! (:stage/viewport (:ctx/stage ctx)) width height true)
+          (viewport/update! (:ctx/world-viewport ctx) width height false)))
       (pause [_])
       (resume [_]))
     (doto (Lwjgl3ApplicationConfiguration.)
