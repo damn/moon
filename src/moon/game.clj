@@ -63,7 +63,6 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
-    [:ctx/audio :some]
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
@@ -2275,8 +2274,10 @@
     texture))
 
 (def state (atom nil))
+(def audio (atom nil))
 
-(defn create! [audio files input handle-fsm-event! spawn-entity!]
+(defn create! [gdx-audio files input handle-fsm-event! spawn-entity!]
+  (reset! audio (audio/create gdx-audio files))
   (reset! state
           (as-> {:ctx/unit-scale (atom 1)
                  :ctx/active-entities nil
@@ -2291,7 +2292,6 @@
                  :ctx/show-body-bounds? false
                  :ctx/show-tile-grid? false
                  :ctx/batch (SpriteBatch.)
-                 :ctx/audio (audio/create audio files)
                  :ctx/shape-drawer-texture (shape-drawer-texture)}
             ctx
             (assoc ctx :ctx/shape-drawer
@@ -2363,7 +2363,6 @@
                   skin (:ctx/skin ctx)
                   textures (:ctx/textures ctx)
                   colors (:ctx/colors ctx)
-                  audio (:ctx/audio ctx)
                   shape-drawer (:ctx/shape-drawer ctx)
                   cell-size 48]
               (doseq [actor [(create-action-bar)
@@ -2409,7 +2408,7 @@
                                                                                                     [(.getX ^Input Gdx/input)
                                                                                                      (.getY ^Input Gdx/input)])]
                                                         (handle-clicked-inventory-cell (:ctx/player-eid ctx)
-                                                                                       audio
+                                                                                       @audio
                                                                                        handle-fsm-event!
                                                                                        #(ui-set-item! ctx %1 %2)
                                                                                        #(ui-remove-item! ctx %)
@@ -2475,7 +2474,7 @@
 
 (defn dispose! []
   (let [ctx @state]
-    (audio/dispose! (:ctx/audio ctx))
+    (audio/dispose! @audio)
     (Disposable/.dispose (:ctx/batch ctx))
     (run! Disposable/.dispose (vals (:ctx/cursors ctx)))
     (Disposable/.dispose (:ctx/default-font ctx))
@@ -2489,8 +2488,7 @@
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
-  (let [audio (:ctx/audio @state)
-        batch (:ctx/batch @state)
+  (let [batch (:ctx/batch @state)
         default-font (:ctx/default-font @state)
         shape-drawer (:ctx/shape-drawer @state)
         ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage @state)) mouse-position)
@@ -2593,7 +2591,7 @@
                                   (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
                                     (when (pos? (v2/length v))
                                       v))))]
-          (handle-input state-k eid ctx audio handle-fsm-event!
+          (handle-input state-k eid ctx @audio handle-fsm-event!
                         (button-just-pressed? Input$Buttons/LEFT)
                         movement-vector
                         mouseover-actor*
@@ -2610,7 +2608,7 @@
       (swap! state #(-> % update-time update-potential-fields))
       (let [ctx @state
             audiovisual! (let [do-audiovisual! audiovisual!]
-                           #(do-audiovisual! spawn-entity! (:ctx/db ctx) audio %1 %2))
+                           #(do-audiovisual! spawn-entity! (:ctx/db ctx) @audio %1 %2))
             active-entities (:ctx/active-entities ctx)
             colors (:ctx/colors ctx)
             raycaster (:ctx/raycaster ctx)
@@ -2649,7 +2647,7 @@
             :entity/destroy-audiovisual
             (audiovisual! spawn-entity!
                           (:ctx/db ctx)
-                          audio
+                          @audio
                           (:entity/position @eid)
                           v)
             nil))))
@@ -2697,7 +2695,6 @@
 
 (defn handle-fsm-event! [eid world-mouse-position event & [params]]
   (let [ctx @state
-        audio (:ctx/audio ctx)
         fsm (:entity/fsm @eid)
         _ (assert fsm)
         old-state-k (:state fsm)
@@ -2718,7 +2715,7 @@
                   item (:entity/item-on-cursor entity)]
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
-                (audio/play! audio "bfxr_itemputground")
+                (audio/play! @audio "bfxr_itemputground")
                 (spawn-entity! (spawn-item (item-place-position (:entity/position entity)
                                                                     world-mouse-position
                                                                     (- (:entity/click-distance-tiles entity) 0.1))
@@ -2749,7 +2746,7 @@
               (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
               (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
                      (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
-              (audio/play! audio (:skill/start-action-sound skill))
+              (audio/play! @audio (:skill/start-action-sound skill))
               nil)
 
             :npc-dead
@@ -2764,7 +2761,7 @@
               nil)
 
             :player-dead
-            (do (audio/play! audio "bfxr_playerdeath")
+            (do (audio/play! @audio "bfxr_playerdeath")
                 (show-modal! (:ctx/skin ctx) (:ctx/stage ctx) {:title "YOU DIED - again!"
                                                                :text "Good luck next time!"
                                                                :button-text "OK"
