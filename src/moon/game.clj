@@ -2456,130 +2456,6 @@
     (f v eid ctx)
     nil))
 
-(defn create-bootstrap [app]
-  {:ctx/audio    (.getAudio    ^Application app)
-   :ctx/files    (.getFiles    ^Application app)
-   :ctx/graphics (.getGraphics ^Application app)
-   :ctx/input    (.getInput    ^Application app)
-   :ctx/unit-scale (atom 1)
-   :ctx/active-entities nil
-   :ctx/delta-time nil
-   :ctx/ui-mouse-position nil
-   :ctx/world-mouse-position nil
-   :ctx/mouseover-eid nil
-   :ctx/paused? false
-   :ctx/elapsed-time 0
-   :ctx/potential-field-cache (atom nil)
-   :ctx/show-potential-field-colors? nil
-   :ctx/show-cell-entities? false
-   :ctx/show-cell-occupied? false
-   :ctx/show-body-bounds? false
-   :ctx/show-tile-grid? false})
-
-(defn create-batch [ctx]
-  (assoc ctx :ctx/batch (sprite-batch/create)))
-
-(defn create-audio [ctx]
-  (assoc ctx
-         :ctx/audio (audio/create (:ctx/audio ctx) (:ctx/files ctx))))
-
-(defn create-shape-drawer-texture [ctx]
-  (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
-                 (pixmap/set-color! 1 1 1 1)
-                 (pixmap/draw-pixel! 0 0))
-        texture (texture/create (pixmap-texture-data/create pixmap
-                                                         (pixmap/get-format pixmap)
-                                                         false
-                                                         false))]
-    (disposable/dispose! pixmap)
-    (assoc ctx :ctx/shape-drawer-texture texture)))
-
-(defn create-shape-drawer [ctx]
-  (assoc ctx
-         :ctx/shape-drawer (shape-drawer/new (:ctx/batch ctx)
-                                             (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1))))
-
-(defn create-skin [ctx]
-  (let [files (:ctx/files ctx)
-        skin (skin/create (files/internal files "skin/uiskin.json"))]
-    (-> skin
-        (skin/get-font "default-font")
-        bitmap-font/get-data
-        (bitmap-font-data/set-markup-enabled! true))
-    (assoc ctx :ctx/skin skin)))
-
-(defn create-stage [ctx]
-  (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
-    (set-input-processor! ctx stage*)
-    (assoc ctx :ctx/stage stage*)))
-
-(defn create-init-tooltip [ctx]
-  (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)
-  (colors/put! "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
-  ctx)
-
-(defn create-cursors [ctx]
-  (assoc ctx
-         :ctx/cursors (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
-                         (update-vals data
-                                      (fn [[path-segment [hotspot-x hotspot-y]]]
-                                        (let [path (format path-format path-segment)
-                                              pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
-                                              cursor (create-cursor ctx pixmap* hotspot-x hotspot-y)]
-                                          (disposable/dispose! pixmap*)
-                                          cursor))))))
-
-(defn create-textures [ctx]
-  (let [files (:ctx/files ctx)]
-    (assoc ctx :ctx/textures (textures/create files {:folder "resources/"
-                                                     :extensions #{"png" "bmp"}}))))
-
-(defn create-world-viewport [ctx]
-  (assoc ctx
-         :ctx/world-viewport (let [world-width (* 1440 world-unit-scale)
-                                   world-height (* 900 world-unit-scale)]
-                               (fit-viewport/create world-width
-                                                    world-height
-                                                    (doto (orthographic-camera/new)
-                                                      (orthographic-camera/set-to-ortho! false world-width world-height))))))
-
-(defn create-default-font [ctx]
-  (assoc ctx
-         :ctx/default-font (let [{:keys [path
-                                         size
-                                         quality-scaling
-                                         use-integer-positions?]} {:path "fonts/films.EXL_____.ttf"
-                                                                   :size 16
-                                                                   :quality-scaling 2
-                                                                   :use-integer-positions? false}
-                                 generator (font-generator/new (files/internal (:ctx/files ctx) path))
-                                 parameter {
-                                            :set-size (* size quality-scaling)
-                                            :set-min-filter texture-filter/linear
-                                            :set-mag-filter texture-filter/linear
-                                            }
-                                 font (font-generator/generate-font generator parameter)
-                                 font-data (bitmap-font/get-data font)]
-                             (disposable/dispose! generator)
-                             (bitmap-font-data/set-scale! font-data (/ quality-scaling))
-                             (bitmap-font-data/set-markup-enabled! font-data true)
-                             (bitmap-font/set-use-integer-positions! font use-integer-positions?)
-                             font)))
-
-(defn create-context [ctx]
-  (merge (map->Record {}) ctx))
-
-(defn create-game-config [ctx]
-  (-> ctx
-      (assoc :ctx/controls controls)
-      (assoc :ctx/controls-info controls-info)
-      (assoc :ctx/colors colors)
-      (assoc :ctx/render-z-order render-z-order)
-      (assoc :ctx/max-speed max-speed)))
-
-(defn create-db [ctx]
-  (assoc ctx :ctx/db (db/create)))
-
 (defn- set-label-text-actor [label-widget text-fn]
   (proxy [Actor] []
     (act [delta]
@@ -2642,85 +2518,6 @@
                                                            :fill-x? true
                                                            :fill-y? true}]]})
         (layout/set-fill-parent! true)))
-
-(defn create-stage-actors
-  [ctx]
-  (let [stage (:ctx/stage ctx)
-        skin (:ctx/skin ctx)
-        textures (:ctx/textures ctx)]
-    (doseq [actor [(create-action-bar)
-                   (create-dev-menu
-                    {:menus dev-menus
-                     :update-labels (for [item dev-update-labels]
-                                      (if (:icon item)
-                                        (update item :icon #(get textures %))
-                                        item))
-                     :skin skin})
-                   (hp-mana-bar-create ctx)
-                   (windows-create ctx [stage-info-window-create
-                                        inventory-window-create])
-                   (player-state-draw-create)
-                   (player-message-actor-create)]]
-      (stage/add-actor! stage actor))
-    ctx))
-
-(defn create-tiled-map [ctx]
-  (let [{:keys [tiled-map
-                start-position]} (level-fn
-                                   {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
-                                                                 (db/all-raw (:ctx/db ctx) :properties/creatures)
-                                                                 #(textures/texture-region (:ctx/textures ctx) %))
-                                    :textures (:ctx/textures ctx)})]
-    (assoc ctx
-           :ctx/tiled-map tiled-map
-           :ctx/start-position start-position)))
-
-(defn create-world [ctx]
-  (assoc ctx :ctx/world (world/create (:ctx/tiled-map ctx))))
-
-(defn create-explored-tile-corners [ctx]
-  (assoc ctx
-         :ctx/explored-tile-corners (atom (moon-g2d/create (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
-                                                            (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
-                                                            (constantly false)))))
-
-(defn create-raycaster [ctx]
-  (let [{:keys [width height cells]} (world/raycaster-data (:ctx/world ctx))
-        arr (make-array Boolean/TYPE width height)]
-    (doseq [[[x y] blocked?] cells]
-      (aset arr x y (boolean blocked?)))
-    (assoc ctx :ctx/raycaster [arr width height])))
-
-(defn create-spawn-player [ctx]
-  (spawn-creature! ctx {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
-                        :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
-                        :components {:entity/fsm {:fsm :fsms/player
-                                                  :initial-state :player-idle}
-                                     :entity/faction :good
-                                     :entity/player? true
-                                     :entity/free-skill-points 3
-                                     :entity/clickable {:type :clickable/player}
-                                     :entity/click-distance-tiles 1.5}})
-  ctx)
-
-(defn create-player-eid [ctx]
-  (let [eid (world/entity-by-id (:ctx/world ctx) 1)]
-    (assert (:entity/player? @eid))
-    (assoc ctx :ctx/player-eid eid)))
-
-(defn create-spawn-creatures [ctx]
-  (let [start-position (:ctx/start-position ctx)]
-    (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))
-            :when (not= position start-position)]
-      (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
-                            :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
-                            :components {:entity/fsm {:fsm :fsms/npc
-                                                      :initial-state :npc-sleeping}
-                                         :entity/faction :evil}})))
-  ctx)
-
-(defn create-dissoc-files [ctx]
-  (dissoc ctx :ctx/files))
 
 (defn stage-ctx
   [ctx]
@@ -3151,30 +2948,160 @@
     (reify ApplicationListener
       (create [_]
         (reset! state
-                (-> (create-bootstrap Gdx/app)
-                    create-batch
-                    create-audio
-                    create-shape-drawer-texture
-                    create-shape-drawer
-                    create-skin
-                    create-stage
-                    create-init-tooltip
-                    create-cursors
-                    create-textures
-                    create-world-viewport
-                    create-default-font
-                    create-context
-                    create-game-config
-                    create-db
-                    create-stage-actors
-                    create-tiled-map
-                    create-world
-                    create-explored-tile-corners
-                    create-raycaster
-                    create-spawn-player
-                    create-player-eid
-                    create-spawn-creatures
-                    create-dissoc-files)))
+                (as-> {:ctx/audio    (.getAudio    ^Application Gdx/app)
+                       :ctx/files    (.getFiles    ^Application Gdx/app)
+                       :ctx/graphics (.getGraphics ^Application Gdx/app)
+                       :ctx/input    (.getInput    ^Application Gdx/app)
+                       :ctx/unit-scale (atom 1)
+                       :ctx/active-entities nil
+                       :ctx/delta-time nil
+                       :ctx/ui-mouse-position nil
+                       :ctx/world-mouse-position nil
+                       :ctx/mouseover-eid nil
+                       :ctx/paused? false
+                       :ctx/elapsed-time 0
+                       :ctx/potential-field-cache (atom nil)
+                       :ctx/show-potential-field-colors? nil
+                       :ctx/show-cell-entities? false
+                       :ctx/show-cell-occupied? false
+                       :ctx/show-body-bounds? false
+                       :ctx/show-tile-grid? false} ctx
+                  (assoc ctx :ctx/batch (sprite-batch/create))
+                  (assoc ctx :ctx/audio (audio/create (:ctx/audio ctx) (:ctx/files ctx)))
+                  (assoc ctx :ctx/shape-drawer-texture
+                         (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
+                                        (pixmap/set-color! 1 1 1 1)
+                                        (pixmap/draw-pixel! 0 0))
+                               texture (texture/create (pixmap-texture-data/create pixmap
+                                                                                (pixmap/get-format pixmap)
+                                                                                false
+                                                                                false))]
+                           (disposable/dispose! pixmap)
+                           texture))
+                  (assoc ctx :ctx/shape-drawer
+                         (shape-drawer/new (:ctx/batch ctx)
+                                           (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1)))
+                  (assoc ctx :ctx/skin
+                         (let [skin (skin/create (files/internal (:ctx/files ctx) "skin/uiskin.json"))]
+                           (-> skin
+                               (skin/get-font "default-font")
+                               bitmap-font/get-data
+                               (bitmap-font-data/set-markup-enabled! true))
+                           skin))
+                  (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
+                    (set-input-processor! ctx stage*)
+                    (assoc ctx :ctx/stage stage*))
+                  (do
+                    (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)
+                    (colors/put! "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
+                    ctx)
+                  (assoc ctx :ctx/cursors
+                         (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
+                           (update-vals data
+                                        (fn [[path-segment [hotspot-x hotspot-y]]]
+                                          (let [path (format path-format path-segment)
+                                                pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
+                                                cursor (create-cursor ctx pixmap* hotspot-x hotspot-y)]
+                                            (disposable/dispose! pixmap*)
+                                            cursor)))))
+                  (assoc ctx :ctx/textures
+                         (textures/create (:ctx/files ctx) {:folder "resources/"
+                                                            :extensions #{"png" "bmp"}}))
+                  (assoc ctx :ctx/world-viewport
+                         (let [world-width (* 1440 world-unit-scale)
+                               world-height (* 900 world-unit-scale)]
+                           (fit-viewport/create world-width
+                                                world-height
+                                                (doto (orthographic-camera/new)
+                                                  (orthographic-camera/set-to-ortho! false world-width world-height)))))
+                  (assoc ctx :ctx/default-font
+                         (let [{:keys [path
+                                       size
+                                       quality-scaling
+                                       use-integer-positions?]} {:path "fonts/films.EXL_____.ttf"
+                                                                 :size 16
+                                                                 :quality-scaling 2
+                                                                 :use-integer-positions? false}
+                               generator (font-generator/new (files/internal (:ctx/files ctx) path))
+                               parameter {:set-size (* size quality-scaling)
+                                          :set-min-filter texture-filter/linear
+                                          :set-mag-filter texture-filter/linear}
+                               font (font-generator/generate-font generator parameter)
+                               font-data (bitmap-font/get-data font)]
+                           (disposable/dispose! generator)
+                           (bitmap-font-data/set-scale! font-data (/ quality-scaling))
+                           (bitmap-font-data/set-markup-enabled! font-data true)
+                           (bitmap-font/set-use-integer-positions! font use-integer-positions?)
+                           font))
+                  (merge (map->Record {}) ctx)
+                  (-> ctx
+                      (assoc :ctx/controls controls)
+                      (assoc :ctx/controls-info controls-info)
+                      (assoc :ctx/colors colors)
+                      (assoc :ctx/render-z-order render-z-order)
+                      (assoc :ctx/max-speed max-speed))
+                  (assoc ctx :ctx/db (db/create))
+                  (let [stage (:ctx/stage ctx)
+                        skin (:ctx/skin ctx)
+                        textures (:ctx/textures ctx)]
+                    (doseq [actor [(create-action-bar)
+                                   (create-dev-menu
+                                    {:menus dev-menus
+                                     :update-labels (for [item dev-update-labels]
+                                                      (if (:icon item)
+                                                        (update item :icon #(get textures %))
+                                                        item))
+                                     :skin skin})
+                                   (hp-mana-bar-create ctx)
+                                   (windows-create ctx [stage-info-window-create
+                                                        inventory-window-create])
+                                   (player-state-draw-create)
+                                   (player-message-actor-create)]]
+                      (stage/add-actor! stage actor))
+                    ctx)
+                  (let [{:keys [tiled-map start-position]}
+                        (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
+                                                                (db/all-raw (:ctx/db ctx) :properties/creatures)
+                                                                #(textures/texture-region (:ctx/textures ctx) %))
+                                   :textures (:ctx/textures ctx)})]
+                    (assoc ctx
+                           :ctx/tiled-map tiled-map
+                           :ctx/start-position start-position))
+                  (assoc ctx :ctx/world (world/create (:ctx/tiled-map ctx)))
+                  (assoc ctx :ctx/explored-tile-corners
+                         (atom (moon-g2d/create (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
+                                                 (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
+                                                 (constantly false))))
+                  (let [{:keys [width height cells]} (world/raycaster-data (:ctx/world ctx))
+                        arr (make-array Boolean/TYPE width height)]
+                    (doseq [[[x y] blocked?] cells]
+                      (aset arr x y (boolean blocked?)))
+                    (assoc ctx :ctx/raycaster [arr width height]))
+                  (do
+                    (spawn-creature! ctx {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
+                                          :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
+                                          :components {:entity/fsm {:fsm :fsms/player
+                                                                    :initial-state :player-idle}
+                                                       :entity/faction :good
+                                                       :entity/player? true
+                                                       :entity/free-skill-points 3
+                                                       :entity/clickable {:type :clickable/player}
+                                                       :entity/click-distance-tiles 1.5}})
+                    ctx)
+                  (let [eid (world/entity-by-id (:ctx/world ctx) 1)]
+                    (assert (:entity/player? @eid))
+                    (assoc ctx :ctx/player-eid eid))
+                  (do
+                    (let [start-position (:ctx/start-position ctx)]
+                      (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))
+                              :when (not= position start-position)]
+                        (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
+                                              :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
+                                              :components {:entity/fsm {:fsm :fsms/npc
+                                                                        :initial-state :npc-sleeping}
+                                                           :entity/faction :evil}})))
+                    ctx)
+                  (dissoc ctx :ctx/files))))
       (dispose [_]
         (let [ctx @state]
           (dispose-audio! ctx)
