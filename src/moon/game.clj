@@ -636,25 +636,26 @@
     (.addListener ^Actor cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
+(defn- set-item [entity cell item]
+  (assert (and (nil? (get-in (:entity/inventory entity) cell))
+               (inventory/valid-slot? cell item)))
+  (cond-> (assoc-in entity (cons :entity/inventory cell) item)
+    (inventory/applies-modifiers? cell)
+    (update :entity/stats stats/add-mods (:stats/modifiers item))))
+
 (defn- set-item! [ctx eid cell item]
-  (let [entity @eid
-        inventory (:entity/inventory entity)]
-    (assert (and (nil? (get-in inventory cell))
-                 (inventory/valid-slot? cell item)))
-    (swap! eid assoc-in (cons :entity/inventory cell) item)
-    (when (inventory/applies-modifiers? cell)
-      (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
-    (when (:entity/player? @eid)
-      (let [skin (:ctx/skin ctx)
-            stage (:ctx/stage ctx)
-            textures (:ctx/textures ctx)]
-        (-> stage
-            :stage/root
-            (#(group/find-actor % "moon.ui.windows.inventory"))
-            (inventory-window-set-item! cell
-                                      {:texture-region (textures/texture-region textures (:entity/image item))
-                                       :tooltip-text (item/info-text item)}
-                                      skin)))))
+  (swap! eid set-item cell item)
+  (when (:entity/player? @eid)
+    (let [skin (:ctx/skin ctx)
+          stage (:ctx/stage ctx)
+          textures (:ctx/textures ctx)]
+      (-> stage
+          :stage/root
+          (#(group/find-actor % "moon.ui.windows.inventory"))
+          (inventory-window-set-item! cell
+                                    {:texture-region (textures/texture-region textures (:entity/image item))
+                                     :tooltip-text (item/info-text item)}
+                                    skin)))))
 
 (defn- pickup-item! [ctx eid item]
   (assert (item/valid? item))
