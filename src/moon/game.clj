@@ -2939,6 +2939,8 @@
     (disposable/dispose! (:ctx/tiled-map ctx))))
 
 (defn render! []
+  (.glClearColor (graphics/get-gl20 (:ctx/graphics @state)) 0 0 0 0)
+  (.glClear (graphics/get-gl20 (:ctx/graphics @state)) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (:stage/ctx (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
   (swap! state update-mouse-positions)
@@ -2946,12 +2948,8 @@
   (check-debug-viewer @state)
   (swap! state #(assoc % :ctx/active-entities
                        (world/active-entities (:ctx/world %) @(:ctx/player-eid %))))
-  (let [ctx @state]
-    (orthographic-camera/set-position! (viewport/get-camera (:ctx/world-viewport ctx))
-                                       (:entity/position @(:ctx/player-eid ctx))))
-  (let [gl (graphics/get-gl20 (:ctx/graphics @state))]
-    (.glClearColor ^GL20 gl 0 0 0 0)
-    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
+  (orthographic-camera/set-position! (viewport/get-camera (:ctx/world-viewport @state))
+                                     (:entity/position @(:ctx/player-eid @state)))
   (render-draw-tiled-map @state)
   (draw-on-world-viewport @state)
   (swap! state assoc-interaction-state)
