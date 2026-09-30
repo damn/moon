@@ -1482,125 +1482,6 @@
     (draw-body ctx)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
 
-(defn- draw-entity-image!
-  [image entity ctx]
-  (draw-fn-texture-region ctx
-                          (textures/texture-region (:ctx/textures ctx) image)
-                          (:entity/position entity)
-                          {:center? true
-                           :rotation (or (:entity/rotation-angle entity)
-                                         0)}))
-
-(defn- render-clickable
-  [{:keys [text]}
-   {:keys [entity/position
-           entity/height
-           entity/mouseover?]}
-   _ctx]
-  (when (and mouseover? text)
-    (let [[x y] position]
-      (draw-fn-text _ctx {:text text
-                          :x x
-                          :y (+ y (/ height 2))
-                          :up? true}))))
-
-(defn- render-animation
-  [{:keys [frames
-           cnt
-           frame-duration]}
-   entity
-   ctx]
-  (draw-entity-image! (frames (min (int (/ (float cnt) (float frame-duration)))
-                                    (dec (count frames))))
-                      entity
-                      ctx))
-
-(defn- render-line-render
-  [{:keys [thick? end color]}
-   {:keys [entity/position]}
-   ctx]
-  (if thick?
-    (draw-with-line-width! ctx 4 #(draw-fn-line % position end color))
-    (draw-fn-line ctx position end color)))
-
-(defn- render-mouseover
-  [_
-   {:keys [entity/position
-           entity/width
-           entity/height
-           entity/faction]
-    :as entity}
-   ctx]
-  (let [colors (:ctx/colors ctx)
-        player @(:ctx/player-eid ctx)
-        color (cond (= faction (faction/enemy (:entity/faction player)))
-                    (:colors/enemy-color colors)
-                    (= faction (:entity/faction player))
-                    (:colors/friendly-color colors)
-                    :else
-                    (:colors/neutral-color colors))]
-    (draw-with-line-width! ctx 5
-                           #(draw-fn-ellipse % position
-                                              (/ width 2)
-                                              (/ height 2)
-                                              color))))
-
-(defn- render-npc-sleeping
-  [_ {:keys [entity/position entity/height]} ctx]
-  (let [[x y] position]
-    (draw-fn-text ctx {:text "zzz"
-                       :x x
-                       :y (+ y (/ height 2))
-                       :up? true})))
-
-(defn- render-player-item-on-cursor
-  [{:keys [item]}
-   entity
-   ctx]
-  (when-not (mouseover-actor ctx)
-    (draw-fn-texture-region ctx
-                            (textures/texture-region (:ctx/textures ctx) (:entity/image item))
-                            (item-place-position ctx entity)
-                            {:center? true})))
-
-(defn- render-stats
-  [_ entity ctx]
-  (let [colors (:ctx/colors ctx)
-        ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
-    (when (or (< ratio 1) (:entity/mouseover? entity))
-      (let [{:keys [entity/position entity/width entity/height]} entity
-            [x y] position
-            x (- x (/ width  2))
-            y (+ y (/ height 2))
-            height (* 5 world-unit-scale)
-            border (* 1 world-unit-scale)]
-        (draw-fn-filled-rectangle ctx x y width height (:colors/hp-bar-rect colors))
-        (draw-fn-filled-rectangle ctx
-                                  (+ x border)
-                                  (+ y border)
-                                  (- (* width ratio) (* 2 border))
-                                  (- height (* 2 border))
-                                  ((:colors/hp-bar colors) ratio))))))
-
-(defn- render-string-effect
-  [{:keys [text]} entity ctx]
-  (let [[x y] (:entity/position entity)]
-    (draw-fn-text ctx {:text text
-                       :x x
-                       :y (+ y
-                             (/ (:entity/height entity) 2)
-                             (* 5 world-unit-scale))
-                       :scale 2
-                       :up? true})))
-
-(defn- render-stunned
-  [_ {:keys [entity/position]} ctx]
-  (draw-fn-circle ctx position 0.5 (:colors/stunned (:ctx/colors ctx))))
-
-(defn- render-temp-modifier
-  [_ entity ctx]
-  (draw-fn-filled-circle ctx (:entity/position entity) 0.5 (:colors/temp-modifier (:ctx/colors ctx))))
-
 (defmulti effect-render
   (fn [[k _v] _effect-ctx _ctx]
     k))
@@ -1638,33 +1519,6 @@
                       (:colors/target-entity-in-range colors)
                       (:colors/target-entity-not-in-range colors))))))
 
-(defn- render-active-skill
-  [{:keys [skill effect-ctx counter]}
-   entity
-   ctx]
-  (let [colors (:ctx/colors ctx)
-        textures (:ctx/textures ctx)
-        elapsed-time (:ctx/elapsed-time ctx)
-        {:keys [entity/image skill/effects]} skill
-        radius active-skill-radius
-        action-counter-ratio (timer/ratio elapsed-time counter)
-        texture-region (textures/texture-region textures image)
-        [x y] (:entity/position entity)
-        y (+ (float y)
-             (float (/ (:entity/height entity) 2))
-             (float 0.15))
-        center [x (+ y radius)]]
-    (draw-fn-filled-circle ctx center radius (:colors/active-skill-circle colors))
-    (draw-fn-sector ctx
-                    center
-                    radius
-                    (math/to-radians 90)
-                    (math/to-radians (* (float action-counter-ratio) 360))
-                    (:colors/active-skill-sector colors))
-    (draw-fn-texture-region ctx texture-region [(- (float x) radius) y])
-    (doseq [effect effects]
-      (effect-render effect effect-ctx ctx))))
-
 (defn tile-color-setter*
   [{:keys [ray-blocked?
            explored-tile-corners
@@ -1697,23 +1551,134 @@
                 (swap! explored-tile-corners assoc (mapv int position) true))
               visible-tile-color))))))
 
-(def k->render
-  {:entity/clickable render-clickable
-   :player-item-on-cursor render-player-item-on-cursor
-   :entity/animation render-animation
-   :entity/image draw-entity-image!
-   :entity/line-render render-line-render
-   :entity/mouseover? render-mouseover
-   :entity/stats render-stats
-   :entity/string-effect render-string-effect
-   :entity/temp-modifier render-temp-modifier
-   :active-skill render-active-skill
-   :npc-sleeping render-npc-sleeping
-   :stunned render-stunned})
-
 (defn draw-component
   [ctx entity k v]
-  ((k->render k) v entity ctx))
+  (case k
+    :entity/clickable
+    (let [{:keys [text]} v
+          {:keys [entity/position entity/height entity/mouseover?]} entity]
+      (when (and mouseover? text)
+        (let [[x y] position]
+          (draw-fn-text ctx {:text text
+                             :x x
+                             :y (+ y (/ height 2))
+                             :up? true}))))
+
+    :player-item-on-cursor
+    (let [{:keys [item]} v]
+      (when-not (mouseover-actor ctx)
+        (draw-fn-texture-region ctx
+                                (textures/texture-region (:ctx/textures ctx) (:entity/image item))
+                                (item-place-position ctx entity)
+                                {:center? true})))
+
+    :entity/animation
+    (let [{:keys [frames cnt frame-duration]} v
+          image (frames (min (int (/ (float cnt) (float frame-duration)))
+                             (dec (count frames))))]
+      (draw-fn-texture-region ctx
+                              (textures/texture-region (:ctx/textures ctx) image)
+                              (:entity/position entity)
+                              {:center? true
+                               :rotation (or (:entity/rotation-angle entity) 0)}))
+
+    :entity/image
+    (draw-fn-texture-region ctx
+                            (textures/texture-region (:ctx/textures ctx) v)
+                            (:entity/position entity)
+                            {:center? true
+                             :rotation (or (:entity/rotation-angle entity) 0)})
+
+    :entity/line-render
+    (let [{:keys [thick? end color]} v
+          position (:entity/position entity)]
+      (if thick?
+        (draw-with-line-width! ctx 4 #(draw-fn-line % position end color))
+        (draw-fn-line ctx position end color)))
+
+    :entity/mouseover?
+    (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
+          colors (:ctx/colors ctx)
+          player @(:ctx/player-eid ctx)
+          color (cond (= faction (faction/enemy (:entity/faction player)))
+                      (:colors/enemy-color colors)
+                      (= faction (:entity/faction player))
+                      (:colors/friendly-color colors)
+                      :else
+                      (:colors/neutral-color colors))]
+      (draw-with-line-width! ctx 5
+                             #(draw-fn-ellipse % position
+                                                (/ width 2)
+                                                (/ height 2)
+                                                color)))
+
+    :entity/stats
+    (let [colors (:ctx/colors ctx)
+          ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
+      (when (or (< ratio 1) (:entity/mouseover? entity))
+        (let [{:keys [entity/position entity/width entity/height]} entity
+              [x y] position
+              x (- x (/ width  2))
+              y (+ y (/ height 2))
+              height (* 5 world-unit-scale)
+              border (* 1 world-unit-scale)]
+          (draw-fn-filled-rectangle ctx x y width height (:colors/hp-bar-rect colors))
+          (draw-fn-filled-rectangle ctx
+                                    (+ x border)
+                                    (+ y border)
+                                    (- (* width ratio) (* 2 border))
+                                    (- height (* 2 border))
+                                    ((:colors/hp-bar colors) ratio)))))
+
+    :entity/string-effect
+    (let [{:keys [text]} v
+          [x y] (:entity/position entity)]
+      (draw-fn-text ctx {:text text
+                         :x x
+                         :y (+ y
+                               (/ (:entity/height entity) 2)
+                               (* 5 world-unit-scale))
+                         :scale 2
+                         :up? true}))
+
+    :entity/temp-modifier
+    (draw-fn-filled-circle ctx (:entity/position entity) 0.5 (:colors/temp-modifier (:ctx/colors ctx)))
+
+    :active-skill
+    (let [{:keys [skill effect-ctx counter]} v
+          colors (:ctx/colors ctx)
+          textures (:ctx/textures ctx)
+          elapsed-time (:ctx/elapsed-time ctx)
+          {:keys [entity/image skill/effects]} skill
+          radius active-skill-radius
+          action-counter-ratio (timer/ratio elapsed-time counter)
+          texture-region (textures/texture-region textures image)
+          [x y] (:entity/position entity)
+          y (+ (float y)
+               (float (/ (:entity/height entity) 2))
+               (float 0.15))
+          center [x (+ y radius)]]
+      (draw-fn-filled-circle ctx center radius (:colors/active-skill-circle colors))
+      (draw-fn-sector ctx
+                      center
+                      radius
+                      (math/to-radians 90)
+                      (math/to-radians (* (float action-counter-ratio) 360))
+                      (:colors/active-skill-sector colors))
+      (draw-fn-texture-region ctx texture-region [(- (float x) radius) y])
+      (doseq [effect effects]
+        (effect-render effect effect-ctx ctx)))
+
+    :npc-sleeping
+    (let [{:keys [entity/position entity/height]} entity
+          [x y] position]
+      (draw-fn-text ctx {:text "zzz"
+                         :x x
+                         :y (+ y (/ height 2))
+                         :up? true}))
+
+    :stunned
+    (draw-fn-circle ctx (:entity/position entity) 0.5 (:colors/stunned (:ctx/colors ctx)))))
 
 (defn hp-mana-bar-create
   [ctx]
