@@ -606,13 +606,24 @@
       (#(group/find-actor % "moon.ui.windows.inventory"))
       (inventory-window-remove-item! cell)))
 
+(defn- ui-set-skill! [ctx elapsed-time skill]
+  (let [skin (:ctx/skin ctx)
+        stage (:ctx/stage ctx)
+        textures (:ctx/textures ctx)]
+    (-> (.getRoot ^Stage stage)
+        (#(group/find-actor % "moon.ui.action-bar"))
+        (action-bar-add-skill! {:skill-id (:property/id skill)
+                                :texture-region (textures/texture-region textures (:entity/image skill))
+                                :tooltip-text (info-text skill elapsed-time)}
+                               skin))))
+
 (defn after-create-component
-  [ctx eid [k v]]
+  [ui-set-skill! ui-set-item! elapsed-time eid [k v]]
   (case k
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
       (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
-      (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid (:ctx/elapsed-time ctx)))
+      (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid elapsed-time))
       nil)
 
     :entity/skills
@@ -622,15 +633,7 @@
         (assert (not (contains? (:entity/skills @eid) id)))
         (swap! eid update :entity/skills assoc id skill)
         (when (:entity/player? @eid)
-          (let [skin (:ctx/skin ctx)
-                stage (:ctx/stage ctx)
-                textures (:ctx/textures ctx)]
-            (-> (.getRoot ^Stage stage)
-                (#(group/find-actor % "moon.ui.action-bar"))
-                (action-bar-add-skill! {:skill-id (:property/id skill)
-                                        :texture-region (textures/texture-region textures (:entity/image skill))
-                                        :tooltip-text (info-text skill (:ctx/elapsed-time ctx))}
-                                       skin)))))
+          (ui-set-skill! skill)))
       nil)
 
     :entity/inventory
@@ -656,7 +659,7 @@
           (assert (nil? cell-item))
           (swap! eid set-item cell item)
           (when (:entity/player? @eid)
-            (ui-set-item! ctx cell item))))
+            (ui-set-item! cell item))))
       nil)
 
     nil))
@@ -695,8 +698,9 @@
       [:mouseover-actor/unspecified])))
 
 (defn- spawn-entity! [ctx entity]
-  (let [entity (reduce (fn [m [k v]]
-                         (assoc m k (create-component (:ctx/elapsed-time ctx) k v)))
+  (let [elapsed-time (:ctx/elapsed-time ctx)
+        entity (reduce (fn [m [k v]]
+                         (assoc m k (create-component elapsed-time k v)))
                        {}
                        entity)
         entity (prepare-entity-geometry entity)
@@ -704,7 +708,11 @@
         eid (atom entity)]
     (world/register-eid! (:ctx/world ctx) eid)
     (doseq [component @eid]
-      (after-create-component ctx eid component))))
+      (after-create-component #(ui-set-skill! ctx elapsed-time %)
+                              #(ui-set-item! ctx %1 %2)
+                              elapsed-time
+                              eid
+                              component))))
 
 (defn- spawn-creature! [ctx {:keys [position creature-property components]}]
   (assert creature-property)
