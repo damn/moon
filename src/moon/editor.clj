@@ -24,20 +24,18 @@
             [moon.scene2d.group :as group]
             [gdx.touchable :as touchable]
             [gdx.skin :as ui-skin]
-            [gdx.tooltip.text :as text-tooltip]
             [gdx.change-listener :as change-listener]
             [gdx.layout :as layout]
-            [gdx.drawable.texture-region :as texture-region-drawable]
             [gdx.disposable :as disposable]
-            [gdx.viewport.fit :as fit-viewport]
             [gdx.viewport :as viewport])
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+           (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn- find-ancestor [a pred?]
   (loop [actor a]
@@ -216,13 +214,13 @@
       {:actor (let [stack (Stack.)]
                 (run! #(group/add-actor! stack %)
                       [(doto (ImageButton.
-                              (doto (texture-region-drawable/create texture-region)
-                                (texture-region-drawable/set-min-size! (* image-scale (texture-region/get-region-width texture-region))
-                                                (* image-scale (texture-region/get-region-height texture-region)))))
+                              (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                                (.setMinSize (* image-scale (texture-region/get-region-width texture-region))
+                                             (* image-scale (texture-region/get-region-height texture-region)))))
                         (.addListener (change-listener/create
                                            (fn [event actor]
                                              (on-clicked actor (:stage/ctx (event/get-stage event))))))
-                        (.addListener (text-tooltip/create tooltip skin)))
+                        (.addListener (TextTooltip. ^String tooltip ^Skin skin)))
                        (doto (Label. ^String extra-info-text ^Skin skin)
                          (.setTouchable touchable/disabled))])
                 stack)})))
@@ -351,7 +349,7 @@
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
           {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
-                    (.addListener (text-tooltip/create (property/tooltip property) skin))
+                    (.addListener (TextTooltip. ^String (property/tooltip property) ^Skin skin))
                     (.setUserObject property-id))}))
       (for [id property-ids]
         {:actor (doto (TextButton. "-" skin)
@@ -394,7 +392,7 @@
       [(when property-id
          (let [property (db/get-raw db property-id)]
            {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
-                     (.addListener (text-tooltip/create (property/tooltip property) skin))
+                     (.addListener (TextTooltip. ^String (property/tooltip property) ^Skin skin))
                      (.setUserObject property-id))}))]
       [(when property-id
          {:actor (doto (TextButton. "-" skin)
@@ -546,9 +544,9 @@
                                 (let [scale 2
                                       texture-region (textures/texture-region textures image)]
                                   (ImageButton.
-                                   (doto (texture-region-drawable/create texture-region)
-                                     (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
-                                                                       (* scale (texture-region/get-region-height texture-region))))))})]}))
+                                   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                                     (.setMinSize (* scale (texture-region/get-region-width texture-region))
+                                                  (* scale (texture-region/get-region-height texture-region))))))})]}))
 
 (defmethod create-widget :s/boolean
   [_ checked? {:keys [ctx/skin]}]
@@ -566,9 +564,9 @@
   (let [texture-region (textures/texture-region textures image)
         scale 2]
     (ImageButton.
-     (doto (texture-region-drawable/create texture-region)
-       (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
-                                              (* scale (texture-region/get-region-height texture-region)))))))
+     (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+       (.setMinSize (* scale (texture-region/get-region-width texture-region))
+                    (* scale (texture-region/get-region-height texture-region)))))))
 
 (defmethod create-widget :s/map
   [schema
@@ -591,7 +589,7 @@
 (defmethod create-widget :s/number
   [schema v {:keys [ctx/skin]}]
   (doto (TextField. ^String (pr-str v) ^Skin skin)
-    (.addListener (text-tooltip/create (str schema) skin))))
+    (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
 (defmethod create-widget :s/one-to-many
   [[_ property-type] property-ids ctx]
@@ -625,12 +623,12 @@
 (defmethod create-widget :s/string
   [schema v {:keys [ctx/skin]}]
   (doto (TextField. ^String (str v) ^Skin skin)
-    (.addListener (text-tooltip/create (str schema) skin))))
+    (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
 (defmethod create-widget :s/val-max
   [schema v {:keys [ctx/skin]}]
   (doto (TextField. ^String (pr-str v) ^Skin skin)
-    (.addListener (text-tooltip/create (str schema) skin))))
+    (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
 (defn- main-window-f
   [{:keys [ctx/db
@@ -682,7 +680,7 @@
 
 (defn- stage-f [{:keys [ctx/input
                         ctx/batch] :as ctx}]
-  (let [stage* (stage/create (fit-viewport/create 1440 900) batch)]
+  (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) batch)]
     (input/set-processor! input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
       (stage/add-actor! (get-stage ctx) (main-window-f ctx))

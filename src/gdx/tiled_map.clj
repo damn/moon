@@ -1,6 +1,6 @@
 (ns gdx.tiled-map
   (:require [gdx.texture-region :as texture-region]
-            [gdx.camera.orthographic :as orthographic-camera]
+            [moon.camera :as orthographic-camera]
             [gdx.map-layers :as map-layers]
             [gdx.map-properties :as map-properties]
             [gdx.tiled-map-tile :as tiled-map-tile]

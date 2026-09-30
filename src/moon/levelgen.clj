@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [moon.db :as db]
-            [gdx.camera.orthographic :as orthographic-camera]
+            [moon.camera :as orthographic-camera]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
@@ -19,12 +19,12 @@
             [moon.scene2d.window :as window]
             [gdx.change-listener :as change-listener]
             [gdx.disposable :as disposable]
-            [gdx.viewport.fit :as fit-viewport]
             [gdx.viewport :as viewport])
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 ;; ctx accessors
 
@@ -206,8 +206,8 @@
 
 (defn- create-stage [ctx]
   (assoc ctx
-         :ctx/stage (stage/create (fit-viewport/create (:ui-viewport-width config)
-                                                       (:ui-viewport-height config))
+         :ctx/stage (stage/create (FitViewport. (float (:ui-viewport-width config))
+                                                (float (:ui-viewport-height config)))
                                   (get-sprite-batch ctx))))
 
 (defn- create-skin [ctx]
@@ -219,12 +219,12 @@
   (let [world-unit-scale (get-world-unit-scale ctx)
         world-width (* (:world-viewport-width config) world-unit-scale)
         world-height (* (:world-viewport-height config) world-unit-scale)
-        world-viewport (fit-viewport/create world-width
-                                            world-height
-                                            (doto (orthographic-camera/new)
-                                              (orthographic-camera/set-to-ortho! false
-                                                                                 world-width
-                                                                                 world-height)))]
+        world-viewport (FitViewport. (float world-width)
+                                     (float world-height)
+                                     (doto (orthographic-camera/new)
+                                       (orthographic-camera/set-to-ortho! false
+                                                                          world-width
+                                                                          world-height)))]
     (-> ctx
         (assoc :ctx/world-viewport world-viewport)
         (assoc :ctx/camera (viewport/get-camera world-viewport)))))

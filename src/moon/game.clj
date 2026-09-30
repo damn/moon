@@ -7,14 +7,12 @@
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
             [gdx.click-listener :as click-listener]
-            [gdx.drawable.texture-region :as texture-region-drawable]
             [gdx.event :as event]
             [gdx.layout :as layout]
-            [gdx.tooltip.text :as text-tooltip]
             [gdx.touchable :as touchable]
             [gdx.vector2 :as vector2]
             [gdx.bitmap-font-data :as bitmap-font-data]
-            [gdx.camera.orthographic :as orthographic-camera]
+            [moon.camera :as orthographic-camera]
             [gdx.change-listener :as change-listener]
             [gdx.color :as color]
             [gdx.colors :as colors]
@@ -35,7 +33,6 @@
             [gdx.tiled-map :as moon-tiled-map]
             [gdx.tooltip-manager :as tooltip-manager]
             [gdx.viewport :as viewport]
-            [gdx.viewport.fit :as fit-viewport]
             [moon.audio :as audio]
             [moon.body :as body]
             [moon.cell :as cell]
@@ -68,14 +65,14 @@
              [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics GL20)
-           (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics Color GL20 Texture)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont TextureRegion)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton Widget)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)
-           (com.badlogic.gdx.utils Align))
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip Widget)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.utils Align)
+           (com.badlogic.gdx.utils.viewport FitViewport))
   (:gen-class))
 
 (def schema
@@ -547,10 +544,10 @@
   (let [scale 2
         {:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
         button (doto (ImageButton.
-                      (doto (texture-region-drawable/create texture-region)
-                        (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
-                                                               (* scale (texture-region/get-region-height texture-region)))))
-                 (.addListener (text-tooltip/create tooltip-text skin))
+                      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                        (.setMinSize (* scale (texture-region/get-region-width texture-region))
+                                     (* scale (texture-region/get-region-height texture-region)))))
+                 (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
                  (.setUserObject skill-id))]
     (group/add-actor! horizontal-group button)
     (.add ^ButtonGroup button-group ^Button button)
@@ -589,9 +586,9 @@
   (let [cell-widget (inventory-window-get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (.getUserObject ^Actor image-widget))]
-    (.setDrawable ^Image image-widget ^Drawable (doto (texture-region-drawable/create texture-region)
-                                                  (texture-region-drawable/set-min-size! cell-size cell-size)))
-    (.addListener ^Actor cell-widget (text-tooltip/create tooltip-text skin))
+    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                                                  (.setMinSize cell-size cell-size)))
+    (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
     nil))
 
 (defn- set-item [entity cell item]
@@ -1690,9 +1687,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (doto (texture-region-drawable/create (slot->texture-region slot))
-                           (texture-region-drawable/set-min-size! cell-size cell-size)
-                           (texture-region-drawable/tint! (color/create [1 1 1 0.4]))))
+                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
+                           (.setMinSize cell-size cell-size)
+                           (.tint ^Color (color/create [1 1 1 0.4]))))
         ->cell (partial inventory-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
         window (doto (window/create {:title "Inventory"
                                      :skin skin
@@ -2517,7 +2514,7 @@
                          .getData
                          (bitmap-font-data/set-markup-enabled! true))
                      skin))
-            (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
+            (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
               (input/set-processor! input stage*)
               (assoc ctx :ctx/stage stage*))
             (do
@@ -2539,10 +2536,10 @@
             (assoc ctx :ctx/world-viewport
                    (let [world-width (* 1440 world-unit-scale)
                          world-height (* 900 world-unit-scale)]
-                     (fit-viewport/create world-width
-                                          world-height
-                                          (doto (orthographic-camera/new)
-                                            (orthographic-camera/set-to-ortho! false world-width world-height)))))
+                     (FitViewport. (float world-width)
+                                   (float world-height)
+                                   (doto (orthographic-camera/new)
+                                     (orthographic-camera/set-to-ortho! false world-width world-height)))))
             (assoc ctx :ctx/default-font
                    (let [{:keys [path
                                  size
