@@ -770,23 +770,6 @@
                                 :tooltip-text (info-text skill elapsed-time)}
                                skin))))
 
-(defn- spawn-entity! [ctx entity]
-  (let [elapsed-time (:ctx/elapsed-time ctx)
-        entity (reduce (fn [m [k v]]
-                         (assoc m k (create-component elapsed-time k v)))
-                       {}
-                       entity)
-        entity (prepare-entity-geometry entity)
-        entity (merge (map->EntityRecord {}) entity)
-        eid (atom entity)]
-    (world/register-eid! (:ctx/world ctx) eid)
-    (doseq [component @eid]
-      (after-create-component #(ui-set-skill! ctx elapsed-time %)
-                              #(ui-set-item! ctx %1 %2)
-                              elapsed-time
-                              eid
-                              component))))
-
 (defn- audiovisual! [spawn-entity! db audio position audiovisual]
   (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
@@ -2293,7 +2276,7 @@
 
 (def state (atom nil))
 
-(defn create! [audio files input handle-fsm-event!]
+(defn create! [audio files input handle-fsm-event! spawn-entity!]
   (reset! state
           (as-> {:ctx/unit-scale (atom 1)
                  :ctx/active-entities nil
@@ -2464,28 +2447,30 @@
                 (aset arr x y (boolean blocked?)))
               (assoc ctx :ctx/raycaster [arr width height]))
             (do
-             (spawn-entity! ctx (spawn-creature {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
-                                                 :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
-                                                 :components {:entity/fsm {:fsm :fsms/player
-                                                                           :initial-state :player-idle}
-                                                              :entity/faction :good
-                                                              :entity/player? true
-                                                              :entity/free-skill-points 3
-                                                              :entity/clickable {:type :clickable/player}
-                                                              :entity/click-distance-tiles 1.5}}))
+             (reset! state ctx)
+             (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
+                                             :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
+                                             :components {:entity/fsm {:fsm :fsms/player
+                                                                       :initial-state :player-idle}
+                                                          :entity/faction :good
+                                                          :entity/player? true
+                                                          :entity/free-skill-points 3
+                                                          :entity/clickable {:type :clickable/player}
+                                                          :entity/click-distance-tiles 1.5}}))
              ctx)
             (let [eid (world/entity-by-id (:ctx/world ctx) 1)]
               (assert (:entity/player? @eid))
               (assoc ctx :ctx/player-eid eid))
             (do
+             (reset! state ctx)
              (let [start-position (:ctx/start-position ctx)]
                (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))
                        :when (not= position start-position)]
-                 (spawn-entity! ctx (spawn-creature {:position (mapv (partial + 0.5) position)
-                                                     :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
-                                                     :components {:entity/fsm {:fsm :fsms/npc
-                                                                               :initial-state :npc-sleeping}
-                                                                  :entity/faction :evil}}))))
+                 (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) position)
+                                                 :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
+                                                 :components {:entity/fsm {:fsm :fsms/npc
+                                                                           :initial-state :npc-sleeping}
+                                                              :entity/faction :evil}}))))
              ctx))))
 
 (defn dispose! []
@@ -2499,7 +2484,7 @@
     (run! Disposable/.dispose (vals (:ctx/textures ctx)))
     (Disposable/.dispose (:ctx/tiled-map ctx))))
 
-(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed? handle-fsm-event!]
+(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed? handle-fsm-event! spawn-entity!]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
@@ -2624,8 +2609,6 @@
     (when-not (:ctx/paused? @state)
       (swap! state #(-> % update-time update-potential-fields))
       (let [ctx @state
-            spawn-entity! (let [do-spawn-entity! spawn-entity!]
-                            #(do-spawn-entity! ctx %))
             audiovisual! (let [do-audiovisual! audiovisual!]
                            #(do-audiovisual! spawn-entity! (:ctx/db ctx) audio %1 %2))
             active-entities (:ctx/active-entities ctx)
@@ -2664,8 +2647,7 @@
         (doseq [[k v] @eid]
           (case k
             :entity/destroy-audiovisual
-            (audiovisual! (let [do-spawn-entity! spawn-entity!]
-                            #(do-spawn-entity! ctx %))
+            (audiovisual! spawn-entity!
                           (:ctx/db ctx)
                           audio
                           (:entity/position @eid)
@@ -2695,6 +2677,24 @@
     (viewport/update! (.getViewport ^Stage (:ctx/stage ctx)) width height true)
     (viewport/update! (:ctx/world-viewport ctx) width height false)))
 
+(defn spawn-entity! [entity]
+  (let [ctx @state
+        elapsed-time (:ctx/elapsed-time ctx)
+        entity (reduce (fn [m [k v]]
+                         (assoc m k (create-component elapsed-time k v)))
+                       {}
+                       entity)
+        entity (prepare-entity-geometry entity)
+        entity (merge (map->EntityRecord {}) entity)
+        eid (atom entity)]
+    (world/register-eid! (:ctx/world ctx) eid)
+    (doseq [component @eid]
+      (after-create-component #(ui-set-skill! ctx elapsed-time %)
+                              #(ui-set-item! ctx %1 %2)
+                              elapsed-time
+                              eid
+                              component))))
+
 (defn handle-fsm-event! [eid world-mouse-position event & [params]]
   (let [ctx @state
         audio (:ctx/audio ctx)
@@ -2719,7 +2719,7 @@
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
                 (audio/play! audio "bfxr_itemputground")
-                (spawn-entity! ctx (spawn-item (item-place-position (:entity/position entity)
+                (spawn-entity! (spawn-item (item-place-position (:entity/position entity)
                                                                     world-mouse-position
                                                                     (- (:entity/click-distance-tiles entity) 0.1))
                                                item))))
@@ -2730,7 +2730,7 @@
 
             :npc-sleeping
             (do (swap! eid add-text-effect (:ctx/elapsed-time ctx) "[WHITE]!" 1)
-                (spawn-entity! ctx (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 (:ctx/elapsed-time ctx))))
+                (spawn-entity! (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 (:ctx/elapsed-time ctx))))
 
             :npc-moving
             (do (swap! eid dissoc :entity/movement)
@@ -2784,7 +2784,7 @@
 (def listener
   (reify ApplicationListener
     (create [_]
-      (create! Gdx/audio Gdx/files Gdx/input handle-fsm-event!))
+      (create! Gdx/audio Gdx/files Gdx/input handle-fsm-event! spawn-entity!))
     (dispose [_]
       (dispose!))
     (render [_]
@@ -2793,7 +2793,8 @@
                  #(.isKeyPressed ^Input input (int %))
                  #(.isKeyJustPressed ^Input input (int %))
                  #(.isButtonJustPressed ^Input input (int %))
-                 handle-fsm-event!)))
+                 handle-fsm-event!
+                 spawn-entity!)))
     (resize [_ width height]
       (resize! width height))
     (pause [_])
