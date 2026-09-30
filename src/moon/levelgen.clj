@@ -39,67 +39,28 @@
    :zoom-speed 0.1
    :camera-movement-speed 1})
 
-(defn- creature-properties [ctx]
-  (moon-tiled-map/prepare-creature-tiles
-   (db/all-raw (:ctx/db ctx) :properties/creatures)
-   #(textures/texture-region (:ctx/textures ctx) %)))
-
-(defn- show-creatures-layer! [tiled-map]
-  (let [layers (moon-tiled-map/get-layers tiled-map)]
-    (-> (.get ^MapLayers layers "creatures")
-        (tiled-map-tile-layer/set-visible! true))))
-
-(defn- fit-camera-to-tiled-map! [ctx tiled-map]
-  (let [camera (:ctx/camera ctx)
+(defn- generate-level
+  [ctx level-fn]
+  (let [textures (:ctx/textures ctx)
+        level (level-fn {:level/creature-properties
+                         (moon-tiled-map/prepare-creature-tiles
+                          (db/all-raw (:ctx/db ctx) :properties/creatures)
+                          #(textures/texture-region textures %))
+                         :textures textures})
+        tiled-map (:tiled-map level)
+        ctx (assoc ctx :ctx/tiled-map tiled-map)
+        camera (:ctx/camera ctx)
         width (moon-tiled-map/get-property tiled-map "width")
         height (moon-tiled-map/get-property tiled-map "height")]
+    (assert tiled-map)
+    (-> (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
+        (tiled-map-tile-layer/set-visible! true))
     (orthographic-camera/set-position! camera [(/ width 2) (/ height 2)])
     (orthographic-camera/zoom-to-rect camera {:left [0 0]
                                               :top [0 height]
                                               :right [width 0]
-                                              :bottom [0 0]}))
-  ctx)
-
-(defn- generate-level
-  [ctx level-fn]
-  (let [level (level-fn {:level/creature-properties (creature-properties ctx)
-                         :textures (:ctx/textures ctx)})
-        tiled-map (:tiled-map level)
-        ctx (assoc ctx :ctx/tiled-map tiled-map)]
-    (assert tiled-map)
-    (show-creatures-layer! tiled-map)
-    (fit-camera-to-tiled-map! ctx tiled-map)))
-
-(defn- regenerate-level! [ctx level-fn]
-  (Disposable/.dispose (:ctx/tiled-map ctx))
-  (generate-level ctx level-fn))
-
-(defn- zoom-controls! [ctx]
-  (let [input (:ctx/input ctx)
-        zoom-speed (:ctx/zoom-speed ctx)
-        camera (:ctx/camera ctx)]
-    (when (input/key-pressed? input :input.keys/minus)
-      (orthographic-camera/inc-zoom! camera zoom-speed))
-    (when (input/key-pressed? input :input.keys/equals)
-      (orthographic-camera/inc-zoom! camera (- zoom-speed)))))
-
-(defn- camera-movement-controls! [ctx]
-  (let [input (:ctx/input ctx)
-        camera (:ctx/camera ctx)
-        speed (:ctx/camera-movement-speed ctx)
-        move (fn [idx f]
-               (orthographic-camera/set-position! camera
-                                                  (update (orthographic-camera/position camera)
-                                                          idx
-                                                          #(f % speed))))]
-    (when (input/key-pressed? input :input.keys/left)
-      (move 0 -))
-    (when (input/key-pressed? input :input.keys/right)
-      (move 0 +))
-    (when (input/key-pressed? input :input.keys/up)
-      (move 1 +))
-    (when (input/key-pressed? input :input.keys/down)
-      (move 1 -))))
+                                              :bottom [0 0]})
+    ctx))
 
 (defn listener []
   (let [state (atom nil)]
@@ -146,7 +107,9 @@
                          (doto (TextButton. (str "Generate " label) skin)
                            (.addListener (proxy [ChangeListener] []
                                            (changed [_event _actor]
-                                             (swap! state #(regenerate-level! % level-fn))))))}])}))
+                                             (swap! state (fn [ctx]
+                                                            (Disposable/.dispose (:ctx/tiled-map ctx))
+                                                            (generate-level ctx level-fn))))))}])}))
                   ctx)))
       (dispose [_]
         (let [{:keys [ctx/sprite-batch
@@ -161,7 +124,16 @@
         (swap! state
                (fn [ctx]
                  (let [gl (.getGL20 ^Graphics Gdx/graphics)
-                       stage (:ctx/stage ctx)]
+                       stage (:ctx/stage ctx)
+                       input (:ctx/input ctx)
+                       zoom-speed (:ctx/zoom-speed ctx)
+                       camera (:ctx/camera ctx)
+                       speed (:ctx/camera-movement-speed ctx)
+                       move (fn [idx f]
+                              (orthographic-camera/set-position! camera
+                                                                 (update (orthographic-camera/position camera)
+                                                                         idx
+                                                                         #(f % speed))))]
                    (.glClearColor ^GL20 gl 0 0 0 0)
                    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
                    (moon-tiled-map/draw! (:ctx/tiled-map ctx)
@@ -169,8 +141,18 @@
                                          (:ctx/world-unit-scale ctx)
                                          (viewport/get-camera (:ctx/world-viewport ctx))
                                          (constantly (color/to-float-bits [1 1 1 1])))
-                   (zoom-controls! ctx)
-                   (camera-movement-controls! ctx)
+                   (when (input/key-pressed? input :input.keys/minus)
+                     (orthographic-camera/inc-zoom! camera zoom-speed))
+                   (when (input/key-pressed? input :input.keys/equals)
+                     (orthographic-camera/inc-zoom! camera (- zoom-speed)))
+                   (when (input/key-pressed? input :input.keys/left)
+                     (move 0 -))
+                   (when (input/key-pressed? input :input.keys/right)
+                     (move 0 +))
+                   (when (input/key-pressed? input :input.keys/up)
+                     (move 1 +))
+                   (when (input/key-pressed? input :input.keys/down)
+                     (move 1 -))
                    (stage/act! stage)
                    (stage/draw! stage)
                    ctx))))
