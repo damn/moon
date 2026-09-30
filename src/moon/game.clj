@@ -1016,12 +1016,6 @@
     :effects.target/stun
     (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
 
-; hingt an apply-effects
-(defn- apply-effects! [ctx audio world-mouse-position effect-ctx effects]
-  (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-    (handle-effect effect effect-ctx ctx audio world-mouse-position
-                   #(apply-effects! ctx audio world-mouse-position %1 %2))))
-
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (.getRoot ^Stage (:ctx/stage ctx))
                       (group/find-actor "moon.ui.windows.inventory"))]
@@ -2720,13 +2714,17 @@
                                    update-time
                                    update-potential-fields)]
                        (try
-                         (doseq [eid (:ctx/active-entities ctx)
-                                 component @eid]
-                           (try (tick-component ctx audio world-mouse-position
-                                                #(apply-effects! ctx audio world-mouse-position %1 %2)
-                                                eid component)
-                                (catch Throwable t
-                                  (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
+                         (letfn [(apply-effects! [effect-ctx effects]
+                                   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+                                     (handle-effect effect effect-ctx ctx audio world-mouse-position
+                                                    apply-effects!)))]
+                           (doseq [eid (:ctx/active-entities ctx)
+                                   component @eid]
+                             (try (tick-component ctx audio world-mouse-position
+                                                  apply-effects!
+                                                  eid component)
+                                  (catch Throwable t
+                                    (throw (ex-info "Error at `entity/tick`:" {:eid eid} t))))))
                          (catch Throwable t
                            (throwable/pretty-pst t)
                            (.addActor ^Stage (:ctx/stage ctx)
