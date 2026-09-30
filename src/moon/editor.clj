@@ -217,14 +217,14 @@
                            :throwable t}))))))
 
 (defn- property-editor-window
-  [{:keys [ctx
+  [{:keys [db
+           skin
+           stage
+           create-widget
            property]}]
-  (let [{:keys [ctx/db
-                ctx/skin]} ctx
-        stage (:ctx/stage ctx)
-        schemas (:db/schemas db)
+  (let [schemas (:db/schemas db)
         schema (get schemas (property/type property))
-        widget (create-widget schema property ctx)
+        widget (create-widget schema property)
         scroll-pane-height (viewport/get-world-height (:stage/viewport stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
@@ -361,10 +361,11 @@
                                        (redo-rows db skin textures nil))))))})]])))
 
 (defn- rebuild-editor-window!
-  [{:keys [ctx/db]
+  [{:keys [ctx/db
+           ctx/skin
+           ctx/stage]
     :as ctx}]
-  (let [stage (:ctx/stage ctx)
-        window (-> stage
+  (let [window (-> stage
                    :stage/root
                    (group/find-actor "moon.ui.clojure.editor-window"))
         map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
@@ -372,7 +373,10 @@
     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
     (stage/add-actor! stage
                       (property-editor-window
-                       {:ctx ctx
+                       {:db db
+                        :skin skin
+                        :stage stage
+                        :create-widget (fn [schema v] (create-widget schema v ctx))
                         :property property}))))
 
 (defn- create-component-row
@@ -603,19 +607,27 @@
                                                                            (changed [event _actor]
                                                                              (let [{:keys [ctx/db
                                                                                            ctx/skin
-                                                                                           ctx/textures]
+                                                                                           ctx/textures
+                                                                                           ctx/stage]
                                                                                     :as ctx} (:stage/ctx (.getStage ^Event event))]
-                                                                               (stage/add-actor! (:ctx/stage ctx)
+                                                                               (stage/add-actor! stage
                                                                                                  (property-overview-window
                                                                                                   {:db db
                                                                                                    :textures textures
                                                                                                    :skin skin
                                                                                                    :property-type property-type
-                                                                                                   :clicked-id-fn (fn [_actor id ctx]
-                                                                                                                    (stage/add-actor! (:ctx/stage ctx)
-                                                                                                                                        (property-editor-window
-                                                                                                                                         {:ctx ctx
-                                                                                                                                          :property (db/get-raw db id)})))})))))))}])})))
+                                                                                                   :clicked-id-fn (fn [_actor id {:keys [ctx/db
+                                                                                                                                         ctx/skin
+                                                                                                                                         ctx/stage]
+                                                                                                                                  :as ctx}]
+                                                                                                                    (stage/add-actor! stage
+                                                                                                                                      (property-editor-window
+                                                                                                                                       {:db db
+                                                                                                                                        :skin skin
+                                                                                                                                        :stage stage
+                                                                                                                                        :create-widget (fn [schema v]
+                                                                                                                                                         (create-widget schema v ctx))
+                                                                                                                                        :property (db/get-raw db id)})))})))))))}])})))
 
 (defn listener []
   (let [state (atom nil)]
