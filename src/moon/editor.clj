@@ -646,50 +646,27 @@
                                                                                                                                          {:ctx ctx
                                                                                                                                           :property (db/get-raw db id)})))})))))))}])})))
 
-(defn- input-f [ctx]
-  (assoc ctx :ctx/input (.getInput ^Application Gdx/app)))
-
-(defn- audio-f [{:keys [ctx/files] :as ctx}]
-  (assoc ctx :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)))
-
-(defn- files-f [ctx]
-  (assoc ctx :ctx/files (.getFiles ^Application Gdx/app)))
-
-(defn- batch-f [ctx]
-  (assoc ctx :ctx/batch (SpriteBatch.)))
-
-(defn- skin-f [{:keys [ctx/files] :as ctx}]
-  (let [skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
-    (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                          (.getData (.getFont ^Skin skin "default-font")))
-          true)
-    (assoc ctx :ctx/skin skin)))
-
-(defn- db-f [ctx]
-  (assoc ctx :ctx/db (db/create)))
-
-(defn- stage-f [{:keys [ctx/input
-                        ctx/batch] :as ctx}]
-  (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) batch)]
-    (input/set-processor! input stage*)
-    (let [ctx (assoc ctx :ctx/stage stage*)]
-      (stage/add-actor! (get-stage ctx) (main-window-f ctx))
-      ctx)))
-
-(defn- textures-f [{:keys [ctx/files] :as ctx}]
-  (assoc ctx :ctx/textures (textures/create files {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}})))
-
 (defn create []
-  (-> {}
-      input-f
-      files-f
-      audio-f
-      batch-f
-      skin-f
-      db-f
-      stage-f
-      textures-f))
+  (let [input (.getInput ^Application Gdx/app)
+        files (.getFiles ^Application Gdx/app)
+        batch (SpriteBatch.)
+        skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))
+        _ (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                                (.getData (.getFont ^Skin skin "default-font")))
+                true)
+        stage* (stage/create (FitViewport. (float 1440) (float 900)) batch)
+        _ (input/set-processor! input stage*)
+        ctx {:ctx/input input
+             :ctx/files files
+             :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)
+             :ctx/batch batch
+             :ctx/skin skin
+             :ctx/db (db/create)
+             :ctx/stage stage*
+             :ctx/textures (textures/create files {:folder "resources/"
+                                                   :extensions #{"png" "bmp"}})}]
+    (stage/add-actor! (get-stage ctx) (main-window-f ctx))
+    ctx))
 
 (defn dispose [{:keys [ctx/audio
                        ctx/skin
