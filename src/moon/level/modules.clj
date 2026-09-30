@@ -219,7 +219,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) ^String "creatures")
+                                                    (property-value (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

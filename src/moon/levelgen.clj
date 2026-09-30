@@ -86,7 +86,7 @@
 
 (defn- show-creatures-layer! [tiled-map]
   (let [layers (moon-tiled-map/get-layers tiled-map)]
-    (-> (.get ^MapLayers layers ^String "creatures")
+    (-> (.get ^MapLayers layers "creatures")
         (tiled-map-tile-layer/set-visible! true))))
 
 (defn- fit-camera-to-tiled-map! [ctx tiled-map]

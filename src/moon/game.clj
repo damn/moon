@@ -1765,7 +1765,7 @@
            position
            set-label-text!
            skin]}]
-  (let [label (Label. ^String "MY LABEL TEXT" ^Skin skin)
+  (let [label (Label. "MY LABEL TEXT" ^Skin skin)
         window (doto (window/create {:title title
                                      :skin skin
                                      :table/rows [[{:actor label :expand? true}]]})
@@ -2182,18 +2182,18 @@
 (defn- add-upd-label!
   ([skin table text-fn icon]
    (let [label (Label. ^String "" ^Skin skin)
-         sub-table (table/create {:table/rows [[{:actor (Image. ^Texture icon)
-                                                              label]]})]
+         sub-table (table/create {:table/rows [[{:actor (Image. ^Texture icon)}
+                                                {:actor label}]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor sub-table
-                       :right? true
-                       :expand-x? true})))
+                             :right? true
+                             :expand-x? true})))
   ([skin table text-fn]
    (let [label (Label. ^String "" ^Skin skin)]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor label
-                       :right? true
-                       :expand-x? true}))))
+                             :right? true
+                             :expand-x? true}))))
 
 (defn- dev-menu-main-table [skin menus update-labels]
   (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]

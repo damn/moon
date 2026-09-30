@@ -36,7 +36,6 @@
         (recur p))
       (throw (Error. (str "Actor has no matching ancestor " actor))))))
 
-
 (defn k-label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
   )
@@ -108,11 +107,6 @@
    :skill/action-time
    :skill/start-action-sound
    :skill/cost])
-
-(defn- build-widget [ctx schema k v]
-  (let [widget (create-widget schema v ctx)]
-    (.setUserObject ^com.badlogic.gdx.scenes.scene2d.Actor widget [k v])
-    widget))
 
 (defn- sound-columns [skin table sound-name open-select-sounds-handler]
   [{:actor (doto (TextButton. sound-name skin)
@@ -317,7 +311,7 @@
                                                   ctx/skin
                                                   ctx/textures]} (:stage/ctx (.getStage ^Event event))]
                                       (redo-rows db skin textures
-                                                 (disj property-ids id)))))))}])))
+                                                 (disj property-ids id)))))))})])))
 
 (defn- add-one-to-one-rows
   [db
@@ -410,7 +404,7 @@
     :left? true}])
 
 (defn- add-component-window
-  [{:keys [schemas schema map-widget-table skin]}]
+  [{:keys [schemas schema map-widget-table skin build-widget]}]
   (let [window (doto (window/create {:title "Choose"
                                      :skin skin
                                      :table/cell-defaults {:pad 5}
@@ -428,8 +422,7 @@
                                     (let [ctx (:stage/ctx (.getStage ^Event event))]
                                       (table/add-rows! map-widget-table [(create-component-row
                                                                           {:skin skin
-                                                                           :editor-widget (build-widget ctx
-                                                                                                        (get schemas k)
+                                                                           :editor-widget (build-widget (get schemas k)
                                                                                                         k
                                                                                                         (default-value schemas k))
                                                                            :k k
@@ -454,7 +447,8 @@
            k->widget
            k->optional?
            ks-sorted
-           opt?]}]
+           opt?
+           build-widget]}]
   (let [table (doto (table/create {:table/cell-defaults {:pad 5}})
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
@@ -474,15 +468,16 @@
                            (.addListener (proxy [ChangeListener] []
                                            (changed [event actor]
                                              (let [{:keys [ctx/db
-                                                           ctx/skin]
-                                                    :as ctx} (:stage/ctx (.getStage ^Event event))]
+                                                           ctx/skin
+                                                           ctx/stage]} (:stage/ctx (.getStage ^Event event))]
                                                (stage/add-actor!
-                                                (:ctx/stage ctx)
+                                                stage
                                                 (add-component-window
                                                  {:skin skin
                                                   :schemas (:db/schemas db)
                                                   :schema schema
-                                                  :map-widget-table table})))))))
+                                                  :map-widget-table table
+                                                  :build-widget build-widget})))))))
                   :colspan colspan}])]
              [(when opt?
                 [{:actor nil
@@ -530,6 +525,7 @@
     (map-widget-table-create
      {:skin skin
       :schema schema
+      :build-widget build-widget
       :k->widget (into {}
                        (for [[k v] m]
                          [k (build-widget (get schemas k) k v)]))
@@ -575,6 +571,11 @@
 (defn- val-max-widget [schema v skin]
   (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
+
+(defn- build-widget [ctx schema k v]
+  (let [widget (create-widget schema v ctx)]
+    (.setUserObject ^com.badlogic.gdx.scenes.scene2d.Actor widget [k v])
+    widget))
 
 (defn create-widget [[schema-k :as schema] v {:keys [ctx/db ctx/skin ctx/textures] :as ctx}]
   (case schema-k
