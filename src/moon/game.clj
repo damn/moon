@@ -2565,12 +2565,14 @@
     (assoc ctx :ctx/player-eid eid)))
 
 (defn create-spawn-creatures [ctx]
-  (doseq [[position creature-id] (moon-tiled-map/spawn-positions (get-tiled-map ctx))]
-    (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
-                          :creature-property (db/build (get-db ctx) (keyword creature-id))
-                          :components {:entity/fsm {:fsm :fsms/npc
-                                                    :initial-state :npc-sleeping}
-                                       :entity/faction :evil}}))
+  (let [start-position (get-start-position ctx)]
+    (doseq [[position creature-id] (moon-tiled-map/spawn-positions (get-tiled-map ctx))
+            :when (not= position start-position)]
+      (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
+                            :creature-property (db/build (get-db ctx) (keyword creature-id))
+                            :components {:entity/fsm {:fsm :fsms/npc
+                                                      :initial-state :npc-sleeping}
+                                         :entity/faction :evil}})))
   ctx)
 
 (defn create-dissoc-files [ctx]

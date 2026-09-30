@@ -222,7 +222,8 @@
                         :let [area-level (get scaled-area-level-grid position)
                               creatures (filter #(= area-level (:creature/level %))
                                                 creature-properties)]
-                        :when (and (number? area-level)
+                        :when (and (not= position start-position)
+                                   (number? area-level)
                                    (<= (rand) spawn-rate)
                                    (seq creatures))]
                     [position (rand-nth creatures)])]

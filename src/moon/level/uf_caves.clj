@@ -93,7 +93,8 @@
         creatures (filter #(= level (:creature/level %)) creature-properties)
         spawn-positions (g2d/flood-fill grid start-position can-spawn?)
         creatures (for [position spawn-positions
-                        :when (<= (rand) spawn-rate)]
+                        :when (and (not= position start-position)
+                                   (<= (rand) spawn-rate))]
                     [position (rand-nth creatures)])]
     (moon-tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
