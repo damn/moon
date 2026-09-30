@@ -1959,7 +1959,7 @@
       (effect-ctx/without-target effect-ctx))))
 
 (defn tick-component
-  [ctx audio world-mouse-position eid [k v]]
+  [ctx audio world-mouse-position apply-effects! eid [k v]]
   (case k
     :entity/animation
     (let [{:keys [delete-after-stopped?
@@ -2027,8 +2027,7 @@
       (when destroy?
         (swap! eid assoc :entity/destroyed? true))
       (when hit-entity
-        (apply-effects! ctx audio world-mouse-position
-                        {:effect/source eid
+        (apply-effects! {:effect/source eid
                          :effect/target hit-entity}
                         entity-effects))
       nil)
@@ -2043,7 +2042,7 @@
        (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
 
        (timer/stopped? elapsed-time counter)
-       (do (apply-effects! ctx audio world-mouse-position effect-ctx (:skill/effects skill))
+       (do (apply-effects! effect-ctx (:skill/effects skill))
            (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
            nil)))
 
@@ -2367,7 +2366,9 @@
   (try
     (doseq [eid (:ctx/active-entities ctx)
             component @eid]
-      (try (tick-component ctx audio world-mouse-position eid component)
+      (try (tick-component ctx audio world-mouse-position
+                           #(apply-effects! ctx audio world-mouse-position %1 %2)
+                           eid component)
            (catch Throwable t
              (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
     (catch Throwable t
