@@ -14,10 +14,9 @@
             [moon.error-window :as error-window]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [gdx.input :as input]
             [moon.scene2d.group :as group]
             [moon.viewport :as viewport])
-  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
+  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
@@ -258,8 +257,8 @@
                           (act [delta]
                             (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
                               (let [ctx (:stage/ctx stage)]
-                                (when (input/key-just-pressed? (:ctx/input ctx)
-                                                               :input.keys/enter)
+                                (when (.isKeyJustPressed ^Input (:ctx/input ctx)
+                                                               Input$Keys/ENTER)
                                   (clicked-save-fn this ctx))))
                             (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
                               (proxy-super act delta)))
@@ -642,7 +641,7 @@
                                               (.getData (.getFont ^Skin skin "default-font")))
                               true)
                       stage* (stage/create (FitViewport. (float 1440) (float 900)) batch)
-                      _ (input/set-processor! input stage*)
+                      _ (.setInputProcessor ^Input input ^InputProcessor stage*)
                       ctx {:ctx/input input
                            :ctx/files files
                            :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)

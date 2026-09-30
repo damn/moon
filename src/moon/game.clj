@@ -8,7 +8,6 @@
             [moon.scene2d.window :as window]
             [moon.camera :as orthographic-camera]
             [moon.color :as color]
-            [gdx.input :as input]
             [gdx.stage :as stage]
             [moon.tiled-map :as moon-tiled-map]
             [moon.viewport :as viewport]
@@ -42,7 +41,7 @@
              [moon.val-max :as val-max]
              [qrecord.core :as q]
              [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
+  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
@@ -1009,11 +1008,11 @@
              dmg-text (str "[RED]" dmg-amount "[]")]
          (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
          (swap! target add-text-effect elapsed-time dmg-text 0.3)
-         (handle-fsm-event! ctx target (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) (if (zero? new-hp-val) :kill :alert))
+         (handle-fsm-event! ctx target (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) (if (zero? new-hp-val) :kill :alert))
          (audiovisual! ctx (:entity/position target*) :audiovisuals/damage))))
 
     :effects.target/kill
-    (handle-fsm-event! ctx (effect-ctx/get-target effect-ctx) (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :kill)
+    (handle-fsm-event! ctx (effect-ctx/get-target effect-ctx) (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :kill)
 
     :effects.target/melee-damage
     ; TODO AT EFFECT CREATION MAKE
@@ -1032,7 +1031,7 @@
         nil))
 
     :effects.target/stun
-    (handle-fsm-event! ctx (effect-ctx/get-target effect-ctx) (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :stun v)))
+    (handle-fsm-event! ctx (effect-ctx/get-target effect-ctx) (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :stun v)))
 
 (defn- apply-effects! [ctx effect-ctx effects]
   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
@@ -1093,14 +1092,14 @@
      :colors/item-rect (color/float-bits [0.5 0.5 0.5 1])}))
 
 (def controls
-  {:zoom-in :input.keys/minus
-   :zoom-out :input.keys/equals
-   :unpause-once :input.keys/p
-   :unpause-continously :input.keys/space
-   :close-windows-key :input.keys/escape
-   :toggle-inventory :input.keys/i
-   :toggle-entity-info :input.keys/e
-   :open-debug-button :input.buttons/right})
+  {:zoom-in Input$Keys/MINUS
+   :zoom-out Input$Keys/EQUALS
+   :unpause-once Input$Keys/P
+   :unpause-continously Input$Keys/SPACE
+   :close-windows-key Input$Keys/ESCAPE
+   :toggle-inventory Input$Keys/I
+   :toggle-entity-info Input$Keys/E
+   :open-debug-button Input$Buttons/RIGHT})
 
 (def controls-info
   (str/join "\n"
@@ -1595,7 +1594,7 @@
   (when-let [item (get-in (:entity/inventory @eid) cell)]
     (play-sound! ctx "bfxr_takeit")
     (remove-item! ctx eid cell)
-    (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :pickup-item item)))
+    (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :pickup-item item)))
 
 (defn- clicked-inventory-cell-player-item-on-cursor
   [ctx eid cell]
@@ -1609,7 +1608,7 @@
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
          (set-item! ctx eid cell item-on-cursor)
-         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :dropped-item))
+         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :dropped-item))
 
      (and item-in-cell
           (inventory/valid-slot? cell item-on-cursor))
@@ -1617,8 +1616,8 @@
          (play-sound! ctx "bfxr_itemput")
          (remove-item! ctx eid cell)
          (set-item! ctx eid cell item-on-cursor)
-         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :dropped-item)
-         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :pickup-item item-in-cell)))))
+         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :dropped-item)
+         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :pickup-item item-in-cell)))))
 
 (def k->clicked-inventory-cell
   {:player-item-on-cursor clicked-inventory-cell-player-item-on-cursor
@@ -1645,7 +1644,7 @@
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
                                        (let [[ux uy] (viewport/unproject (:stage/viewport (:ctx/stage ctx))
-                                                                         (input/position Gdx/input))
+                                                                         [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
                                              local (.stageToLocalCoordinates ^Actor this
                                                                              (Vector2. (float ux) (float uy)))
                                              x (.x ^Vector2 local)
@@ -1825,7 +1824,7 @@
             entity @player-eid
             state-k (:state (:entity/fsm entity))
             ui-mouse-position (viewport/unproject (:stage/viewport (:ctx/stage ctx))
-                                                  (input/position Gdx/input))
+                                                  [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
             [x y] ui-mouse-position]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
@@ -2018,7 +2017,7 @@
                                :radius 4}
                               (world/circle->entities (:ctx/world ctx))
                               (filter #(= (:entity/faction @%) faction)))]
-      (handle-fsm-event! ctx friendly-eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :alert)))
+      (handle-fsm-event! ctx friendly-eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :alert)))
   nil)
 
 (defn- tick-entity-string-effect
@@ -2082,11 +2081,11 @@
     (cond
      (not (seq (filter #(effect-applicable? % effect-ctx)
                        (:skill/effects skill))))
-     (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :action-done)
+     (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :action-done)
 
      (timer/stopped? elapsed-time counter)
      (do (apply-effects! ctx effect-ctx (:skill/effects skill))
-         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :action-done)
+         (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :action-done)
          nil))))
 
 (defn- tick-entity-delete-after-duration
@@ -2098,26 +2097,26 @@
 (defn- tick-stunned
   [{:keys [counter]} eid ctx]
   (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-    (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :effect-wears-off)))
+    (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :effect-wears-off)))
 
 (defn- tick-npc-moving
   [{:keys [timer]} eid ctx]
   (when (timer/stopped? (:ctx/elapsed-time ctx) timer)
-    (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :timer-finished)))
+    (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :timer-finished)))
 
 (defn- tick-npc-sleeping
   [_ eid ctx]
   (let [entity @eid]
     (when-let [distance (world/nearest-enemy-distance (:ctx/world ctx) entity)]
       (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-        (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :alert)))))
+        (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :alert)))))
 
 (defn- tick-npc-idle
   [_ eid ctx]
   (let [effect-ctx (create-effect-ctx ctx eid)]
     (if-let [skill (choose-skill ctx @eid effect-ctx)]
-      (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :start-action [skill effect-ctx])
-      (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) (input/position Gdx/input)) :movement-direction (or (world/find-direction (:ctx/world ctx) eid)
+      (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :start-action [skill effect-ctx])
+      (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :movement-direction (or (world/find-direction (:ctx/world ctx) eid)
                                                          [0 0])))))
 
 (defn- tick-entity-movement
@@ -2499,7 +2498,7 @@
                            true)
                      skin))
             (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
-              (input/set-processor! input stage*)
+              (.setInputProcessor ^Input input ^InputProcessor stage*)
               (assoc ctx :ctx/stage stage*))
             (do
              (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
@@ -2577,11 +2576,11 @@
                                                           {:label "GUI"
                                                            :update-fn (fn [ctx]
                                                                         (mapv int (viewport/unproject (:stage/viewport (:ctx/stage ctx))
-                                                                                                      (input/position Gdx/input))))}
+                                                                                                      [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                                           {:label "World"
                                                            :update-fn (fn [ctx]
                                                                         (mapv int (viewport/unproject (:ctx/world-viewport ctx)
-                                                                                                      (input/position Gdx/input))))}
+                                                                                                      [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                                           {:label "Zoom"
                                                            :update-fn (fn [ctx]
                                                                         (orthographic-camera/zoom (viewport/get-camera (:ctx/world-viewport ctx))))
@@ -2749,16 +2748,16 @@
             eid (:ctx/player-eid ctx)
             entity @eid
             state-k (:state (:entity/fsm entity))
-            movement-vector (let [r (when (key-pressed? :input.keys/d) [1  0])
-                                  l (when (key-pressed? :input.keys/a) [-1 0])
-                                  u (when (key-pressed? :input.keys/w) [0  1])
-                                  d (when (key-pressed? :input.keys/s) [0 -1])]
+            movement-vector (let [r (when (key-pressed? Input$Keys/D) [1  0])
+                                  l (when (key-pressed? Input$Keys/A) [-1 0])
+                                  u (when (key-pressed? Input$Keys/W) [0  1])
+                                  d (when (key-pressed? Input$Keys/S) [0 -1])]
                               (when (or r l u d)
                                 (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
                                   (when (pos? (v2/length v))
                                     v))))]
         (handle-input state-k eid ctx
-                      (button-just-pressed? :input.buttons/left)
+                      (button-just-pressed? Input$Buttons/LEFT)
                       movement-vector
                       mouseover-actor*
                       world-mouse-position)))
@@ -2817,10 +2816,10 @@
       (dispose!))
     (render [_]
       (let [input Gdx/input]
-        (render! (input/position input)
-                 #(input/key-pressed? input %)
-                 #(input/key-just-pressed? input %)
-                 #(input/button-just-pressed? input %))))
+        (render! [(.getX ^Input input) (.getY ^Input input)]
+                 #(.isKeyPressed ^Input input (int %))
+                 #(.isKeyJustPressed ^Input input (int %))
+                 #(.isButtonJustPressed ^Input input (int %)))))
     (resize [_ width height]
       (resize! width height))
     (pause [_])

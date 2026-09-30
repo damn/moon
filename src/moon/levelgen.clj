@@ -8,12 +8,11 @@
             [gdx.stage :as stage]
             [moon.tiled-map :as moon-tiled-map]
             [moon.color :as color]
-            [gdx.input :as input]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [moon.scene2d.window :as window]
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.maps MapLayers)
-           (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
+           (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
@@ -120,7 +119,7 @@
                                          :skin @skin
                                          :table/rows (for [[label on-click!] buttons]
                                                        [{:actor (text-button @skin label on-click!)}])})))
-        (input/set-processor! Gdx/input @ui-stage)
+        (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
         (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?
         (reset! camera (viewport/get-camera @world-viewport)) ; ?? sep?
         (reset! db (db/create)) ; needs reloading?
@@ -148,17 +147,17 @@
                                 world-unit-scale
                                 (viewport/get-camera @world-viewport)
                                 (constantly (color/float-bits [1 1 1 1])))
-          (when (input/key-pressed? Gdx/input :input.keys/minus)
+          (when (.isKeyPressed ^Input Gdx/input Input$Keys/MINUS)
             (orthographic-camera/inc-zoom! camera* zoom-speed))
-          (when (input/key-pressed? Gdx/input :input.keys/equals)
+          (when (.isKeyPressed ^Input Gdx/input Input$Keys/EQUALS)
             (orthographic-camera/inc-zoom! camera* (- zoom-speed)))
-          (when (input/key-pressed? Gdx/input :input.keys/left)
+          (when (.isKeyPressed ^Input Gdx/input Input$Keys/LEFT)
             (move 0 -))
-          (when (input/key-pressed? Gdx/input :input.keys/right)
+          (when (.isKeyPressed ^Input Gdx/input Input$Keys/RIGHT)
             (move 0 +))
-          (when (input/key-pressed? Gdx/input :input.keys/up)
+          (when (.isKeyPressed ^Input Gdx/input Input$Keys/UP)
             (move 1 +))
-          (when (input/key-pressed? Gdx/input :input.keys/down)
+          (when (.isKeyPressed ^Input Gdx/input Input$Keys/DOWN)
             (move 1 -))
           (stage/act! @ui-stage)
           (stage/draw! @ui-stage)))
