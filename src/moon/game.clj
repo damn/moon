@@ -755,15 +755,11 @@
     (f v eid ctx)
     nil))
 
-(defn- item-place-position [ctx player-entity]
-  (let [world-mouse-position (:ctx/world-mouse-position ctx)]
-    (assert world-mouse-position)
-    (let [player-position (:entity/position player-entity)
-          maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
-      (v2/add player-position
-              (v2/scale (v2/direction player-position world-mouse-position)
-                        (min maxrange
-                             (v2/distance player-position world-mouse-position)))))))
+(defn- item-place-position [player-position world-mouse-position maxrange]
+  (v2/add player-position
+          (v2/scale (v2/direction player-position world-mouse-position)
+                    (min maxrange
+                         (v2/distance player-position world-mouse-position)))))
 
 (defn- mouseover-actor [ctx]
   (let [stage (:ctx/stage ctx)
@@ -961,7 +957,10 @@
     (when item
       (swap! eid dissoc :entity/item-on-cursor)
       (play-sound! ctx "bfxr_itemputground")
-      (spawn-item! ctx (item-place-position ctx entity) item))))
+      (spawn-item! ctx (item-place-position (:entity/position entity)
+                                            (:ctx/world-mouse-position ctx)
+                                            (- (:entity/click-distance-tiles entity) 0.1))
+                   item))))
 
 (defn- state-exit-player-moving
   [_ eid _ctx]
@@ -1569,7 +1568,9 @@
       (when-not (mouseover-actor ctx)
         (draw-fn-texture-region ctx
                                 (textures/texture-region (:ctx/textures ctx) (:entity/image item))
-                                (item-place-position ctx entity)
+                                (item-place-position (:entity/position entity)
+                                                     (:ctx/world-mouse-position ctx)
+                                                     (- (:entity/click-distance-tiles entity) 0.1))
                                 {:center? true})))
 
     :entity/animation
