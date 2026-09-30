@@ -67,12 +67,18 @@
                                                      world-width
                                                      world-height))))
 
-(defn create-skin [path]
-  (Skin. ^FileHandle (.internal ^Files Gdx/files path)))
+(defn create-skin [file-handle]
+  (Skin. ^FileHandle file-handle))
 
-(defn create-stage [batch width height]
-  (stage/create (FitViewport. width height)
-                batch))
+(defn create-stage [batch viewport actor]
+  (doto (stage/create viewport batch)
+    (stage/add-actor! actor)))
+
+(defn text-button [skin label on-click!]
+  (doto (TextButton. label skin)
+    (.addListener (proxy [ChangeListener] []
+                    (changed [_event _actor]
+                      (on-click!))))))
 
 (defn listener
   [{:keys [zoom-speed
@@ -96,36 +102,37 @@
         camera (atom nil)
         db (atom nil)
         textures (atom nil)
-        tiled-map (atom nil)]
+        tiled-map (atom nil)
+        buttons (for [[label level-fn] level-fns]
+                  [(str "Generate " label)
+                   (fn []
+                     (Disposable/.dispose @tiled-map)
+                     (reset! tiled-map
+                             (generate-level @db @textures @camera level-fn)))])]
     (reify ApplicationListener
       (create [_]
         (reset! batch (SpriteBatch.))
-        (reset! ui-stage (create-stage @batch ui-viewport-width ui-viewport-height))
+        (reset! skin (create-skin (.internal ^Files Gdx/files ui-skin-path))) ; same ?
+        (reset! ui-stage (create-stage @batch
+                                       (FitViewport. ui-viewport-width ui-viewport-height) ; requires gl context ?
+                                       (window/create
+                                        {:title "Edit"
+                                         :skin @skin
+                                         :table/rows (for [[label on-click!] buttons]
+                                                       [{:actor (text-button @skin label on-click!)}])})))
         (input/set-processor! Gdx/input @ui-stage)
-        (reset! skin (create-skin ui-skin-path))
-        (stage/add-actor! @ui-stage
-                          (window/create
-                           {:title "Edit"
-                            :skin @skin
-                            :table/rows
-                            (for [[label level-fn] level-fns]
-                              [{:actor
-                                (doto (TextButton. (str "Generate " label) @skin)
-                                  (.addListener (proxy [ChangeListener] []
-                                                  (changed [_event _actor]
-                                                    (Disposable/.dispose @tiled-map)
-                                                    (reset! tiled-map
-                                                            (generate-level @db @textures @camera level-fn))))))}])}))
-        (reset! world-viewport (create-viewport world-width world-height))
-        (reset! camera (viewport/get-camera @world-viewport))
-        (reset! db (db/create))
+        (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?
+        (reset! camera (viewport/get-camera @world-viewport)) ; ?? sep?
+        (reset! db (db/create)) ; needs reloading?
         (reset! textures (textures/create Gdx/files textures-config))
         (reset! tiled-map (generate-level @db @textures @camera initial-level-fn)))
+
       (dispose [_]
         (Disposable/.dispose @batch)
         (Disposable/.dispose @skin)
         (run! Disposable/.dispose (vals @textures))
         (Disposable/.dispose @tiled-map))
+
       (render [_]
         (let [gl (.getGL20 ^Graphics Gdx/graphics)
               camera* @camera
@@ -155,10 +162,13 @@
             (move 1 -))
           (stage/act! @ui-stage)
           (stage/draw! @ui-stage)))
+
       (resize [_ width height]
         (viewport/update! (:stage/viewport @ui-stage) width height true)
         (viewport/update! @world-viewport width height false))
+
       (pause [_])
+
       (resume [_]))))
 
 (defn -main []
