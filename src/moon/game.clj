@@ -58,43 +58,19 @@
   (run! Disposable/.dispose (vals sounds)))
 
 ;; ---- moon.camera ----
-(defn camera-new []
-  (OrthographicCamera.))
-
-(defn combined [orthographic-camera]
-  (.combined ^OrthographicCamera orthographic-camera))
-
-(defn set-to-ortho! [orthographic-camera y-down viewport-width viewport-height]
-  (.setToOrtho ^OrthographicCamera orthographic-camera y-down viewport-width viewport-height))
-
-(defn zoom [orthographic-camera]
-  (.zoom ^OrthographicCamera orthographic-camera))
-
-(defn viewport-width [orthographic-camera]
-  (.viewportWidth ^OrthographicCamera orthographic-camera))
-
-(defn viewport-height [orthographic-camera]
-  (.viewportHeight ^OrthographicCamera orthographic-camera))
-
-(defn up [orthographic-camera]
-  (.up ^OrthographicCamera orthographic-camera))
-
-(defn position-vec3 [orthographic-camera]
-  (.position ^OrthographicCamera orthographic-camera))
-
 (defn set-zoom! [orthographic-camera amount]
   (set! (.zoom ^OrthographicCamera orthographic-camera) amount)
   (.update ^OrthographicCamera orthographic-camera))
 
 (defn inc-zoom! [orthographic-camera by]
-  (set-zoom! orthographic-camera (max 0.1 (+ (zoom orthographic-camera) by))))
+  (set-zoom! orthographic-camera (max 0.1 (+ (.zoom ^OrthographicCamera orthographic-camera) by))))
 
 (defn position [orthographic-camera]
-  (let [v3 (position-vec3 orthographic-camera)]
+  (let [v3 (.position ^OrthographicCamera orthographic-camera)]
     [(.x ^Vector3 v3) (.y ^Vector3 v3) (.z ^Vector3 v3)]))
 
 (defn set-position! [orthographic-camera [x y]]
-  (let [pos (position-vec3 orthographic-camera)]
+  (let [pos (.position ^OrthographicCamera orthographic-camera)]
     (set! (.x ^Vector3 pos) x)
     (set! (.y ^Vector3 pos) y))
   (.update ^OrthographicCamera orthographic-camera))
@@ -119,8 +95,8 @@
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."
   [orthographic-camera {:keys [left top right bottom]}]
-  (let [viewport-width  (viewport-width orthographic-camera)
-        viewport-height (viewport-height orthographic-camera)
+  (let [viewport-width  (.viewportWidth ^OrthographicCamera orthographic-camera)
+        viewport-height (.viewportHeight ^OrthographicCamera orthographic-camera)
         [px py] (position orthographic-camera)
         px (float px)
         py (float py)
@@ -1372,16 +1348,16 @@
    world-unit-scale
    camera
    color-setter]
-  (.setProjectionMatrix ^Batch batch (combined camera))
+  (.setProjectionMatrix ^Batch batch (.combined ^OrthographicCamera camera))
   (.begin ^Batch batch)
-  (let [width  (* (viewport-width camera) (zoom camera))
-        height (* (viewport-height camera) (zoom camera))
-        up (up camera)
+  (let [width  (* (.viewportWidth ^OrthographicCamera camera) (.zoom ^OrthographicCamera camera))
+        height (* (.viewportHeight ^OrthographicCamera camera) (.zoom ^OrthographicCamera camera))
+        up (.up ^OrthographicCamera camera)
         w (+ (* width  (Math/abs (float (.y ^Vector3 up))))
              (* height (Math/abs (float (.x ^Vector3 up)))))
         h (+ (* height (Math/abs (float (.y ^Vector3 up))))
              (* width  (Math/abs (float (.x ^Vector3 up)))))
-        pos (position-vec3 camera)
+        pos (.position ^OrthographicCamera camera)
         view-bounds {:x (- (.x ^Vector3 pos) (/ w 2))
                      :y (- (.y ^Vector3 pos) (/ h 2))
                      :width w
@@ -3355,8 +3331,8 @@
 (defn create-viewport [world-width world-height]
   (FitViewport. (float world-width)
                 (float world-height)
-                (doto (camera-new)
-                  (set-to-ortho! false
+                (doto (OrthographicCamera.)
+                  (.setToOrtho false
                                                      world-width
                                                      world-height))))
 
@@ -5727,8 +5703,8 @@
                 world-height (* 900 world-unit-scale)]
             (FitViewport. (float world-width)
                           (float world-height)
-                          (doto (camera-new)
-                            (set-to-ortho! false world-width world-height)))))
+                          (doto (OrthographicCamera.)
+                            (.setToOrtho false world-width world-height)))))
   (reset! default-font
           (let [{:keys [path
                         size
@@ -5801,7 +5777,7 @@
                                                                                                       [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                                           {:label "Zoom"
                                                            :update-fn (fn [ctx]
-                                                                        (zoom (.getCamera ^Viewport @world-viewport)))
+                                                                        (.zoom ^OrthographicCamera (.getCamera ^Viewport @world-viewport)))
                                                            :icon "images/zoom.png"}]]
                                                 (if (:icon item)
                                                   (update item :icon #(get @textures %))
@@ -5962,7 +5938,7 @@
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor @stage x y)]
       (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-      (.setProjectionMatrix ^Batch @batch (combined (.getCamera ^Viewport world-viewport)))
+      (.setProjectionMatrix ^Batch @batch (.combined ^OrthographicCamera (.getCamera ^Viewport world-viewport)))
       (.begin ^Batch @batch)
       (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
         (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))
