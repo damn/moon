@@ -26,10 +26,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData FileTextureData)
            (space.earlygrey.shapedrawer ShapeDrawer)
-           (com.badlogic.gdx.maps MapLayers MapProperties MapLayer)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader TiledMap TiledMapTile)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
-           (java.util Random))
+           (com.badlogic.gdx.maps MapLayers MapProperties)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader TiledMap TiledMapTile))
   (:gen-class))
 
 
@@ -85,28 +83,6 @@
     (for [x (range (int left-x)   (int right-x))
           y (range (int bottom-y) (+ 2 (int top-y)))]
       [x y])))
-
-(defn calculate-zoom
-  "calculates the zoom value for camera to see all the 4 points."
-  [orthographic-camera {:keys [left top right bottom]}]
-  (let [viewport-width  (.viewportWidth ^OrthographicCamera orthographic-camera)
-        viewport-height (.viewportHeight ^OrthographicCamera orthographic-camera)
-        [px py] (position orthographic-camera)
-        px (float px)
-        py (float py)
-        leftx (float (left 0))
-        rightx (float (right 0))
-        x-diff (max (- px leftx) (- rightx px))
-        topy (float (top 1))
-        bottomy (float (bottom 1))
-        y-diff (max (- topy py) (- py bottomy))
-        vp-ratio-w (/ (* x-diff 2) viewport-width)
-        vp-ratio-h (/ (* y-diff 2) viewport-height)]
-    (max vp-ratio-w vp-ratio-h)))
-
-(defn zoom-to-rect [orthographic-camera rectangle]
-  (set-zoom! orthographic-camera
-             (calculate-zoom orthographic-camera rectangle)))
 
 ;; ---- moon.cell ----
 (defrecord R [position
@@ -198,11 +174,6 @@
            :start-position [32 71]}))
 
 ;; ---- moon.m ----
-(defn assoc-ks [m ks v]
-  (if (empty? ks)
-    m
-    (apply assoc m (interleave ks (repeat v)))))
-
 (defn dissoc-in [m ks]
   (assert (> (count ks) 1))
   (update-in m (drop-last ks) dissoc (last ks)))
@@ -389,12 +360,6 @@
   (defn get-8-neighbours [position]
     (mapv #(mapv + position %) offsets)))
 
-(defn get-4-neighbours [[x y]]
-  [[(inc x) y]
-   [(dec x) y]
-   [x (inc y)]
-   [x (dec y)]])
-
 (defn diagonal? [[x1 y1] [x2 y2]]
   (and (not= x1 x2)
        (not= y1 y2)))
@@ -406,113 +371,8 @@
   (cells [_])
   (posis [_]))
 
-(defn adjacent-wall-positions [g2d]
-  (filter (fn [position]
-            (and (= :wall (get g2d position))
-                 (some #(= :ground (get g2d %))
-                       (get-8-neighbours position))))
-          (posis g2d)))
-
-(defn assoc-transition-cells [grid]
-  (let [grid (reduce #(assoc %1 %2 :transition) grid
-                     (adjacent-wall-positions grid))]
-    (assert (or
-             (= #{:wall :ground :transition} (set (cells grid)))
-             (= #{:ground :transition}       (set (cells grid))))
-            (str "(set (cells grid)): " (set (cells grid))))
-    ;_ (printgrid/f grid)
-    ;_ (println)
-    grid))
-
 (defn get-cells [g2d int-positions]
   (into [] (keep g2d) int-positions))
-
-(defn print-y-up
-  [grid]
-  (doseq [y (range (dec (height grid)) -1 -1)]
-    (doseq [x (range (width grid))]
-      (let [celltype (grid [x y])]
-        (print (if (number? celltype)
-                 celltype
-                 (case celltype
-                   nil               "?"
-                   :undefined        " "
-                   :ground           "_"
-                   :wall             "#"
-                   :airwalkable      "."
-                   :transition       "+")))))
-    (println)))
-
-(defn nad-corner? [grid [fromx fromy] [tox toy]]
-  (and
-   (= :ground (get grid [tox toy])) ; also filters nil/out of map
-   (= :wall (get grid [tox fromy]))
-   (= :wall (get grid [fromx toy]))))
-
-; could be made faster because accessing the same posis oftentimes at nad-corner? check
-(let [diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]]]
-  (defn get-nads [grid]
-    (loop [checkposis (filter (fn [{y 1 :as posi}]
-                                (and (even? y)
-                                     (= :ground (get grid posi))))
-                              (posis grid))
-           result []]
-      (if (seq checkposis)
-        (let [position (first checkposis)
-              diagonal-posis (map #(mapv + position %) diagonal-steps)
-              nads (map (fn [nad] [position nad])
-                        (filter #(nad-corner? grid position %) diagonal-posis))]
-          (recur
-           (rest checkposis)
-           (doall (concat result nads)))) ; doall else stackoverflow error
-        result))))
-
-(defn get-tiles-needing-fix-for-nad [grid [[fromx fromy] [tox toy]]]
-  (let [xstep (- tox fromx)
-        ystep (- toy fromy)
-        cell1x (+ fromx xstep)
-        cell1y fromy
-        cell1 [cell1x cell1y]
-        cell11 [(+ cell1x xstep) (+ cell1y (- ystep))]
-        cell2x (+ cell1x xstep)
-        cell2y cell1y
-        cell2 [cell2x cell2y]
-        cell21 [(+ cell2x xstep) (+ cell2y ystep)]
-        cell3 [cell2x (+ cell2y ystep)]]
-    ;    (println "from: " [fromx fromy] " to: " [tox toy])
-    ;    (println "xstep " xstep " ystep " ystep)
-    ;    (println "cell1 " cell1)
-    ;    (println "cell11 " cell11)
-    ;    (println "cell2 " cell2)
-    ;    (println "cell21 " cell21)
-    ;    (println "cell3 " cell3)
-    (if-not (nad-corner? grid cell1 cell11)
-      [cell1]
-      (if-not (nad-corner? grid cell2 cell21)
-        [cell1 cell2]
-        [cell1 cell2 cell3]))))
-
-(defn g2d-fix-nads [grid]
-  {:pre [(= #{:wall :ground} (set (cells grid)))]
-   :post [(= #{:wall :ground} (set (cells %)))]}
-  (assoc-ks grid
-              (mapcat #(get-tiles-needing-fix-for-nad grid %)
-                      (get-nads grid))
-              :ground))
-
-(defn flood-fill [grid start walk-on-position?]
-  (loop [next-positions [start]
-         filled []
-         grid grid]
-    (if (seq next-positions)
-      (recur (filter #(and (get grid %)
-                           (walk-on-position? %))
-                     (distinct
-                      (mapcat get-8-neighbours
-                              next-positions)))
-             (concat filled next-positions)
-             (assoc-ks grid next-positions nil))
-      filled)))
 
 (deftype VectorGrid [data]
   G2d
@@ -577,35 +437,6 @@
                        (range h)))
          (range w))))
 
-(defn from-mapgrid
-  "Transforms a grid of {position value} to a grid2d.
-  Returns [grid convert-fn]: convert-fn converts a position of the old grid to a position of the new one."
-  [grid calc-newgrid-value]
-  (let [posis (keys grid)
-        xs (map #(% 0) posis)
-        min-x (apply min xs)
-        max-x (apply max xs)
-        ys (map #(% 1) posis)
-        min-y (apply min ys)
-        max-y (apply max ys)
-        width (inc (- max-x min-x))
-        height (inc (- max-y min-y))
-        convert (fn [[x y]] [(- x min-x -1)
-                             (- y min-y -1)])]
-    ; +2 so there are walls on all borders around the farthest ground cells
-    [(g2d-create (+ width 2) (+ height 2)
-             (fn [[x y]]
-               ; new grid starts 1 left/top of leftest cell
-               (calc-newgrid-value (get grid [(+ x min-x -1)
-                                              (+ y min-y -1)]))))
-     convert]))
-
-(defn scale-uniform [grid factor]
-  (g2d-create (* (width grid) factor)
-          (* (height grid) factor)
-          (fn [posi]
-            (get grid (mapv #(int (/ % factor)) posi)))))
-
 ;; ---- moon.content-grid ----
 (defn content-grid-create [width height cell-size]
   {:grid (g2d-create
@@ -656,135 +487,12 @@
   (keyword (name property-type)))
 
 ;; ---- moon.rand ----
-(defn new-random []
-  (Random.))
-
-(defn srand
-  ([^Random random] (.nextFloat random))
-  ([n random] (* n (srand random))))
-
-(defn srand-int [n random]
-  (int (srand n random)))
-
-(defn sshuffle
-  "Return a random permutation of coll"
-  ([coll random]
-   (when coll
-     (let [al (java.util.ArrayList. ^java.util.Collection coll)]
-       (java.util.Collections/shuffle al random)
-       (clojure.lang.RT/vector (.toArray al)))))
-  ([coll]
-   (sshuffle coll (new-random))))
-
 (defn int-between
   "returns a random integer between lower and upper bounds inclusive."
   ([[lower upper]]
    (int-between lower upper))
   ([lower upper]
    (+ lower (rand-int (inc (- upper lower))))))
-
-(defn get-rand-weighted-item
-  "given a sequence of items and their weight, returns a weighted random item.
-  for example {:a 5 :b 1} returns b only in about 1 of 6 cases"
-  [weights]
-  (let [result (rand-int (reduce + (map #(% 1) weights)))]
-    (loop [r 0
-           items weights]
-      (let [[item weight] (first items)
-            r (+ r weight)]
-        (if (> r result)
-          item
-          (recur (int r) (rest items)))))))
-
-;; ---- moon.caves ----
-; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
-; besser 150x150 anstatt 100x100 w h
-; TODO glaubich einziger unterschied noch: openpaths wird bei jeder cell neu berechnet?
-; TODO max-tries wenn er nie über min-cells kommt? -> im let dazu definieren vlt max 30 sekunden -> in tries umgerechnet??
-(defn generate [random min-cells max-cells get-adj-num-fn]
-  (let [create-order (fn [] (sshuffle (range 4) random))
-        turn-ratio 0.25
-        start [0 0]
-        start-grid (assoc {} start :ground) ; grid of posis to :ground or no entry for walls
-        finished (fn [grid end cell-cnt]
-                   ;(println "Reached cells: " cell-cnt) ; TODO cell-cnt stimmt net genau
-                   ; TODO already called there down ... make mincells check there
-                   (if (< cell-cnt min-cells)
-                     (generate random min-cells max-cells get-adj-num-fn) ; recur?
-                     (let [[grid convert] (from-mapgrid grid #(if (nil? %) :wall :ground))]
-                       {:grid  grid
-                        :start (convert start)
-                        :end   (convert end)})))]
-    (loop [posi-seq [start]
-           grid     start-grid
-           cell-cnt 0
-           current-order (create-order)]
-      ; TODO min cells check !?
-      (if (>= cell-cnt max-cells)
-        (finished grid
-                  (last posi-seq)
-                  cell-cnt)
-        (let [current-order (if (< (srand random) turn-ratio)
-                              (create-order)
-                              current-order)
-              neighbours (get-4-neighbours (last posi-seq))
-              try-carve-posis (take (get-adj-num-fn (count posi-seq) random)
-                                    (map #(get neighbours %) current-order))
-              carve-posis (filter #(nil? (get grid %)) try-carve-posis)
-              new-pos-seq (concat (drop-last posi-seq) carve-posis)]
-          (if (not-empty new-pos-seq)
-            (recur new-pos-seq
-                   (if (seq carve-posis)
-                     (assoc-ks grid carve-posis :ground)
-                     grid)
-                   (+ cell-cnt (count carve-posis))
-                   current-order)
-            ; TODO here min-cells check ?
-            (finished grid (last posi-seq) cell-cnt)))))))
-
-(def k->adj-num
-  {:wide
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       (case (int (srand-int 3 random))
-         0 1
-         2)
-       (case (int (srand-int 4 random))
-         0 1
-         1 2
-         2 3
-         3 4
-         1)))
-
-   :thin
-   ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       1
-       (case (int (srand-int 7 random))
-         0 0
-         1 2
-         1)))
-
-   :default
-   ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       (case (int (srand-int 4 random))
-         0 1
-         1 1
-         2 1
-         3 2
-         1)
-       (case (int (srand-int 4 random))
-         0 0
-         1 1
-         2 1
-         3 2
-         1)))})
-
-(defn caves-create [random min-cells max-cells adjnum-type]
-  (generate random min-cells max-cells (k->adj-num adjnum-type)))
 
 ;; ---- moon.raycaster ----
 (defn raycaster-blocked?
@@ -1025,45 +733,6 @@
 (defn get-property [tiled-map k]
   (.get ^MapProperties (get-properties tiled-map) k))
 
-(defn create-layer
-  [tiled-map
-   {:keys [name
-           visible?
-           properties
-           tiles]}]
-  {:pre [(string? name)
-         (boolean? visible?)]}
-  (let [props (get-properties tiled-map)
-        layer (doto (TiledMapTileLayer. (int (.get ^MapProperties props "width"))
-                                        (int (.get ^MapProperties props "height"))
-                                        (int (.get ^MapProperties props "tilewidth"))
-                                        (int (.get ^MapProperties props "tileheight")))
-                (.setName ^String name)
-                (.setVisible visible?))]
-    (doseq [[k v] properties]
-      (assert (string? k))
-      (.put ^MapProperties (.getProperties ^TiledMapTileLayer layer) k v))
-    (doseq [[[x y] tile] tiles
-            :when tile]
-      (.setCell ^TiledMapTileLayer layer (int x) (int y)
-                (doto (TiledMapTileLayer$Cell.)
-                  (.setTile ^TiledMapTile tile))))
-    layer))
-
-(defn add-layer! [tiled-map layer]
-  (.add ^MapLayers (get-layers tiled-map)
-        ^MapLayer (create-layer tiled-map layer)))
-
-(defn tiled-map-create
-  [{:keys [properties layers]}]
-  (let [tiled-map (TiledMap.)]
-    (doseq [[k v] properties]
-      (assert (string? k))
-      (.put ^MapProperties (get-properties tiled-map) k v))
-    (doseq [layer layers]
-      (add-layer! tiled-map layer))
-    tiled-map))
-
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -1108,31 +777,6 @@
            movement-property-layers
            (some #(tile-movement-property tiled-map % position)))
       "none"))
-
-(defn prepare-creature-tiles [creature-properties image->texture-region]
-  (for [{:keys [entity/animation
-                creature/level
-                property/id]} creature-properties
-        :let [image (first (:animation/frames animation))
-              texture-region (image->texture-region image)]]
-    {:creature/level level
-     :tile/id id
-     :tile/texture-region texture-region}))
-
-(defn add-creatures-layer! [tiled-map spawn-positions]
-  (add-layer! tiled-map
-              (let [creature-tile (memoize
-                                   (fn [{:keys [tile/id
-                                                tile/texture-region]}]
-                                     (assert (and id
-                                                  texture-region))
-                                     (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-                                       (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
-                                       tile)))]
-                {:name "creatures"
-                 :visible? false
-                 :tiles (for [[position creature-property] spawn-positions]
-                          [position (creature-tile creature-property)])})))
 
 (defn- draw-tile!
   [x
@@ -1269,150 +913,6 @@
                         view-bounds
                         color-setter)))
   (.end ^Batch batch))
-
-;; ---- moon.level.uf-caves ----
-(defn- level-uf-caves-initial-grid
-  [{:keys [initial-grid-create-fn
-           size
-           cave-style
-           random]
-    :as level}]
-  (let [{:keys [start grid]} (initial-grid-create-fn random size size cave-style)]
-    (assert (= #{:wall :ground} (set (cells grid))))
-    (assoc level
-           :level/start start
-           :level/grid grid)))
-
-(defn- level-uf-caves-fix-nads
-  [{:keys [level/grid]
-    :as level}]
-  (let [grid ((:grid2d-fix-nads-fn level) grid)]
-    (assoc level :level/grid grid)))
-
-(defn- scale-grid [grid start scale]
-  (let [grid (scale-uniform grid scale)]
-    {:start-position (mapv #(* % scale) start)
-     :grid grid}))
-
-(defn- position-tile-fn [grid]
-  (let [uf-grounds (for [x [1 5]
-                         y (range 5 11)
-                         :when (not= [x y] [5 5])]
-                     [x y])
-        uf-walls (for [x [1]
-                       y [13,16,19,22,25,28]]
-                   [x y])
-        transition? (fn [[x y]]
-                      (= :ground (get grid [x (dec y)])))
-        rand-0-3 (fn [] (get-rand-weighted-item {0 60 1 1 2 1 3 1}))
-        rand-0-5 (fn [] (get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
-        [ground-x ground-y] (rand-nth uf-grounds)
-        {wall-x 0 wall-y 1} (rand-nth uf-walls)
-        [transition-x transition-y] [wall-x (inc wall-y)]
-        wall-tile (fn []
-                    {:sprite-idx [(+ wall-x (rand-0-5)) wall-y]
-                     :movement "none"})
-        transition-tile (fn []
-                          {:sprite-idx [(+ transition-x (rand-0-5))
-                                        transition-y]
-                           :movement "none"})
-        ground-tile (fn []
-                      {:sprite-idx [(+ ground-x (rand-0-3))
-                                    ground-y]
-                       :movement "all"})]
-    (fn [position]
-      (case (get grid position)
-        :wall (wall-tile)
-        :transition (if (transition? position)
-                      (transition-tile)
-                      (wall-tile))
-        :ground (ground-tile)))))
-
-(defn- level-uf-caves-last-steps
-  [{:keys [level/grid
-           level/start
-           level/spawn-rate
-           level/creature-properties
-           level/create-tile
-           level/tile-size
-           level/scaling]
-    :as lvlctx}]
-  (assert (= #{:wall :ground} (set (cells grid))))
-  (let [{:keys [start-position grid]} (scale-grid grid start scaling)
-        grid (assoc-transition-cells grid)
-        position->tile (position-tile-fn grid)
-        tiled-map (tiled-map-create
-                   {:properties {"width" (width grid)
-                                 "height" (height grid)
-                                 "tilewidth" tile-size
-                                 "tileheight" tile-size}
-                    :layers [{:name "ground"
-                              :visible? true
-                              :properties {"movement-properties" true}
-                              :tiles (for [position (posis grid)]
-                                       [position (create-tile (position->tile position))])}]})
-        can-spawn? #(= "all" (movement-property tiled-map %))
-        _ (assert (can-spawn? start-position))
-        level (inc (rand-int 6))
-        level-creatures (filter #(= level (:creature/level %)) creature-properties)
-        spawn-positions (flood-fill grid start-position can-spawn?)
-        creatures (for [position spawn-positions
-                        :when (and (not= position start-position)
-                                   (<= (rand) spawn-rate)
-                                   (seq level-creatures))]
-                    [position (rand-nth level-creatures)])]
-    (add-creatures-layer! tiled-map creatures)
-    {:tiled-map tiled-map
-     :start-position start-position}))
-
-(defn level-uf-caves-create
-  [world-fn-ctx]
-  (let [{:keys [initial-grid-create-fn
-                grid2d-fix-nads-fn
-                level/creature-properties
-                textures
-                tile-size
-                texture-path
-                spawn-rate
-                scaling
-                cave-size
-                cave-style]}
-        (merge {:initial-grid-create-fn caves-create
-                :grid2d-fix-nads-fn g2d-fix-nads
-                :tile-size 48
-                :texture-path "images/uf_terrain.png"
-                :spawn-rate 0.02
-                :scaling 3
-                :cave-size 200
-                :cave-style :wide}
-               world-fn-ctx)]
-    (reduce (fn [m f]
-              (f m))
-            {:initial-grid-create-fn initial-grid-create-fn
-             :grid2d-fix-nads-fn grid2d-fix-nads-fn
-             :size cave-size
-             :cave-style cave-style
-             :random (new-random)
-             :level/tile-size tile-size
-             :level/create-tile (let [texture (get textures texture-path)]
-                                  (memoize
-                                   (fn [& {:keys [sprite-idx movement]}]
-                                     {:pre [#{"all" "air" "none"} movement]}
-                                     (let [texture-region (TextureRegion. ^Texture texture
-                                                                          (int (* (sprite-idx 0) tile-size))
-                                                                          (int (* (sprite-idx 1) tile-size))
-                                                                          (int tile-size)
-                                                                          (int tile-size))
-                                           tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-                                       (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile)
-                                             "movement" movement)
-                                       tile))))
-             :level/spawn-rate spawn-rate
-             :level/scaling scaling
-             :level/creature-properties creature-properties}
-            [level-uf-caves-initial-grid
-             level-uf-caves-fix-nads
-             level-uf-caves-last-steps])))
 
 ;; ---- moon.timer ----
 (defn timer-create [elapsed-time duration]
@@ -1968,10 +1468,6 @@
   (assert (contains? data property-id))
   (get data property-id) )
 
-(defn all-raw [{:keys [db/data]} ptype]
-  (->> (vals data)
-       (filter #(= ptype (property-type %)))))
-
 ; SCHEMA
 (defmulti create-value (fn [[k] _v _db]
                          k))
@@ -2217,162 +1713,6 @@
      :world/grid (create-grid tiled-map)
      :world/content-grid (content-grid-create width height 16)}))
 
-;; ---- moon.levelgen ----
-(def ^:private config
-  {:initial-level-fn level-uf-caves-create
-   :level-fns [["Vampire" vampire]
-               ["UF Caves" level-uf-caves-create]]
-   :ui-viewport-width 1440
-   :ui-viewport-height 900
-   :world-viewport-width 1440
-   :world-viewport-height 900
-   :tile-size 48
-   :ui-skin-path "skin/uiskin.json"
-   :textures-config {:folder "resources/"
-                     :extensions #{"png" "bmp"}}
-   :zoom-speed 0.1
-   :camera-movement-speed 1})
-
-(defn- generate-level
-  [db textures camera level-fn]
-  (let [level (level-fn {:level/creature-properties
-                         (prepare-creature-tiles
-                          (all-raw db :properties/creatures)
-                          #(texture-region textures %))
-                         :textures textures})
-        tiled-map (:tiled-map level)
-        width (get-property tiled-map "width")
-        height (get-property tiled-map "height")]
-    (assert tiled-map)
-    (.setVisible ^TiledMapTileLayer (.get ^MapLayers (get-layers tiled-map) "creatures")
-                 true)
-    (set-position! camera [(/ width 2) (/ height 2)])
-    (zoom-to-rect camera {:left [0 0]
-                                              :top [0 height]
-                                              :right [width 0]
-                                              :bottom [0 0]})
-    tiled-map))
-
-(defn create-viewport [world-width world-height]
-  (FitViewport. (float world-width)
-                (float world-height)
-                (doto (OrthographicCamera.)
-                  (.setToOrtho false
-                                                     world-width
-                                                     world-height))))
-
-(defn create-skin [file-handle]
-  (Skin. ^FileHandle file-handle))
-
-(defn create-stage [batch viewport actor]
-  (doto (Stage. viewport batch)
-    (.addActor actor)))
-
-(defn text-button [skin label on-click!]
-  (doto (TextButton. label skin)
-    (.addListener (proxy [ChangeListener] []
-                    (changed [_event _actor]
-                      (on-click!))))))
-
-(defn levelgen-listener
-  [{:keys [zoom-speed
-           camera-movement-speed
-           tile-size
-           world-viewport-width
-           world-viewport-height
-           ui-viewport-width
-           ui-viewport-height
-           ui-skin-path
-           level-fns
-           textures-config
-           initial-level-fn]}]
-  (let [world-unit-scale (float (/ tile-size))
-        world-width (* world-viewport-width world-unit-scale)
-        world-height (* world-viewport-height world-unit-scale)
-        batch (atom nil)
-        skin (atom nil)
-        ui-stage (atom nil)
-        world-viewport (atom nil)
-        camera (atom nil)
-        db (atom nil)
-        textures (atom nil)
-        tiled-map (atom nil)
-        buttons (for [[label level-fn] level-fns]
-                  [(str "Generate " label)
-                   (fn []
-                     (Disposable/.dispose @tiled-map)
-                     (reset! tiled-map
-                             (generate-level @db @textures @camera level-fn)))])]
-    (reify ApplicationListener
-      (create [_]
-        (reset! batch (SpriteBatch.))
-        (reset! skin (create-skin (.internal ^Files Gdx/files ui-skin-path))) ; same ?
-        (reset! ui-stage (create-stage @batch
-                                       (FitViewport. ui-viewport-width ui-viewport-height) ; requires gl context ?
-                                       (scene2d-window-create
-                                        {:title "Edit"
-                                         :skin @skin
-                                         :table/rows (for [[label on-click!] buttons]
-                                                       [{:actor (text-button @skin label on-click!)}])})))
-        (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
-        (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?
-        (reset! camera (.getCamera ^Viewport @world-viewport)) ; ?? sep?
-        (reset! db (db-create)) ; needs reloading?
-        (reset! textures (textures-create Gdx/files textures-config))
-        (reset! tiled-map (generate-level @db @textures @camera initial-level-fn)))
-
-      (dispose [_]
-        (Disposable/.dispose @batch)
-        (Disposable/.dispose @skin)
-        (run! Disposable/.dispose (vals @textures))
-        (Disposable/.dispose @tiled-map))
-
-      (render [_]
-        (let [gl (.getGL20 ^Graphics Gdx/graphics)
-              camera* @camera
-              move (fn [idx f]
-                     (set-position! camera*
-                                                        (update (position camera*)
-                                                                idx
-                                                                #(f % camera-movement-speed))))]
-          (.glClearColor ^GL20 gl 0 0 0 0)
-          (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
-          (draw! @tiled-map
-                                @batch
-                                world-unit-scale
-                                (.getCamera ^Viewport @world-viewport)
-                                (constantly (float-bits [1 1 1 1])))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/MINUS)
-            (inc-zoom! camera* zoom-speed))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/EQUALS)
-            (inc-zoom! camera* (- zoom-speed)))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/LEFT)
-            (move 0 -))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/RIGHT)
-            (move 0 +))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/UP)
-            (move 1 +))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/DOWN)
-            (move 1 -))
-          (.act ^Stage @ui-stage)
-          (.draw ^Stage @ui-stage)))
-
-      (resize [_ width height]
-        (.update ^Viewport (.getViewport ^Stage @ui-stage) width height true)
-        (.update ^Viewport @world-viewport width height false))
-
-      (pause [_])
-
-      (resume [_]))))
-
-(defn levelgen-main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (levelgen-listener config)
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Levelgen Test")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
-
 ;; ---- moon.game ----
 ; 1. step only use ctx bag in listener fns
 ; 2. step remove ctx bag and just bind state over the fns
@@ -2412,7 +1752,7 @@
 
 (def max-delta 0.04)
 
-(def level-fn level-uf-caves-create)
+(def level-fn vampire)
 
 (def pausing? true)
 
@@ -3397,8 +2737,7 @@
 
 (def select-world-menu-item
   {:label "Select World"
-   :items (for [[label world-fn] [["Vampire" vampire]
-                                  ["UF Caves" level-uf-caves-create]]]
+   :items (for [[label world-fn] [["Vampire" vampire]]]
             {:label (str "Start " label)
              :on-click (fn [ctx]
                          #_(let [rebuild-actors! nil
@@ -4739,10 +4078,7 @@
                 (.addActor ^Stage @stage actor))
               ctx)
             (let [{:keys [tiled-map start-position]}
-                  (level-fn {:level/creature-properties (prepare-creature-tiles
-                                                         (all-raw (:ctx/db ctx) :properties/creatures)
-                                                         #(texture-region @textures %))
-                             :textures @textures})]
+                  (level-fn {})]
               (assoc ctx
                      :ctx/tiled-map tiled-map
                      :ctx/start-position start-position))
@@ -5090,6 +4426,7 @@
 (def listener
   (reify ApplicationListener
     (create [_]
+      ; TODO pass capabilities (functions) and not data (audio,input)
       (create! Gdx/audio Gdx/files Gdx/input handle-fsm-event! spawn-entity!))
     (dispose [_]
       (dispose!))
