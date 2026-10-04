@@ -1,8 +1,7 @@
 (ns malli.is-optional-test
-  (:require [moon.map-schema :as map-schema]))
-
+  (:require [moon.game :as game]))
 (comment
- (= (map-schema/optional?
+ (= (game/map-schema-optional?
      [:map {:closed true}
       [:foo]
       [:bar]
@@ -12,7 +11,7 @@
      :foo)
     nil)
 
- (= (map-schema/optional?
+ (= (game/map-schema-optional?
      [:map {:closed true}
       [:foo]
       [:bar]
@@ -22,7 +21,7 @@
      :baz)
     true)
 
- (= (map-schema/optional?
+ (= (game/map-schema-optional?
      [:map {:closed true}
       [:foo]
       [:bar]

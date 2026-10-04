@@ -1,12 +1,10 @@
 (ns moon.grid2d.utils-test
-  (:require [moon.caves :as caves]
-            [moon.g2d :as g2d])
+  (:require [moon.game :as game])
   (:import (java.util Random)))
-
 (comment
- (let [{:keys [start grid]} (caves/create (Random.) 15 15 :wide)
+ (let [{:keys [start grid]} (game/caves-create (Random.) 15 15 :wide)
        _ (println "BASE GRID:\n")
-       _ (g2d/print-y-up grid)
+       _ (game/print-y-up grid)
        ;_ (println)
        ;_ (println "WITH START POSITION (0) :\n")
        ;_ (g2d/print-y-up (assoc grid start 0))
@@ -15,6 +13,6 @@
        ;           "start " start "\n")
        ;_ (println (g2d/posis grid))
        _ (println "\n\n")
-       filled (g2d/flood-fill grid start (fn [p] (= :ground (get grid p))))
-       _ (g2d/print-y-up (reduce #(assoc %1 %2 nil) grid filled))])
+       filled (game/flood-fill grid start (fn [p] (= :ground (get grid p))))
+       _ (game/print-y-up (reduce #(assoc %1 %2 nil) grid filled))])
  )

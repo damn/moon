@@ -1,8 +1,7 @@
 (ns malli.map-form-k-properties-test
-  (:require [moon.map-schema :refer [map-form-k->properties]]))
-
+  (:require [moon.game :as game]))
 (comment
- (= (map-form-k->properties
+ (= (game/map-form-k->properties
      [:map {:closed true}
       [:foo]
       [:bar]

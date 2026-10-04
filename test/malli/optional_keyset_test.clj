@@ -1,8 +1,7 @@
 (ns malli.optional-keyset-test
-  (:require [moon.map-schema :as map-schema]))
-
+  (:require [moon.game :as game]))
 (comment
- (= (map-schema/optional-keyset
+ (= (game/map-schema-optional-keyset
      [:map {:closed true}
       [:foo]
       [:bar]

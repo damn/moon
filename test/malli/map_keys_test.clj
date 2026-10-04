@@ -1,8 +1,7 @@
 (ns malli.map-keys-test
-  (:require [moon.map-schema :as map-schema]))
-
+  (:require [moon.game :as game]))
 (comment
- (= (map-schema/map-keys
+ (= (game/map-schema-map-keys
      [:map {:closed true}
       [:foo]
       [:bar]

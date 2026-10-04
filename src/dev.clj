@@ -50,8 +50,7 @@
            "clojure.scene2d.utils.click-listener")
 
   ;; Game scratch
-  (require '[moon.db :as db]
-           '[moon.game :as game])
+  (require '[moon.game :as game])
   (import '(com.badlogic.gdx Application Gdx))
   (.postRunnable ^Application Gdx/app
                               (fn []
@@ -59,7 +58,7 @@
                                        :as ctx} @state]
                                   (#'game/spawn-creature! ctx
                                                           {:position [35 73]
-                                                           :creature-property (db/build db :creatures/dragon-red)
+                                                           :creature-property (game/build db :creatures/dragon-red)
                                                            :components {:entity/fsm {:fsm :fsms/npc
                                                                                      :initial-state :npc-sleeping}
                                                                         :entity/faction :evil}})))))
