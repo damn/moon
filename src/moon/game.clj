@@ -20,7 +20,7 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion Batch BitmapFont)
            (com.badlogic.gdx.scenes.scene2d Actor Event Touchable Group)
-           (com.badlogic.gdx.scenes.scene2d.ui Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip Button ButtonGroup HorizontalGroup TooltipManager Widget Cell Table Window)
+           (com.badlogic.gdx.scenes.scene2d.ui Image ImageButton Label Skin Stack TextButton TextTooltip Button ButtonGroup HorizontalGroup TooltipManager Widget Cell Table Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable ClickListener)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
@@ -2628,8 +2628,7 @@
    :unpause-continously Input$Keys/SPACE
    :close-windows-key Input$Keys/ESCAPE
    :toggle-inventory Input$Keys/I
-   :toggle-entity-info Input$Keys/E
-   :open-debug-button Input$Buttons/RIGHT})
+   :toggle-entity-info Input$Keys/E})
 
 (def controls-info
   (str/join "\n"
@@ -2639,84 +2638,11 @@
              "[E] - Entity Info window"
              "[-]/[=] - Zoom"
              "[P]/[SPACE] - Unpause"
-             "rightclick on tile or entity - open debug data window"
              "Leftmouse click - use skill/drop item on cursor"]))
 
 (def help-menu-item
   {:label "Help"
    :items [{:label controls-info}]})
-
-(defn- data-viewer-label-str [k]
-  (str "[LIGHT_GRAY]:"
-       (when-let [ns (namespace k)] (str ns "/"))
-       "[][WHITE]"
-       (name k)
-       "[]"))
-
-(defn- create-data-viewer-window
-  [{:keys [title
-           data
-           width
-           height
-           skin]}]
-  {:pre [(map? data)]}
-  (let [v->actor (fn [v skin]
-                   (if (map? v)
-                     (doto (TextButton. "Map" skin)
-                       (.addListener (proxy [ChangeListener] []
-                                            (changed [_event actor]
-                                              (.addActor ^Stage (.getStage ^Actor actor)
-                                                                (create-data-viewer-window
-                                                                 {:title "title"
-                                                                  :data v
-                                                                  :width 500
-                                                                  :height 500
-                                                                  :skin skin}))))))
-                     (Label. ^String (cond
-                                  (or (keyword? v)
-                                      (number? v)
-                                      (boolean? v)
-                                      (string? v))
-                                  (str "[GOLD]" v "[]")
-
-                                  :else
-                                  (str (class v)))
-                                ^Skin skin)))
-        rows (for [[k v] (sort-by key data)]
-               {:label (data-viewer-label-str k)
-                :actor (v->actor v skin)})
-        scroll-pane-table (scene2d-table-create
-                           {:table/rows (for [{:keys [label actor]} rows]
-                                           [{:actor (Label. ^String label ^Skin skin)}
-                                            {:actor actor}])})
-        scroll-pane-cell {:actor (ScrollPane.
-                                  ^Actor (scene2d-table-create {:table/cell-defaults {:pad 1}
-                                                 :table/rows [[scroll-pane-table]]})
-                                  ^Skin skin)
-                          :width width
-                          :height 800}]
-    (scene2d-window-create {:title title
-                    :skin skin
-                    :table/rows [[scroll-pane-cell]]
-                    :window/add-close-button? true})))
-
-(def ctx-data-menu-item
-  {:label "Ctx Data"
-   :items [{:label "Show data"
-            :on-click (fn [ctx]
-                        (let [skin @skin
-                              stage @stage]
-                        ; skin & stage
-                        ; :moon.game/ui
-                        ; moon.game.ui/data-viweer-window?
-                        (.addActor ^Stage stage
-                                        (create-data-viewer-window
-                                         {:title "Data View"
-                                          :data ctx
-                                          :width 1000
-                                          :height 1000
-                                          :skin skin}))
-                        ctx))}]})
 
 (def debug-flags-menu-item
   {:label "Debug"
@@ -2754,8 +2680,7 @@
                          ctx)})})
 
 (def dev-menus
-  [ctx-data-menu-item
-   debug-flags-menu-item
+  [debug-flags-menu-item
    help-menu-item
    select-world-menu-item])
 
@@ -4252,19 +4177,6 @@
                      (when new-eid
                        (swap! new-eid assoc :entity/mouseover? true))
                      (assoc ctx :ctx/mouseover-eid new-eid))))
-    (let [ctx @state]
-      (when (button-just-pressed? (:open-debug-button (:ctx/controls ctx)))
-        (let [world (:ctx/world ctx)
-              mouseover-eid (:ctx/mouseover-eid ctx)
-              data (or (and mouseover-eid @mouseover-eid)
-                       (cell-at world (mapv int world-mouse-position)))]
-          (.addActor ^Stage @stage
-                            (create-data-viewer-window
-                             {:title "Data View"
-                              :data data
-                              :width 500
-                              :height 500
-                              :skin @skin})))))
     (swap! state #(assoc % :ctx/active-entities
                          (world-active-entities (:ctx/world %) @(:ctx/player-eid %))))
     (set-position! (.getCamera ^Viewport @world-viewport)
