@@ -20,8 +20,8 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion Batch BitmapFont)
            (com.badlogic.gdx.scenes.scene2d Actor Event Touchable Group)
-           (com.badlogic.gdx.scenes.scene2d.ui Image ImageButton Label Skin Stack TextButton TextTooltip Button ButtonGroup HorizontalGroup TooltipManager Widget Cell Table Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable ClickListener)
+           (com.badlogic.gdx.scenes.scene2d.ui Image ImageButton Label Skin TextButton TextTooltip Button ButtonGroup HorizontalGroup TooltipManager Cell Table Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData FileTextureData)
@@ -290,69 +290,6 @@
                                                (str/capitalize (name k)))))
                                       (ops-sort modifier-ops))))
                     mods))))
-
-;; ---- moon.item ----
-(defn item-valid? [item]
-  (let [keyset (set (keys item))]
-    (or (= #{:property/id
-             :property/pretty-name
-             :entity/image
-             :item/slot
-             :stats/modifiers} keyset)
-        (= #{:property/id
-             :property/pretty-name
-             :entity/image
-             :item/slot} keyset))))
-
-(defn item-info-text [item]
-  (assert (item-valid? item))
-  (str/join "\n"
-            (remove nil?
-                    [(str "[PRETTY_NAME]" (:property/pretty-name item) "[]")
-                     (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
-                     ; seq because they can be empty map ?
-                     (when (seq (:stats/modifiers item))
-                       (str "[CYAN]" (mods-format-text (:stats/modifiers item)) "[]"))])))
-
-;; ---- moon.inventory ----
-(def slots
-  #{:inventory.slot/bag
-    :inventory.slot/weapon
-    :inventory.slot/shield
-    :inventory.slot/helm
-    :inventory.slot/chest
-    :inventory.slot/leg
-    :inventory.slot/glove
-    :inventory.slot/boot
-    :inventory.slot/cloak
-    :inventory.slot/necklace
-    :inventory.slot/rings})
-
-(defn- known-slot? [slot]
-  (slots slot))
-
-(defn- cells-and-items [inventory slot]
-  (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
-  (for [[position item] (slot inventory)]
-    [[slot position] item]))
-
-(defn- free-cell [inventory slot]
-  (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
-  (first (filter (fn [[_cell cell-item]]
-                   (nil? cell-item))
-                 (cells-and-items inventory slot))))
-
-(defn can-pickup-item? [inventory item]
-  (assert (item-valid? item))
-  (or (free-cell inventory (:item/slot item))
-      (free-cell inventory :inventory.slot/bag)))
-
-(defn valid-slot? [[slot _] item]
-  (or (= :inventory.slot/bag slot)
-      (= (:item/slot item) slot)))
-
-(defn applies-modifiers? [[slot _]]
-  (not= :inventory.slot/bag slot))
 
 ;; ---- moon.position ----
 ; not using `for` because creates a lazy seq (slow)
@@ -1756,8 +1693,7 @@
    :stunned false
    :player-moving false
    :player-idle true
-   :player-dead true
-   :player-item-on-cursor true})
+   :player-dead true})
 
 (def factions-iterations
   {:good 15
@@ -2089,10 +2025,6 @@
                         (* (stats-get-value (:entity/stats @eid) :stats/reaction-time)
                            0.016))})
 
-(defmethod create-entity-state :player-item-on-cursor
-  [[_k item] _eid _elapsed-time]
-  {:item item})
-
 (def fsms
   {:npc (fsm/fsm-inc
           [[:npc-sleeping
@@ -2117,11 +2049,10 @@
             :effect-wears-off -> :npc-idle]
            [:npc-dead]])
    :player (fsm/fsm-inc
-            [[:player-idle
+            [            [:player-idle
               :kill -> :player-dead
               :stun -> :stunned
               :start-action -> :active-skill
-              :pickup-item -> :player-item-on-cursor
               :movement-input -> :player-moving]
              [:player-moving
               :kill -> :player-dead
@@ -2134,11 +2065,6 @@
              [:stunned
               :kill -> :player-dead
               :effect-wears-off -> :player-idle]
-             [:player-item-on-cursor
-              :kill -> :player-dead
-              :stun -> :stunned
-              :drop-item -> :player-idle
-              :dropped-item -> :player-idle]
              [:player-dead]])})
 
 (defn- create-fsm
@@ -2203,48 +2129,8 @@
   (when-let [skill-button (.getChecked ^ButtonGroup (:button-group (action-bar-get-data action-bar)))]
     (.getUserObject ^Actor skill-button)))
 
-(defn- inventory-window-get-cell [inventory-window cell]
-  (->> "inventory-cell-table"
-       (#(find-actor inventory-window %))
-       get-children
-       (filter #(= (.getUserObject ^Actor %) cell))
-       first))
-
-(defn- inventory-window-remove-item! [inventory-window cell]
-  (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (find-actor cell-widget "image-widget")]
-    (.setDrawable ^Image image-widget ^Drawable (:background-drawable (.getUserObject ^Actor image-widget)))
-    ; !! TODO FIXME FIXME FIXME !!!
-    ;(.removeListener actor (.getListeners actor))
-    ; ... first find the listener
-    #_(tooltip/remove! cell-widget)
-    nil))
-
-(defn- inventory-window-set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
-  (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (find-actor cell-widget "image-widget")
-        cell-size (:cell-size (.getUserObject ^Actor image-widget))]
-    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                                  (.setMinSize cell-size cell-size)))
-    (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
-    nil))
-
-(defn- set-item [entity cell item]
-  (assert (and (nil? (get-in (:entity/inventory entity) cell))
-               (valid-slot? cell item)))
-  (cond-> (assoc-in entity (cons :entity/inventory cell) item)
-    (applies-modifiers? cell)
-    (update :entity/stats add-mods (:stats/modifiers item))))
-
-(defn- remove-item [entity cell]
-  (let [item (get-in (:entity/inventory entity) cell)]
-    (assert item)
-    (cond-> (assoc-in entity (cons :entity/inventory cell) nil)
-      (applies-modifiers? cell)
-      (update :entity/stats remove-mods (:stats/modifiers item)))))
-
 (defn after-create-component
-  [ui-set-skill! ui-set-item! elapsed-time eid [k v]]
+  [ui-set-skill! elapsed-time eid [k v]]
   (case k
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
@@ -2262,39 +2148,7 @@
           (ui-set-skill! skill)))
       nil)
 
-    :entity/inventory
-    (do
-      (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
-                                                              :weapon   [1 1]
-                                                              :shield   [1 1]
-                                                              :helm     [1 1]
-                                                              :chest    [1 1]
-                                                              :leg      [1 1]
-                                                              :glove    [1 1]
-                                                              :boot     [1 1]
-                                                              :cloak    [1 1]
-                                                              :necklace [1 1]
-                                                              :rings    [2 1]}
-                                                 (map (fn [[slot [width height]]]
-                                                        [slot (g2d-create width height (constantly nil))]))
-                                                 (into {})))
-      (doseq [item v]
-        (assert (item-valid? item))
-        (let [[cell cell-item] (can-pickup-item? (:entity/inventory @eid) item)]
-          (assert cell)
-          (assert (nil? cell-item))
-          (swap! eid set-item cell item)
-          (when (:entity/player? @eid)
-            (ui-set-item! cell item))))
-      nil)
-
     nil))
-
-(defn- item-place-position [player-position world-mouse-position maxrange]
-  (v2-add player-position
-          (scale (v2-direction player-position world-mouse-position)
-                    (min maxrange
-                         (distance player-position world-mouse-position)))))
 
 (defn- mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
@@ -2307,21 +2161,15 @@
           (button-class? parent)))))
 
 (defn- mouseover-actor-info [actor]
-  (let [inventory-slot (and (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)
-                            (= "inventory-cell" (.getName ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))
-                            (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))]
-    (cond
-      inventory-slot
-      [:mouseover-actor/inventory-cell inventory-slot]
+  (cond
+    (title-bar? actor)
+    [:mouseover-actor/window-title-bar]
 
-      (title-bar? actor)
-      [:mouseover-actor/window-title-bar]
+    (button? actor)
+    [:mouseover-actor/button]
 
-      (button? actor)
-      [:mouseover-actor/button]
-
-      :else
-      [:mouseover-actor/unspecified])))
+    :else
+    [:mouseover-actor/unspecified]))
 
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
@@ -2346,16 +2194,6 @@
                 {:entity/alert-friendlies-after-duration
                  {:counter (timer-create elapsed-time duration)
                   :faction faction}}))
-
-(defn- spawn-item [position item]
-  {:entity/position position
-   :entity/width 0.75
-   :entity/height 0.75
-   :entity/z-order :z-order/on-ground
-   :entity/image (:entity/image item)
-   :entity/item item
-   :entity/clickable {:type :clickable/item
-                      :text (:property/pretty-name item)}})
 
 (defn- spawn-line [{:keys [start end duration color thick?]}]
   (spawn-effect start
@@ -2401,17 +2239,6 @@
                       (set-modal! true)
                       (.setName "moon.ui.modal-window")
                       (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (.getWorldWidth ^Viewport (.getViewport ^Stage stage)) 2) (float (* (.getWorldHeight ^Viewport (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center)))))
-
-(defn- ui-set-item! [ctx cell item]
-  (let [skin @skin
-        stage @stage
-        textures @textures]
-    (-> (.getRoot ^Stage stage)
-        (find-actor "moon.ui.windows.inventory")
-        (inventory-window-set-item! cell
-                                    {:texture-region (texture-region textures (:entity/image item))
-                                     :tooltip-text (item-info-text item)}
-                                    skin))))
 
 (defn- ui-set-skill! [ctx elapsed-time skill]
   (let [skin @skin
@@ -2564,11 +2391,6 @@
     :effects.target/stun
     (handle-fsm-event! (:effect/target effect-ctx) world-mouse-position :stun v)))
 
-(defn- toggle-inventory-visible! [stage]
-  (let [inventory (-> (.getRoot ^Stage stage)
-                      (find-actor "moon.ui.windows.inventory"))]
-    (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory)))))
-
 (defn- show-message! [stage message]
   (-> (.getRoot ^Stage stage)
       (find-actor "player-message")
@@ -2611,10 +2433,7 @@
      :colors/stunned (float-bits [1 1 1 0.6])
      :colors/explored-tile (float-bits [0.5 0.5 0.5 1])
      :colors/visible-tile (float-bits [1 1 1 1])
-     :colors/invisible-tile (float-bits [0 0 0 1])
-     :colors/droppable-item (float-bits [0 0.6 0 0.8 1])
-     :colors/not-allowed-drop-item (float-bits [0.6 0 0 0.8 1])
-     :colors/item-rect (float-bits [0.5 0.5 0.5 1])}))
+     :colors/invisible-tile (float-bits [0 0 0 1])}))
 
 (def controls
   {:zoom-in Input$Keys/MINUS
@@ -2622,18 +2441,16 @@
    :unpause-once Input$Keys/P
    :unpause-continously Input$Keys/SPACE
    :close-windows-key Input$Keys/ESCAPE
-   :toggle-inventory Input$Keys/I
    :toggle-entity-info Input$Keys/E})
 
 (def controls-info
   (str/join "\n"
             ["[W][A][S][D] - Move"
              "[ESCAPE] - Close windows"
-             "[I] - Inventory window"
              "[E] - Entity Info window"
              "[-]/[=] - Zoom"
              "[P]/[SPACE] - Unpause"
-             "Leftmouse click - use skill/drop item on cursor"]))
+             "Leftmouse click - use skill"]))
 
 (def help-menu-item
   {:label "Help"
@@ -2846,7 +2663,7 @@
               visible-tile-color))))))
 
 (defn draw-component
-  [shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+  [shape-drawer batch default-font unit-scale
    textures colors player elapsed-time active-entities raycaster
    entity k v]
   (case k
@@ -2859,16 +2676,6 @@
                              :x x
                              :y (+ y (/ height 2))
                              :up? true}))))
-
-    :player-item-on-cursor
-    (let [{:keys [item]} v]
-      (when-not mouseover-actor
-        (draw-fn-texture-region batch unit-scale
-                                (texture-region textures (:entity/image item))
-                                (item-place-position (:entity/position entity)
-                                                     world-mouse-position
-                                                     (- (:entity/click-distance-tiles entity) 0.1))
-                                {:center? true})))
 
     :entity/animation
     (let [{:keys [frames cnt frame-duration]} v
@@ -3022,160 +2829,6 @@
             (draw-hpmana-bar! ctx batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
             (draw-hpmana-bar! ctx batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
 
-(defn- ui-remove-item! [ctx cell]
-  (-> (.getRoot ^Stage @stage)
-      (find-actor "moon.ui.windows.inventory")
-      (inventory-window-remove-item! cell)))
-
-(defn handle-clicked-inventory-cell
-  [player-eid audio handle-fsm-event! ui-set-item! ui-remove-item! cell world-mouse-position]
-  (case (:state (:entity/fsm @player-eid))
-    :player-idle
-    (when-let [item (get-in (:entity/inventory @player-eid) cell)]
-      (play! audio "bfxr_takeit")
-      (swap! player-eid remove-item cell)
-      (ui-remove-item! cell)
-      (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
-
-    :player-item-on-cursor
-    (let [entity @player-eid
-          inventory (:entity/inventory entity)
-          item-in-cell (get-in inventory cell)
-          item-on-cursor (:entity/item-on-cursor entity)]
-      (cond
-       (and (not item-in-cell)
-            (valid-slot? cell item-on-cursor))
-       (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (play! audio "bfxr_itemput")
-           (swap! player-eid set-item cell item-on-cursor)
-           (ui-set-item! cell item-on-cursor)
-           (handle-fsm-event! player-eid world-mouse-position :dropped-item))
-
-       (and item-in-cell
-            (valid-slot? cell item-on-cursor))
-       (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (play! audio "bfxr_itemput")
-           (swap! player-eid remove-item cell)
-           (ui-remove-item! cell)
-           (swap! player-eid set-item cell item-on-cursor)
-           (ui-set-item! cell item-on-cursor)
-           (handle-fsm-event! player-eid world-mouse-position :dropped-item)
-           (handle-fsm-event! player-eid world-mouse-position :pickup-item item-in-cell))))
-
-    nil))
-
-(defn- inventory-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
-  (let [cell [slot (or position [0 0])]
-        background-drawable (slot->drawable slot)]
-    {:actor
-     (let [stack (Stack.)]
-       (run! #(add-actor! stack %)
-             [(proxy [Widget] []
-                (draw [batch parent-alpha]
-                  (when-let [stage (.getStage ^Actor this)]
-                    (let [ctx (.ctx ^Stage stage)]
-                      (draw-cell-rect! ctx
-                                       @(:ctx/player-eid ctx)
-                                       (.getX ^Actor this)
-                                       (.getY ^Actor this)
-                                       (let [[ux uy] (unproject (.getViewport ^Stage stage)
-                                                                         [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
-                                             local (.stageToLocalCoordinates ^Actor this
-                                                                             (Vector2. (float ux) (float uy)))
-                                             x (.x ^Vector2 local)
-                                             y (.y ^Vector2 local)]
-                                         (.hit ^Actor this (float x) (float y) true))
-                                       (.getUserObject ^Actor (.getParent ^Actor this)))))))
-              (doto (Image. ^Drawable background-drawable)
-                (.setName "image-widget")
-                (.setUserObject {:background-drawable background-drawable
-                                      :cell-size cell-size}))])
-       (doto stack
-         (.addListener (proxy [ClickListener] []
-                         (clicked [event _x _y]
-                           (on-click-cell event cell))))
-         (.setName "inventory-cell")
-         (.setUserObject cell)))}))
-
-(defn- inventory-window-build
-  [{:keys [on-click-cell
-           draw-cell-rect!
-           skin
-           position
-           slot->texture-region
-           cell-size]}]
-  (let [slot->drawable (fn [slot]
-                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
-                           (.setMinSize cell-size cell-size)
-                           (.tint ^Color (Color. 1 1 1 0.4))))
-        ->cell (partial inventory-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
-        window (doto (scene2d-window-create {:title "Inventory"
-                                     :skin skin
-                                     :table/rows [[{:actor (doto (scene2d-table-create
-                                                                  {:table/rows (concat [[nil nil
-                                                                                        (->cell :inventory.slot/helm)
-                                                                                        (->cell :inventory.slot/necklace)]
-                                                                                       [nil
-                                                                                        (->cell :inventory.slot/weapon)
-                                                                                        (->cell :inventory.slot/chest)
-                                                                                        (->cell :inventory.slot/cloak)
-                                                                                        (->cell :inventory.slot/shield)]
-                                                                                       [nil nil
-                                                                                        (->cell :inventory.slot/leg)]
-                                                                                       [nil
-                                                                                        (->cell :inventory.slot/glove)
-                                                                                        (->cell :inventory.slot/rings :position [0 0])
-                                                                                        (->cell :inventory.slot/rings :position [1 0])
-                                                                                        (->cell :inventory.slot/boot)]]
-                                                                                      (for [y (range 4)]
-                                                                                        (for [x (range 6)]
-                                                                                          (->cell :inventory.slot/bag :position [x y]))))})
-                                                                  (.setName "inventory-cell-table"))
-                                                    :pad 4}]]})
-                     (.setName "moon.ui.windows.inventory")
-                     (.setVisible false))]
-    (let [[x y] position]
-      (.setPosition ^Actor window (float x) (float y)))
-    window))
-
-(defn inventory-window-create
-  [ctx on-click-cell draw-cell-rect!]
-  (let [skin @skin
-        stage @stage
-        textures @textures
-        slot->y-sprite-idx #:inventory.slot {:weapon 0
-                                             :shield 1
-                                             :rings 2
-                                             :necklace 3
-                                             :helm 4
-                                             :cloak 5
-                                             :chest 6
-                                             :leg 7
-                                             :glove 8
-                                             :boot 9
-                                             :bag 10}
-        slot->texture-region (fn [slot]
-                               (let [width 48
-                                     height 48
-                                     sprite-x 21
-                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
-                                     bounds [(* sprite-x width)
-                                             (* sprite-y height)
-                                             width
-                                             height]]
-                                 (texture-region textures
-                                                          {:image/file "images/items.png"
-                                                           :image/bounds bounds})))
-        cell-size 48]
-    (inventory-window-build
-     {:on-click-cell on-click-cell
-      :draw-cell-rect! draw-cell-rect!
-      :skin skin
-      :position [(.getWorldWidth ^Viewport (.getViewport ^Stage stage))
-                 (.getWorldHeight ^Viewport (.getViewport ^Stage stage))]
-      :slot->texture-region slot->texture-region
-      :cell-size cell-size})))
-
 (defn windows-create [ctx actor-fns]
   (let [group* (scene2d-group-create)]
     (run! #(add-actor! group* %) (for [f actor-fns] (f ctx)))
@@ -3225,40 +2878,6 @@
                            ""))
       :skin skin})))
 
-(defn entity-state-draw-ui-view
-  [[k _v] eid ctx batch unit-scale mouseover-actor ui-mouse-position]
-  (case k
-    :player-item-on-cursor
-    (when mouseover-actor
-      (draw-fn-texture-region batch unit-scale
-                              (texture-region @textures (:entity/image (:entity/item-on-cursor @eid)))
-                              ui-mouse-position
-                              {:center? true}))
-
-    nil))
-
-(defn player-state-draw-create [unit-scale]
-  (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
-    (act [delta]
-      (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
-        (proxy-super act delta)))
-    (draw [batch parent-alpha]
-      (let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)
-            ctx (.ctx ^Stage stage)
-            player-eid (:ctx/player-eid ctx)
-            entity @player-eid
-            state-k (:state (:entity/fsm entity))
-            ui-mouse-position (unproject (.getViewport ^Stage stage)
-                                                  [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
-            [x y] ui-mouse-position]
-        (entity-state-draw-ui-view [state-k (state-k entity)]
-                                   player-eid
-                                   ctx
-                                   batch
-                                   unit-scale
-                                   (mouseover-actor stage x y)
-                                   ui-mouse-position)))))
-
 (defn player-message-actor-create [default-font unit-scale]
   (let [message-duration-seconds 0.5]
     (doto (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
@@ -3285,7 +2904,7 @@
       (.setName "player-message")
       (.setUserObject (atom nil)))))
 
-(defn- interaction-state->txs [[k params] stage audio handle-fsm-event! ui-set-item! player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] stage audio handle-fsm-event! player-eid world-mouse-position]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -3295,34 +2914,7 @@
       (if in-click-range?
         (case (:type (:entity/clickable @clicked-eid))
           :clickable/player
-          (do (toggle-inventory-visible! stage)
-              nil)
-
-          :clickable/item
-          (let [item (:entity/item @clicked-eid)]
-            (cond
-              (-> (.getRoot ^Stage stage)
-                  (find-actor "moon.ui.windows.inventory")
-                  .isVisible)
-              (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (play! audio "bfxr_takeit")
-                  (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
-
-              (can-pickup-item? (:entity/inventory @player-eid) item)
-              (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (play! audio "bfxr_pickup")
-                  (assert (item-valid? item))
-                  (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
-                    (assert cell)
-                    (assert (nil? cell-item))
-                    (swap! player-eid set-item cell item)
-                    (ui-set-item! cell item))
-                  nil)
-
-              :else
-              (do (play! audio "bfxr_denied")
-                  (show-message! stage "Your Inventory is full")
-                  nil))))
+          nil)
         (do (play! audio "bfxr_denied")
             (show-message! stage "Too far away")
             nil)))
@@ -3346,7 +2938,7 @@
         nil)))
 
 (defn- handle-input
-  [state-k eid ctx audio handle-fsm-event! left-button-pressed? movement-vector mouseover-actor world-mouse-position]
+  [state-k eid ctx audio handle-fsm-event! left-button-pressed? movement-vector world-mouse-position]
   (case state-k
     :player-idle
     (if movement-vector
@@ -3356,7 +2948,6 @@
                                 @stage
                                 audio
                                 handle-fsm-event!
-                                #(ui-set-item! ctx %1 %2)
                                 eid
                                 world-mouse-position)))
 
@@ -3367,11 +2958,6 @@
                                                         0)})
           nil)
       (handle-fsm-event! eid world-mouse-position :no-movement-input))
-
-    :player-item-on-cursor
-    (when (and left-button-pressed?
-               (not mouseover-actor))
-      (handle-fsm-event! eid world-mouse-position :drop-item))
 
     nil))
 
@@ -3633,8 +3219,7 @@
 
 (def ^:private render-layers
   [#{:entity/mouseover?
-     :stunned
-     :player-item-on-cursor}
+     :stunned}
    #{:entity/clickable
      :entity/animation
      :entity/image
@@ -3681,7 +3266,7 @@
     (draw-fn-rectangle shape-drawer x y width height color-float-bits)))
 
 (defn- draw-entities!
-  [ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position]
+  [ctx shape-drawer batch default-font unit-scale]
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
         textures @textures
@@ -3709,7 +3294,7 @@
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
-            (draw-component shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+            (draw-component shape-drawer batch default-font unit-scale
                             textures colors player elapsed-time active-entities raycaster
                             entity k v)))
         (catch Throwable t
@@ -3763,44 +3348,30 @@
   (assoc ctx :ctx/interaction-state (make-interaction-state ctx mouseover-actor world-mouse-position)))
 
 (def k->cursor
-  {:player-item-on-cursor :cursors/hand-grab
-   :player-dead :cursors/black-x
+  {:player-dead :cursors/black-x
    :active-skill :cursors/sandclock
    :stunned :cursors/denied
    :player-moving :cursors/walking
    :player-idle (fn
-                  [eid ctx]
+                  [_eid ctx]
                   (let [[k params] (:ctx/interaction-state ctx)]
                     (case k
                       :interaction-state/mouseover-actor
-                      (let [[actor-type params] params
-                            inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
-                                                           (let [inventory-slot params]
-                                                             (get-in (:entity/inventory @eid) inventory-slot)))]
+                      (let [[actor-type params] params]
                         (cond
-                         inventory-cell-with-item?
-                         :cursors/hand-before-grab
-
                          (= actor-type :mouseover-actor/window-title-bar)
                          :cursors/move-window
 
                          (= actor-type :mouseover-actor/button)
                          :cursors/over-button
 
-                         (= actor-type :mouseover-actor/unspecified)
-                         :cursors/default
-
                          :else
                          :cursors/default))
 
                       :interaction-state/clickable-mouseover-eid
-                      (let [{:keys [clicked-eid
-                                    in-click-range?]} params]
+                      (let [{:keys [clicked-eid]} params]
                         (case (:type (:entity/clickable @clicked-eid))
-                          :clickable/item (if in-click-range?
-                                            :cursors/hand-before-grab
-                                            :cursors/hand-before-grab-gray)
-                          :clickable/player :cursors/bag))
+                          :clickable/player :cursors/default))
 
                       :interaction-state.skill/usable
                       :cursors/use-skill
@@ -3861,7 +3432,6 @@
     (register-eid! (:ctx/world ctx) eid)
     (doseq [component @eid]
       (after-create-component #(ui-set-skill! ctx elapsed-time %)
-                              #(ui-set-item! ctx %1 %2)
                               elapsed-time
                               eid
                               component))))
@@ -3883,17 +3453,6 @@
         (swap! eid dissoc old-state-k)
         (let [[state-k _state-v] old-state-obj]
           (case state-k
-            :player-item-on-cursor
-            (let [entity @eid
-                  item (:entity/item-on-cursor entity)]
-              (when item
-                (swap! eid dissoc :entity/item-on-cursor)
-                (play! @audio "bfxr_itemputground")
-                (spawn-entity! (spawn-item (item-place-position (:entity/position entity)
-                                                                    world-mouse-position
-                                                                    (- (:entity/click-distance-tiles entity) 0.1))
-                                               item))))
-
             :player-moving
             (do (swap! eid dissoc :entity/movement)
                 nil)
@@ -3909,11 +3468,6 @@
             nil))
         (let [[state-k state-v] new-state-obj]
           (case state-k
-            :player-item-on-cursor
-            (let [{:keys [item]} state-v]
-              (swap! eid assoc :entity/item-on-cursor item)
-              nil)
-
             :active-skill
             (let [{:keys [skill]} state-v]
               (swap! eid update :entity/stats pay-mana-cost (:skill/cost skill))
@@ -4026,7 +3580,7 @@
             ctx
             (merge (map->Record {}) ctx)
             (assoc ctx :ctx/db (db-create))
-            (let [cell-size 48]
+            (do
               (doseq [actor [(create-action-bar)
                              (create-dev-menu
                               {:menus dev-menus
@@ -4061,31 +3615,7 @@
                                                   item))
                                :skin @skin})
                              (hp-mana-bar-create ctx)
-                             (windows-create ctx [stage-info-window-create
-                                                  #(inventory-window-create
-                                                    %
-                                                    (fn [event cell]
-                                                      (let [ctx (.ctx ^Stage (.getStage ^Event event))
-                                                            world-mouse-position (unproject @world-viewport
-                                                                                                    [(.getX ^Input Gdx/input)
-                                                                                                     (.getY ^Input Gdx/input)])]
-                                                        (handle-clicked-inventory-cell (:ctx/player-eid ctx)
-                                                                                       @audio
-                                                                                       handle-fsm-event!
-                                                                                       (fn [cell item] (ui-set-item! ctx cell item))
-                                                                                       (fn [cell] (ui-remove-item! ctx cell))
-                                                                                       cell
-                                                                                       world-mouse-position)))
-                                                    (fn [ctx player-entity x y mouseover? cell]
-                                                      (draw-fn-rectangle @shape-drawer x y cell-size cell-size (:colors/item-rect colors))
-                                                      (when (and mouseover?
-                                                                 (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                                                        (let [item (:entity/item-on-cursor player-entity)
-                                                              color (if (valid-slot? cell item)
-                                                                      (:colors/droppable-item colors)
-                                                                      (:colors/not-allowed-drop-item colors))]
-                                                          (draw-fn-filled-rectangle @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
-                             (player-state-draw-create unit-scale)
+                             (windows-create ctx [stage-info-window-create])
                              (player-message-actor-create @default-font unit-scale)]]
                 (.addActor ^Stage @stage actor))
               ctx)
@@ -4193,7 +3723,7 @@
         (reset! unit-scale world-unit-scale)
         (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport)
                          #(draw-cell-debug % shape-drawer world-viewport)
-                         #(draw-entities! % shape-drawer @batch default-font unit-scale mouseover-actor* world-mouse-position)
+                         #(draw-entities! % shape-drawer @batch default-font unit-scale)
                          #(highlight-mouseover-tile % shape-drawer world-mouse-position)]]
           (draw-fn ctx))
         (reset! unit-scale 1)
@@ -4225,7 +3755,6 @@
           (handle-input state-k eid ctx @audio handle-fsm-event!
                         (button-just-pressed? Input$Buttons/LEFT)
                         movement-vector
-                        mouseover-actor*
                         world-mouse-position)))
     (swap! state dissoc :ctx/interaction-state)
     (swap! state (fn [ctx]
@@ -4292,8 +3821,6 @@
         (->> (find-actor (.getRoot ^Stage stage) "moon.ui.windows")
              get-children
              (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
-      (when (key-just-pressed? (:toggle-inventory controls))
-        (toggle-inventory-visible! stage))
       (when (key-just-pressed? (:toggle-entity-info controls))
         (let [entity-info (find-actor (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))

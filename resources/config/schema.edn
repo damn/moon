@@ -82,7 +82,6 @@
                         [:stats/armor-save   {:optional true}]
                         [:stats/armor-pierce {:optional true}]]]
 
- :entity/inventory [:s/one-to-many :properties/items],
  :entity/skills    [:s/one-to-many :properties/skills],
 
  :properties/creatures [:s/map [:property/id
@@ -94,28 +93,8 @@
                                 :entity/flying?
                                 :entity/animation
                                 :entity/skills
-                                [:entity/inventory    {:optional true}]
                                 :entity/stats
                                 ]],
-
- :item/slot [:s/enum
-             :inventory.slot/cloak
-             :inventory.slot/chest
-             :inventory.slot/helm
-             :inventory.slot/necklace
-             :inventory.slot/glove
-             :inventory.slot/rings
-             :inventory.slot/bag
-             :inventory.slot/leg
-             :inventory.slot/shield
-             :inventory.slot/weapon
-             :inventory.slot/boot],
-
- :properties/items [:s/map [:property/id
-                            :property/pretty-name
-                            :entity/image
-                            :item/slot
-                            [:stats/modifiers {:optional true}]]],
 
  :projectile/max-range [:s/number :pos-int],
  :projectile/speed [:s/number :pos-int],
