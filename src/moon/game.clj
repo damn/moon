@@ -4222,18 +4222,7 @@
                                                               :entity/faction :evil}}))))
              ctx))))
 
-(defn dispose! []
-  (let [ctx @state]
-    (audio-dispose! @audio)
-    (Disposable/.dispose @batch)
-    (run! Disposable/.dispose (vals @cursors))
-    (Disposable/.dispose @default-font)
-    (Disposable/.dispose @shape-drawer-texture)
-    (Disposable/.dispose @skin)
-    (run! Disposable/.dispose (vals @textures))
-    (Disposable/.dispose (:ctx/tiled-map ctx))))
-
-(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed!]
+(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (.ctx ^Stage @stage) %))
@@ -4418,17 +4407,20 @@
     (swap! state update-draw-stage)
     (validate-humanize schema @state)))
 
-(defn resize! [width height]
-  (let [ctx @state]
-    (.update ^Viewport (.getViewport ^Stage @stage) width height true)
-    (.update ^Viewport @world-viewport width height false)))
-
 (def listener
   (reify ApplicationListener
     (create [_]
       (create! Gdx/audio Gdx/files Gdx/input))
     (dispose [_]
-      (dispose!))
+      (let [ctx @state]
+        (audio-dispose! @audio)
+        (Disposable/.dispose @batch)
+        (run! Disposable/.dispose (vals @cursors))
+        (Disposable/.dispose @default-font)
+        (Disposable/.dispose @shape-drawer-texture)
+        (Disposable/.dispose @skin)
+        (run! Disposable/.dispose (vals @textures))
+        (Disposable/.dispose (:ctx/tiled-map ctx))))
     (render [_]
       (let [input Gdx/input]
         (render! [(.getX ^Input input) (.getY ^Input input)]
@@ -4436,7 +4428,8 @@
                  #(.isKeyJustPressed ^Input input (int %))
                  #(.isButtonJustPressed ^Input input (int %)))))
     (resize [_ width height]
-      (resize! width height))
+      (.update ^Viewport (.getViewport ^Stage @stage) width height true)
+      (.update ^Viewport @world-viewport width height false))
     (pause [_])
     (resume [_])))
 
