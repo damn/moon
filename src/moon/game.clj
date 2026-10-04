@@ -4189,7 +4189,9 @@
         (doseq [friendly-eid (->> {:position (:entity/position @eid)
                                    :radius 4}
                                   (world-circle->entities (:ctx/world ctx))
-                                  (filter #(= (:entity/faction @%) faction)))]
+                                  (filter #(and (:entity/fsm @%)
+                                                (not (:entity/destroyed? @%))
+                                                (= (:entity/faction @%) faction))))]
           (handle-fsm-event! friendly-eid world-mouse-position :alert)))
       nil)
 
