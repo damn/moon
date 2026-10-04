@@ -25,7 +25,6 @@
   :aliases {
             "dev"      ["run" "-m" "moon.loop" "((requiring-resolve 'moon.game/-main))"]
             "levelgen" ["run" "-m" "moon.loop" "((requiring-resolve 'moon.game/levelgen-main))"]
-            "editor"   ["run" "-m" "moon.loop" "((requiring-resolve 'moon.game/editor-main))"]
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]
