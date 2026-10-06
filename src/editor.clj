@@ -10,8 +10,7 @@
             [clojure.set :as set]
             [clojure.string :as str]
             [clj-commons.pretty.repl :as pretty-repl]
-            [moon.string :as string]
-            [moon.viewport :as viewport])
+            [moon.string :as string])
   (:import (com.badlogic.gdx ApplicationListener Audio Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
@@ -161,7 +160,7 @@
         window (Window. "Choose" skin)
         c (.add window (ScrollPane. list-table skin))]
     (.width c (float (+ (.getWidth list-table) 50)))
-    (.height c (float (min (- (viewport/get-world-height (.getViewport stage)) 50)
+    (.height c (float (min (- (.getWorldHeight (.getViewport stage)) 50)
                             (.getHeight list-table))))
     (.row window)
     (.pack window)
@@ -264,7 +263,7 @@
   (let [schemas (:db/schemas db)
         schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget schema property)
-        scroll-pane-height (viewport/get-world-height (.getViewport stage))
+        scroll-pane-height (.getWorldHeight (.getViewport stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
         on-delete (with-window-close (fn [db]
@@ -631,7 +630,7 @@
         (.act stage)
         (.draw stage)))
     (resize [_ width height]
-      (viewport/update! (.getViewport stage) width height true))
+      (.update (.getViewport stage) width height true))
     (pause [_])
     (resume [_])))
 

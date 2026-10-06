@@ -5,13 +5,6 @@
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn property-value [layer [x y] property-key]
-  (if-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
-    (if-let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell)) property-key)]
-      value
-      :undefined)
-    :no-cell))
-
 (defn create-layer
   [^TiledMap tiled-map
    {:keys [name

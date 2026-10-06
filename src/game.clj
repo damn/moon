@@ -6,7 +6,6 @@
             [moon.camera :as orthographic-camera]
             [moon.color :as color]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.viewport :as viewport]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.coll :as coll]
@@ -46,7 +45,7 @@
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Cell HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport)
+           (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
@@ -739,8 +738,8 @@
     (.setModal window true)
     (.setName window "moon.ui.modal-window")
     (.setPosition window
-                  (/ (viewport/get-world-width (.getViewport stage)) 2)
-                  (float (* (viewport/get-world-height (.getViewport stage)) (/ 3 4)))
+                  (/ (.getWorldWidth (.getViewport stage)) 2)
+                  (float (* (.getWorldHeight (.getViewport stage)) (/ 3 4)))
                   (float Align/center))
     (.addActor stage window)))
 
@@ -1339,7 +1338,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (viewport/get-world-width (.getViewport ^Stage stage)) 2)
+        [x y-mana] [(/ (.getWorldWidth (.getViewport ^Stage stage)) 2)
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -1423,10 +1422,11 @@
                     (draw-cell-rect! @@player-eid
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
-                                       (let [[ux uy] (viewport/unproject (.getViewport ^Stage stage)
-                                                                         [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
+                                       (let [v2 (.unproject (.getViewport ^Stage stage)
+                                                           (Vector2. (float (.getX ^Input Gdx/input))
+                                                                     (float (.getY ^Input Gdx/input))))
                                              local (.stageToLocalCoordinates ^Actor this
-                                                                             (Vector2. (float ux) (float uy)))
+                                                                             (Vector2. (.x v2) (.y v2)))
                                              x (.x ^Vector2 local)
                                              y (.y ^Vector2 local)]
                                          (.hit ^Actor this (float x) (float y) true))
@@ -1522,8 +1522,8 @@
      {:on-click-cell on-click-cell
       :draw-cell-rect! draw-cell-rect!
       :skin skin
-      :position [(viewport/get-world-width (.getViewport ^Stage stage))
-                 (viewport/get-world-height (.getViewport ^Stage stage))]
+      :position [(.getWorldWidth (.getViewport ^Stage stage))
+                 (.getWorldHeight (.getViewport ^Stage stage))]
       :slot->texture-region slot->texture-region
       :cell-size cell-size})))
 
@@ -1569,7 +1569,7 @@
      {:title "Entity Info"
       :actor-name "moon.ui.windows.entity-info"
       :visible? false
-      :position [(viewport/get-world-width (.getViewport ^Stage stage)) 0]
+      :position [(.getWorldWidth (.getViewport ^Stage stage)) 0]
       :set-label-text! (fn []
                          (if-let [eid @mouseover-eid]
                            (info-text (apply dissoc @eid [:entity/skills
@@ -1601,8 +1601,10 @@
             player-eid @player-eid
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            ui-mouse-position (viewport/unproject (.getViewport ^Stage stage)
-                                                  [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
+            ui-v2 (.unproject (.getViewport ^Stage stage)
+                             (Vector2. (float (.getX ^Input Gdx/input))
+                                       (float (.getY ^Input Gdx/input))))
+            ui-mouse-position [(.x ui-v2) (.y ui-v2)]
             [x y] ui-mouse-position]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
@@ -1625,8 +1627,8 @@
             (draw [batch parent-alpha]
               (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
                 (let [state (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor this)
-                      vp-width (viewport/get-world-width (.getViewport ^Stage stage))
-                      vp-height (viewport/get-world-height (.getViewport ^Stage stage))]
+                      vp-width (.getWorldWidth (.getViewport ^Stage stage))
+                      vp-height (.getWorldHeight (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
                     (draw-fn-text batch default-font unit-scale {:x (/ vp-width 2)
                                        :y (+ (/ vp-height 2) 200)
@@ -2013,22 +2015,22 @@
      :active-skill}])
 
 (defn- draw-tile-grid
-  [ctx shape-drawer world-viewport]
+  [ctx shape-drawer ^Viewport world-viewport]
   (when @show-tile-grid?
-    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
+    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (.getCamera world-viewport))]
       (draw-fn-grid shape-drawer
                      (int left-x)
                      (int bottom-y)
-                     (inc (int (viewport/get-world-width world-viewport)))
-                     (+ 2 (int (viewport/get-world-height world-viewport)))
+                     (inc (int (.getWorldWidth world-viewport)))
+                     (+ 2 (int (.getWorldHeight world-viewport)))
                      1
                      1
                      (color/float-bits [1 1 1 0.8])))))
 
 (defn- draw-cell-debug
-  [ctx shape-drawer world-viewport]
+  [ctx shape-drawer ^Viewport world-viewport]
   (let [world @world
-        tile-positions (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))]
+        tile-positions (orthographic-camera/visible-tiles (.getCamera world-viewport))]
     (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and @show-cell-entities? (seq (:entities cell*)))
         (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-entities colors)))
@@ -2225,15 +2227,19 @@
                                    :update-fn (fn [] @paused?)}
                                   {:label "GUI"
                                    :update-fn (fn []
-                                                (mapv int (viewport/unproject (.getViewport ^Stage @stage)
-                                                                              [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
+                                                (let [v2 (.unproject (.getViewport ^Stage @stage)
+                                                                    (Vector2. (float (.getX ^Input Gdx/input))
+                                                                              (float (.getY ^Input Gdx/input))))]
+                                                  (mapv int [(.x v2) (.y v2)])))}
                                   {:label "World"
                                    :update-fn (fn []
-                                                (mapv int (viewport/unproject @world-viewport
-                                                                              [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
+                                                (let [v2 (.unproject ^Viewport @world-viewport
+                                                                    (Vector2. (float (.getX ^Input Gdx/input))
+                                                                              (float (.getY ^Input Gdx/input))))]
+                                                  (mapv int [(.x v2) (.y v2)])))}
                                   {:label "Zoom"
                                    :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (viewport/get-camera @world-viewport)))
+                                                (.zoom ^OrthographicCamera (.getCamera ^Viewport @world-viewport)))
                                    :icon "images/zoom.png"}]]
                         (if (:icon item)
                           (update item :icon #(get @textures %))
@@ -2243,9 +2249,10 @@
      (windows-create [stage-info-window-create
                       #(inventory-window-create
                         (fn [_event cell]
-                          (let [world-mouse-position (viewport/unproject @world-viewport
-                                                                        [(.getX ^Input Gdx/input)
-                                                                         (.getY ^Input Gdx/input)])]
+                          (let [v2 (.unproject ^Viewport @world-viewport
+                                               (Vector2. (float (.getX ^Input Gdx/input))
+                                                         (float (.getY ^Input Gdx/input))))
+                                world-mouse-position [(.x v2) (.y v2)]]
                             (handle-clicked-inventory-cell @player-eid
                                                            @audio
                                                            handle-fsm-event!
@@ -2387,8 +2394,11 @@
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (let [default-font @default-font
         shape-drawer @shape-drawer
-        ui-mouse-position (viewport/unproject (.getViewport ^Stage @stage) mouse-position)
-        world-mouse-position (viewport/unproject @world-viewport mouse-position)]
+        [mx my] mouse-position
+        ui-v2 (.unproject (.getViewport ^Stage @stage) (Vector2. (float mx) (float my)))
+        world-v2 (.unproject ^Viewport @world-viewport (Vector2. (float mx) (float my)))
+        ui-mouse-position [(.x ui-v2) (.y ui-v2)]
+        world-mouse-position [(.x world-v2) (.y world-v2)]]
     (let [old-mouseover-eid @mouseover-eid
           [x y] ui-mouse-position
           new-eid (if (mouseover-actor @stage x y)
@@ -2407,25 +2417,25 @@
         (swap! new-eid assoc :entity/mouseover? true))
       (reset! mouseover-eid new-eid))
     (reset! active-entities (world/active-entities @world @@player-eid))
-    (orthographic-camera/set-position! (viewport/get-camera @world-viewport)
+    (orthographic-camera/set-position! (.getCamera ^Viewport @world-viewport)
                                        (:entity/position @@player-eid))
     (let [raycaster @raycaster
-          world-viewport @world-viewport
+          ^Viewport world-viewport @world-viewport
           tiled-map @tiled-map]
       (moon-tiled-map/draw! tiled-map
                             @batch
                             world-unit-scale
-                            (viewport/get-camera world-viewport)
+                            (.getCamera world-viewport)
                             (tile-color-setter*
                              {:ray-blocked? (partial raycaster/blocked? raycaster)
                               :explored-tile-corners explored-tile-corners
-                              :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
+                              :light-position (orthographic-camera/position (.getCamera world-viewport))
                               :see-all-tiles? false
                               :explored-tile-color (:colors/explored-tile colors)
                               :visible-tile-color (:colors/visible-tile colors)
                               :invisible-tile-color (:colors/invisible-tile colors)})))
-    (let [world-viewport @world-viewport
-          ^OrthographicCamera camera (viewport/get-camera world-viewport)
+    (let [^Viewport world-viewport @world-viewport
+          ^OrthographicCamera camera (.getCamera world-viewport)
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor @stage x y)]
       (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
@@ -2512,11 +2522,11 @@
                         v)
           nil)))
     (let [stage @stage
-          world-viewport @world-viewport]
+          ^Viewport world-viewport @world-viewport]
       (when (key-pressed? (:zoom-in controls))
-        (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
+        (orthographic-camera/inc-zoom! (.getCamera world-viewport) zoom-speed))
       (when (key-pressed? (:zoom-out controls))
-        (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
+        (orthographic-camera/inc-zoom! (.getCamera world-viewport) (- zoom-speed)))
       (when (key-just-pressed? (:close-windows-key controls))
         (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
              (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
@@ -2528,8 +2538,8 @@
     (update-draw-stage)))
 
 (defn resize! [width height]
-  (viewport/update! (.getViewport ^Stage @stage) width height true)
-  (viewport/update! @world-viewport width height false))
+  (.update (.getViewport ^Stage @stage) width height true)
+  (.update ^Viewport @world-viewport width height false))
 
 (defn spawn-entity! [entity]
   (let [elapsed-time @elapsed-time

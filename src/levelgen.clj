@@ -6,8 +6,7 @@
             [moon.level.uf-caves :as uf-caves]
             [moon.textures :as textures]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.color :as color]
-            [moon.viewport :as viewport])
+            [moon.color :as color])
   (:import (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
@@ -18,7 +17,7 @@
            (com.badlogic.gdx.scenes.scene2d.ui Skin Table TextButton Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)
            (com.badlogic.gdx.utils Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+           (com.badlogic.gdx.utils.viewport FitViewport Viewport)))
 
 (def ^:private config
   {:initial-level-fn uf-caves/create
@@ -122,7 +121,7 @@
                                          window)))
         (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
         (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?
-        (reset! camera (viewport/get-camera @world-viewport)) ; ?? sep?
+        (reset! camera (.getCamera ^Viewport @world-viewport)) ; ?? sep?
         (reset! db (db/create)) ; needs reloading?
         (reset! textures (textures/create Gdx/files textures-config))
         (reset! tiled-map (generate-level @db @textures @camera initial-level-fn)))
@@ -146,7 +145,7 @@
           (moon-tiled-map/draw! @tiled-map
                                 @batch
                                 world-unit-scale
-                                (viewport/get-camera @world-viewport)
+                                (.getCamera ^Viewport @world-viewport)
                                 (constantly (color/float-bits [1 1 1 1])))
           (when (.isKeyPressed ^Input Gdx/input Input$Keys/MINUS)
             (orthographic-camera/inc-zoom! camera* zoom-speed))
@@ -164,8 +163,8 @@
           (.draw ^Stage @ui-stage)))
 
       (resize [_ width height]
-        (viewport/update! (.getViewport ^Stage @ui-stage) width height true)
-        (viewport/update! @world-viewport width height false))
+        (.update (.getViewport ^Stage @ui-stage) width height true)
+        (.update ^Viewport @world-viewport width height false))
 
       (pause [_])
 
