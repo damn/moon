@@ -43,7 +43,6 @@
              [qrecord.core :as q]
              [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
-           (clojure Stage)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
@@ -51,7 +50,7 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor Event Touchable)
+           (com.badlogic.gdx.scenes.scene2d Actor Event Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip TooltipManager Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
@@ -1442,8 +1441,8 @@
         (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
           (proxy-super act delta)))
       (draw [batch parent-alpha]
-        (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
-          (let [ctx (.ctx ^Stage stage)
+        (when (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)
+          (let [ctx @state
                 stats (:entity/stats @(:ctx/player-eid ctx))
                 bar-x (- x (/ rahmenw 2))]
             (draw-hpmana-bar! ctx batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
@@ -1500,7 +1499,7 @@
              [(proxy [Widget] []
                 (draw [batch parent-alpha]
                   (when-let [stage (.getStage ^Actor this)]
-                    (let [ctx (.ctx ^Stage stage)]
+                    (let [ctx @state]
                       (draw-cell-rect! ctx
                                        @(:ctx/player-eid ctx)
                                        (.getX ^Actor this)
@@ -1626,8 +1625,8 @@
       (.setPosition ^Actor window (float x) (float y)))
     (add-actor! window (proxy [Actor] []
                          (act [delta]
-                           (when-let [stage (.getStage ^Actor this)]
-                             (.setText ^Label label ^String (set-label-text! (.ctx ^Stage stage))))
+                           (when (.getStage ^Actor this)
+                             (.setText ^Label label ^String (set-label-text! @state)))
                            (.pack ^Layout window)
                            (let [^Actor this this]
                              (proxy-super act delta)))
@@ -1671,7 +1670,7 @@
         (proxy-super act delta)))
     (draw [batch parent-alpha]
       (let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)
-            ctx (.ctx ^Stage stage)
+            ctx @state
             player-eid (:ctx/player-eid ctx)
             entity @player-eid
             state-k (:state (:entity/fsm entity))
@@ -1699,8 +1698,7 @@
                 (proxy-super act delta)))
             (draw [batch parent-alpha]
               (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
-                (let [ctx (.ctx ^Stage stage)
-                      state (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor this)
+                (let [state (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor this)
                       vp-width (viewport/get-world-width (.getViewport ^Stage stage))
                       vp-height (viewport/get-world-height (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
@@ -1997,8 +1995,8 @@
 (defn- set-label-text-actor [label-widget text-fn]
   (proxy [Actor] []
     (act [delta]
-      (when-let [stage (.getStage ^Actor this)]
-        (.setText ^Label label-widget ^String (text-fn (.ctx ^Stage stage))))
+      (when (.getStage ^Actor this)
+        (.setText ^Label label-widget ^String (text-fn @state)))
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha])))
@@ -2032,9 +2030,8 @@
                                                                                                                  {:actor
                                                                                                                   (doto (TextButton. label skin)
                                                                                                                     (.addListener (proxy [ChangeListener] []
-                                                                                                                                   (changed [event actor]
-                                                                                                                                     (let [stage (.getStage ^Event event)]
-                                                                                                                                       (set! (.ctx ^Stage stage) (on-click (.ctx ^Stage stage))))))))})]
+                                                                                                                                   (changed [_event _actor]
+                                                                                                                                     (swap! state on-click)))))})]
                                                                                                   :window/add-close-button? true}))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
@@ -2258,13 +2255,10 @@
 
 (def zoom-speed 0.025)
 
-(defn update-draw-stage
-  [ctx]
+(defn update-draw-stage []
   (let [stage @stage]
-    (set! (.ctx ^Stage stage) ctx)
     (.act ^Stage stage)
-    (.draw ^Stage stage)
-    (.ctx ^Stage stage)))
+    (.draw ^Stage stage)))
 
 (defn- create-shape-drawer-texture []
   (let [pixmap (doto ^Pixmap (Pixmap. (int 1) (int 1) Pixmap$Format/RGBA8888)
@@ -2397,8 +2391,8 @@
                              (windows-create ctx [stage-info-window-create
                                                   #(inventory-window-create
                                                     %
-                                                    (fn [event cell]
-                                                      (let [ctx (.ctx ^Stage (.getStage ^Event event))
+                                                    (fn [_event cell]
+                                                      (let [ctx @state
                                                             world-mouse-position (viewport/unproject @world-viewport
                                                                                                     [(.getX ^Input Gdx/input)
                                                                                                      (.getY ^Input Gdx/input)])]
@@ -2481,7 +2475,6 @@
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed? handle-fsm-event! spawn-entity!]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
-  (swap! state #(or (.ctx ^Stage @stage) %))
   (malli-schema/validate-humanize schema @state)
   (let [default-font @default-font
         shape-drawer @shape-drawer
@@ -2660,7 +2653,7 @@
       (when (key-just-pressed? (:toggle-entity-info (:ctx/controls ctx)))
         (let [entity-info (find-actor (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
-    (swap! state update-draw-stage)
+    (update-draw-stage)
     (malli-schema/validate-humanize schema @state)))
 
 (defn resize! [width height]

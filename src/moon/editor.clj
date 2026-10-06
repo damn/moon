@@ -15,17 +15,18 @@
             [moon.scene2d.window :as window]
             [moon.scene2d.group :refer [get-children clear-children! add-actor! find-actor]]
             [moon.viewport :as viewport])
-  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
-           (clojure Stage)
+  (:import (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor Event Touchable)
+           (com.badlogic.gdx.scenes.scene2d Actor Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
+
+(def state (atom nil))
 
 (defn- find-ancestor [a pred?]
   (loop [actor a]
@@ -112,11 +113,11 @@
              (.addListener (proxy [ChangeListener] []
                              (changed [event _actor]
                                ((open-select-sounds-handler table)
-                                (.ctx ^Stage (.getStage ^Event event)))))))}
+                                @state)))))}
    {:actor (doto (TextButton. "play!" skin)
              (.addListener (proxy [ChangeListener] []
                              (changed [event _actor]
-                               (audio/play! (:ctx/audio (.ctx ^Stage (.getStage ^Event event)))
+                               (audio/play! (:ctx/audio @state)
                                             sound-name)))))}])
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
@@ -141,11 +142,11 @@
                                                                                          [{:actor (doto (TextButton. sound-name skin)
                                                                                                     (.addListener (proxy [ChangeListener] []
                                                                                                                     (changed [event actor]
-                                                                                                                      ((rebuild-sound-widget! table sound-name ->sound-columns) actor (.ctx ^Stage (.getStage ^Event event)))))))}
+                                                                                                                      ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
                                                                                           {:actor (doto (TextButton. "play!" skin)
                                                                                                     (.addListener (proxy [ChangeListener] []
                                                                                                                     (changed [event _actor]
-                                                                                                                      (audio/play! (:ctx/audio (.ctx ^Stage (.getStage ^Event event)))
+                                                                                                                      (audio/play! (:ctx/audio @state)
                                                                                                                                    sound-name)))))}])})]
                                                   {:actor (ScrollPane. ^Actor table ^Skin skin)
                                                    :width  (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
@@ -168,7 +169,7 @@
                                              (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
                          (.addListener (proxy [ChangeListener] []
                                          (changed [event actor]
-                                           (on-clicked actor (.ctx ^Stage (.getStage ^Event event))))))
+                                           (on-clicked actor @state))))
                          (.addListener (TextTooltip. ^String tooltip ^Skin skin)))
                        (doto (Label. ^String extra-info-text ^Skin skin)
                          (.setTouchable Touchable/disabled))])
@@ -207,9 +208,7 @@
   (fn [actor {:keys [ctx/skin]
               :as ctx}]
     (try
-     (let [new-ctx (update ctx :ctx/db f)
-           gdx-stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor actor)]
-       (set! (.ctx ^Stage gdx-stage) new-ctx))
+     (reset! state (update ctx :ctx/db f))
      (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
@@ -239,12 +238,12 @@
                           [{:actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" skin)
                                      (.addListener (proxy [ChangeListener] []
                                                      (changed [event actor]
-                                                       (clicked-save-fn actor (.ctx ^Stage (.getStage ^Event event)))))))
+                                                       (clicked-save-fn actor @state)))))
                             :center? true}
                            {:actor (doto (TextButton. "Delete" skin)
                                      (.addListener (proxy [ChangeListener] []
                                                      (changed [event actor]
-                                                       (clicked-delete-fn actor (.ctx ^Stage (.getStage ^Event event)))))))
+                                                       (clicked-delete-fn actor @state)))))
                             :center? true}]]]
     (doto (window/create {:title "[SKY]Property[]"
                           :skin skin
@@ -259,11 +258,8 @@
       (window/set-modal! true)
       (add-actor! (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
                     (act [delta]
-                      (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
-                        (let [ctx (.ctx ^Stage stage)]
-                          (when (.isKeyJustPressed ^Input (:ctx/input ctx)
-                                                   Input$Keys/ENTER)
-                            (clicked-save-fn this ctx))))
+                      (when (.isKeyJustPressed ^Input Gdx/input Input$Keys/ENTER)
+                        (clicked-save-fn this @state))
                       (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
                         (proxy-super act delta)))
                     (draw [batch parent-alpha])))
@@ -288,7 +284,7 @@
                                    (let [{:keys [ctx/db
                                                  ctx/skin
                                                  ctx/textures
-                                                 ctx/stage]} (.ctx ^Stage (.getStage ^Event event))]
+                                                 ctx/stage]} @state]
                                      (.addActor ^Stage
                                       stage
                                       (property-overview-window
@@ -312,7 +308,7 @@
                                   (changed [event _actor]
                                     (let [{:keys [ctx/db
                                                   ctx/skin
-                                                  ctx/textures]} (.ctx ^Stage (.getStage ^Event event))]
+                                                  ctx/textures]} @state]
                                       (redo-rows db skin textures
                                                  (disj property-ids id)))))))})])))
 
@@ -336,7 +332,7 @@
                                      (let [{:keys [ctx/db
                                                    ctx/skin
                                                    ctx/textures
-                                                   ctx/stage]} (.ctx ^Stage (.getStage ^Event event))]
+                                                   ctx/stage]} @state]
                                        (.addActor ^Stage
                                         stage
                                         (property-overview-window
@@ -360,7 +356,7 @@
                                    (changed [event _actor]
                                      (let [{:keys [ctx/db
                                                    ctx/skin
-                                                   ctx/textures]} (.ctx ^Stage (.getStage ^Event event))]
+                                                   ctx/textures]} @state]
                                        (redo-rows db skin textures nil))))))})]])))
 
 (defn- rebuild-editor-window!
@@ -396,7 +392,7 @@
                                                                                                                                        (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
                                                                                                                                             (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
                                                                                                                                      (get-children table))))
-                                                                      (let [ctx (.ctx ^Stage (.getStage ^Event event))]
+                                                                      (let [ctx @state]
                                                                         (rebuild-editor-window! ctx)))))))
                                          :left? true}
                                         {:actor (Label. ^String (k-label-text k) ^Skin skin)}]]})
@@ -425,7 +421,7 @@
                   (.addListener (proxy [ChangeListener] []
                                   (changed [event _actor]
                                     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
-                                    (let [ctx (.ctx ^Stage (.getStage ^Event event))]
+                                    (let [ctx @state]
                                       (table/add-rows! map-widget-table [(create-component-row
                                                                           {:skin skin
                                                                            :editor-widget (build-widget (get schemas k)
@@ -475,7 +471,7 @@
                                            (changed [event actor]
                                              (let [{:keys [ctx/db
                                                            ctx/skin
-                                                           ctx/stage]} (.ctx ^Stage (.getStage ^Event event))]
+                                                           ctx/stage]} @state]
                                                (.addActor ^Stage
                                                 stage
                                                 (add-component-window
@@ -567,7 +563,7 @@
                                     (.addListener (proxy [ChangeListener] []
                                                     (changed [event _actor]
                                                       ((open-select-fn table)
-                                                       (.ctx ^Stage (.getStage ^Event event)))))))}])])
+                                                       @state)))))}])])
       table)))
 
 (defn- string-widget [schema v skin]
@@ -611,7 +607,7 @@
                                                                                            ctx/skin
                                                                                            ctx/textures
                                                                                            ctx/stage]
-                                                                                    :as ctx} (.ctx ^Stage (.getStage ^Event event))]
+                                                                                    :as ctx} @state]
                                                                                (.addActor ^Stage stage
                                                                                                  (property-overview-window
                                                                                                   {:db db
@@ -632,57 +628,45 @@
                                                                                                                                         :property (db/get-raw db id)})))})))))))}])})))
 
 (defn listener []
-  (let [state (atom nil)]
-    (reify ApplicationListener
-      (create [_]
-        (reset! state
-                (let [input (.getInput ^Application Gdx/app)
-                      files (.getFiles ^Application Gdx/app)
-                      batch (SpriteBatch.)
-                      skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))
-                      _ (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                                              (.getData (.getFont ^Skin skin "default-font")))
-                              true)
-                      stage* (Stage. (FitViewport. (float 1440) (float 900)) batch)
-                      _ (.setInputProcessor ^Input input ^InputProcessor stage*)
-                      ctx {:ctx/input input
-                           :ctx/files files
-                           :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)
-                           :ctx/batch batch
-                           :ctx/skin skin
-                           :ctx/db (db/create)
-                           :ctx/stage stage*
-                           :ctx/textures (textures/create files {:folder "resources/"
-                                                                 :extensions #{"png" "bmp"}})}]
-                  (.addActor ^Stage (:ctx/stage ctx) (main-window-f ctx))
-                  ctx)))
-      (dispose [_]
-        (let [{:keys [ctx/audio
-                      ctx/skin
-                      ctx/batch
-                      ctx/textures]} @state]
-          (audio/dispose! audio)
-          (Disposable/.dispose batch)
-          (Disposable/.dispose skin)
-          (run! Disposable/.dispose (vals textures))))
-      (render [_]
-        (swap! state
-               (fn [ctx]
-                 (let [stage (:ctx/stage ctx)
-                       gl (.getGL20 ^Graphics Gdx/graphics)
-                       _ (.glClearColor ^GL20 gl 0 0 0 0)
-                       _ (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
-                       ctx (if-let [new-ctx (.ctx ^Stage stage)]
-                             new-ctx
-                             ctx)]
-                   (set! (.ctx ^Stage stage) ctx)
-                   (.act ^Stage stage)
-                   (.draw ^Stage stage)
-                   (.ctx ^Stage stage)))))
-      (resize [_ width height]
-        (viewport/update! (.getViewport ^Stage (:ctx/stage @state)) width height true))
-      (pause [_])
-      (resume [_]))))
+  (reify ApplicationListener
+    (create [_]
+      (reset! state
+              (let [batch (SpriteBatch.)
+                    skin (Skin. ^FileHandle (.internal ^Files Gdx/files "skin/uiskin.json"))
+                    _ (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                                            (.getData (.getFont ^Skin skin "default-font")))
+                            true)
+                    stage* (Stage. (FitViewport. (float 1440) (float 900)) batch)
+                    _ (.setInputProcessor ^Input Gdx/input ^InputProcessor stage*)
+                    ctx {:ctx/audio (audio/create Gdx/audio Gdx/files)
+                         :ctx/batch batch
+                         :ctx/skin skin
+                         :ctx/db (db/create)
+                         :ctx/stage stage*
+                         :ctx/textures (textures/create Gdx/files {:folder "resources/"
+                                                                   :extensions #{"png" "bmp"}})}]
+                (.addActor ^Stage (:ctx/stage ctx) (main-window-f ctx))
+                ctx)))
+    (dispose [_]
+      (let [{:keys [ctx/audio
+                    ctx/skin
+                    ctx/batch
+                    ctx/textures]} @state]
+        (audio/dispose! audio)
+        (Disposable/.dispose batch)
+        (Disposable/.dispose skin)
+        (run! Disposable/.dispose (vals textures))))
+    (render [_]
+      (let [stage (:ctx/stage @state)
+            gl (.getGL20 ^Graphics Gdx/graphics)]
+        (.glClearColor ^GL20 gl 0 0 0 0)
+        (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
+        (.act ^Stage stage)
+        (.draw ^Stage stage)))
+    (resize [_ width height]
+      (viewport/update! (.getViewport ^Stage (:ctx/stage @state)) width height true))
+    (pause [_])
+    (resume [_])))
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
