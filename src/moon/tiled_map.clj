@@ -1,8 +1,14 @@
 (ns moon.tiled-map
-  (:import (com.badlogic.gdx.graphics OrthographicCamera Texture)
-           (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
-           (com.badlogic.gdx.maps MapLayer MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
+  (:import (com.badlogic.gdx.graphics OrthographicCamera
+                                      Texture)
+           (com.badlogic.gdx.graphics.g2d Batch
+                                          TextureRegion)
+           (com.badlogic.gdx.maps MapLayer
+                                  MapProperties)
+           (com.badlogic.gdx.maps.tiled TiledMap
+                                        TiledMapTile
+                                        TiledMapTileLayer
+                                        TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn spawn-positions [^TiledMap tiled-map]
