@@ -8,14 +8,13 @@
 (defn spawn-positions [^TiledMap tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (.get (.getLayers tiled-map) layer-name)]
-    (for [x (range (.getWidth ^TiledMapTileLayer layer))
-          y (range (.getHeight ^TiledMapTileLayer layer))
+        ^TiledMapTileLayer layer (.get (.getLayers tiled-map) layer-name)]
+    (for [x (range (.getWidth layer))
+          y (range (.getHeight layer))
           :let [position [x y]
-                cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
+                cell (.getCell layer (int x) (int y))]
           :when cell
-          :let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
-                            property-key)]
+          :let [value (.get (.getProperties (.getTile cell)) property-key)]
           :when value]
       [position value])))
 
