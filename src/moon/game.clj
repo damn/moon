@@ -9,7 +9,6 @@
             [moon.color :as color]
             [moon.tiled-map :as moon-tiled-map]
             [moon.viewport :as viewport]
-            [moon.audio :as audio]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.coll :as coll]
@@ -35,10 +34,11 @@
             [moon.throwable :as throwable]
             [moon.timer :as timer]
             [moon.v2 :as v2]
-             [moon.val-max :as val-max]
-             [qrecord.core :as q]
-             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
+            [moon.val-max :as val-max]
+            [qrecord.core :as q]
+            [reduce-fsm :as fsm])
+  (:import (com.badlogic.gdx Application ApplicationListener Audio Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
+           (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
@@ -768,11 +768,15 @@
                                 :tooltip-text (info-text skill elapsed-time)}
                                skin))))
 
+(defn- play-sound! [sounds sound-name]
+  (assert (contains? sounds sound-name) (str sound-name))
+  (.play ^Sound (get sounds sound-name)))
+
 (defn- audiovisual! [spawn-entity! db audio position audiovisual]
   (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
-    (audio/play! audio sound)
+    (play-sound! audio sound)
     (spawn-entity! (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
@@ -1456,7 +1460,7 @@
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (get-in (:entity/inventory @player-eid) cell)]
-      (audio/play! audio "bfxr_takeit")
+      (play-sound! audio "bfxr_takeit")
       (swap! player-eid remove-item cell)
       (ui-remove-item! cell)
       (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
@@ -1470,7 +1474,7 @@
        (and (not item-in-cell)
             (inventory/valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (audio/play! audio "bfxr_itemput")
+           (play-sound! audio "bfxr_itemput")
            (swap! player-eid set-item cell item-on-cursor)
            (ui-set-item! cell item-on-cursor)
            (handle-fsm-event! player-eid world-mouse-position :dropped-item))
@@ -1478,7 +1482,7 @@
        (and item-in-cell
             (inventory/valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (audio/play! audio "bfxr_itemput")
+           (play-sound! audio "bfxr_itemput")
            (swap! player-eid remove-item cell)
            (ui-remove-item! cell)
            (swap! player-eid set-item cell item-on-cursor)
@@ -1729,12 +1733,12 @@
                   (.findActor "moon.ui.windows.inventory")
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (audio/play! audio "bfxr_takeit")
+                  (play-sound! audio "bfxr_takeit")
                   (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
 
               (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (audio/play! audio "bfxr_pickup")
+                  (play-sound! audio "bfxr_pickup")
                   (assert (item/valid? item))
                   (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
                     (assert cell)
@@ -1744,10 +1748,10 @@
                   nil)
 
               :else
-              (do (audio/play! audio "bfxr_denied")
+              (do (play-sound! audio "bfxr_denied")
                   (show-message! stage "Your Inventory is full")
                   nil))))
-        (do (audio/play! audio "bfxr_denied")
+        (do (play-sound! audio "bfxr_denied")
             (show-message! stage "Too far away")
             nil)))
 
@@ -1757,7 +1761,7 @@
 
     :interaction-state.skill/not-usable
     (let [state params]
-      (do (audio/play! audio "bfxr_denied")
+      (do (play-sound! audio "bfxr_denied")
           (show-message! stage (case state
                                  :cooldown "Skill is still on cooldown"
                                  :not-enough-mana "Not enough mana"
@@ -1765,7 +1769,7 @@
           nil))
 
     :interaction-state/no-skill-selected
-    (do (audio/play! audio "bfxr_denied")
+    (do (play-sound! audio "bfxr_denied")
         (show-message! stage "No selected skill")
         nil)))
 
@@ -2277,7 +2281,12 @@
     texture))
 
 (defn create! [gdx-audio files input handle-fsm-event! spawn-entity!]
-  (reset! audio (audio/create gdx-audio files))
+  (reset! audio
+          (into {}
+                (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
+                      :let [path (format "sounds/%s.wav" sound-name)]]
+                  [sound-name
+                   (.newSound ^Audio gdx-audio (.internal ^Files files path))])))
   (reset! batch (SpriteBatch.))
   (reset! unit-scale 1)
   (reset! shape-drawer-texture (create-shape-drawer-texture))
@@ -2468,7 +2477,7 @@
 
 (defn dispose! []
   (let [ctx @state]
-    (audio/dispose! @audio)
+    (run! Disposable/.dispose (vals @audio))
     (Disposable/.dispose @batch)
     (run! Disposable/.dispose (vals @cursors))
     (Disposable/.dispose @default-font)
@@ -2705,7 +2714,7 @@
                   item (:entity/item-on-cursor entity)]
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
-                (audio/play! @audio "bfxr_itemputground")
+                (play-sound! @audio "bfxr_itemputground")
                 (spawn-entity! (spawn-item (item-place-position (:entity/position entity)
                                                                     world-mouse-position
                                                                     (- (:entity/click-distance-tiles entity) 0.1))
@@ -2736,7 +2745,7 @@
               (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
               (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
                      (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
-              (audio/play! @audio (:skill/start-action-sound skill))
+              (play-sound! @audio (:skill/start-action-sound skill))
               nil)
 
             :npc-dead
@@ -2751,7 +2760,7 @@
               nil)
 
             :player-dead
-            (do (audio/play! @audio "bfxr_playerdeath")
+            (do (play-sound! @audio "bfxr_playerdeath")
                 (show-modal! @skin @stage {:title "YOU DIED - again!"
                                                                :text "Good luck next time!"
                                                                :button-text "OK"

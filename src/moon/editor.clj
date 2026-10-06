@@ -3,8 +3,8 @@
             [moon.property :as property]
             [clojure.edn :as edn]
             [moon.coll :as coll]
+            [clojure.java.io :as io]
             [moon.textures :as textures]
-            [moon.audio :as audio]
             [moon.schemas :refer [default-value map-keys optional-keyset optional?]]
             [clojure.set :as set]
             [clojure.string :as str]
@@ -14,7 +14,8 @@
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
             [moon.viewport :as viewport])
-  (:import (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
+  (:import (com.badlogic.gdx ApplicationListener Audio Files Gdx Graphics Input Input$Keys InputProcessor)
+           (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
@@ -111,8 +112,9 @@
   (doto (TextButton. "play!" skin)
     (.addListener (proxy [ChangeListener] []
                     (changed [event _actor]
-                      (audio/play! (:ctx/audio @state)
-                                   sound-name))))))
+                      (let [sounds (:ctx/audio @state)]
+                        (assert (contains? sounds sound-name) (str sound-name))
+                        (.play ^Sound (get sounds sound-name)))))))
 
 (defn- sound-columns [skin table sound-name open-select-sounds-handler]
   [{:actor (doto (TextButton. sound-name skin)
@@ -158,7 +160,7 @@
                         :table/rows
                         [[(let [list-table (list-sounds-table
                                             5
-                                            (for [sound-name (audio/names audio)]
+                                            (for [sound-name (keys audio)]
                                               [(choose-sound-button skin table sound-name ->sound-columns)
                                                (play-sound-button skin sound-name)]))]
                             {:actor (ScrollPane. ^Actor list-table ^Skin skin)
@@ -669,7 +671,11 @@
                             true)
                     stage* (Stage. (FitViewport. (float 1440) (float 900)) batch)
                     _ (.setInputProcessor ^Input Gdx/input ^InputProcessor stage*)
-                    ctx {:ctx/audio (audio/create Gdx/audio Gdx/files)
+                    ctx {:ctx/audio (into {}
+                                          (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
+                                                :let [path (format "sounds/%s.wav" sound-name)]]
+                                            [sound-name
+                                             (.newSound ^Audio Gdx/audio (.internal ^Files Gdx/files path))]))
                          :ctx/batch batch
                          :ctx/skin skin
                          :ctx/db (db/create)
@@ -683,7 +689,7 @@
                     ctx/skin
                     ctx/batch
                     ctx/textures]} @state]
-        (audio/dispose! audio)
+        (run! Disposable/.dispose (vals audio))
         (Disposable/.dispose batch)
         (Disposable/.dispose skin)
         (run! Disposable/.dispose (vals textures))))
