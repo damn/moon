@@ -5,41 +5,31 @@
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn create-layer
-  [^TiledMap tiled-map
-   {:keys [name
-           visible?
-           properties
-           tiles]}]
-  {:pre [(string? name)
-         (boolean? visible?)]}
-  (let [props (.getProperties tiled-map)
-        layer (doto (TiledMapTileLayer. (int (.get props "width"))
-                                        (int (.get props "height"))
-                                        (int (.get props "tilewidth"))
-                                        (int (.get props "tileheight")))
-                (.setName ^String name)
-                (.setVisible visible?))]
-    (doseq [[k v] properties]
-      (assert (string? k))
-      (.put ^MapProperties (.getProperties ^TiledMapTileLayer layer) k v))
-    (doseq [[[x y] tile] tiles
-            :when tile]
-      (.setCell ^TiledMapTileLayer layer (int x) (int y)
-                (doto (TiledMapTileLayer$Cell.)
-                  (.setTile ^TiledMapTile tile))))
-    layer))
-
-
 (defn create
   [{:keys [properties layers]}]
   (let [tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
       (.put (.getProperties tiled-map) k v))
-    (doseq [layer layers]
-      (.add (.getLayers tiled-map)
-            ^MapLayer (create-layer tiled-map layer)))
+    (doseq [{:keys [name visible? properties tiles]} layers]
+      (assert (string? name))
+      (assert (boolean? visible?))
+      (let [props (.getProperties tiled-map)
+            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
+                                                               (int (.get props "height"))
+                                                               (int (.get props "tilewidth"))
+                                                               (int (.get props "tileheight")))
+                                       (.setName ^String name)
+                                       (.setVisible visible?))]
+        (doseq [[k v] properties]
+          (assert (string? k))
+          (.put ^MapProperties (.getProperties layer) k v))
+        (doseq [[[x y] tile] tiles
+                :when tile]
+          (.setCell layer (int x) (int y)
+                    (doto (TiledMapTileLayer$Cell.)
+                      (.setTile ^TiledMapTile tile))))
+        (.add (.getLayers tiled-map) ^MapLayer layer)))
     tiled-map))
 
 (defn spawn-positions [^TiledMap tiled-map]
@@ -97,20 +87,28 @@
      :tile/texture-region texture-region}))
 
 (defn add-creatures-layer! [^TiledMap tiled-map spawn-positions]
-  (.add (.getLayers tiled-map)
-        ^MapLayer (create-layer tiled-map
-                                (let [creature-tile (memoize
-                                                     (fn [{:keys [tile/id
-                                                                  tile/texture-region]}]
-                                                       (assert (and id
-                                                                    texture-region))
-                                                       (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-                                                         (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
-                                                         tile)))]
-                                  {:name "creatures"
-                                   :visible? false
-                                   :tiles (for [[position creature-property] spawn-positions]
-                                            [position (creature-tile creature-property)])}))))
+  (let [creature-tile (memoize
+                       (fn [{:keys [tile/id
+                                    tile/texture-region]}]
+                         (assert (and id
+                                      texture-region))
+                         (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+                           (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
+                           tile)))
+        props (.getProperties tiled-map)
+        ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
+                                                           (int (.get props "height"))
+                                                           (int (.get props "tilewidth"))
+                                                           (int (.get props "tileheight")))
+                                   (.setName "creatures")
+                                   (.setVisible false))]
+    (doseq [[[x y] tile] (for [[position creature-property] spawn-positions]
+                           [position (creature-tile creature-property)])
+            :when tile]
+      (.setCell layer (int x) (int y)
+                (doto (TiledMapTileLayer$Cell.)
+                  (.setTile ^TiledMapTile tile))))
+    (.add (.getLayers tiled-map) ^MapLayer layer)))
 
 (defn- draw-tile!
   [x
