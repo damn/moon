@@ -31,7 +31,6 @@
    :ui-skin-path "skin/uiskin.json"
    :textures-config {:folder "resources/"
                      :extensions #{"png" "bmp"}}
-   :zoom-speed 0.1
    :camera-movement-speed 1})
 
 (defn- generate-level
@@ -83,11 +82,11 @@
                       (on-click!))))))
 
 (defn- zoom-in! [^OrthographicCamera camera]
-  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) (:zoom-speed config))))
+  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.1)))
   (.update camera))
 
 (defn- zoom-out! [^OrthographicCamera camera]
-  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) (- (:zoom-speed config)))))
+  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.1)))
   (.update camera))
 
 (defn- move-camera! [^OrthographicCamera camera idx f]

@@ -2293,15 +2293,8 @@
   []
   (doseq [[faction max-iterations] factions-iterations]
     (world/update-potential-fields! @world
-                  potential-field-cache
-                  faction
-                  @active-entities
-                  max-iterations))
+                                    potential-field-cache
+                                    faction
+                                    @active-entities
+                                    max-iterations))
   nil)
-
-(def zoom-speed 0.025)
-
-(defn update-draw-stage []
-  (let [stage @stage]
-    (.act ^Stage stage)
-    (.draw ^Stage stage)))

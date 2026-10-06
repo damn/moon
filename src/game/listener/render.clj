@@ -35,14 +35,12 @@
                                  toggle-inventory-visible!
                                  ui-mouse-position
                                  unit-scale
-                                 update-draw-stage
                                  update-potential-fields
                                  update-time
                                  world
                                  world-mouse-position
                                  world-unit-scale
-                                 world-viewport
-                                 zoom-speed]]
+                                 world-viewport]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]
@@ -52,11 +50,10 @@
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.scenes.scene2d Group Stage)
-           (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn- update-mouseover-eid! []
+(defn update-mouseover-eid! []
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position)
         new-eid (if (mouseover-actor @stage x y)
@@ -75,10 +72,10 @@
       (swap! new-eid assoc :entity/mouseover? true))
     (reset! mouseover-eid new-eid)))
 
-(defn- update-active-entities! []
+(defn update-active-entities! []
   (reset! active-entities (world/active-entities @world @@player-eid)))
 
-(defn- set-camera-to-player! []
+(defn set-camera-to-player! []
   (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)
         pos (.position camera)
         [x y] (:entity/position @@player-eid)]
@@ -86,7 +83,7 @@
     (set! (.y pos) y)
     (.update camera)))
 
-(defn- draw-tiled-map! []
+(defn draw-tiled-map! []
   (let [raycaster @raycaster
         ^Viewport world-viewport @world-viewport
         tiled-map @tiled-map
@@ -105,11 +102,11 @@
                             :visible-tile-color (:colors/visible-tile colors)
                             :invisible-tile-color (:colors/invisible-tile colors)}))))
 
-(defn- current-mouseover-actor []
+(defn current-mouseover-actor []
   (let [[x y] (ui-mouse-position)]
     (mouseover-actor @stage x y)))
 
-(defn- draw-world! []
+(defn draw-world! []
   (let [default-font @default-font
         shape-drawer @shape-drawer
         ^Viewport world-viewport @world-viewport
@@ -130,7 +127,7 @@
       (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width))
     (.end ^Batch @batch)))
 
-(defn- update-cursor! []
+(defn update-cursor! []
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -151,7 +148,7 @@
         (when (pos? (v2/length v))
           v)))))
 
-(defn- handle-player-input! [key-pressed? button-just-pressed?]
+(defn handle-player-input! [key-pressed? button-just-pressed?]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))]
@@ -161,10 +158,10 @@
                   (current-mouseover-actor)
                   (world-mouse-position))))
 
-(defn- clear-interaction-state! []
+(defn clear-interaction-state! []
   (reset! interaction-state nil))
 
-(defn- update-paused! [key-pressed? key-just-pressed?]
+(defn update-paused! [key-pressed? key-just-pressed?]
   (reset! paused?
           (or #_error
               (and pausing?
@@ -190,13 +187,13 @@
                         apply-effects!
                         eid component)))))
 
-(defn- tick-game! []
+(defn tick-game! []
   (when-not @paused?
     (update-time)
     (update-potential-fields)
     (tick-entities!)))
 
-(defn- destroy-entities! []
+(defn destroy-entities! []
   (doseq [eid (world/destroyed-eids @world)]
     (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
@@ -207,12 +204,12 @@
 
 (defn- zoom-in! []
   (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
-    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) zoom-speed)))
+    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
     (.update camera)))
 
 (defn- zoom-out! []
   (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
-    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) (- zoom-speed))))
+    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
     (.update camera)))
 
 (defn- close-windows! []
@@ -228,7 +225,7 @@
     (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info
                  (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
 
-(defn- handle-controls! [key-pressed? key-just-pressed?]
+(defn handle-controls! [key-pressed? key-just-pressed?]
   (doseq [[k f] {(:zoom-in controls) zoom-in!
                  (:zoom-out controls) zoom-out!}]
     (when (key-pressed? k)
@@ -238,20 +235,3 @@
                  (:toggle-entity-info controls) toggle-entity-info!}]
     (when (key-just-pressed? k)
       (f))))
-
-(defn render! [key-pressed? key-just-pressed? button-just-pressed?]
-  (ScreenUtils/clear 0 0 0 0)
-  (update-mouseover-eid!)
-  (update-active-entities!)
-  (set-camera-to-player!)
-  (draw-tiled-map!)
-  (draw-world!)
-  (assoc-interaction-state (current-mouseover-actor) (world-mouse-position))
-  (update-cursor!)
-  (handle-player-input! key-pressed? button-just-pressed?)
-  (clear-interaction-state!)
-  (update-paused! key-pressed? key-just-pressed?)
-  (tick-game!)
-  (destroy-entities!)
-  (handle-controls! key-pressed? key-just-pressed?)
-  (update-draw-stage))

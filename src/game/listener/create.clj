@@ -129,7 +129,7 @@
      (player-state-draw-create unit-scale)
      (player-message-actor-create @default-font unit-scale)]))
 
-(defn- create-audio! [gdx-audio files]
+(defn create-audio! [gdx-audio files]
   (reset! audio
           (into {}
                 (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
@@ -137,21 +137,21 @@
                   [sound-name
                    (.newSound ^Audio gdx-audio (.internal ^Files files path))]))))
 
-(defn- create-batch! []
+(defn create-batch! []
   (reset! batch (SpriteBatch.)))
 
-(defn- init-unit-scale! []
+(defn init-unit-scale! []
   (reset! unit-scale 1))
 
-(defn- init-shape-drawer-texture! []
+(defn init-shape-drawer-texture! []
   (reset! shape-drawer-texture (create-shape-drawer-texture)))
 
-(defn- create-shape-drawer! []
+(defn create-shape-drawer! []
   (reset! shape-drawer
           (ShapeDrawer. @batch
                         (TextureRegion. ^Texture @shape-drawer-texture (int 1) (int 0) (int 1) (int 1)))))
 
-(defn- create-skin! [files]
+(defn create-skin! [files]
   (reset! skin
           (let [s (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
             (set! (.markupEnabled ^BitmapFont$BitmapFontData
@@ -159,18 +159,18 @@
                   true)
             s)))
 
-(defn- create-stage! [input]
+(defn create-stage! [input]
   (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
     (.setInputProcessor ^Input input ^InputProcessor stage*)
     (reset! stage stage*)))
 
-(defn- init-tooltip-manager! []
+(defn init-tooltip-manager! []
   (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0))
 
-(defn- put-pretty-name-color! []
+(defn put-pretty-name-color! []
   (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1)))
 
-(defn- create-cursors! [files]
+(defn create-cursors! [files]
   (reset! cursors
           (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
             (update-vals data
@@ -181,12 +181,12 @@
                              (Disposable/.dispose pixmap*)
                              cursor))))))
 
-(defn- create-textures! [files]
+(defn create-textures! [files]
   (reset! textures
           (textures/create files {:folder "resources/"
                                   :extensions #{"png" "bmp"}})))
 
-(defn- create-world-viewport! []
+(defn create-world-viewport! []
   (reset! world-viewport
           (let [world-width (* 1440 world-unit-scale)
                 world-height (* 900 world-unit-scale)]
@@ -195,7 +195,7 @@
                           (doto (OrthographicCamera.)
                             (.setToOrtho false world-width world-height))))))
 
-(defn- create-default-font! [files]
+(defn create-default-font! [files]
   (reset! default-font
           (let [{:keys [path
                         size
@@ -219,11 +219,11 @@
             (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
             font)))
 
-(defn- add-ui-actors! []
+(defn add-ui-actors! []
   (doseq [actor (create-ui-actors)]
     (.addActor ^Stage @stage actor)))
 
-(defn- create-level! []
+(defn create-level! []
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
         (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
@@ -233,24 +233,24 @@
     (reset! tiled-map level-tiled-map)
     (reset! start-position level-start)))
 
-(defn- create-world! []
+(defn create-world! []
   (reset! world (world/create @tiled-map)))
 
-(defn- create-explored-tile-corners! []
+(defn create-explored-tile-corners! []
   (reset! explored-tile-corners
           (let [props (.getProperties ^TiledMap @tiled-map)]
             (moon-g2d/create (.get props "width")
                              (.get props "height")
                              (constantly false)))))
 
-(defn- create-raycaster! []
+(defn create-raycaster! []
   (let [{:keys [width height cells]} (world/raycaster-data @world)
         arr (make-array Boolean/TYPE width height)]
     (doseq [[[x y] blocked?] cells]
       (aset arr x y (boolean blocked?)))
     (reset! raycaster [arr width height])))
 
-(defn- spawn-player! []
+(defn spawn-player! []
   (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @start-position)
                                    :creature-property (db/build db :creatures/vampire)
                                    :components {:entity/fsm {:fsm :fsms/player
@@ -261,12 +261,12 @@
                                                 :entity/clickable {:type :clickable/player}
                                                 :entity/click-distance-tiles 1.5}})))
 
-(defn- bind-player-eid! []
+(defn bind-player-eid! []
   (let [eid (world/entity-by-id @world 1)]
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 
-(defn- spawn-map-creatures! []
+(defn spawn-map-creatures! []
   (let [sp @start-position]
     (doseq [[position creature-id] (moon-tiled-map/spawn-positions @tiled-map)
             :when (not= position sp)]
@@ -275,26 +275,3 @@
                                        :components {:entity/fsm {:fsm :fsms/npc
                                                                  :initial-state :npc-sleeping}
                                                     :entity/faction :evil}})))))
-
-(defn create! [gdx-audio files input]
-  (create-audio! gdx-audio files)
-  (create-batch!)
-  (init-unit-scale!)
-  (init-shape-drawer-texture!)
-  (create-shape-drawer!)
-  (create-skin! files)
-  (create-stage! input)
-  (init-tooltip-manager!)
-  (put-pretty-name-color!)
-  (create-cursors! files)
-  (create-textures! files)
-  (create-world-viewport!)
-  (create-default-font! files)
-  (add-ui-actors!)
-  (create-level!)
-  (create-world!)
-  (create-explored-tile-corners!)
-  (create-raycaster!)
-  (spawn-player!)
-  (bind-player-eid!)
-  (spawn-map-creatures!))
