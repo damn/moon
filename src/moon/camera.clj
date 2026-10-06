@@ -2,20 +2,6 @@
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.math Vector3)))
 
-(defn inc-zoom! [^OrthographicCamera orthographic-camera by]
-  (set! (.zoom orthographic-camera) (max 0.1 (+ (.zoom orthographic-camera) by)))
-  (.update orthographic-camera))
-
-(defn position [^OrthographicCamera orthographic-camera]
-  (let [v3 (.position orthographic-camera)]
-    [(.x v3) (.y v3) (.z v3)]))
-
-(defn set-position! [^OrthographicCamera orthographic-camera [x y]]
-  (let [pos (.position orthographic-camera)]
-    (set! (.x pos) x)
-    (set! (.y pos) y))
-  (.update orthographic-camera))
-
 (defn frustum [^OrthographicCamera orthographic-camera]
   (let [plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
@@ -38,9 +24,9 @@
   [^OrthographicCamera orthographic-camera {:keys [left top right bottom]}]
   (let [viewport-width  (.viewportWidth orthographic-camera)
         viewport-height (.viewportHeight orthographic-camera)
-        [px py] (position orthographic-camera)
-        px (float px)
-        py (float py)
+        pos (.position orthographic-camera)
+        px (float (.x pos))
+        py (float (.y pos))
         leftx (float (left 0))
         rightx (float (right 0))
         x-diff (max (- px leftx) (- rightx px))

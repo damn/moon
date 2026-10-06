@@ -8,15 +8,15 @@
             [moon.tiled-map :as moon-tiled-map]
             [moon.color :as color])
   (:import (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer)
-           (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
+           (com.badlogic.gdx Application ApplicationListener Files Gdx Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics GL20 OrthographicCamera)
+           (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin Table TextButton Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)
-           (com.badlogic.gdx.utils Disposable)
+           (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)))
 
 (def ^:private config
@@ -36,7 +36,7 @@
    :camera-movement-speed 1})
 
 (defn- generate-level
-  [db textures camera level-fn]
+  [db textures ^OrthographicCamera camera level-fn]
   (let [level (level-fn {:level/creature-properties
                          (moon-tiled-map/prepare-creature-tiles
                           (db/all-raw db :properties/creatures)
@@ -49,7 +49,10 @@
     (assert tiled-map)
     (.setVisible ^TiledMapTileLayer (.get (.getLayers tiled-map) "creatures")
                  true)
-    (orthographic-camera/set-position! camera [(/ width 2) (/ height 2)])
+    (let [pos (.position camera)]
+      (set! (.x pos) (/ width 2))
+      (set! (.y pos) (/ height 2))
+      (.update camera))
     (orthographic-camera/zoom-to-rect camera {:left [0 0]
                                               :top [0 height]
                                               :right [width 0]
@@ -77,10 +80,47 @@
                     (changed [_event _actor]
                       (on-click!))))))
 
+(defn- zoom-in! [^OrthographicCamera camera]
+  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) (:zoom-speed config))))
+  (.update camera))
+
+(defn- zoom-out! [^OrthographicCamera camera]
+  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) (- (:zoom-speed config)))))
+  (.update camera))
+
+(defn- move-camera! [^OrthographicCamera camera idx f]
+  (let [pos (.position camera)
+        [x y] (update [(.x pos) (.y pos) (.z pos)]
+                      idx
+                      #(f % (:camera-movement-speed config)))]
+    (set! (.x pos) x)
+    (set! (.y pos) y)
+    (.update camera)))
+
+(defn- move-left! [camera]
+  (move-camera! camera 0 -))
+
+(defn- move-right! [camera]
+  (move-camera! camera 0 +))
+
+(defn- move-up! [camera]
+  (move-camera! camera 1 +))
+
+(defn- move-down! [camera]
+  (move-camera! camera 1 -))
+
+(defn- handle-controls! [camera]
+  (doseq [[k f] {Input$Keys/MINUS zoom-in!
+                 Input$Keys/EQUALS zoom-out!
+                 Input$Keys/LEFT move-left!
+                 Input$Keys/RIGHT move-right!
+                 Input$Keys/UP move-up!
+                 Input$Keys/DOWN move-down!}]
+    (when (.isKeyPressed ^Input Gdx/input k)
+      (f camera))))
+
 (defn listener
-  [{:keys [zoom-speed
-           camera-movement-speed
-           tile-size
+  [{:keys [tile-size
            world-viewport-width
            world-viewport-height
            ui-viewport-width
@@ -133,32 +173,14 @@
         (Disposable/.dispose @tiled-map))
 
       (render [_]
-        (let [gl (.getGL20 ^Graphics Gdx/graphics)
-              camera* @camera
-              move (fn [idx f]
-                     (orthographic-camera/set-position! camera*
-                                                        (update (orthographic-camera/position camera*)
-                                                                idx
-                                                                #(f % camera-movement-speed))))]
-          (.glClearColor ^GL20 gl 0 0 0 0)
-          (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
+        (let [camera* @camera]
+          (ScreenUtils/clear 0 0 0 0)
           (moon-tiled-map/draw! @tiled-map
                                 @batch
                                 world-unit-scale
                                 (.getCamera ^Viewport @world-viewport)
                                 (constantly (color/float-bits [1 1 1 1])))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/MINUS)
-            (orthographic-camera/inc-zoom! camera* zoom-speed))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/EQUALS)
-            (orthographic-camera/inc-zoom! camera* (- zoom-speed)))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/LEFT)
-            (move 0 -))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/RIGHT)
-            (move 0 +))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/UP)
-            (move 1 +))
-          (when (.isKeyPressed ^Input Gdx/input Input$Keys/DOWN)
-            (move 1 -))
+          (handle-controls! camera*)
           (.act ^Stage @ui-stage)
           (.draw ^Stage @ui-stage)))
 

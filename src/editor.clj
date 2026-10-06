@@ -11,16 +11,15 @@
             [clojure.string :as str]
             [clj-commons.pretty.repl :as pretty-repl]
             [moon.string :as string])
-  (:import (com.badlogic.gdx ApplicationListener Audio Files Gdx Graphics Input Input$Keys InputProcessor)
+  (:import (com.badlogic.gdx ApplicationListener Audio Files Gdx Input Input$Keys InputProcessor)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Cell CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack Table TextButton TextField TextTooltip Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
-           (com.badlogic.gdx.utils Disposable)
+           (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (def audio nil)
@@ -624,11 +623,9 @@
       (Disposable/.dispose skin)
       (run! Disposable/.dispose (vals textures)))
     (render [_]
-      (let [gl (.getGL20 ^Graphics Gdx/graphics)]
-        (.glClearColor ^GL20 gl 0 0 0 0)
-        (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
-        (.act stage)
-        (.draw stage)))
+      (ScreenUtils/clear 0 0 0 0)
+      (.act stage)
+      (.draw stage))
     (resize [_ width height]
       (.update (.getViewport stage) width height true))
     (pause [_])

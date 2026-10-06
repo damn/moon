@@ -43,24 +43,18 @@
                                  world-unit-scale
                                  world-viewport
                                  zoom-speed]]
-            [moon.camera :as orthographic-camera]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]
             [moon.v2 :as v2]
             [moon.world :as world])
   (:import (com.badlogic.gdx Gdx Graphics Input Input$Buttons Input$Keys)
-           (com.badlogic.gdx.graphics Cursor GL20 OrthographicCamera)
+           (com.badlogic.gdx.graphics Cursor OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.scenes.scene2d Group Stage)
+           (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(defn- clear-color! []
-  (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0))
-
-(defn- clear-framebuffer! []
-  (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT))
 
 (defn- update-mouseover-eid! []
   (let [old-mouseover-eid @mouseover-eid
@@ -85,21 +79,27 @@
   (reset! active-entities (world/active-entities @world @@player-eid)))
 
 (defn- set-camera-to-player! []
-  (orthographic-camera/set-position! (.getCamera ^Viewport @world-viewport)
-                                     (:entity/position @@player-eid)))
+  (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)
+        pos (.position camera)
+        [x y] (:entity/position @@player-eid)]
+    (set! (.x pos) x)
+    (set! (.y pos) y)
+    (.update camera)))
 
 (defn- draw-tiled-map! []
   (let [raycaster @raycaster
         ^Viewport world-viewport @world-viewport
-        tiled-map @tiled-map]
+        tiled-map @tiled-map
+        ^OrthographicCamera camera (.getCamera world-viewport)
+        pos (.position camera)]
     (moon-tiled-map/draw! tiled-map
                           @batch
                           world-unit-scale
-                          (.getCamera world-viewport)
+                          camera
                           (tile-color-setter*
                            {:ray-blocked? (partial raycaster/blocked? raycaster)
                             :explored-tile-corners explored-tile-corners
-                            :light-position (orthographic-camera/position (.getCamera world-viewport))
+                            :light-position [(.x pos) (.y pos) (.z pos)]
                             :see-all-tiles? false
                             :explored-tile-color (:colors/explored-tile colors)
                             :visible-tile-color (:colors/visible-tile colors)
@@ -206,10 +206,14 @@
         nil))))
 
 (defn- zoom-in! []
-  (orthographic-camera/inc-zoom! (.getCamera ^Viewport @world-viewport) zoom-speed))
+  (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) zoom-speed)))
+    (.update camera)))
 
 (defn- zoom-out! []
-  (orthographic-camera/inc-zoom! (.getCamera ^Viewport @world-viewport) (- zoom-speed)))
+  (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) (- zoom-speed))))
+    (.update camera)))
 
 (defn- close-windows! []
   (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
@@ -236,8 +240,7 @@
       (f))))
 
 (defn render! [key-pressed? key-just-pressed? button-just-pressed?]
-  (clear-color!)
-  (clear-framebuffer!)
+  (ScreenUtils/clear 0 0 0 0)
   (update-mouseover-eid!)
   (update-active-entities!)
   (set-camera-to-player!)
