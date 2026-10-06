@@ -1,9 +1,9 @@
 (ns moon.val-max
-  (:require [moon.malli :as malli-schema]
+  (:require [malli.core :as m]
             [moon.mods :as mods]))
 
 (def schema
-  (malli-schema/create
+  (m/schema
    [:and
     [:vector {:min 2 :max 2} [:int {:min 0}]]
     [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
@@ -12,7 +12,7 @@
      (fn [[^int a ^int b]] (<= a b))]]))
 
 (defn- valid? [val-max]
-  (malli-schema/validate schema val-max))
+  (m/validate schema val-max))
 
 (defn to-pos-int [val-max]
   (mapv #(-> % int (max 0)) val-max))

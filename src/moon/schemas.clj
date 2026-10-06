@@ -1,5 +1,6 @@
 (ns moon.schemas
-  (:require [moon.malli :as malli]
+  (:require [malli.core :as m]
+            [malli.error :as me]
             [moon.schema :as schema]
             [moon.map-schema :as map-schema]))
 
@@ -22,7 +23,8 @@
   (map-schema/optional? (schema/malli-form schema schemas) k))
 
 (defn validate [schemas k value]
-  (-> (get schemas k)
-      (schema/malli-form schemas)
-      malli/create
-      (malli/validate-humanize value)))
+  (let [schema (m/schema (schema/malli-form (get schemas k) schemas))]
+    (when-not (m/validate schema value)
+      (throw (ex-info (str (me/humanize (m/explain schema value)))
+                      {:value value
+                       :schema (m/form schema)})))))

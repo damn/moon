@@ -21,7 +21,8 @@
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.m :as m]
-            [moon.malli :as malli-schema]
+            [malli.core :as malli]
+            [malli.error :as me]
             [moon.mods :as mods]
             [moon.world :as world]
             [moon.number :as number]
@@ -57,7 +58,7 @@
 ; 2. step remove ctx bag and just bind state over the fns
 ; 3. pass capabilitites/receive libgdx capabilities as functions
 (def schema
-  (malli-schema/create
+  (malli/schema
    [:map {:closed true}
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
@@ -2410,7 +2411,11 @@
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed? handle-fsm-event! spawn-entity!]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
-  (malli-schema/validate-humanize schema @state)
+  (let [value @state]
+    (when-not (malli/validate schema value)
+      (throw (ex-info (str (me/humanize (malli/explain schema value)))
+                      {:value value
+                       :schema (malli/form schema)}))))
   (let [default-font @default-font
         shape-drawer @shape-drawer
         ui-mouse-position (viewport/unproject (.getViewport ^Stage @stage) mouse-position)
@@ -2571,7 +2576,11 @@
         (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
     (update-draw-stage)
-    (malli-schema/validate-humanize schema @state)))
+    (let [value @state]
+      (when-not (malli/validate schema value)
+        (throw (ex-info (str (me/humanize (malli/explain schema value)))
+                        {:value value
+                         :schema (malli/form schema)}))))))
 
 (defn resize! [width height]
   (let [ctx @state]
