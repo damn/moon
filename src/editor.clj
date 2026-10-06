@@ -126,7 +126,9 @@
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
     (.clearChildren ^Group table)
-    (table/add-rows! table [(->sound-columns skin table sound-name)])
+    (doseq [cell (->sound-columns skin table sound-name)]
+      (table/add-cell! table cell))
+    (.row ^Table table)
     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
     (.pack ^Layout (find-ancestor table (partial instance? Window)))
     (let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table)]
@@ -235,10 +237,14 @@
        (throwable/pretty-pst t)))))
 
 (defn- property-editor-table [rows]
-  (doto (Table.)
-    (#(.pad (.defaults ^Table %) (float 5)))
-    (table/add-rows! rows)
-    (.pack)))
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 5))))]
+    (doseq [row rows]
+      (doseq [cell row]
+        (table/add-cell! table cell))
+      (.row ^Table table))
+    (.pack table)
+    table))
 
 (defn- property-editor-window
   [{:keys [db
@@ -297,8 +303,7 @@
                     (.clearChildren ^Group table)
                     (add-one-to-many-rows db skin textures table property-type property-ids)
                     (.pack ^Layout (find-ancestor table (partial instance? Window))))]
-    (table/add-rows!
-     table
+    (doseq [row
      [[{:actor (doto (TextButton. "+" skin)
                  (.addListener (proxy [ChangeListener] []
                                  (changed [event _actor]
@@ -334,7 +339,10 @@
                                                   ctx/skin
                                                   ctx/textures]} @state]
                                       (redo-rows db skin textures
-                                                 (disj property-ids id)))))))})])))
+                                                 (disj property-ids id)))))))})]]
+      (doseq [cell row]
+        (table/add-cell! table cell))
+      (.row ^Table table))))
 
 (defn- add-one-to-one-rows
   [db
@@ -347,44 +355,45 @@
                     (.clearChildren ^Group table)
                     (add-one-to-one-rows db skin textures table property-type id)
                     (.pack ^Layout (find-ancestor table (partial instance? Window))))]
-    (table/add-rows!
-     table
-     [[(when-not property-id
-         {:actor (doto (TextButton. "+" skin)
-                   (.addListener (proxy [ChangeListener] []
-                                   (changed [event _actor]
-                                     (let [{:keys [ctx/db
-                                                   ctx/skin
-                                                   ctx/textures
-                                                   ctx/stage]} @state]
-                                       (.addActor ^Stage
-                                        stage
-                                        (property-overview-window
-                                         {:db db
-                                          :textures textures
-                                          :skin skin
-                                          :property-type property-type
-                                          :clicked-id-fn (fn [actor id {:keys [ctx/db
-                                                                               ctx/skin
-                                                                               ctx/textures]}]
-                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
-                                                           (redo-rows db skin textures id))})))))))})]
-      [(when property-id
-         (let [property (db/get-raw db property-id)]
-           {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
-                                                                                     (first (:animation/frames (:entity/animation property))))))
-                     (.addListener (TextTooltip. ^String (binding [*print-level* 2]
-                                                           (with-out-str
-                                                             (pprint property))) ^Skin skin))
-                     (.setUserObject property-id))}))]
-      [(when property-id
-         {:actor (doto (TextButton. "-" skin)
-                   (.addListener (proxy [ChangeListener] []
-                                   (changed [event _actor]
-                                     (let [{:keys [ctx/db
-                                                   ctx/skin
-                                                   ctx/textures]} @state]
-                                       (redo-rows db skin textures nil))))))})]])))
+    (doseq [row (cond-> []
+                  (not property-id)
+                  (conj [{:actor (doto (TextButton. "+" skin)
+                                   (.addListener (proxy [ChangeListener] []
+                                                   (changed [event _actor]
+                                                     (let [{:keys [ctx/db
+                                                                   ctx/skin
+                                                                   ctx/textures
+                                                                   ctx/stage]} @state]
+                                                       (.addActor ^Stage
+                                                        stage
+                                                        (property-overview-window
+                                                         {:db db
+                                                          :textures textures
+                                                          :skin skin
+                                                          :property-type property-type
+                                                          :clicked-id-fn (fn [actor id {:keys [ctx/db
+                                                                                               ctx/skin
+                                                                                               ctx/textures]}]
+                                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
+                                                                           (redo-rows db skin textures id))})))))))}])
+                  property-id
+                  (conj [{:actor (let [property (db/get-raw db property-id)]
+                                   (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
+                                                                                                     (first (:animation/frames (:entity/animation property))))))
+                                     (.addListener (TextTooltip. ^String (binding [*print-level* 2]
+                                                                           (with-out-str
+                                                                             (pprint property))) ^Skin skin))
+                                     (.setUserObject property-id)))}]
+                        [{:actor (doto (TextButton. "-" skin)
+                                   (.addListener (proxy [ChangeListener] []
+                                                   (changed [event _actor]
+                                                     (let [{:keys [ctx/db
+                                                                   ctx/skin
+                                                                   ctx/textures]} @state]
+                                                       (redo-rows db skin textures nil))))))}]))]
+      (doseq [cell row]
+        (table/add-cell! table cell))
+      (.row ^Table table))))
 
 (defn- rebuild-editor-window!
   [{:keys [ctx/db
@@ -409,21 +418,24 @@
            display-remove-component-button?
            k
            table]}]
-  (doto (Table.)
-    (#(.pad (.defaults ^Table %) (float 2)))
-    (table/add-rows! [[{:actor (when display-remove-component-button?
-                                         (doto (TextButton. "-" skin)
-                                           (.addListener (proxy [ChangeListener] []
-                                                           (changed [event _actor]
-                                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
-                                                                                                                              (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
-                                                                                                                                   (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
-                                                                                                                            (.getChildren ^Group table))))
-                                                             (let [ctx @state]
-                                                               (rebuild-editor-window! ctx)))))))
-                        :left? true}
-                       {:actor (Label. ^String (k-label-text k) ^Skin skin)}]])
-    (.pack)))
+  (let [row-table (doto (Table.)
+                    (#(.pad (.defaults ^Table %) (float 2))))]
+    (doseq [cell [{:actor (when display-remove-component-button?
+                            (doto (TextButton. "-" skin)
+                              (.addListener (proxy [ChangeListener] []
+                                              (changed [event _actor]
+                                                (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
+                                                                                                                 (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
+                                                                                                                      (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
+                                                                                                               (.getChildren ^Group table))))
+                                                (let [ctx @state]
+                                                  (rebuild-editor-window! ctx)))))))
+                   :left? true}
+                  {:actor (Label. ^String (k-label-text k) ^Skin skin)}]]
+      (table/add-cell! row-table cell))
+    (.row ^Table row-table)
+    (.pack row-table)
+    row-table))
 
 (defn- create-component-row
   [{:keys [editor-widget]
@@ -447,23 +459,26 @@
                  (Window/.setModal true))
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
-    (table/add-rows!
-     window
-     (for [k remaining-ks]
-       [{:actor (doto (TextButton. (name k) skin)
-                  (.addListener (proxy [ChangeListener] []
-                                  (changed [event _actor]
-                                    (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
-                                    (let [ctx @state]
-                                      (table/add-rows! map-widget-table [(create-component-row
-                                                                          {:skin skin
-                                                                           :editor-widget (build-widget (get schemas k)
-                                                                                                        k
-                                                                                                        (default-value schemas k))
-                                                                           :k k
-                                                                           :display-remove-component-button? (optional? schemas schema k)
-                                                                           :table map-widget-table})])
-                                      (rebuild-editor-window! ctx))))))}]))
+    (doseq [row (for [k remaining-ks]
+                  [{:actor (doto (TextButton. (name k) skin)
+                             (.addListener (proxy [ChangeListener] []
+                                             (changed [event _actor]
+                                               (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
+                                               (let [ctx @state]
+                                                 (doseq [cell (create-component-row
+                                                               {:skin skin
+                                                                :editor-widget (build-widget (get schemas k)
+                                                                                             k
+                                                                                             (default-value schemas k))
+                                                                :k k
+                                                                :display-remove-component-button? (optional? schemas schema k)
+                                                                :table map-widget-table})]
+                                                   (table/add-cell! map-widget-table cell))
+                                                 (.row ^Table map-widget-table)
+                                                 (rebuild-editor-window! ctx))))))}])]
+      (doseq [cell row]
+        (table/add-cell! window cell))
+      (.row ^Table window))
     (.pack ^Layout window)
     window))
 
@@ -497,32 +512,33 @@
                                                   :display-remove-component-button? (k->optional? k)
                                                   :table table}))
                                               ks-sorted))]
-    (table/add-rows!
-     table
-     (concat [(when opt?
-                [{:actor (doto (TextButton. "Add component" skin)
-                           (.addListener (proxy [ChangeListener] []
-                                           (changed [event actor]
-                                             (let [{:keys [ctx/db
-                                                           ctx/skin
-                                                           ctx/stage]} @state]
-                                               (.addActor ^Stage
-                                                stage
-                                                (add-component-window
-                                                 {:skin skin
-                                                  :schemas (:db/schemas db)
-                                                  :schema schema
-                                                  :map-widget-table table
-                                                  :build-widget build-widget})))))))
-                  :colspan colspan}])]
-             [(when opt?
-                [{:actor nil
-                  :pad-top 2
-                  :pad-bottom 2
-                  :colspan colspan
-                  :fill-x? true
-                  :expand-x? true}])]
-             component-rows))
+    (doseq [row (concat (when opt?
+                          [[{:actor (doto (TextButton. "Add component" skin)
+                                      (.addListener (proxy [ChangeListener] []
+                                                      (changed [event actor]
+                                                        (let [{:keys [ctx/db
+                                                                      ctx/skin
+                                                                      ctx/stage]} @state]
+                                                          (.addActor ^Stage
+                                                           stage
+                                                           (add-component-window
+                                                            {:skin skin
+                                                             :schemas (:db/schemas db)
+                                                             :schema schema
+                                                             :map-widget-table table
+                                                             :build-widget build-widget})))))))
+                             :colspan colspan}]])
+                        (when opt?
+                          [[{:actor nil
+                             :pad-top 2
+                             :pad-bottom 2
+                             :colspan colspan
+                             :fill-x? true
+                             :expand-x? true}]])
+                        component-rows)]
+      (doseq [cell row]
+        (table/add-cell! table cell))
+      (.row ^Table table))
     table))
 
 (defn- scaled-image-button [texture-region scale]
@@ -538,13 +554,16 @@
           ^Skin skin))
 
 (defn- animation-widget [animation textures]
-  (doto (Table.)
-    (#(.pad (.defaults ^Table %) (float 1)))
-    (table/add-rows! [(for [image (:animation/frames animation)]
-                        {:actor (scaled-image-button
-                                 (textures/texture-region textures image)
-                                 2)})])
-    (.pack)))
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 1))))]
+    (doseq [cell (for [image (:animation/frames animation)]
+                   {:actor (scaled-image-button
+                            (textures/texture-region textures image)
+                            2)})]
+      (table/add-cell! table cell))
+    (.row ^Table table)
+    (.pack table)
+    table))
 
 (defn- boolean-widget [checked? skin]
   (doto (CheckBox. "" ^Skin skin)
@@ -595,14 +614,16 @@
               (sound-columns skin table sound-name open-select-fn))
             (open-select-fn [table]
               (open-select-sounds-handler table sound-columns-fn))]
-      (table/add-rows! table [(if sound-name
-                                (sound-columns-fn skin table sound-name)
-                                [{:actor
-                                  (doto (TextButton. "No sound" skin)
-                                    (.addListener (proxy [ChangeListener] []
-                                                    (changed [event _actor]
-                                                      ((open-select-fn table)
-                                                       @state)))))}])])
+      (doseq [cell (if sound-name
+                    (sound-columns-fn skin table sound-name)
+                    [{:actor
+                      (doto (TextButton. "No sound" skin)
+                        (.addListener (proxy [ChangeListener] []
+                                        (changed [event _actor]
+                                          ((open-select-fn table)
+                                           @state)))))}])]
+        (table/add-cell! table cell))
+      (.row ^Table table)
       table)))
 
 (defn- string-widget [schema v skin]

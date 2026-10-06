@@ -24,15 +24,3 @@
 (defn add-cell! [table cell-declaration]
   (-> (.add ^Table table ^Actor (:actor cell-declaration))
       (set-cell-opts! (dissoc cell-declaration :actor))))
-
-(defn add-rows! [table rows]
-  (doseq [row rows]
-    (doseq [props-or-actor row]
-      (cond
-        (map? props-or-actor)
-        (add-cell! table props-or-actor)
-
-        ; TODO Remove else case
-        :else (.add ^Table table ^Actor props-or-actor)))
-    (.row ^Table table))
-  table)

@@ -483,20 +483,22 @@
          :state initial-state))
 
 (defn- create-action-bar []
-  (doto (Table.)
-    (#(.pad (.defaults ^Table %) (float 2)))
-    (table/add-rows! [[{:actor (doto (HorizontalGroup.)
-                                 (.space (float 2))
-                                 (.pad (float 2))
-                                 (.setName "moon.ui.action-bar.horizontal-group")
-                                 (.setUserObject (doto (ButtonGroup.)
-                                                   (.setMaxCheckCount (int 1))
-                                                   (.setMinCheckCount (int 0)))))
-                        :expand? true
-                        :bottom? true}]])
-    (.pack)
-    (.setFillParent true)
-    (.setName "moon.ui.action-bar")))
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 2))))]
+    (table/add-cell! table {:actor (doto (HorizontalGroup.)
+                                     (.space (float 2))
+                                     (.pad (float 2))
+                                     (.setName "moon.ui.action-bar.horizontal-group")
+                                     (.setUserObject (doto (ButtonGroup.)
+                                                       (.setMaxCheckCount (int 1))
+                                                       (.setMinCheckCount (int 0)))))
+                            :expand? true
+                            :bottom? true})
+    (.row ^Table table)
+    (doto table
+      (.pack)
+      (.setFillParent true)
+      (.setName "moon.ui.action-bar"))))
 
 (defn- action-bar-get-data
   [action-bar]
@@ -1445,27 +1447,31 @@
         ->cell (partial inventory-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
         window (doto (window/create {:title "Inventory"
                                      :skin skin
-                                     :table/rows [[{:actor (doto (Table.)
-                                                             (table/add-rows! (concat [[nil nil
-                                                                                         (->cell :inventory.slot/helm)
-                                                                                         (->cell :inventory.slot/necklace)]
-                                                                                        [nil
-                                                                                         (->cell :inventory.slot/weapon)
-                                                                                         (->cell :inventory.slot/chest)
-                                                                                         (->cell :inventory.slot/cloak)
-                                                                                         (->cell :inventory.slot/shield)]
-                                                                                        [nil nil
-                                                                                         (->cell :inventory.slot/leg)]
-                                                                                        [nil
-                                                                                         (->cell :inventory.slot/glove)
-                                                                                         (->cell :inventory.slot/rings :position [0 0])
-                                                                                         (->cell :inventory.slot/rings :position [1 0])
-                                                                                         (->cell :inventory.slot/boot)]]
-                                                                                       (for [y (range 4)]
-                                                                                         (for [x (range 6)]
-                                                                                           (->cell :inventory.slot/bag :position [x y])))))
-                                                             (.pack)
-                                                             (.setName "inventory-cell-table"))
+                                     :table/rows [[{:actor (let [cell-table (Table.)]
+                                                             (doseq [row (concat [[{:actor nil} {:actor nil}
+                                                                                   (->cell :inventory.slot/helm)
+                                                                                   (->cell :inventory.slot/necklace)]
+                                                                                  [{:actor nil}
+                                                                                   (->cell :inventory.slot/weapon)
+                                                                                   (->cell :inventory.slot/chest)
+                                                                                   (->cell :inventory.slot/cloak)
+                                                                                   (->cell :inventory.slot/shield)]
+                                                                                  [{:actor nil} {:actor nil}
+                                                                                   (->cell :inventory.slot/leg)]
+                                                                                  [{:actor nil}
+                                                                                   (->cell :inventory.slot/glove)
+                                                                                   (->cell :inventory.slot/rings :position [0 0])
+                                                                                   (->cell :inventory.slot/rings :position [1 0])
+                                                                                   (->cell :inventory.slot/boot)]]
+                                                                                 (for [y (range 4)]
+                                                                                   (for [x (range 6)]
+                                                                                     (->cell :inventory.slot/bag :position [x y]))))]
+                                                               (doseq [cell row]
+                                                                 (table/add-cell! cell-table cell))
+                                                               (.row ^Table cell-table))
+                                                             (.pack cell-table)
+                                                             (.setName cell-table "inventory-cell-table")
+                                                             cell-table)
                                                     :pad 4}]]})
                      (.setName "moon.ui.windows.inventory")
                      (.setVisible false))]
@@ -1911,10 +1917,12 @@
 (defn- add-upd-label!
   ([skin table text-fn icon]
    (let [label (Label. "" ^Skin skin)
-         sub-table (doto (Table.)
-                     (table/add-rows! [[{:actor (Image. ^Texture icon)}
-                                        {:actor label}]])
-                     (.pack))]
+         sub-table (Table.)]
+     (doseq [cell [{:actor (Image. ^Texture icon)}
+                   {:actor label}]]
+       (table/add-cell! sub-table cell))
+     (.row ^Table sub-table)
+     (.pack sub-table)
      (.addActor ^Group table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor sub-table
                              :right? true
@@ -1927,23 +1935,25 @@
                              :expand-x? true}))))
 
 (defn- dev-menu-main-table [skin menus update-labels]
-  (let [table (doto (Table.)
-                (table/add-rows! [(for [{:keys [label items]} menus]
-                                            {:actor
-                                             (doto (TextButton. label skin)
-                                               (.addListener (proxy [ChangeListener] []
-                                                               (changed [event actor]
-                                                                 (.addActor ^Stage (.getStage ^Event event)
-                                                                            (window/create {:title label
-                                                                                            :skin skin
-                                                                                            :table/rows [(for [{:keys [label on-click]} items]
-                                                                                                           {:actor
-                                                                                                            (doto (TextButton. label skin)
-                                                                                                              (.addListener (proxy [ChangeListener] []
-                                                                                                                              (changed [_event _actor]
-                                                                                                                                (on-click)))))})]
-                                                                                            :window/add-close-button? true}))))))})])
-                (.pack))]
+  (let [table (Table.)]
+    (doseq [cell (for [{:keys [label items]} menus]
+                   {:actor
+                    (doto (TextButton. label skin)
+                      (.addListener (proxy [ChangeListener] []
+                                      (changed [event actor]
+                                        (.addActor ^Stage (.getStage ^Event event)
+                                                   (window/create {:title label
+                                                                   :skin skin
+                                                                   :table/rows [(for [{:keys [label on-click]} items]
+                                                                                  {:actor
+                                                                                   (doto (TextButton. label skin)
+                                                                                     (.addListener (proxy [ChangeListener] []
+                                                                                                     (changed [_event _actor]
+                                                                                                       (on-click)))))})]
+                                                                   :window/add-close-button? true}))))))})]
+      (table/add-cell! table cell))
+    (.row ^Table table)
+    (.pack table)
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn))]
         (if icon
@@ -1953,18 +1963,22 @@
 
 (defn- create-dev-menu
   [{:keys [menus update-labels skin]}]
-  (doto (Table.)
-    (table/add-rows! [[{:actor (dev-menu-main-table skin menus update-labels)
-                        :expand-x? true
-                        :fill-x? true
-                        :colspan 1}]
-                      [{:actor (doto (Label. "" ^Skin skin)
-                                 (.setTouchable Touchable/disabled))
-                        :expand? true
-                        :fill-x? true
-                        :fill-y? true}]])
-    (.pack)
-    (.setFillParent true)))
+  (let [table (Table.)]
+    (doseq [row [[{:actor (dev-menu-main-table skin menus update-labels)
+                   :expand-x? true
+                   :fill-x? true
+                   :colspan 1}]
+                 [{:actor (doto (Label. "" ^Skin skin)
+                            (.setTouchable Touchable/disabled))
+                   :expand? true
+                   :fill-x? true
+                   :fill-y? true}]]]
+      (doseq [cell row]
+        (table/add-cell! table cell))
+      (.row ^Table table))
+    (doto table
+      (.pack)
+      (.setFillParent true))))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
