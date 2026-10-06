@@ -27,7 +27,6 @@
             [moon.stats :as stats]
             [moon.string :as string]
             [moon.textures :as textures]
-            [moon.throwable :as throwable]
             [moon.timer :as timer]
             [moon.v2 :as v2]
             [moon.val-max :as val-max]
@@ -37,7 +36,8 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
+           (com.badlogic.gdx.graphics Color Colors Cursor GL20 OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
+           (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
@@ -721,26 +721,28 @@
 ;; CTX SIDE EFFECT
 
 ; -> used in handle-fsm-event
-(defn- show-modal! [skin stage {:keys [title text button-text on-click]}]
-  (assert (not (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.modal-window")))
-  (let [window (Window. ^String title ^Skin skin)]
-    (.add ^Table window ^Actor (Label. ^String text ^Skin skin))
-    (.row ^Table window)
-    (.add ^Table window ^Actor (doto (TextButton. button-text skin)
-                                 (.addListener (proxy [ChangeListener] []
-                                                 (changed [_event _actor]
-                                                   (.remove ^Actor (.findActor ^Group (.getRoot ^Stage stage)
-                                                                               "moon.ui.modal-window"))
-                                                   (on-click))))))
-    (.row ^Table window)
-    (.pack ^Layout window)
-    (Window/.setModal window true)
+(defn- show-modal! [^Skin skin ^Stage stage {:keys [title text button-text on-click]}]
+  (assert (not (.findActor (.getRoot stage) "moon.ui.modal-window")))
+  (let [^String title title
+        ^String text text
+        window (Window. title skin)]
+    (.add window (Label. text skin))
+    (.row window)
+    (.add window (doto (TextButton. ^String button-text skin)
+                   (.addListener (proxy [ChangeListener] []
+                                   (changed [_event _actor]
+                                     (.remove (.findActor (.getRoot stage)
+                                                          "moon.ui.modal-window"))
+                                     (on-click))))))
+    (.row window)
+    (.pack window)
+    (.setModal window true)
     (.setName window "moon.ui.modal-window")
-    (.setPosition ^Actor window
-                  (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2)
-                  (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4)))
+    (.setPosition window
+                  (/ (viewport/get-world-width (.getViewport stage)) 2)
+                  (float (* (viewport/get-world-height (.getViewport stage)) (/ 3 4)))
                   (float Align/center))
-    (.addActor ^Stage stage window)))
+    (.addActor stage window)))
 
 (defn- ui-set-item! [ctx cell item]
   (let [skin @skin
@@ -1473,18 +1475,18 @@
                          (for [x (range 6)]
                            (->cell :inventory.slot/bag :position [x y]))))]
       (doseq [cell row]
-        (.add ^Table cell-table ^Actor (:actor cell)))
-      (.row ^Table cell-table))
+        (.add cell-table ^Actor (:actor cell)))
+      (.row cell-table))
     (.pack cell-table)
     (.setName cell-table "inventory-cell-table")
-    (let [c (.add ^Table window ^Actor cell-table)]
-      (.pad ^Cell c (float 4)))
-    (.row ^Table window)
-    (.pack ^Layout window)
+    (let [c (.add window cell-table)]
+      (.pad c (float 4)))
+    (.row window)
+    (.pack window)
     (.setName window "moon.ui.windows.inventory")
     (.setVisible window false)
     (let [[x y] position]
-      (.setPosition ^Actor window (float x) (float y)))
+      (.setPosition window (float x) (float y)))
     window))
 
 (defn inventory-window-create
@@ -1538,22 +1540,23 @@
            position
            set-label-text!
            skin]}]
-  (let [label (Label. "MY LABEL TEXT" ^Skin skin)
-        window (Window. ^String title ^Skin skin)
-        c (.add ^Table window ^Actor label)]
-    (.expand ^Cell c)
-    (.row ^Table window)
-    (.pack ^Layout window)
+  (let [^Skin skin skin
+        label (Label. "MY LABEL TEXT" skin)
+        window (Window. ^String title skin)
+        c (.add window label)]
+    (.expand c)
+    (.row window)
+    (.pack window)
     (.setName window actor-name)
     (.setVisible window visible?)
     (let [[x y] position]
-      (.setPosition ^Actor window (float x) (float y)))
-    (.addActor ^Group window (proxy [Actor] []
+      (.setPosition window (float x) (float y)))
+    (.addActor window (proxy [Actor] []
                          (act [delta]
-                           (when (.getStage ^Actor this)
-                             (.setText ^Label label ^String (set-label-text!)))
-                           (.pack ^Layout window)
                            (let [^Actor this this]
+                             (when (.getStage this)
+                               (.setText label ^String (set-label-text!)))
+                             (.pack window)
                              (proxy-super act delta)))
                          (draw [batch parent-alpha])))
     window))
@@ -1944,30 +1947,31 @@
        (.right)
        (.expandX)))))
 
-(defn- dev-menu-main-table [skin menus update-labels]
+(defn- dev-menu-main-table [^Skin skin menus update-labels]
   (let [table (Table.)]
     (doseq [cell (for [{:keys [label items]} menus]
                    {:actor
-                    (doto (TextButton. label skin)
+                    (doto (TextButton. ^String label skin)
                       (.addListener (proxy [ChangeListener] []
                                       (changed [event actor]
-                                        (.addActor ^Stage (.getStage ^Event event)
-                                                   (let [window (Window. ^String label ^Skin skin)]
-                                                     (doseq [{:keys [label on-click]} items]
-                                                       (.add ^Table window ^Actor (doto (TextButton. label skin)
-                                                                                    (.addListener (proxy [ChangeListener] []
-                                                                                                    (changed [_event _actor]
-                                                                                                      (on-click)))))))
-                                                     (.row ^Table window)
-                                                     (.pack ^Layout window)
-                                                     (.add ^Table (.getTitleTable ^Window window)
-                                                           ^Actor (doto (TextButton. "X" ^Skin skin)
-                                                                    (.addListener (proxy [ChangeListener] []
-                                                                                    (changed [_event _actor]
-                                                                                      (.remove ^Actor window))))))
-                                                     window))))))})]
-      (.add ^Table table ^Actor (:actor cell)))
-    (.row ^Table table)
+                                        (let [^Stage stage (.getStage ^Event event)]
+                                          (.addActor stage
+                                                     (let [window (Window. ^String label skin)]
+                                                       (doseq [{:keys [label on-click]} items]
+                                                         (.add window (doto (TextButton. ^String label skin)
+                                                                        (.addListener (proxy [ChangeListener] []
+                                                                                        (changed [_event _actor]
+                                                                                          (on-click)))))))
+                                                       (.row window)
+                                                       (.pack window)
+                                                       (.add (.getTitleTable window)
+                                                             (doto (TextButton. "X" skin)
+                                                               (.addListener (proxy [ChangeListener] []
+                                                                               (changed [_event _actor]
+                                                                                 (.remove window))))))
+                                                       window)))))))})]
+      (.add table ^Actor (:actor cell)))
+    (.row table)
     (.pack table)
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn))]
@@ -2229,7 +2233,7 @@
                                                                               [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                   {:label "Zoom"
                                    :update-fn (fn []
-                                                (orthographic-camera/zoom (viewport/get-camera @world-viewport)))
+                                                (.zoom ^OrthographicCamera (viewport/get-camera @world-viewport)))
                                    :icon "images/zoom.png"}]]
                         (if (:icon item)
                           (update item :icon #(get @textures %))
@@ -2302,8 +2306,8 @@
                 world-height (* 900 world-unit-scale)]
             (FitViewport. (float world-width)
                           (float world-height)
-                          (doto (orthographic-camera/new)
-                            (orthographic-camera/set-to-ortho! false world-width world-height)))))
+                          (doto (OrthographicCamera.)
+                            (.setToOrtho false world-width world-height)))))
   (reset! default-font
           (let [{:keys [path
                         size
@@ -2338,9 +2342,10 @@
     (reset! start-position level-start))
   (reset! world (world/create @tiled-map))
   (reset! explored-tile-corners
-          (moon-g2d/create (moon-tiled-map/get-property @tiled-map "width")
-                           (moon-tiled-map/get-property @tiled-map "height")
-                           (constantly false)))
+          (let [props (.getProperties ^TiledMap @tiled-map)]
+            (moon-g2d/create (.get props "width")
+                             (.get props "height")
+                             (constantly false))))
   (let [{:keys [width height cells]} (world/raycaster-data @world)
         arr (make-array Boolean/TYPE width height)]
     (doseq [[[x y] blocked?] cells]
@@ -2420,10 +2425,11 @@
                               :visible-tile-color (:colors/visible-tile colors)
                               :invisible-tile-color (:colors/invisible-tile colors)})))
     (let [world-viewport @world-viewport
+          ^OrthographicCamera camera (viewport/get-camera world-viewport)
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor @stage x y)]
       (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-      (.setProjectionMatrix ^Batch @batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
+      (.setProjectionMatrix ^Batch @batch (.combined camera))
       (.begin ^Batch @batch)
       (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
         (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))

@@ -8,12 +8,11 @@
             [moon.tiled-map :as moon-tiled-map]
             [moon.color :as color]
             [moon.viewport :as viewport])
-  (:import (com.badlogic.gdx.maps MapLayers)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
+  (:import (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.graphics GL20 OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin Table TextButton Window)
@@ -44,11 +43,12 @@
                           (db/all-raw db :properties/creatures)
                           #(textures/texture-region textures %))
                          :textures textures})
-        tiled-map (:tiled-map level)
-        width (moon-tiled-map/get-property tiled-map "width")
-        height (moon-tiled-map/get-property tiled-map "height")]
+        ^TiledMap tiled-map (:tiled-map level)
+        props (.getProperties tiled-map)
+        width (.get props "width")
+        height (.get props "height")]
     (assert tiled-map)
-    (.setVisible ^TiledMapTileLayer (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
+    (.setVisible ^TiledMapTileLayer (.get (.getLayers tiled-map) "creatures")
                  true)
     (orthographic-camera/set-position! camera [(/ width 2) (/ height 2)])
     (orthographic-camera/zoom-to-rect camera {:left [0 0]
@@ -60,10 +60,10 @@
 (defn create-viewport [world-width world-height]
   (FitViewport. (float world-width)
                 (float world-height)
-                (doto (orthographic-camera/new)
-                  (orthographic-camera/set-to-ortho! false
-                                                     world-width
-                                                     world-height))))
+                (doto (OrthographicCamera.)
+                  (.setToOrtho false
+                               world-width
+                               world-height))))
 
 (defn create-skin [file-handle]
   (Skin. ^FileHandle file-handle))
@@ -72,7 +72,7 @@
   (doto (Stage. viewport batch)
     (.addActor actor)))
 
-(defn text-button [skin label on-click!]
+(defn text-button ^TextButton [^Skin skin ^String label on-click!]
   (doto (TextButton. label skin)
     (.addListener (proxy [ChangeListener] []
                     (changed [_event _actor]
@@ -113,11 +113,12 @@
         (reset! skin (create-skin (.internal ^Files Gdx/files ui-skin-path))) ; same ?
         (reset! ui-stage (create-stage @batch
                                        (FitViewport. ui-viewport-width ui-viewport-height) ; requires gl context ?
-                                       (let [window (Window. "Edit" ^Skin @skin)]
+                                       (let [^Skin skin @skin
+                                             window (Window. "Edit" skin)]
                                          (doseq [[label on-click!] buttons]
-                                           (.add ^Table window ^Actor (text-button @skin label on-click!))
-                                           (.row ^Table window))
-                                         (.pack ^Layout window)
+                                           (.add window (text-button skin label on-click!))
+                                           (.row window))
+                                         (.pack window)
                                          window)))
         (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
         (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?

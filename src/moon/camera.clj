@@ -1,53 +1,28 @@
 (ns moon.camera
-  (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.math Frustum Vector3)))
+           (com.badlogic.gdx.math Vector3)))
 
-(defn new []
-  (OrthographicCamera.))
+(defn set-zoom! [^OrthographicCamera orthographic-camera amount]
+  (set! (.zoom orthographic-camera) amount)
+  (.update orthographic-camera))
 
-(defn combined [orthographic-camera]
-  (.combined ^OrthographicCamera orthographic-camera))
+(defn inc-zoom! [^OrthographicCamera orthographic-camera by]
+  (set-zoom! orthographic-camera (max 0.1 (+ (.zoom orthographic-camera) by))))
 
-(defn set-to-ortho! [orthographic-camera y-down viewport-width viewport-height]
-  (.setToOrtho ^OrthographicCamera orthographic-camera y-down viewport-width viewport-height))
+(defn position [^OrthographicCamera orthographic-camera]
+  (let [v3 (.position orthographic-camera)]
+    [(.x v3) (.y v3) (.z v3)]))
 
-(defn zoom [orthographic-camera]
-  (.zoom ^OrthographicCamera orthographic-camera))
+(defn set-position! [^OrthographicCamera orthographic-camera [x y]]
+  (let [pos (.position orthographic-camera)]
+    (set! (.x pos) x)
+    (set! (.y pos) y))
+  (.update orthographic-camera))
 
-(defn viewport-width [orthographic-camera]
-  (.viewportWidth ^OrthographicCamera orthographic-camera))
-
-(defn viewport-height [orthographic-camera]
-  (.viewportHeight ^OrthographicCamera orthographic-camera))
-
-(defn up [orthographic-camera]
-  (.up ^OrthographicCamera orthographic-camera))
-
-(defn position-vec3 [orthographic-camera]
-  (.position ^OrthographicCamera orthographic-camera))
-
-(defn set-zoom! [orthographic-camera amount]
-  (set! (.zoom ^OrthographicCamera orthographic-camera) amount)
-  (.update ^OrthographicCamera orthographic-camera))
-
-(defn inc-zoom! [orthographic-camera by]
-  (set-zoom! orthographic-camera (max 0.1 (+ (zoom orthographic-camera) by))))
-
-(defn position [orthographic-camera]
-  (let [v3 (position-vec3 orthographic-camera)]
-    [(.x ^Vector3 v3) (.y ^Vector3 v3) (.z ^Vector3 v3)]))
-
-(defn set-position! [orthographic-camera [x y]]
-  (let [pos (position-vec3 orthographic-camera)]
-    (set! (.x ^Vector3 pos) x)
-    (set! (.y ^Vector3 pos) y))
-  (.update ^OrthographicCamera orthographic-camera))
-
-(defn frustum [orthographic-camera]
-  (let [plane-points (mapv (fn [v3]
-                             [(.x ^Vector3 v3) (.y ^Vector3 v3) (.z ^Vector3 v3)])
-                           (.planePoints ^Frustum (.frustum ^OrthographicCamera orthographic-camera)))
+(defn frustum [^OrthographicCamera orthographic-camera]
+  (let [plane-points (mapv (fn [^Vector3 v3]
+                             [(.x v3) (.y v3) (.z v3)])
+                           (.planePoints (.frustum orthographic-camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
@@ -63,9 +38,9 @@
 
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."
-  [orthographic-camera {:keys [left top right bottom]}]
-  (let [viewport-width  (viewport-width orthographic-camera)
-        viewport-height (viewport-height orthographic-camera)
+  [^OrthographicCamera orthographic-camera {:keys [left top right bottom]}]
+  (let [viewport-width  (.viewportWidth orthographic-camera)
+        viewport-height (.viewportHeight orthographic-camera)
         [px py] (position orthographic-camera)
         px (float px)
         py (float py)

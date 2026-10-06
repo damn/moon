@@ -5,8 +5,8 @@
             [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapLayers MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
+           (com.badlogic.gdx.maps MapProperties)
+           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn print-grid [{:keys [grid] :as world-fn-ctx}]
@@ -116,9 +116,10 @@
         number-modules-x 8
         number-modules-y 4
         [modules-width modules-height] modules-scale
-        _ (assert (and (= (moon-tiled-map/get-property modules-tiled-map "width")
+        props (.getProperties ^TiledMap modules-tiled-map)
+        _ (assert (and (= (.get props "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (moon-tiled-map/get-property modules-tiled-map "height")
+                       (= (.get props "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* module-offset-tiles
@@ -154,19 +155,19 @@
                                     (filter #(= :transition (get grid %)) (g2d/posis grid)))))
 
 (defn- grid->tiled-map
-  [schema-tiled-map grid]
+  [^TiledMap schema-tiled-map grid]
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
                      (if (instance? StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^TextureRegion tile))))]
-    {:properties (merge (let [props (moon-tiled-map/get-properties schema-tiled-map)]
-                          (zipmap (.getKeys ^MapProperties props)
-                                  (.getValues ^MapProperties props)))
+    {:properties (merge (let [props (.getProperties schema-tiled-map)]
+                          (zipmap (.getKeys props)
+                                  (.getValues props)))
                         {"width" (g2d/width grid)
                          "height" (g2d/height grid)})
-     :layers (for [layer (moon-tiled-map/get-layers schema-tiled-map)]
+     :layers (for [layer (.getLayers schema-tiled-map)]
                {:name (.getName ^TiledMapTileLayer layer)
                 :visible? (.isVisible ^TiledMapTileLayer layer)
                 :properties (let [props (.getProperties ^TiledMapTileLayer layer)]
@@ -198,7 +199,8 @@
            scaled-grid
            tiled-map
            start-position]}]
-  (let [can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
+  (let [^TiledMap tiled-map tiled-map
+        can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
         {:keys [_steps area-level-grid]} (g2d/area-level-grid
@@ -218,7 +220,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (moon-tiled-map/property-value (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
+                                                    (moon-tiled-map/property-value (.get (.getLayers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))
