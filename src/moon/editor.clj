@@ -128,31 +128,37 @@
     (let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table)]
       (.setUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table [k sound-name]))))
 
+(defn- choose-sound-window
+  [{:keys [ctx/skin
+           ctx/stage
+           ctx/audio]}
+   table
+   ->sound-columns]
+  (doto (window/create {:title "Choose"
+                        :skin skin
+                        :table/rows
+                        [[(let [list-table (table/create {:table/cell-defaults {:pad 5}
+                                                          :table/rows (for [sound-name (audio/names audio)]
+                                                                        [{:actor (doto (TextButton. sound-name skin)
+                                                                                   (.addListener (proxy [ChangeListener] []
+                                                                                                   (changed [event actor]
+                                                                                                     ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
+                                                                         {:actor (doto (TextButton. "play!" skin)
+                                                                                   (.addListener (proxy [ChangeListener] []
+                                                                                                   (changed [event _actor]
+                                                                                                     (audio/play! (:ctx/audio @state)
+                                                                                                                  sound-name)))))}])})]
+                            {:actor (ScrollPane. ^Actor list-table ^Skin skin)
+                             :width  (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor list-table) 50)
+                             :height (min (- (viewport/get-world-height (.getViewport ^Stage stage)) 50)
+                                          (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor list-table))})]]
+                        :window/add-close-button? true})
+    (window/set-modal! true)))
+
 (defn- open-select-sounds-handler [table ->sound-columns]
-  (fn [{:keys [ctx/skin]
+  (fn [{:keys [ctx/stage]
         :as ctx}]
-    (let [stage (:ctx/stage ctx)]
-      (.addActor ^Stage stage
-                        (doto (window/create {:title "Choose"
-                                              :skin skin
-                                              :table/rows
-                                              [[(let [table (table/create {:table/cell-defaults {:pad 5}
-                                                                           :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
-                                                                                         [{:actor (doto (TextButton. sound-name skin)
-                                                                                                    (.addListener (proxy [ChangeListener] []
-                                                                                                                    (changed [event actor]
-                                                                                                                      ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
-                                                                                          {:actor (doto (TextButton. "play!" skin)
-                                                                                                    (.addListener (proxy [ChangeListener] []
-                                                                                                                    (changed [event _actor]
-                                                                                                                      (audio/play! (:ctx/audio @state)
-                                                                                                                                   sound-name)))))}])})]
-                                                  {:actor (ScrollPane. ^Actor table ^Skin skin)
-                                                   :width  (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
-                                                   :height (min (- (viewport/get-world-height (.getViewport ^Stage stage)) 50)
-                                                                (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))})]]
-                                              :window/add-close-button? true})
-                          (window/set-modal! true))))))
+    (.addActor ^Stage stage (choose-sound-window ctx table ->sound-columns))))
 
 (defn- overview-table-rows* [skin image-scale rows]
   (for [row rows]
