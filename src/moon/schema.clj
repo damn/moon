@@ -1,6 +1,5 @@
 (ns moon.schema
-  (:require [moon.property :as property]
-            [moon.val-max :as val-max]))
+  (:require [moon.val-max :as val-max]))
 
 (declare malli-form)
 
@@ -51,10 +50,10 @@
       :pos-int pos-int?)
 
     :s/one-to-many
-    [:set [:qualified-keyword {:namespace (property/type->id-namespace (second schema))}]]
+    [:set [:qualified-keyword {:namespace (keyword (name (second schema)))}]]
 
     :s/one-to-one
-    [:qualified-keyword {:namespace (property/type->id-namespace (second schema))}]
+    [:qualified-keyword {:namespace (keyword (name (second schema)))}]
 
     :s/qualified-keyword
     (apply vector :qualified-keyword (rest schema))

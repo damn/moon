@@ -1,7 +1,7 @@
 (ns moon.editor
   (:require [moon.db :as db]
-            [moon.property :as property]
             [clojure.edn :as edn]
+            [clojure.pprint :refer [pprint]]
             [moon.coll :as coll]
             [clojure.java.io :as io]
             [moon.textures :as textures]
@@ -207,10 +207,13 @@
     (->> (db/all-raw db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
-                {:texture-region (textures/texture-region textures (property/image property))
+                {:texture-region (textures/texture-region textures (or (:entity/image property)
+                                                                       (first (:animation/frames (:entity/animation property)))))
                  :on-clicked (fn [actor ctx]
                                (clicked-id-fn actor (:property/id property) ctx))
-                 :tooltip (property/tooltip property)
+                 :tooltip (binding [*print-level* 2]
+                            (with-out-str
+                              (pprint property)))
                  :extra-info-text (extra-info-text property)}))
          (partition-all columns)
          (overview-table-rows* skin image-scale))))
@@ -244,7 +247,7 @@
            create-widget
            property]}]
   (let [schemas (:db/schemas db)
-        schema (get schemas (property/type property))
+        schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget schema property)
         scroll-pane-height (viewport/get-world-height (.getViewport ^Stage stage))
         get-widget-value #(widget-value schema widget schemas)
@@ -317,8 +320,11 @@
                                                          (redo-rows db skin textures (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
-                    (.addListener (TextTooltip. ^String (property/tooltip property) ^Skin skin))
+          {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
+                                                                                    (first (:animation/frames (:entity/animation property))))))
+                    (.addListener (TextTooltip. ^String (binding [*print-level* 2]
+                                                          (with-out-str
+                                                            (pprint property))) ^Skin skin))
                     (.setUserObject property-id))}))
       (for [id property-ids]
         {:actor (doto (TextButton. "-" skin)
@@ -365,8 +371,11 @@
                                                            (redo-rows db skin textures id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
-           {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
-                     (.addListener (TextTooltip. ^String (property/tooltip property) ^Skin skin))
+           {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
+                                                                                     (first (:animation/frames (:entity/animation property))))))
+                     (.addListener (TextTooltip. ^String (binding [*print-level* 2]
+                                                           (with-out-str
+                                                             (pprint property))) ^Skin skin))
                      (.setUserObject property-id))}))]
       [(when property-id
          {:actor (doto (TextButton. "-" skin)
