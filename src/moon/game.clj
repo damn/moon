@@ -63,11 +63,6 @@
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
     [:ctx/mouseover-eid :any]
-    [:ctx/colors :some]
-    [:ctx/controls :some]
-    [:ctx/controls-info :some]
-    [:ctx/max-speed :some]
-    [:ctx/render-z-order :some]
     [:ctx/world :some]
     [:ctx/explored-tile-corners :some]
     [:ctx/potential-field-cache :some]
@@ -1893,7 +1888,7 @@
                   speed
                   rotate-in-movement-direction?]
            :as movement} v]
-      (assert (<= 0 speed (:ctx/max-speed ctx))
+      (assert (<= 0 speed max-speed)
               (pr-str speed))
       (assert (vector? direction))
       (assert (or (zero? (v2/length direction))
@@ -2014,7 +2009,6 @@
 (defn- draw-cell-debug
   [ctx shape-drawer world-viewport]
   (let [world (:ctx/world ctx)
-        colors (:ctx/colors ctx)
         tile-positions (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))]
     (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and (:ctx/show-cell-entities? ctx) (seq (:entities cell*)))
@@ -2038,10 +2032,8 @@
   [ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position]
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
-        colors (:ctx/colors ctx)
         textures @textures
         elapsed-time (:ctx/elapsed-time ctx)
-        render-z-order (:ctx/render-z-order ctx)
         show-body-bounds? (:ctx/show-body-bounds? ctx)
         active-entities (:ctx/active-entities ctx)
         entities (map deref active-entities)
@@ -2076,8 +2068,7 @@
 
 (defn- highlight-mouseover-tile
   [ctx shape-drawer world-mouse-position]
-  (let [colors (:ctx/colors ctx)
-        world (:ctx/world ctx)
+  (let [world (:ctx/world ctx)
         [x y] (mapv int world-mouse-position)
         cell (world/cell-at world [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
@@ -2203,8 +2194,7 @@
     texture))
 
 (defn- create-ui-actors [ctx handle-fsm-event!]
-  (let [colors (:ctx/colors ctx)
-        cell-size 48]
+  (let [cell-size 48]
     [(create-action-bar)
      (create-dev-menu
       {:menus dev-menus
@@ -2345,12 +2335,6 @@
                  :ctx/show-tile-grid? false}
             ctx
             (merge (map->Record {}) ctx)
-            (-> ctx
-                (assoc :ctx/controls controls)
-                (assoc :ctx/controls-info controls-info)
-                (assoc :ctx/colors colors)
-                (assoc :ctx/render-z-order render-z-order)
-                (assoc :ctx/max-speed max-speed))
             (assoc ctx :ctx/db (db/create))
             (do
              (doseq [actor (create-ui-actors ctx handle-fsm-event!)]
@@ -2427,7 +2411,6 @@
     (swap! state (fn [ctx]
                    (let [player-eid (:ctx/player-eid ctx)
                          raycaster (:ctx/raycaster ctx)
-                         render-z-order (:ctx/render-z-order ctx)
                          mouseover-eid (:ctx/mouseover-eid ctx)
                          [x y] ui-mouse-position
                          new-eid (if (mouseover-actor @stage x y)
@@ -2452,7 +2435,6 @@
     (let [ctx @state
           raycaster (:ctx/raycaster ctx)
           world-viewport @world-viewport
-          colors (:ctx/colors ctx)
           explored-tile-corners (:ctx/explored-tile-corners ctx)
           tiled-map (:ctx/tiled-map ctx)]
       (moon-tiled-map/draw! tiled-map
@@ -2519,15 +2501,14 @@
                           (or #_error
                               (and pausing?
                                    (state->pause-game? (:state (:entity/fsm @(:ctx/player-eid ctx))))
-                                   (not (or (key-just-pressed? (:unpause-once (:ctx/controls ctx)))
-                                            (key-pressed? (:unpause-continously (:ctx/controls ctx))))))))))
+                                   (not (or (key-just-pressed? (:unpause-once controls))
+                                            (key-pressed? (:unpause-continously controls)))))))))
     (when-not (:ctx/paused? @state)
       (swap! state #(-> % update-time update-potential-fields))
       (let [ctx @state
             audiovisual! (let [do-audiovisual! audiovisual!]
                            #(do-audiovisual! spawn-entity! (:ctx/db ctx) @audio %1 %2))
             active-entities (:ctx/active-entities ctx)
-            colors (:ctx/colors ctx)
             raycaster (:ctx/raycaster ctx)
             elapsed-time (:ctx/elapsed-time ctx)]
         (try
@@ -2567,16 +2548,16 @@
     (let [ctx @state
           stage @stage
           world-viewport @world-viewport]
-      (when (key-pressed? (:zoom-in (:ctx/controls ctx)))
+      (when (key-pressed? (:zoom-in controls))
         (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
-      (when (key-pressed? (:zoom-out (:ctx/controls ctx)))
+      (when (key-pressed? (:zoom-out controls))
         (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
-      (when (key-just-pressed? (:close-windows-key (:ctx/controls ctx)))
+      (when (key-just-pressed? (:close-windows-key controls))
         (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
              (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
-      (when (key-just-pressed? (:toggle-inventory (:ctx/controls ctx)))
+      (when (key-just-pressed? (:toggle-inventory controls))
         (toggle-inventory-visible! stage))
-      (when (key-just-pressed? (:toggle-entity-info (:ctx/controls ctx)))
+      (when (key-just-pressed? (:toggle-entity-info controls))
         (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
     (update-draw-stage)
