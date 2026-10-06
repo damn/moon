@@ -1,6 +1,5 @@
 (ns levelgen
   (:require [moon.db :as db]
-            [moon.camera :as orthographic-camera]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
@@ -49,14 +48,17 @@
     (assert tiled-map)
     (.setVisible ^TiledMapTileLayer (.get (.getLayers tiled-map) "creatures")
                  true)
-    (let [pos (.position camera)]
-      (set! (.x pos) (/ width 2))
-      (set! (.y pos) (/ height 2))
+    (let [pos (.position camera)
+          px (float (/ width 2))
+          py (float (/ height 2))
+          x-diff (max (- px (float 0)) (- (float width) px))
+          y-diff (max (- (float height) py) (- py (float 0)))
+          vp-ratio-w (/ (* x-diff 2) (.viewportWidth camera))
+          vp-ratio-h (/ (* y-diff 2) (.viewportHeight camera))]
+      (set! (.x pos) px)
+      (set! (.y pos) py)
+      (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
       (.update camera))
-    (orthographic-camera/zoom-to-rect camera {:left [0 0]
-                                              :top [0 height]
-                                              :right [width 0]
-                                              :bottom [0 0]})
     tiled-map))
 
 (defn create-viewport [world-width world-height]

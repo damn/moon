@@ -1,7 +1,6 @@
 (ns game.shared
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.camera :as orthographic-camera]
             [moon.color :as color]
             [moon.tiled-map :as moon-tiled-map]
             [moon.body :as body]
@@ -37,7 +36,7 @@
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
-           (com.badlogic.gdx.math Vector2)
+           (com.badlogic.gdx.math Vector2 Vector3)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Cell HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
@@ -2112,7 +2111,13 @@
 (defn draw-tile-grid
   [ctx shape-drawer ^Viewport world-viewport]
   (when @show-tile-grid?
-    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (.getCamera world-viewport))]
+    (let [^OrthographicCamera camera (.getCamera world-viewport)
+          plane-points (mapv (fn [^Vector3 v3]
+                               [(.x v3) (.y v3) (.z v3)])
+                             (.planePoints (.frustum camera)))
+          frustum-points (take 4 plane-points)
+          left-x   (apply min (map first  frustum-points))
+          bottom-y (apply min (map second frustum-points))]
       (draw-fn-grid shape-drawer
                      (int left-x)
                      (int bottom-y)
@@ -2125,7 +2130,18 @@
 (defn draw-cell-debug
   [ctx shape-drawer ^Viewport world-viewport]
   (let [world @world
-        tile-positions (orthographic-camera/visible-tiles (.getCamera world-viewport))]
+        ^OrthographicCamera camera (.getCamera world-viewport)
+        plane-points (mapv (fn [^Vector3 v3]
+                             [(.x v3) (.y v3) (.z v3)])
+                           (.planePoints (.frustum camera)))
+        frustum-points (take 4 plane-points)
+        left-x   (apply min (map first  frustum-points))
+        right-x  (apply max (map first  frustum-points))
+        bottom-y (apply min (map second frustum-points))
+        top-y    (apply max (map second frustum-points))
+        tile-positions (for [x (range (int left-x) (int right-x))
+                             y (range (int bottom-y) (+ 2 (int top-y)))]
+                         [x y])]
     (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and @show-cell-entities? (seq (:entities cell*)))
         (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-entities colors)))
