@@ -5,7 +5,8 @@
             [moon.g2d :as g2d])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapProperties)
+           (com.badlogic.gdx.maps MapLayer MapProperties)
+           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn- initial-grid
@@ -65,6 +66,41 @@
                       (wall-tile))
         :ground (ground-tile)))))
 
+(defn- create-tiled-map [grid tile-size create-tile position->tile]
+  (let [properties {"width" (g2d/width grid)
+                    "height" (g2d/height grid)
+                    "tilewidth" tile-size
+                    "tileheight" tile-size}
+        layers [{:name "ground"
+                 :visible? true
+                 :properties {"movement-properties" true}
+                 :tiles (for [position (g2d/posis grid)]
+                          [position (create-tile (position->tile position))])}]
+        tiled-map (TiledMap.)]
+    (doseq [[k v] properties]
+      (assert (string? k))
+      (.put (.getProperties tiled-map) k v))
+    (doseq [{:keys [name visible? properties tiles]} layers]
+      (assert (string? name))
+      (assert (boolean? visible?))
+      (let [props (.getProperties tiled-map)
+            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
+                                                               (int (.get props "height"))
+                                                               (int (.get props "tilewidth"))
+                                                               (int (.get props "tileheight")))
+                                       (.setName ^String name)
+                                       (.setVisible visible?))]
+        (doseq [[k v] properties]
+          (assert (string? k))
+          (.put ^MapProperties (.getProperties layer) k v))
+        (doseq [[[x y] tile] tiles
+                :when tile]
+          (.setCell layer (int x) (int y)
+                    (doto (TiledMapTileLayer$Cell.)
+                      (.setTile ^TiledMapTile tile))))
+        (.add (.getLayers tiled-map) ^MapLayer layer)))
+    tiled-map))
+
 (defn- last-steps
   [{:keys [level/grid
            level/start
@@ -78,16 +114,7 @@
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
         grid (g2d/assoc-transition-cells grid)
         position->tile (position-tile-fn grid)
-        tiled-map (moon-tiled-map/create
-                   {:properties {"width" (g2d/width grid)
-                                 "height" (g2d/height grid)
-                                 "tilewidth" tile-size
-                                 "tileheight" tile-size}
-                    :layers [{:name "ground"
-                              :visible? true
-                              :properties {"movement-properties" true}
-                              :tiles (for [position (g2d/posis grid)]
-                                       [position (create-tile (position->tile position))])}]})
+        tiled-map (create-tiled-map grid tile-size create-tile position->tile)
         can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         level (inc (rand-int 6))

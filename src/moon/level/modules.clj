@@ -5,7 +5,7 @@
             [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapLayers MapProperties)
+           (com.badlogic.gdx.maps MapLayer MapLayers MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
@@ -180,11 +180,38 @@
                            (when-let [cell (.getCell ^TiledMapTileLayer layer (int (local-position 0)) (int (local-position 1)))]
                              [position (copy-tile (.getTile ^TiledMapTileLayer$Cell cell))])))})}))
 
+(defn- create-tiled-map [schema-tiled-map scaled-grid]
+  (let [{:keys [properties layers]} (grid->tiled-map schema-tiled-map scaled-grid)
+        tiled-map (TiledMap.)]
+    (doseq [[k v] properties]
+      (assert (string? k))
+      (.put (.getProperties tiled-map) k v))
+    (doseq [{:keys [name visible? properties tiles]} layers]
+      (assert (string? name))
+      (assert (boolean? visible?))
+      (let [props (.getProperties tiled-map)
+            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
+                                                               (int (.get props "height"))
+                                                               (int (.get props "tilewidth"))
+                                                               (int (.get props "tileheight")))
+                                       (.setName ^String name)
+                                       (.setVisible visible?))]
+        (doseq [[k v] properties]
+          (assert (string? k))
+          (.put ^MapProperties (.getProperties layer) k v))
+        (doseq [[[x y] tile] tiles
+                :when tile]
+          (.setCell layer (int x) (int y)
+                    (doto (TiledMapTileLayer$Cell.)
+                      (.setTile ^TiledMapTile tile))))
+        (.add (.getLayers tiled-map) ^MapLayer layer)))
+    tiled-map))
+
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
            schema-tiled-map]
     :as w}]
-  (assoc w :tiled-map (moon-tiled-map/create (grid->tiled-map schema-tiled-map scaled-grid))))
+  (assoc w :tiled-map (create-tiled-map schema-tiled-map scaled-grid)))
 
 (defn- calculate-start [{:keys [start scale] :as w}]
   (assoc w :start-position (mapv * start scale)))

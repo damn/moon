@@ -5,33 +5,6 @@
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn create
-  [{:keys [properties layers]}]
-  (let [tiled-map (TiledMap.)]
-    (doseq [[k v] properties]
-      (assert (string? k))
-      (.put (.getProperties tiled-map) k v))
-    (doseq [{:keys [name visible? properties tiles]} layers]
-      (assert (string? name))
-      (assert (boolean? visible?))
-      (let [props (.getProperties tiled-map)
-            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
-                                                               (int (.get props "height"))
-                                                               (int (.get props "tilewidth"))
-                                                               (int (.get props "tileheight")))
-                                       (.setName ^String name)
-                                       (.setVisible visible?))]
-        (doseq [[k v] properties]
-          (assert (string? k))
-          (.put ^MapProperties (.getProperties layer) k v))
-        (doseq [[[x y] tile] tiles
-                :when tile]
-          (.setCell layer (int x) (int y)
-                    (doto (TiledMapTileLayer$Cell.)
-                      (.setTile ^TiledMapTile tile))))
-        (.add (.getLayers tiled-map) ^MapLayer layer)))
-    tiled-map))
-
 (defn spawn-positions [^TiledMap tiled-map]
   (let [layer-name "creatures"
         property-key "id"
