@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
             [moon.camera :as orthographic-camera]
             [moon.color :as color]
@@ -485,15 +484,15 @@
 (defn- create-action-bar []
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 2))))]
-    (table/add-cell! table {:actor (doto (HorizontalGroup.)
-                                     (.space (float 2))
-                                     (.pad (float 2))
-                                     (.setName "moon.ui.action-bar.horizontal-group")
-                                     (.setUserObject (doto (ButtonGroup.)
-                                                       (.setMaxCheckCount (int 1))
-                                                       (.setMinCheckCount (int 0)))))
-                            :expand? true
-                            :bottom? true})
+    (doto (.add ^Table table ^Actor (doto (HorizontalGroup.)
+                                      (.space (float 2))
+                                      (.pad (float 2))
+                                      (.setName "moon.ui.action-bar.horizontal-group")
+                                      (.setUserObject (doto (ButtonGroup.)
+                                                        (.setMaxCheckCount (int 1))
+                                                        (.setMinCheckCount (int 0))))))
+      (.expand)
+      (.bottom))
     (.row ^Table table)
     (doto table
       (.pack)
@@ -1467,7 +1466,7 @@
                                                                                    (for [x (range 6)]
                                                                                      (->cell :inventory.slot/bag :position [x y]))))]
                                                                (doseq [cell row]
-                                                                 (table/add-cell! cell-table cell))
+                                                                 (.add ^Table cell-table ^Actor (:actor cell)))
                                                                (.row ^Table cell-table))
                                                              (.pack cell-table)
                                                              (.setName cell-table "inventory-cell-table")
@@ -1920,19 +1919,19 @@
          sub-table (Table.)]
      (doseq [cell [{:actor (Image. ^Texture icon)}
                    {:actor label}]]
-       (table/add-cell! sub-table cell))
+       (.add ^Table sub-table ^Actor (:actor cell)))
      (.row ^Table sub-table)
      (.pack sub-table)
      (.addActor ^Group table (set-label-text-actor label text-fn))
-     (table/add-cell! table {:actor sub-table
-                             :right? true
-                             :expand-x? true})))
+     (doto (.add ^Table table ^Actor sub-table)
+       (.right)
+       (.expandX))))
   ([skin table text-fn]
    (let [label (Label. "" ^Skin skin)]
      (.addActor ^Group table (set-label-text-actor label text-fn))
-     (table/add-cell! table {:actor label
-                             :right? true
-                             :expand-x? true}))))
+     (doto (.add ^Table table ^Actor label)
+       (.right)
+       (.expandX)))))
 
 (defn- dev-menu-main-table [skin menus update-labels]
   (let [table (Table.)]
@@ -1951,7 +1950,7 @@
                                                                                                      (changed [_event _actor]
                                                                                                        (on-click)))))})]
                                                                    :window/add-close-button? true}))))))})]
-      (table/add-cell! table cell))
+      (.add ^Table table ^Actor (:actor cell)))
     (.row ^Table table)
     (.pack table)
     (doseq [{:keys [label update-fn icon]} update-labels]
@@ -1964,18 +1963,17 @@
 (defn- create-dev-menu
   [{:keys [menus update-labels skin]}]
   (let [table (Table.)]
-    (doseq [row [[{:actor (dev-menu-main-table skin menus update-labels)
-                   :expand-x? true
-                   :fill-x? true
-                   :colspan 1}]
-                 [{:actor (doto (Label. "" ^Skin skin)
-                            (.setTouchable Touchable/disabled))
-                   :expand? true
-                   :fill-x? true
-                   :fill-y? true}]]]
-      (doseq [cell row]
-        (table/add-cell! table cell))
-      (.row ^Table table))
+    (doto (.add table ^Actor (dev-menu-main-table skin menus update-labels))
+      (.expandX)
+      (.fillX)
+      (.colspan (int 1)))
+    (.row table)
+    (doto (.add table ^Actor (doto (Label. "" ^Skin skin)
+                               (.setTouchable Touchable/disabled)))
+      (.expand)
+      (.fillX)
+      (.fillY))
+    (.row table)
     (doto table
       (.pack)
       (.setFillParent true))))

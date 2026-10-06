@@ -1,15 +1,14 @@
 (ns moon.scene2d.window
-  (:require [moon.scene2d.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label Skin Table TextButton Window)
+           (com.badlogic.gdx.scenes.scene2d.ui Cell Label Skin Table TextButton Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)))
 
 (defn add-close-button! [window skin]
-  (table/add-cell! (.getTitleTable ^Window window)
-             {:actor (doto (TextButton. "X" ^Skin skin)
-                       (.addListener (proxy [ChangeListener] []
-                                           (changed [_event _actor]
-                                             (.remove ^Actor window)))))}))
+  (.add ^Table (.getTitleTable ^Window window)
+        ^Actor (doto (TextButton. "X" ^Skin skin)
+                 (.addListener (proxy [ChangeListener] []
+                                 (changed [_event _actor]
+                                   (.remove ^Actor window)))))))
 
 (def ^:private set-opt-fns
   {:window/add-close-button? (fn [window skin _]
@@ -22,7 +21,11 @@
     (when rows
       (doseq [row rows]
         (doseq [cell row]
-          (table/add-cell! window cell))
+          (let [c (.add ^Table window ^Actor (:actor cell))]
+            (when-let [w (:width cell)] (.width ^Cell c (float w)))
+            (when-let [h (:height cell)] (.height ^Cell c (float h)))
+            (when (:expand? cell) (.expand ^Cell c))
+            (when-let [p (:pad cell)] (.pad ^Cell c (float p)))))
         (.row ^Table window))
       (.pack ^Layout window))
     (doseq [[k v] opts :when (and (set-opt-fns k) v)]
