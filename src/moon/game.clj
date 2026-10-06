@@ -3,9 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [moon.scene2d.group :as group :refer [find-actor
-                                                  add-actor!
-                                                  get-children]]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
             [moon.camera :as orthographic-camera]
@@ -50,7 +47,7 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor Event Stage Touchable)
+           (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip TooltipManager Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
@@ -518,7 +515,7 @@
   [action-bar]
   {:post [(:horizontal-group %)
           (:button-group %)]}
-  (let [group (find-actor action-bar "moon.ui.action-bar.horizontal-group")]
+  (let [group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
      :button-group (.getUserObject ^Actor group)}))
 
@@ -536,7 +533,7 @@
                                      (* scale (.getRegionHeight ^TextureRegion texture-region)))))
                  (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
                  (.setUserObject skill-id))]
-    (add-actor! horizontal-group button)
+    (.addActor ^Group horizontal-group ^Actor button)
     (.add ^ButtonGroup button-group ^Button button)
     nil))
 
@@ -553,15 +550,13 @@
     (.getUserObject ^Actor skill-button)))
 
 (defn- inventory-window-get-cell [inventory-window cell]
-  (->> "inventory-cell-table"
-       (#(find-actor inventory-window %))
-       get-children
+  (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))
        (filter #(= (.getUserObject ^Actor %) cell))
        first))
 
 (defn- inventory-window-remove-item! [inventory-window cell]
   (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (find-actor cell-widget "image-widget")]
+        image-widget (.findActor ^Group cell-widget "image-widget")]
     (.setDrawable ^Image image-widget ^Drawable (:background-drawable (.getUserObject ^Actor image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
@@ -571,7 +566,7 @@
 
 (defn- inventory-window-set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
   (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (find-actor cell-widget "image-widget")
+        image-widget (.findActor ^Group cell-widget "image-widget")
         cell-size (:cell-size (.getUserObject ^Actor image-widget))]
     (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                                                   (.setMinSize cell-size cell-size)))
@@ -736,7 +731,7 @@
 
 ; -> used in handle-fsm-event
 (defn- show-modal! [skin stage {:keys [title text button-text on-click]}]
-  (assert (not (find-actor (.getRoot ^Stage stage) "moon.ui.modal-window")))
+  (assert (not (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.modal-window")))
   (.addActor ^Stage stage
                     (doto (window/create {:title title
                                           :skin skin
@@ -744,7 +739,7 @@
                                                        [{:actor (doto (TextButton. button-text skin)
                                                                        (.addListener (proxy [ChangeListener] []
                                                                          (changed [_event _actor]
-                                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-actor (.getRoot ^Stage stage)
+                                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (.findActor ^Group (.getRoot ^Stage stage)
                                                                                               "moon.ui.modal-window"))
                                                                            (on-click)))))}]]})
                       (window/set-modal! true)
@@ -756,7 +751,7 @@
         stage @stage
         textures @textures]
     (-> (.getRoot ^Stage stage)
-        (find-actor "moon.ui.windows.inventory")
+        (.findActor "moon.ui.windows.inventory")
         (inventory-window-set-item! cell
                                     {:texture-region (textures/texture-region textures (:entity/image item))
                                      :tooltip-text (item/info-text item)}
@@ -767,7 +762,7 @@
         stage @stage
         textures @textures]
     (-> (.getRoot ^Stage stage)
-        (find-actor "moon.ui.action-bar")
+        (.findActor "moon.ui.action-bar")
         (action-bar-add-skill! {:skill-id (:property/id skill)
                                 :texture-region (textures/texture-region textures (:entity/image skill))
                                 :tooltip-text (info-text skill elapsed-time)}
@@ -915,12 +910,12 @@
 
 (defn- toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)
-                      (find-actor "moon.ui.windows.inventory"))]
+                      (.findActor "moon.ui.windows.inventory"))]
     (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory)))))
 
 (defn- show-message! [stage message]
   (-> (.getRoot ^Stage stage)
-      (find-actor "player-message")
+      (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
 (def colors
@@ -1450,7 +1445,7 @@
 
 (defn- ui-remove-item! [ctx cell]
   (-> (.getRoot ^Stage @stage)
-      (find-actor "moon.ui.windows.inventory")
+      (.findActor "moon.ui.windows.inventory")
       (inventory-window-remove-item! cell)))
 
 (defn handle-clicked-inventory-cell
@@ -1495,7 +1490,7 @@
         background-drawable (slot->drawable slot)]
     {:actor
      (let [stack (Stack.)]
-       (run! #(add-actor! stack %)
+       (run! #(.addActor ^Group stack ^Actor %)
              [(proxy [Widget] []
                 (draw [batch parent-alpha]
                   (when-let [stage (.getStage ^Actor this)]
@@ -1603,8 +1598,8 @@
       :cell-size cell-size})))
 
 (defn windows-create [ctx actor-fns]
-  (let [group* (group/create)]
-    (run! #(add-actor! group* %) (for [f actor-fns] (f ctx)))
+  (let [group* (Group.)]
+    (run! #(.addActor ^Group group* ^Actor %) (for [f actor-fns] (f ctx)))
     (doto group*
       (.setName "moon.ui.windows"))))
 
@@ -1623,7 +1618,7 @@
                  (.setVisible visible?))]
     (let [[x y] position]
       (.setPosition ^Actor window (float x) (float y)))
-    (add-actor! window (proxy [Actor] []
+    (.addActor ^Group window (proxy [Actor] []
                          (act [delta]
                            (when (.getStage ^Actor this)
                              (.setText ^Label label ^String (set-label-text! @state)))
@@ -1727,7 +1722,7 @@
           (let [item (:entity/item @clicked-eid)]
             (cond
               (-> (.getRoot ^Stage stage)
-                  (find-actor "moon.ui.windows.inventory")
+                  (.findActor "moon.ui.windows.inventory")
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (audio/play! audio "bfxr_takeit")
@@ -2006,13 +2001,13 @@
    (let [label (Label. "" ^Skin skin)
          sub-table (table/create {:table/rows [[{:actor (Image. ^Texture icon)}
                                                 {:actor label}]]})]
-     (add-actor! table (set-label-text-actor label text-fn))
+     (.addActor ^Group table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor sub-table
                              :right? true
                              :expand-x? true})))
   ([skin table text-fn]
    (let [label (Label. "" ^Skin skin)]
-     (add-actor! table (set-label-text-actor label text-fn))
+     (.addActor ^Group table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor label
                              :right? true
                              :expand-x? true}))))
@@ -2174,7 +2169,7 @@
 
       :else
       (if-let [skill-id (-> (.getRoot ^Stage stage)
-                            (find-actor "moon.ui.action-bar")
+                            (.findActor "moon.ui.action-bar")
                             action-bar-selected-skill)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
@@ -2645,13 +2640,12 @@
       (when (key-pressed? (:zoom-out (:ctx/controls ctx)))
         (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
       (when (key-just-pressed? (:close-windows-key (:ctx/controls ctx)))
-        (->> (find-actor (.getRoot ^Stage stage) "moon.ui.windows")
-             get-children
+        (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
              (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
       (when (key-just-pressed? (:toggle-inventory (:ctx/controls ctx)))
         (toggle-inventory-visible! stage))
       (when (key-just-pressed? (:toggle-entity-info (:ctx/controls ctx)))
-        (let [entity-info (find-actor (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
+        (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
     (update-draw-stage)
     (malli-schema/validate-humanize schema @state)))

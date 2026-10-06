@@ -13,14 +13,13 @@
             [moon.error-window :as error-window]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [moon.scene2d.group :refer [get-children clear-children! add-actor! find-actor]]
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor Stage Touchable)
+           (com.badlogic.gdx.scenes.scene2d Actor Group Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable)
@@ -69,7 +68,7 @@
 
 (defn- map-widget-table-get-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a))) (get-children table))
+        (for [widget (filter (comp vector? (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a))) (.getChildren ^Group table))
               :let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor widget)]]
           [k (widget-value (get schemas k) widget schemas)])))
 
@@ -79,10 +78,10 @@
     :s/enum (edn/read-string (.getSelected ^SelectBox widget))
     :s/map (map-widget-table-get-value widget schemas)
     :s/number (edn/read-string (.getText ^TextField widget))
-    :s/one-to-many (->> (get-children widget)
+    :s/one-to-many (->> (.getChildren ^Group widget)
                         (keep (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a)))
                         set)
-    :s/one-to-one (->> (get-children widget)
+    :s/one-to-one (->> (.getChildren ^Group widget)
                        (keep (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a)))
                        first)
     :s/string (.getText ^TextField widget)
@@ -122,7 +121,7 @@
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
-    (clear-children! table)
+    (.clearChildren ^Group table)
     (table/add-rows! table [(->sound-columns skin table sound-name)])
     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
     (.pack ^Layout (find-ancestor table (partial instance? window/class)))
@@ -162,7 +161,7 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (let [stack (Stack.)]
-                (run! #(add-actor! stack %)
+                (run! #(.addActor ^Group stack ^Actor %)
                       [(doto (ImageButton.
                               (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                                 (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
@@ -245,7 +244,7 @@
                                                      (changed [event actor]
                                                        (clicked-delete-fn actor @state)))))
                             :center? true}]]]
-    (doto (window/create {:title "[SKY]Property[]"
+    (doto ^Group (window/create {:title "[SKY]Property[]"
                           :skin skin
                           :table/cell-defaults {:pad 5}
                           :table/rows [[(let [table (table/create {:table/cell-defaults {:pad 5}
@@ -256,7 +255,7 @@
                                                         (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))})]]
                           :window/add-close-button? true})
       (window/set-modal! true)
-      (add-actor! (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
+      (.addActor (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
                     (act [delta]
                       (when (.isKeyJustPressed ^Input Gdx/input Input$Keys/ENTER)
                         (clicked-save-fn this @state))
@@ -273,7 +272,7 @@
    property-type
    property-ids]
   (let [redo-rows (fn [db skin textures property-ids]
-                    (clear-children! table)
+                    (.clearChildren ^Group table)
                     (add-one-to-many-rows db skin textures table property-type property-ids)
                     (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
@@ -320,7 +319,7 @@
    property-type
    property-id]
   (let [redo-rows (fn [db skin textures id]
-                    (clear-children! table)
+                    (.clearChildren ^Group table)
                     (add-one-to-one-rows db skin textures table property-type id)
                     (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
@@ -365,8 +364,8 @@
            ctx/stage]
     :as ctx}]
   (let [window (-> (.getRoot ^Stage stage)
-                   (find-actor "moon.ui.clojure.editor-window"))
-        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+                   (.findActor "moon.ui.clojure.editor-window"))
+        map-widget-table (.findActor ^Group window "moon.db.schema.map.ui.widget")
         property (map-widget-table-get-value map-widget-table (:db/schemas db))]
     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
     (.addActor ^Stage stage
@@ -391,7 +390,7 @@
                                                                       (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
                                                                                                                                        (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
                                                                                                                                             (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
-                                                                                                                                     (get-children table))))
+                                                                                                                                     (.getChildren ^Group table))))
                                                                       (let [ctx @state]
                                                                         (rebuild-editor-window! ctx)))))))
                                          :left? true}
