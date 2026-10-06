@@ -18,7 +18,7 @@
 (defn create [{:keys [title skin table/cell-defaults table/rows] :as opts}]
   (let [window (Window. ^String title ^Skin skin)]
     (when cell-defaults
-      (table/set-cell-defaults! window cell-defaults))
+      (.pad (.defaults window) (float (:pad cell-defaults))))
     (when rows
       (table/add-rows! window rows)
       (.pack ^Layout window))

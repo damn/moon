@@ -36,7 +36,3 @@
         :else (.add ^Table table ^Actor props-or-actor)))
     (.row ^Table table))
   table)
-
-(defn set-cell-defaults! [table defaults]
-  (set-cell-opts! (.defaults ^Table table) defaults)
-  table)

@@ -236,7 +236,7 @@
 
 (defn- property-editor-table [rows]
   (doto (Table.)
-    (table/set-cell-defaults! {:pad 5})
+    (#(.pad (.defaults ^Table %) (float 5)))
     (table/add-rows! rows)
     (.pack)))
 
@@ -410,7 +410,7 @@
            k
            table]}]
   (doto (Table.)
-    (table/set-cell-defaults! {:pad 2})
+    (#(.pad (.defaults ^Table %) (float 2)))
     (table/add-rows! [[{:actor (when display-remove-component-button?
                                          (doto (TextButton. "-" skin)
                                            (.addListener (proxy [ChangeListener] []
@@ -485,7 +485,7 @@
            opt?
            build-widget]}]
   (let [table (doto (Table.)
-                (table/set-cell-defaults! {:pad 5})
+                (#(.pad (.defaults ^Table %) (float 5)))
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (coll/interpose-f (horiz-sep colspan)
@@ -539,7 +539,7 @@
 
 (defn- animation-widget [animation textures]
   (doto (Table.)
-    (table/set-cell-defaults! {:pad 1})
+    (#(.pad (.defaults ^Table %) (float 1)))
     (table/add-rows! [(for [image (:animation/frames animation)]
                         {:actor (scaled-image-button
                                  (textures/texture-region textures image)
@@ -578,19 +578,19 @@
 
 (defn- one-to-many-widget [[_ property-type] property-ids db skin textures]
   (let [table (doto (Table.)
-              (table/set-cell-defaults! {:pad 5}))]
+              (#(.pad (.defaults ^Table %) (float 5))))]
     (add-one-to-many-rows db skin textures table property-type property-ids)
     table))
 
 (defn- one-to-one-widget [[_ property-type] property-id db skin textures]
   (let [table (doto (Table.)
-              (table/set-cell-defaults! {:pad 5}))]
+              (#(.pad (.defaults ^Table %) (float 5))))]
     (add-one-to-one-rows db skin textures table property-type property-id)
     table))
 
 (defn- sound-widget [sound-name skin]
   (let [table (doto (Table.)
-              (table/set-cell-defaults! {:pad 5}))]
+              (#(.pad (.defaults ^Table %) (float 5))))]
     (letfn [(sound-columns-fn [skin table sound-name]
               (sound-columns skin table sound-name open-select-fn))
             (open-select-fn [table]

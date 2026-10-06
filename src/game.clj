@@ -484,7 +484,7 @@
 
 (defn- create-action-bar []
   (doto (Table.)
-    (table/set-cell-defaults! {:pad 2})
+    (#(.pad (.defaults ^Table %) (float 2)))
     (table/add-rows! [[{:actor (doto (HorizontalGroup.)
                                  (.space (float 2))
                                  (.pad (float 2))
