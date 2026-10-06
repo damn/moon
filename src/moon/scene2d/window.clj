@@ -1,6 +1,6 @@
 (ns moon.scene2d.window
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Cell Label Skin Table TextButton Window)
+           (com.badlogic.gdx.scenes.scene2d.ui Cell Skin Table TextButton Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)))
 
 (defn add-close-button! [window skin]
@@ -31,10 +31,3 @@
     (doseq [[k v] opts :when (and (set-opt-fns k) v)]
       ((set-opt-fns k) window skin v))
     window))
-
-(defn title-bar? [actor]
-  (when (instance? Label actor)
-    (when-let [p (.getParent ^Actor actor)]
-      (when-let [p (.getParent ^Actor p)]
-        (and (instance? Window p)
-             (= (.getTitleLabel ^Window p) actor))))))

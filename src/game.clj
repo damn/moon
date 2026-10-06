@@ -646,7 +646,11 @@
       inventory-slot
       [:mouseover-actor/inventory-cell inventory-slot]
 
-      (window/title-bar? actor)
+      (when (instance? Label actor)
+        (when-let [p (.getParent ^Actor actor)]
+          (when-let [p (.getParent ^Actor p)]
+            (and (instance? Window p)
+                 (= (.getTitleLabel ^Window p) actor)))))
       [:mouseover-actor/window-title-bar]
 
       (button? actor)
