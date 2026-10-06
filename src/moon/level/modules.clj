@@ -5,7 +5,7 @@
             [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapProperties)
+           (com.badlogic.gdx.maps MapLayers MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
@@ -214,20 +214,20 @@
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))))
         scaled-area-level-grid (g2d/scale-by area-level-grid scale)
-        creatures-layer (.get (.getLayers tiled-map) "creatures")
         get-free-position-in-area-level (fn [area-level]
-                                          (rand-nth
-                                           (filter
-                                            (fn [p]
-                                              (and (= area-level (get scaled-area-level-grid p))
-                                                   (#{:no-cell :undefined}
-                                                    (let [[x y] p]
-                                                      (if-let [cell (.getCell ^TiledMapTileLayer creatures-layer (int x) (int y))]
-                                                        (if-let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell)) "id")]
-                                                          value
-                                                          :undefined)
-                                                        :no-cell)))))
-                                            spawn-positions)))
+                                          (let [creatures-layer (.get ^MapLayers (.getLayers tiled-map) "creatures")]
+                                            (rand-nth
+                                             (filter
+                                              (fn [p]
+                                                (and (= area-level (get scaled-area-level-grid p))
+                                                     (#{:no-cell :undefined}
+                                                      (let [[x y] p]
+                                                        (if-let [cell (.getCell ^TiledMapTileLayer creatures-layer (int x) (int y))]
+                                                          (if-let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell)) "id")]
+                                                            value
+                                                            :undefined)
+                                                          :no-cell)))))
+                                              spawn-positions))))
         creatures (for [position spawn-positions
                         :let [area-level (get scaled-area-level-grid position)
                               creatures (filter #(= area-level (:creature/level %))
