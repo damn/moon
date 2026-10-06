@@ -2363,22 +2363,20 @@
         shape-drawer @shape-drawer
         ui-mouse-position (viewport/unproject (.getViewport ^Stage @stage) mouse-position)
         world-mouse-position (viewport/unproject @world-viewport mouse-position)]
-    (let [player-eid @player-eid
-          raycaster @raycaster
-          mouseover-eid @mouseover-eid
+    (let [old-mouseover-eid @mouseover-eid
           [x y] ui-mouse-position
           new-eid (if (mouseover-actor @stage x y)
                     nil
-                    (let [player @player-eid
+                    (let [player @@player-eid
                           hits (remove #(= (:entity/z-order @%) :z-order/effect)
                                        (world/point->entities @world world-mouse-position))]
                       (->> render-z-order
                            (coll/sort-by-order hits #(:entity/z-order @%))
                            reverse
-                           (filter #(raycaster/line-of-sight? raycaster player @%))
+                           (filter #(raycaster/line-of-sight? @raycaster player @%))
                            first)))]
-      (when mouseover-eid
-        (swap! mouseover-eid dissoc :entity/mouseover?))
+      (when old-mouseover-eid
+        (swap! old-mouseover-eid dissoc :entity/mouseover?))
       (when new-eid
         (swap! new-eid assoc :entity/mouseover? true))
       (reset! mouseover-eid new-eid))
