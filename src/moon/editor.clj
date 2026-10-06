@@ -128,6 +128,20 @@
     (let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table)]
       (.setUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table [k sound-name]))))
 
+(defn- list-sounds-table
+  [skin audio table ->sound-columns]
+  (table/create {:table/cell-defaults {:pad 5}
+                 :table/rows (for [sound-name (audio/names audio)]
+                               [{:actor (doto (TextButton. sound-name skin)
+                                          (.addListener (proxy [ChangeListener] []
+                                                          (changed [event actor]
+                                                            ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
+                                {:actor (doto (TextButton. "play!" skin)
+                                          (.addListener (proxy [ChangeListener] []
+                                                          (changed [event _actor]
+                                                            (audio/play! (:ctx/audio @state)
+                                                                         sound-name)))))}])}))
+
 (defn- choose-sound-window
   [{:keys [ctx/skin
            ctx/stage
@@ -137,17 +151,7 @@
   (doto (window/create {:title "Choose"
                         :skin skin
                         :table/rows
-                        [[(let [list-table (table/create {:table/cell-defaults {:pad 5}
-                                                          :table/rows (for [sound-name (audio/names audio)]
-                                                                        [{:actor (doto (TextButton. sound-name skin)
-                                                                                   (.addListener (proxy [ChangeListener] []
-                                                                                                   (changed [event actor]
-                                                                                                     ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
-                                                                         {:actor (doto (TextButton. "play!" skin)
-                                                                                   (.addListener (proxy [ChangeListener] []
-                                                                                                   (changed [event _actor]
-                                                                                                     (audio/play! (:ctx/audio @state)
-                                                                                                                  sound-name)))))}])})]
+                        [[(let [list-table (list-sounds-table skin audio table ->sound-columns)]
                             {:actor (ScrollPane. ^Actor list-table ^Skin skin)
                              :width  (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor list-table) 50)
                              :height (min (- (viewport/get-world-height (.getViewport ^Stage stage)) 50)
