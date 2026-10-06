@@ -236,6 +236,12 @@
                            :skin skin
                            :throwable t}))))))
 
+(defn- property-editor-table [rows]
+  (doto (Table.)
+    (table/set-cell-defaults! {:pad 5})
+    (table/add-rows! rows)
+    (.pack)))
+
 (defn- property-editor-window
   [{:keys [db
            skin
@@ -252,28 +258,25 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" skin)
-                                     (.addListener (proxy [ChangeListener] []
-                                                     (changed [event actor]
-                                                       (clicked-save-fn actor @state)))))
-                            :center? true}
-                           {:actor (doto (TextButton. "Delete" skin)
-                                     (.addListener (proxy [ChangeListener] []
-                                                     (changed [event actor]
-                                                       (clicked-delete-fn actor @state)))))
-                            :center? true}]]]
+        table (property-editor-table
+               [[{:actor widget :colspan 2}]
+                [{:actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" skin)
+                           (.addListener (proxy [ChangeListener] []
+                                           (changed [event actor]
+                                             (clicked-save-fn actor @state)))))
+                  :center? true}
+                 {:actor (doto (TextButton. "Delete" skin)
+                           (.addListener (proxy [ChangeListener] []
+                                           (changed [event actor]
+                                             (clicked-delete-fn actor @state)))))
+                  :center? true}]])]
     (doto ^Group (window/create {:title "[SKY]Property[]"
                           :skin skin
                           :table/cell-defaults {:pad 5}
-                          :table/rows [[(let [table (doto (Table.)
-                                                      (table/set-cell-defaults! {:pad 5})
-                                                      (table/add-rows! scroll-pane-rows)
-                                                      (.pack))]
-                                          {:actor (ScrollPane. ^Actor table ^Skin skin)
-                                           :width (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
-                                           :height (min (- scroll-pane-height 50)
-                                                        (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))})]]
+                          :table/rows [[{:actor (ScrollPane. ^Actor table ^Skin skin)
+                                         :width (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
+                                         :height (min (- scroll-pane-height 50)
+                                                      (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))}]]
                           :window/add-close-button? true})
       (window/set-modal! true)
       (.addActor (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
