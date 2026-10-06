@@ -2475,16 +2475,6 @@
                                                                  :initial-state :npc-sleeping}
                                                     :entity/faction :evil}})))))
 
-(defn dispose! []
-  (run! Disposable/.dispose (vals @audio))
-  (Disposable/.dispose @batch)
-  (run! Disposable/.dispose (vals @cursors))
-  (Disposable/.dispose @default-font)
-  (Disposable/.dispose @shape-drawer-texture)
-  (Disposable/.dispose @skin)
-  (run! Disposable/.dispose (vals @textures))
-  (Disposable/.dispose @tiled-map))
-
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
@@ -2623,25 +2613,34 @@
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
     (update-draw-stage)))
 
-(defn resize! [width height]
-  (.update (.getViewport ^Stage @stage) width height true)
-  (.update ^Viewport @world-viewport width height false))
-
 (def listener
   (reify ApplicationListener
     (create [_]
       (create! Gdx/audio Gdx/files Gdx/input))
+
     (dispose [_]
-      (dispose!))
+      (run! Disposable/.dispose (vals @audio))
+      (Disposable/.dispose @batch)
+      (run! Disposable/.dispose (vals @cursors))
+      (Disposable/.dispose @default-font)
+      (Disposable/.dispose @shape-drawer-texture)
+      (Disposable/.dispose @skin)
+      (run! Disposable/.dispose (vals @textures))
+      (Disposable/.dispose @tiled-map))
+
     (render [_]
       (let [input Gdx/input]
         (render! [(.getX ^Input input) (.getY ^Input input)]
                  #(.isKeyPressed ^Input input (int %))
                  #(.isKeyJustPressed ^Input input (int %))
                  #(.isButtonJustPressed ^Input input (int %)))))
+
     (resize [_ width height]
-      (resize! width height))
+      (.update (.getViewport ^Stage @stage) width height true)
+      (.update ^Viewport @world-viewport width height false))
+
     (pause [_])
+
     (resume [_])))
 
 (defn -main []
