@@ -2,12 +2,9 @@
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.math Vector3)))
 
-(defn set-zoom! [^OrthographicCamera orthographic-camera amount]
-  (set! (.zoom orthographic-camera) amount)
-  (.update orthographic-camera))
-
 (defn inc-zoom! [^OrthographicCamera orthographic-camera by]
-  (set-zoom! orthographic-camera (max 0.1 (+ (.zoom orthographic-camera) by))))
+  (set! (.zoom orthographic-camera) (max 0.1 (+ (.zoom orthographic-camera) by)))
+  (.update orthographic-camera))
 
 (defn position [^OrthographicCamera orthographic-camera]
   (let [v3 (.position orthographic-camera)]
@@ -54,6 +51,7 @@
         vp-ratio-h (/ (* y-diff 2) viewport-height)]
     (max vp-ratio-w vp-ratio-h)))
 
-(defn zoom-to-rect [orthographic-camera rectangle]
-  (set-zoom! orthographic-camera
-             (calculate-zoom orthographic-camera rectangle)))
+(defn zoom-to-rect [^OrthographicCamera orthographic-camera rectangle]
+  (set! (.zoom orthographic-camera)
+        (calculate-zoom orthographic-camera rectangle))
+  (.update orthographic-camera))
