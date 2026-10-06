@@ -131,17 +131,18 @@
 (defn- list-sounds-table
   [skin audio table ->sound-columns]
   (doto (Table.)
-    (table/set-opts! {:table/cell-defaults {:pad 5}
-                     :table/rows (for [sound-name (audio/names audio)]
-                                   [{:actor (doto (TextButton. sound-name skin)
-                                              (.addListener (proxy [ChangeListener] []
-                                                              (changed [event actor]
-                                                                ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
-                                    {:actor (doto (TextButton. "play!" skin)
-                                              (.addListener (proxy [ChangeListener] []
-                                                              (changed [event _actor]
-                                                                (audio/play! (:ctx/audio @state)
-                                                                             sound-name)))))}])})))
+    (table/set-cell-defaults! {:pad 5})
+    (table/add-rows! (for [sound-name (audio/names audio)]
+                       [{:actor (doto (TextButton. sound-name skin)
+                                  (.addListener (proxy [ChangeListener] []
+                                                  (changed [event actor]
+                                                    ((rebuild-sound-widget! table sound-name ->sound-columns) actor @state)))))}
+                        {:actor (doto (TextButton. "play!" skin)
+                                  (.addListener (proxy [ChangeListener] []
+                                                  (changed [event _actor]
+                                                    (audio/play! (:ctx/audio @state)
+                                                                 sound-name)))))}]))
+    (.pack)))
 
 (defn- choose-sound-window
   [{:keys [ctx/skin
@@ -259,8 +260,9 @@
                           :skin skin
                           :table/cell-defaults {:pad 5}
                           :table/rows [[(let [table (doto (Table.)
-                                                      (table/set-opts! {:table/cell-defaults {:pad 5}
-                                                                        :table/rows scroll-pane-rows}))]
+                                                      (table/set-cell-defaults! {:pad 5})
+                                                      (table/add-rows! scroll-pane-rows)
+                                                      (.pack))]
                                           {:actor (ScrollPane. ^Actor table ^Skin skin)
                                            :width (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
                                            :height (min (- scroll-pane-height 50)
@@ -395,8 +397,8 @@
            k
            table]}]
   [{:actor (doto (Table.)
-             (table/set-opts! {:table/cell-defaults {:pad 2}
-                          :table/rows [[{:actor (when display-remove-component-button?
+             (table/set-cell-defaults! {:pad 2})
+             (table/add-rows! [[{:actor (when display-remove-component-button?
                                                   (doto (TextButton. "-" skin)
                                                     (.addListener (proxy [ChangeListener] []
                                                                     (changed [event _actor]
@@ -407,7 +409,8 @@
                                                                       (let [ctx @state]
                                                                         (rebuild-editor-window! ctx)))))))
                                          :left? true}
-                                        {:actor (Label. ^String (k-label-text k) ^Skin skin)}]]}))
+                                        {:actor (Label. ^String (k-label-text k) ^Skin skin)}]])
+             (.pack))
     :right? true}
    {:actor nil
     :pad-top 2
@@ -464,7 +467,7 @@
            opt?
            build-widget]}]
   (let [table (doto (Table.)
-                (table/set-opts! {:table/cell-defaults {:pad 5}})
+                (table/set-cell-defaults! {:pad 5})
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (coll/interpose-f (horiz-sep colspan)
@@ -518,11 +521,12 @@
 
 (defn- animation-widget [animation textures]
   (doto (Table.)
-    (table/set-opts! {:table/cell-defaults {:pad 1}
-                     :table/rows [(for [image (:animation/frames animation)]
-                                    {:actor (scaled-image-button
-                                             (textures/texture-region textures image)
-                                             2)})]})))
+    (table/set-cell-defaults! {:pad 1})
+    (table/add-rows! [(for [image (:animation/frames animation)]
+                        {:actor (scaled-image-button
+                                 (textures/texture-region textures image)
+                                 2)})])
+    (.pack)))
 
 (defn- boolean-widget [checked? skin]
   (doto (CheckBox. "" ^Skin skin)
@@ -556,19 +560,19 @@
 
 (defn- one-to-many-widget [[_ property-type] property-ids db skin textures]
   (let [table (doto (Table.)
-              (table/set-opts! {:table/cell-defaults {:pad 5}}))]
+              (table/set-cell-defaults! {:pad 5}))]
     (add-one-to-many-rows db skin textures table property-type property-ids)
     table))
 
 (defn- one-to-one-widget [[_ property-type] property-id db skin textures]
   (let [table (doto (Table.)
-              (table/set-opts! {:table/cell-defaults {:pad 5}}))]
+              (table/set-cell-defaults! {:pad 5}))]
     (add-one-to-one-rows db skin textures table property-type property-id)
     table))
 
 (defn- sound-widget [sound-name skin]
   (let [table (doto (Table.)
-              (table/set-opts! {:table/cell-defaults {:pad 5}}))]
+              (table/set-cell-defaults! {:pad 5}))]
     (letfn [(sound-columns-fn [skin table sound-name]
               (sound-columns skin table sound-name open-select-fn))
             (open-select-fn [table]

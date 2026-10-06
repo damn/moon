@@ -3,7 +3,7 @@
   (:require [moon.scene2d.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label Skin TextButton Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)))
 
 (def class Window)
 
@@ -21,9 +21,13 @@
   {:window/add-close-button? (fn [window skin _]
                                (add-close-button! window skin))})
 
-(defn create [{:keys [title skin] :as opts}]
+(defn create [{:keys [title skin table/cell-defaults table/rows] :as opts}]
   (let [window (Window. ^String title ^Skin skin)]
-    (table/set-opts! window opts)
+    (when cell-defaults
+      (table/set-cell-defaults! window cell-defaults))
+    (when rows
+      (table/add-rows! window rows)
+      (.pack ^Layout window))
     (doseq [[k v] opts :when (and (set-opt-fns k) v)]
       ((set-opt-fns k) window skin v))
     window))
