@@ -2202,6 +2202,70 @@
     (Disposable/.dispose pixmap)
     texture))
 
+(defn- create-ui-actors [ctx handle-fsm-event!]
+  (let [colors (:ctx/colors ctx)
+        cell-size 48]
+    [(create-action-bar)
+     (create-dev-menu
+      {:menus dev-menus
+       :update-labels (for [item [{:label "elapsed-time"
+                                   :update-fn (fn [ctx]
+                                                (str (number/readable (:ctx/elapsed-time ctx)) " seconds"))
+                                   :icon "images/clock.png"}
+                                  {:label "FPS"
+                                   :update-fn (fn [ctx] (.getFramesPerSecond ^Graphics Gdx/graphics))
+                                   :icon "images/fps.png"}
+                                  {:label "Mouseover-entity id"
+                                   :update-fn (fn [ctx]
+                                                (when-let [entity (and (:ctx/mouseover-eid ctx) @(:ctx/mouseover-eid ctx))]
+                                                  (:entity/id entity)))
+                                   :icon "images/mouseover.png"}
+                                  {:label "paused?"
+                                   :update-fn :ctx/paused?}
+                                  {:label "GUI"
+                                   :update-fn (fn [ctx]
+                                                (mapv int (viewport/unproject (.getViewport ^Stage @stage)
+                                                                              [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
+                                  {:label "World"
+                                   :update-fn (fn [ctx]
+                                                (mapv int (viewport/unproject @world-viewport
+                                                                              [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
+                                  {:label "Zoom"
+                                   :update-fn (fn [ctx]
+                                                (orthographic-camera/zoom (viewport/get-camera @world-viewport)))
+                                   :icon "images/zoom.png"}]]
+                        (if (:icon item)
+                          (update item :icon #(get @textures %))
+                          item))
+       :skin @skin})
+     (hp-mana-bar-create ctx)
+     (windows-create ctx [stage-info-window-create
+                          #(inventory-window-create
+                            %
+                            (fn [_event cell]
+                              (let [ctx @state
+                                    world-mouse-position (viewport/unproject @world-viewport
+                                                                            [(.getX ^Input Gdx/input)
+                                                                             (.getY ^Input Gdx/input)])]
+                                (handle-clicked-inventory-cell (:ctx/player-eid ctx)
+                                                               @audio
+                                                               handle-fsm-event!
+                                                               (fn [cell item] (ui-set-item! ctx cell item))
+                                                               (fn [cell] (ui-remove-item! ctx cell))
+                                                               cell
+                                                               world-mouse-position)))
+                            (fn [ctx player-entity x y mouseover? cell]
+                              (draw-fn-rectangle @shape-drawer x y cell-size cell-size (:colors/item-rect colors))
+                              (when (and mouseover?
+                                         (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                                (let [item (:entity/item-on-cursor player-entity)
+                                      color (if (inventory/valid-slot? cell item)
+                                              (:colors/droppable-item colors)
+                                              (:colors/not-allowed-drop-item colors))]
+                                  (draw-fn-filled-rectangle @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
+     (player-state-draw-create unit-scale)
+     (player-message-actor-create @default-font unit-scale)]))
+
 (defn create! [gdx-audio files input handle-fsm-event! spawn-entity!]
   (reset! audio
           (into {}
@@ -2288,70 +2352,10 @@
                 (assoc :ctx/render-z-order render-z-order)
                 (assoc :ctx/max-speed max-speed))
             (assoc ctx :ctx/db (db/create))
-            (let [colors (:ctx/colors ctx)
-                  cell-size 48]
-              (doseq [actor [(create-action-bar)
-                             (create-dev-menu
-                              {:menus dev-menus
-                               :update-labels (for [item [{:label "elapsed-time"
-                                                           :update-fn (fn [ctx]
-                                                                        (str (number/readable (:ctx/elapsed-time ctx)) " seconds"))
-                                                           :icon "images/clock.png"}
-                                                          {:label "FPS"
-                                                           :update-fn (fn [ctx] (.getFramesPerSecond ^Graphics Gdx/graphics))
-                                                           :icon "images/fps.png"}
-                                                          {:label "Mouseover-entity id"
-                                                           :update-fn (fn [ctx]
-                                                                        (when-let [entity (and (:ctx/mouseover-eid ctx) @(:ctx/mouseover-eid ctx))]
-                                                                          (:entity/id entity)))
-                                                           :icon "images/mouseover.png"}
-                                                          {:label "paused?"
-                                                           :update-fn :ctx/paused?}
-                                                          {:label "GUI"
-                                                           :update-fn (fn [ctx]
-                                                                        (mapv int (viewport/unproject (.getViewport ^Stage @stage)
-                                                                                                      [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
-                                                          {:label "World"
-                                                           :update-fn (fn [ctx]
-                                                                        (mapv int (viewport/unproject @world-viewport
-                                                                                                      [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
-                                                          {:label "Zoom"
-                                                           :update-fn (fn [ctx]
-                                                                        (orthographic-camera/zoom (viewport/get-camera @world-viewport)))
-                                                           :icon "images/zoom.png"}]]
-                                                (if (:icon item)
-                                                  (update item :icon #(get @textures %))
-                                                  item))
-                               :skin @skin})
-                             (hp-mana-bar-create ctx)
-                             (windows-create ctx [stage-info-window-create
-                                                  #(inventory-window-create
-                                                    %
-                                                    (fn [_event cell]
-                                                      (let [ctx @state
-                                                            world-mouse-position (viewport/unproject @world-viewport
-                                                                                                    [(.getX ^Input Gdx/input)
-                                                                                                     (.getY ^Input Gdx/input)])]
-                                                        (handle-clicked-inventory-cell (:ctx/player-eid ctx)
-                                                                                       @audio
-                                                                                       handle-fsm-event!
-                                                                                       (fn [cell item] (ui-set-item! ctx cell item))
-                                                                                       (fn [cell] (ui-remove-item! ctx cell))
-                                                                                       cell
-                                                                                       world-mouse-position)))
-                                                    (fn [ctx player-entity x y mouseover? cell]
-                                                      (draw-fn-rectangle @shape-drawer x y cell-size cell-size (:colors/item-rect colors))
-                                                      (when (and mouseover?
-                                                                 (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                                                        (let [item (:entity/item-on-cursor player-entity)
-                                                              color (if (inventory/valid-slot? cell item)
-                                                                      (:colors/droppable-item colors)
-                                                                      (:colors/not-allowed-drop-item colors))]
-                                                          (draw-fn-filled-rectangle @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
-                             (player-state-draw-create unit-scale)
-                             (player-message-actor-create @default-font unit-scale)]]
-                (.addActor ^Stage @stage actor))
-              ctx)
+            (do
+             (doseq [actor (create-ui-actors ctx handle-fsm-event!)]
+               (.addActor ^Stage @stage actor))
+             ctx)
             (let [{:keys [tiled-map start-position]}
                   (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
                                                          (db/all-raw (:ctx/db ctx) :properties/creatures)
