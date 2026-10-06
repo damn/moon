@@ -4,13 +4,12 @@
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.textures :as textures]
-            [moon.tiled-map :as moon-tiled-map]
-            [moon.color :as color])
+            [moon.tiled-map :as moon-tiled-map])
   (:import (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics OrthographicCamera)
+           (com.badlogic.gdx.graphics Color OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin Table TextButton Window)
@@ -180,7 +179,7 @@
                                 @batch
                                 world-unit-scale
                                 (.getCamera ^Viewport @world-viewport)
-                                (constantly (color/float-bits [1 1 1 1])))
+                                (constantly (.toFloatBits Color/WHITE)))
           (handle-controls! camera*)
           (.act ^Stage @ui-stage)
           (.draw ^Stage @ui-stage)))
