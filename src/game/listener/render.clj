@@ -205,21 +205,35 @@
         (audiovisual! (:entity/position @eid) v)
         nil))))
 
+(defn- zoom-in! []
+  (orthographic-camera/inc-zoom! (.getCamera ^Viewport @world-viewport) zoom-speed))
+
+(defn- zoom-out! []
+  (orthographic-camera/inc-zoom! (.getCamera ^Viewport @world-viewport) (- zoom-speed)))
+
+(defn- close-windows! []
+  (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
+       (run! (fn [actor]
+               (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor actor false)))))
+
+(defn- toggle-inventory! []
+  (toggle-inventory-visible! @stage))
+
+(defn- toggle-entity-info! []
+  (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
+    (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info
+                 (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
+
 (defn- handle-controls! [key-pressed? key-just-pressed?]
-  (let [stage @stage
-        ^Viewport world-viewport @world-viewport]
-    (when (key-pressed? (:zoom-in controls))
-      (orthographic-camera/inc-zoom! (.getCamera world-viewport) zoom-speed))
-    (when (key-pressed? (:zoom-out controls))
-      (orthographic-camera/inc-zoom! (.getCamera world-viewport) (- zoom-speed)))
-    (when (key-just-pressed? (:close-windows-key controls))
-      (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
-           (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
-    (when (key-just-pressed? (:toggle-inventory controls))
-      (toggle-inventory-visible! stage))
-    (when (key-just-pressed? (:toggle-entity-info controls))
-      (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
-        (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))))
+  (doseq [[k f] {(:zoom-in controls) zoom-in!
+                 (:zoom-out controls) zoom-out!}]
+    (when (key-pressed? k)
+      (f)))
+  (doseq [[k f] {(:close-windows-key controls) close-windows!
+                 (:toggle-inventory controls) toggle-inventory!
+                 (:toggle-entity-info controls) toggle-entity-info!}]
+    (when (key-just-pressed? k)
+      (f))))
 
 (defn render! [key-pressed? key-just-pressed? button-just-pressed?]
   (clear-color!)
