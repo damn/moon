@@ -10,7 +10,6 @@
             [clojure.string :as str]
             [moon.throwable :as throwable]
             [moon.string :as string]
-            [moon.error-window :as error-window]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
             [moon.viewport :as viewport])
@@ -21,7 +20,7 @@
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack Table TextButton TextField TextTooltip)
+           (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack Table TextButton TextField TextTooltip Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
@@ -114,7 +113,7 @@
                     (changed [event _actor]
                       (let [sounds (:ctx/audio @state)]
                         (assert (contains? sounds sound-name) (str sound-name))
-                        (.play ^Sound (get sounds sound-name)))))))
+                        (.play ^Sound (get sounds sound-name))))))))
 
 (defn- sound-columns [skin table sound-name open-select-sounds-handler]
   [{:actor (doto (TextButton. sound-name skin)
@@ -128,8 +127,8 @@
   (fn [actor {:keys [ctx/skin]}]
     (.clearChildren ^Group table)
     (table/add-rows! table [(->sound-columns skin table sound-name)])
-    (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
-    (.pack ^Layout (find-ancestor table (partial instance? window/class)))
+    (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
+    (.pack ^Layout (find-ancestor table (partial instance? Window)))
     (let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table)]
       (.setUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table [k sound-name]))))
 
@@ -168,7 +167,7 @@
                              :height (min (- (viewport/get-world-height (.getViewport ^Stage stage)) 50)
                                           (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor list-table))})]]
                         :window/add-close-button? true})
-    (window/set-modal! true)))
+    (Window/.setModal true)))
 
 (defn- open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/stage]
@@ -222,21 +221,15 @@
                         :skin skin
                         :table/rows (property-overview-rows opts)
                         :window/add-close-button? true})
-    (window/set-modal! true)))
+    (Window/.setModal true)))
 
 (defn- with-window-close [f]
-  (fn [actor {:keys [ctx/skin]
-              :as ctx}]
+  (fn [actor ctx]
     (try
      (reset! state (update ctx :ctx/db f))
-     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
+     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
      (catch Throwable t
-       (throwable/pretty-pst t)
-       (.addActor ^Stage (:ctx/stage ctx)
-                         (error-window/create
-                          {:type :ui/error-window
-                           :skin skin
-                           :throwable t}))))))
+       (throwable/pretty-pst t)))))
 
 (defn- property-editor-table [rows]
   (doto (Table.)
@@ -280,7 +273,7 @@
                                          :height (min (- scroll-pane-height 50)
                                                       (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))}]]
                           :window/add-close-button? true})
-      (window/set-modal! true)
+      (Window/.setModal true)
       (.addActor (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
                     (act [delta]
                       (when (.isKeyJustPressed ^Input Gdx/input Input$Keys/ENTER)
@@ -300,7 +293,7 @@
   (let [redo-rows (fn [db skin textures property-ids]
                     (.clearChildren ^Group table)
                     (add-one-to-many-rows db skin textures table property-type property-ids)
-                    (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
+                    (.pack ^Layout (find-ancestor table (partial instance? Window))))]
     (table/add-rows!
      table
      [[{:actor (doto (TextButton. "+" skin)
@@ -320,7 +313,7 @@
                                         :clicked-id-fn (fn [actor id {:keys [ctx/db
                                                                              ctx/skin
                                                                              ctx/textures]}]
-                                                         (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
+                                                         (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
                                                          (redo-rows db skin textures (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
@@ -347,7 +340,7 @@
   (let [redo-rows (fn [db skin textures id]
                     (.clearChildren ^Group table)
                     (add-one-to-one-rows db skin textures table property-type id)
-                    (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
+                    (.pack ^Layout (find-ancestor table (partial instance? Window))))]
     (table/add-rows!
      table
      [[(when-not property-id
@@ -368,7 +361,7 @@
                                           :clicked-id-fn (fn [actor id {:keys [ctx/db
                                                                                ctx/skin
                                                                                ctx/textures]}]
-                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
+                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? Window)))
                                                            (redo-rows db skin textures id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
@@ -402,27 +395,31 @@
                         :create-widget (fn [schema v] (create-widget schema v ctx))
                         :property property}))))
 
-(defn- create-component-row
+(defn- component-row-table
   [{:keys [skin
-           editor-widget
            display-remove-component-button?
            k
            table]}]
-  [{:actor (doto (Table.)
-             (table/set-cell-defaults! {:pad 2})
-             (table/add-rows! [[{:actor (when display-remove-component-button?
-                                                  (doto (TextButton. "-" skin)
-                                                    (.addListener (proxy [ChangeListener] []
-                                                                    (changed [event _actor]
-                                                                      (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
-                                                                                                                                       (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
-                                                                                                                                            (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
-                                                                                                                                     (.getChildren ^Group table))))
-                                                                      (let [ctx @state]
-                                                                        (rebuild-editor-window! ctx)))))))
-                                         :left? true}
-                                        {:actor (Label. ^String (k-label-text k) ^Skin skin)}]])
-             (.pack))
+  (doto (Table.)
+    (table/set-cell-defaults! {:pad 2})
+    (table/add-rows! [[{:actor (when display-remove-component-button?
+                                         (doto (TextButton. "-" skin)
+                                           (.addListener (proxy [ChangeListener] []
+                                                           (changed [event _actor]
+                                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
+                                                                                                                              (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
+                                                                                                                                   (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
+                                                                                                                            (.getChildren ^Group table))))
+                                                             (let [ctx @state]
+                                                               (rebuild-editor-window! ctx)))))))
+                        :left? true}
+                       {:actor (Label. ^String (k-label-text k) ^Skin skin)}]])
+    (.pack)))
+
+(defn- create-component-row
+  [{:keys [editor-widget]
+    :as opts}]
+  [{:actor (component-row-table opts)
     :right? true}
    {:actor nil
     :pad-top 2
@@ -438,7 +435,7 @@
                                      :skin skin
                                      :table/cell-defaults {:pad 5}
                                      :window/add-close-button? true})
-                 (window/set-modal! true))
+                 (Window/.setModal true))
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (table/add-rows!

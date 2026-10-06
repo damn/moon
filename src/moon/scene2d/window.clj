@@ -1,14 +1,8 @@
 (ns moon.scene2d.window
-  (:refer-clojure :exclude [class])
   (:require [moon.scene2d.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label Skin TextButton Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)))
-
-(def class Window)
-
-(defn set-modal! [window modal?]
-  (.setModal ^Window window modal?))
 
 (defn add-close-button! [window skin]
   (table/add-cell! (.getTitleTable ^Window window)

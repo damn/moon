@@ -13,7 +13,6 @@
             [moon.cell :as cell]
             [moon.coll :as coll]
             [moon.db :as db]
-            [moon.error-window :as error-window]
             [moon.faction :as faction]
             [moon.g2d :as moon-g2d]
             [moon.inventory :as inventory]
@@ -47,7 +46,7 @@
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
@@ -742,7 +741,7 @@
                                                                            (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (.findActor ^Group (.getRoot ^Stage stage)
                                                                                               "moon.ui.modal-window"))
                                                                            (on-click)))))}]]})
-                      (window/set-modal! true)
+                      (Window/.setModal true)
                       (.setName "moon.ui.modal-window")
                       (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center)))))
 
@@ -971,8 +970,7 @@
    :unpause-continously Input$Keys/SPACE
    :close-windows-key Input$Keys/ESCAPE
    :toggle-inventory Input$Keys/I
-   :toggle-entity-info Input$Keys/E
-   :open-debug-button Input$Buttons/RIGHT})
+   :toggle-entity-info Input$Keys/E})
 
 (def controls-info
   (str/join "\n"
@@ -982,87 +980,11 @@
              "[E] - Entity Info window"
              "[-]/[=] - Zoom"
              "[P]/[SPACE] - Unpause"
-             "rightclick on tile or entity - open debug data window"
              "Leftmouse click - use skill/drop item on cursor"]))
 
 (def help-menu-item
   {:label "Help"
    :items [{:label controls-info}]})
-
-(defn- data-viewer-label-str [k]
-  (str "[LIGHT_GRAY]:"
-       (when-let [ns (namespace k)] (str ns "/"))
-       "[][WHITE]"
-       (name k)
-       "[]"))
-
-(defn- create-data-viewer-window
-  [{:keys [title
-           data
-           width
-           height
-           skin]}]
-  {:pre [(map? data)]}
-  (let [v->actor (fn [v skin]
-                   (if (map? v)
-                     (doto (TextButton. "Map" skin)
-                       (.addListener (proxy [ChangeListener] []
-                                            (changed [_event actor]
-                                              (.addActor ^Stage (.getStage ^Actor actor)
-                                                                (create-data-viewer-window
-                                                                 {:title "title"
-                                                                  :data v
-                                                                  :width 500
-                                                                  :height 500
-                                                                  :skin skin}))))))
-                     (Label. ^String (cond
-                                  (or (keyword? v)
-                                      (number? v)
-                                      (boolean? v)
-                                      (string? v))
-                                  (str "[GOLD]" v "[]")
-
-                                  :else
-                                  (str (class v)))
-                                ^Skin skin)))
-        rows (for [[k v] (sort-by key data)]
-               {:label (data-viewer-label-str k)
-                :actor (v->actor v skin)})
-        scroll-pane-table (doto (Table.)
-                            (table/add-rows! (for [{:keys [label actor]} rows]
-                                               [{:actor (Label. ^String label ^Skin skin)}
-                                                {:actor actor}]))
-                            (.pack))
-        scroll-pane-cell {:actor (ScrollPane.
-                                  ^Actor (doto (Table.)
-                                           (table/set-cell-defaults! {:pad 1})
-                                           (table/add-rows! [[scroll-pane-table]])
-                                           (.pack))
-                                  ^Skin skin)
-                          :width width
-                          :height 800}]
-    (window/create {:title title
-                    :skin skin
-                    :table/rows [[scroll-pane-cell]]
-                    :window/add-close-button? true})))
-
-(def ctx-data-menu-item
-  {:label "Ctx Data"
-   :items [{:label "Show data"
-            :on-click (fn [ctx]
-                        (let [skin @skin
-                              stage @stage]
-                        ; skin & stage
-                        ; :moon.game/ui
-                        ; moon.game.ui/data-viweer-window?
-                        (.addActor ^Stage stage
-                                        (create-data-viewer-window
-                                         {:title "Data View"
-                                          :data ctx
-                                          :width 1000
-                                          :height 1000
-                                          :skin skin}))
-                        ctx))}]})
 
 (def debug-flags-menu-item
   {:label "Debug"
@@ -1102,8 +1024,7 @@
                          ctx)})})
 
 (def dev-menus
-  [ctx-data-menu-item
-   debug-flags-menu-item
+  [debug-flags-menu-item
    help-menu-item
    select-world-menu-item])
 
@@ -2515,19 +2436,6 @@
                      (when new-eid
                        (swap! new-eid assoc :entity/mouseover? true))
                      (assoc ctx :ctx/mouseover-eid new-eid))))
-    (let [ctx @state]
-      (when (button-just-pressed? (:open-debug-button (:ctx/controls ctx)))
-        (let [world (:ctx/world ctx)
-              mouseover-eid (:ctx/mouseover-eid ctx)
-              data (or (and mouseover-eid @mouseover-eid)
-                       (world/cell-at world (mapv int world-mouse-position)))]
-          (.addActor ^Stage @stage
-                            (create-data-viewer-window
-                             {:title "Data View"
-                              :data data
-                              :width 500
-                              :height 500
-                              :skin @skin})))))
     (swap! state #(assoc % :ctx/active-entities
                          (world/active-entities (:ctx/world %) @(:ctx/player-eid %))))
     (orthographic-camera/set-position! (viewport/get-camera @world-viewport)
@@ -2634,11 +2542,7 @@
                    (catch Throwable t
                      (throw (ex-info "Error at `entity/tick`:" {:eid eid} t))))))
           (catch Throwable t
-            (throwable/pretty-pst t)
-            (.addActor ^Stage @stage
-                              (error-window/create
-                               {:skin @skin
-                                :throwable t}))))))
+            (throwable/pretty-pst t)))))
     (let [ctx @state]
       (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
         (world/unregister-eid! (:ctx/world ctx) eid)
