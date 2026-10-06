@@ -14,7 +14,6 @@
             [moon.cell :as cell]
             [moon.coll :as coll]
             [moon.db :as db]
-            [moon.effect-ctx :as effect-ctx]
             [moon.error-window :as error-window]
             [moon.faction :as faction]
             [moon.g2d :as moon-g2d]
@@ -158,50 +157,50 @@
   [[k v] effect-ctx]
   (case k
     :effects/audiovisual
-    (effect-ctx/get-target-position effect-ctx)
+    (:effect/target-position effect-ctx)
 
     :effects/projectile
-    (effect-ctx/get-target-direction effect-ctx)
+    (:effect/target-direction effect-ctx)
 
     :effects/spawn
-    (and (:entity/faction @(effect-ctx/get-source effect-ctx))
-         (effect-ctx/get-target-position effect-ctx))
+    (and (:entity/faction @(:effect/source effect-ctx))
+         (:effect/target-position effect-ctx))
 
     :effects/target-all
     true
 
     :effects/target-entity
-    (and (effect-ctx/get-target effect-ctx)
+    (and (:effect/target effect-ctx)
          (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
 
     :effects.target/audiovisual
-    (effect-ctx/get-target effect-ctx)
+    (:effect/target effect-ctx)
 
     :effects.target/convert
-    (let [source (effect-ctx/get-source effect-ctx)
-          target (effect-ctx/get-target effect-ctx)]
+    (let [source (:effect/source effect-ctx)
+          target (:effect/target effect-ctx)]
       (and target
            (= (:entity/faction @target)
               (faction/enemy (:entity/faction @source)))))
 
     :effects.target/damage
-    (and (effect-ctx/get-target effect-ctx)
+    (and (:effect/target effect-ctx)
          #_(:stats/hp @target))
 
     :effects.target/kill
-    (and (effect-ctx/get-target effect-ctx)
-         (:entity/fsm @(effect-ctx/get-target effect-ctx)))
+    (and (:effect/target effect-ctx)
+         (:entity/fsm @(:effect/target effect-ctx)))
 
     :effects.target/melee-damage
-    (effect-applicable? [:effects.target/damage (stats/melee-damage @(effect-ctx/get-source effect-ctx))]
+    (effect-applicable? [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
                         effect-ctx)
 
     :effects.target/spiderweb
-    (:entity/stats @(effect-ctx/get-target effect-ctx))
+    (:entity/stats @(:effect/target effect-ctx))
 
     :effects.target/stun
-    (and (effect-ctx/get-target effect-ctx)
-         (:entity/fsm @(effect-ctx/get-target effect-ctx)))))
+    (and (:effect/target effect-ctx)
+         (:entity/fsm @(:effect/target effect-ctx)))))
 
 (defn effect-useful?
   [[k v] effect-ctx ray-blocked?]
@@ -211,8 +210,8 @@
 
     :effects/projectile
     (let [{:keys [projectile/max-range] :as projectile} v
-          source-p (:entity/position @(effect-ctx/get-source effect-ctx))
-          target-p (:entity/position @(effect-ctx/get-target effect-ctx))]
+          source-p (:entity/position @(:effect/source effect-ctx))
+          target-p (:entity/position @(:effect/target effect-ctx))]
       (and (not (let [[start1 target1 start2 target2] (v2/double-ray-endpositions source-p
                                                                                  target-p
                                                                                  (:projectile/size projectile))]
@@ -226,8 +225,8 @@
     false
 
     :effects/target-entity
-    (body/in-range? @(effect-ctx/get-source effect-ctx)
-                    @(effect-ctx/get-target effect-ctx)
+    (body/in-range? @(:effect/source effect-ctx)
+                    @(:effect/target effect-ctx)
                     (:maxrange v))
 
     :effects.target/audiovisual
@@ -782,28 +781,28 @@
    active-entities colors raycaster elapsed-time]
   (case k
     :effects/audiovisual
-    (audiovisual! (effect-ctx/get-target-position effect-ctx) v)
+    (audiovisual! (:effect/target-position effect-ctx) v)
 
     :effects/projectile
-    (let [source (effect-ctx/get-source effect-ctx)]
+    (let [source (:effect/source effect-ctx)]
       (spawn-entity! (spawn-projectile
                       {:position (projectile-start-point @source
-                                                         (effect-ctx/get-target-direction effect-ctx)
+                                                         (:effect/target-direction effect-ctx)
                                                          (:projectile/size v))
-                       :direction (effect-ctx/get-target-direction effect-ctx)
+                       :direction (:effect/target-direction effect-ctx)
                        :faction (:entity/faction @source)}
                       v)))
 
     :effects/spawn
-    (let [source (effect-ctx/get-source effect-ctx)]
-      (spawn-entity! (spawn-creature {:position (effect-ctx/get-target-position effect-ctx)
+    (let [source (:effect/source effect-ctx)]
+      (spawn-entity! (spawn-creature {:position (:effect/target-position effect-ctx)
                                       :creature-property v
                                       :components {:entity/fsm {:fsm :fsms/npc
                                                                 :initial-state :npc-idle}
                                                    :entity/faction (:entity/faction @source)}})))
 
     :effects/target-all
-    (let [source (effect-ctx/get-source effect-ctx)
+    (let [source (:effect/source effect-ctx)
           source* @source]
       (doseq [target (affected-targets active-entities raycaster source*)]
         (spawn-entity! (spawn-line
@@ -817,8 +816,8 @@
                         (:entity-effects v))))
 
     :effects/target-entity
-    (let [source (effect-ctx/get-source effect-ctx)
-          target (effect-ctx/get-target effect-ctx)
+    (let [source (:effect/source effect-ctx)
+          target (:effect/target effect-ctx)
           body        @source
           target-body @target
           {:keys [maxrange entity-effects]} v]
@@ -834,17 +833,17 @@
                       :audiovisuals/hit-ground)))
 
     :effects.target/audiovisual
-    (audiovisual! (:entity/position @(effect-ctx/get-target effect-ctx)) v)
+    (audiovisual! (:entity/position @(:effect/target effect-ctx)) v)
 
     :effects.target/convert
-    (let [source (effect-ctx/get-source effect-ctx)
-          target (effect-ctx/get-target effect-ctx)]
+    (let [source (:effect/source effect-ctx)
+          target (:effect/target effect-ctx)]
       (swap! target assoc :entity/faction (:entity/faction @source))
       nil)
 
     :effects.target/damage
-    (let [source (effect-ctx/get-source effect-ctx)
-          target (effect-ctx/get-target effect-ctx)
+    (let [source (:effect/source effect-ctx)
+          target (:effect/target effect-ctx)
           source* @source
           target* @target
           hp (stats/get-hitpoints (:entity/stats target*))]
@@ -879,12 +878,12 @@
          (audiovisual! (:entity/position target*) :audiovisuals/damage))))
 
     :effects.target/kill
-    (handle-fsm-event! (effect-ctx/get-target effect-ctx) world-mouse-position :kill)
+    (handle-fsm-event! (:effect/target effect-ctx) world-mouse-position :kill)
 
     :effects.target/melee-damage
     ; TODO AT EFFECT CREATION MAKE
     ; same @ applicable
-    (handle-effect [:effects.target/damage (stats/melee-damage @(effect-ctx/get-source effect-ctx))]
+    (handle-effect [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
                    effect-ctx
                    world-mouse-position
                    spawn-entity!
@@ -897,7 +896,7 @@
                    elapsed-time)
 
     :effects.target/spiderweb
-    (let [target (effect-ctx/get-target effect-ctx)]
+    (let [target (:effect/target effect-ctx)]
       ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
       (when-not (:entity/temp-modifier @target)
         (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
@@ -906,7 +905,7 @@
         nil))
 
     :effects.target/stun
-    (handle-fsm-event! (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
+    (handle-fsm-event! (:effect/target effect-ctx) world-mouse-position :stun v)))
 
 (defn- toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)
@@ -1211,7 +1210,7 @@
   [[k v] effect-ctx shape-drawer active-entities colors raycaster]
   (case k
     :effects/target-all
-    (let [source (effect-ctx/get-source effect-ctx)
+    (let [source (:effect/source effect-ctx)
           source* @source]
       (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
         (draw-fn-line shape-drawer
@@ -1220,8 +1219,8 @@
                       (:colors/target-all-render colors))))
 
     :effects/target-entity
-    (when-let [target (effect-ctx/get-target effect-ctx)]
-      (let [source (effect-ctx/get-source effect-ctx)
+    (when-let [target (:effect/target effect-ctx)]
+      (let [source (:effect/source effect-ctx)
             body        @source
             target-body @target
             maxrange (:maxrange v)]
@@ -1834,13 +1833,13 @@
 
 (defn- update-effect-ctx
   [raycaster effect-ctx]
-  (let [source (effect-ctx/get-source effect-ctx)
-        target (effect-ctx/get-target effect-ctx)]
+  (let [source (:effect/source effect-ctx)
+        target (:effect/target effect-ctx)]
     (if (and target
              (not (:entity/destroyed? @target))
              (raycaster/line-of-sight? raycaster @source @target))
       effect-ctx
-      (effect-ctx/without-target effect-ctx))))
+      (dissoc effect-ctx :effect/target))))
 
 (defn tick-component
   [ctx world-mouse-position apply-effects! handle-fsm-event! eid [k v]]
