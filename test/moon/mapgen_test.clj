@@ -40,13 +40,16 @@
 
 #_(defn- ->info-window []
     (let [label (label/create {:label/text ""})
-        window (window/create {:title "Info" :rows [[label]]})]
-    (add-actor! window (proxy [Actor] []
-                        (act [_delta]
-                          (do
-                           (.setText label (map-infos %))
-                           (.pack window)))))
-    (.setPosition window 0 (c/ui-viewport-height ctx)) window))
+          window (Window. "Info" skin)]
+      (.add ^Table window ^Actor label)
+      (.row ^Table window)
+      (.pack ^Layout window)
+      (add-actor! window (proxy [Actor] []
+                           (act [_delta]
+                             (do
+                               (.setText label (map-infos %))
+                               (.pack window)))))
+      (.setPosition window 0 (c/ui-viewport-height ctx)) window))
 
 #_(defn- render-on-map [_context]
   (let [{:keys [tiled-map
@@ -89,14 +92,17 @@
     (.setVisible (.get (get-layers this) "creatures") true)))
 
 #_(defn ->generate-map-window [c level-id]
-    (doto (window/create {:title "Properties"
-                          :cell-defaults {:pad 10}
-                          :rows [[(label/create {:label/text (with-out-str (pprint (db/build db level-id)))})]
-                                 [(text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
-                                                                (catch Throwable t
-                                                                  (pretty-pst t)
-                                                                  (println t))))]] })
-      (.pack)))
+    (let [window (Window. "Properties" skin)]
+      (.pad (.defaults window) (float 10))
+      (.add ^Table window ^Actor (label/create {:label/text (with-out-str (pprint (db/build db level-id)))}))
+      (.row ^Table window)
+      (.add ^Table window ^Actor (text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
+                                                               (catch Throwable t
+                                                                 (pretty-pst t)
+                                                                 (println t)))))
+      (.row ^Table window)
+      (.pack ^Layout window)
+      window))
 
 (defn render [_]
   #_(moon.graphics/draw-on-world-view @state render-on-map)

@@ -7,7 +7,6 @@
             [moon.textures :as textures]
             [moon.tiled-map :as moon-tiled-map]
             [moon.color :as color]
-            [moon.scene2d.window :as window]
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
@@ -16,9 +15,9 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
-           (com.badlogic.gdx.scenes.scene2d Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
+           (com.badlogic.gdx.scenes.scene2d Actor Stage)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin Table TextButton Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -114,11 +113,12 @@
         (reset! skin (create-skin (.internal ^Files Gdx/files ui-skin-path))) ; same ?
         (reset! ui-stage (create-stage @batch
                                        (FitViewport. ui-viewport-width ui-viewport-height) ; requires gl context ?
-                                       (window/create
-                                        {:title "Edit"
-                                         :skin @skin
-                                         :table/rows (for [[label on-click!] buttons]
-                                                       [{:actor (text-button @skin label on-click!)}])})))
+                                       (let [window (Window. "Edit" ^Skin @skin)]
+                                         (doseq [[label on-click!] buttons]
+                                           (.add ^Table window ^Actor (text-button @skin label on-click!))
+                                           (.row ^Table window))
+                                         (.pack ^Layout window)
+                                         window)))
         (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
         (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?
         (reset! camera (viewport/get-camera @world-viewport)) ; ?? sep?

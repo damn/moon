@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [moon.scene2d.window :as window]
             [moon.camera :as orthographic-camera]
             [moon.color :as color]
             [moon.tiled-map :as moon-tiled-map]
@@ -44,7 +43,7 @@
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Cell HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
@@ -724,19 +723,24 @@
 ; -> used in handle-fsm-event
 (defn- show-modal! [skin stage {:keys [title text button-text on-click]}]
   (assert (not (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.modal-window")))
-  (.addActor ^Stage stage
-                    (doto (window/create {:title title
-                                          :skin skin
-                                          :table/rows [[{:actor (Label. ^String text ^Skin skin)}]
-                                                       [{:actor (doto (TextButton. button-text skin)
-                                                                       (.addListener (proxy [ChangeListener] []
-                                                                         (changed [_event _actor]
-                                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (.findActor ^Group (.getRoot ^Stage stage)
-                                                                                              "moon.ui.modal-window"))
-                                                                           (on-click)))))}]]})
-                      (Window/.setModal true)
-                      (.setName "moon.ui.modal-window")
-                      (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center)))))
+  (let [window (Window. ^String title ^Skin skin)]
+    (.add ^Table window ^Actor (Label. ^String text ^Skin skin))
+    (.row ^Table window)
+    (.add ^Table window ^Actor (doto (TextButton. button-text skin)
+                                 (.addListener (proxy [ChangeListener] []
+                                                 (changed [_event _actor]
+                                                   (.remove ^Actor (.findActor ^Group (.getRoot ^Stage stage)
+                                                                               "moon.ui.modal-window"))
+                                                   (on-click))))))
+    (.row ^Table window)
+    (.pack ^Layout window)
+    (Window/.setModal window true)
+    (.setName window "moon.ui.modal-window")
+    (.setPosition ^Actor window
+                  (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2)
+                  (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4)))
+                  (float Align/center))
+    (.addActor ^Stage stage window)))
 
 (defn- ui-set-item! [ctx cell item]
   (let [skin @skin
@@ -1448,36 +1452,37 @@
                            (.setMinSize cell-size cell-size)
                            (.tint ^Color (Color. 1 1 1 0.4))))
         ->cell (partial inventory-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
-        window (doto (window/create {:title "Inventory"
-                                     :skin skin
-                                     :table/rows [[{:actor (let [cell-table (Table.)]
-                                                             (doseq [row (concat [[{:actor nil} {:actor nil}
-                                                                                   (->cell :inventory.slot/helm)
-                                                                                   (->cell :inventory.slot/necklace)]
-                                                                                  [{:actor nil}
-                                                                                   (->cell :inventory.slot/weapon)
-                                                                                   (->cell :inventory.slot/chest)
-                                                                                   (->cell :inventory.slot/cloak)
-                                                                                   (->cell :inventory.slot/shield)]
-                                                                                  [{:actor nil} {:actor nil}
-                                                                                   (->cell :inventory.slot/leg)]
-                                                                                  [{:actor nil}
-                                                                                   (->cell :inventory.slot/glove)
-                                                                                   (->cell :inventory.slot/rings :position [0 0])
-                                                                                   (->cell :inventory.slot/rings :position [1 0])
-                                                                                   (->cell :inventory.slot/boot)]]
-                                                                                 (for [y (range 4)]
-                                                                                   (for [x (range 6)]
-                                                                                     (->cell :inventory.slot/bag :position [x y]))))]
-                                                               (doseq [cell row]
-                                                                 (.add ^Table cell-table ^Actor (:actor cell)))
-                                                               (.row ^Table cell-table))
-                                                             (.pack cell-table)
-                                                             (.setName cell-table "inventory-cell-table")
-                                                             cell-table)
-                                                    :pad 4}]]})
-                     (.setName "moon.ui.windows.inventory")
-                     (.setVisible false))]
+        cell-table (Table.)
+        window (Window. "Inventory" ^Skin skin)]
+    (doseq [row (concat [[{:actor nil} {:actor nil}
+                         (->cell :inventory.slot/helm)
+                         (->cell :inventory.slot/necklace)]
+                        [{:actor nil}
+                         (->cell :inventory.slot/weapon)
+                         (->cell :inventory.slot/chest)
+                         (->cell :inventory.slot/cloak)
+                         (->cell :inventory.slot/shield)]
+                        [{:actor nil} {:actor nil}
+                         (->cell :inventory.slot/leg)]
+                        [{:actor nil}
+                         (->cell :inventory.slot/glove)
+                         (->cell :inventory.slot/rings :position [0 0])
+                         (->cell :inventory.slot/rings :position [1 0])
+                         (->cell :inventory.slot/boot)]]
+                       (for [y (range 4)]
+                         (for [x (range 6)]
+                           (->cell :inventory.slot/bag :position [x y]))))]
+      (doseq [cell row]
+        (.add ^Table cell-table ^Actor (:actor cell)))
+      (.row ^Table cell-table))
+    (.pack cell-table)
+    (.setName cell-table "inventory-cell-table")
+    (let [c (.add ^Table window ^Actor cell-table)]
+      (.pad ^Cell c (float 4)))
+    (.row ^Table window)
+    (.pack ^Layout window)
+    (.setName window "moon.ui.windows.inventory")
+    (.setVisible window false)
     (let [[x y] position]
       (.setPosition ^Actor window (float x) (float y)))
     window))
@@ -1534,11 +1539,13 @@
            set-label-text!
            skin]}]
   (let [label (Label. "MY LABEL TEXT" ^Skin skin)
-        window (doto (window/create {:title title
-                                     :skin skin
-                                     :table/rows [[{:actor label :expand? true}]]})
-                 (.setName actor-name)
-                 (.setVisible visible?))]
+        window (Window. ^String title ^Skin skin)
+        c (.add ^Table window ^Actor label)]
+    (.expand ^Cell c)
+    (.row ^Table window)
+    (.pack ^Layout window)
+    (.setName window actor-name)
+    (.setVisible window visible?)
     (let [[x y] position]
       (.setPosition ^Actor window (float x) (float y)))
     (.addActor ^Group window (proxy [Actor] []
@@ -1945,15 +1952,20 @@
                       (.addListener (proxy [ChangeListener] []
                                       (changed [event actor]
                                         (.addActor ^Stage (.getStage ^Event event)
-                                                   (window/create {:title label
-                                                                   :skin skin
-                                                                   :table/rows [(for [{:keys [label on-click]} items]
-                                                                                  {:actor
-                                                                                   (doto (TextButton. label skin)
-                                                                                     (.addListener (proxy [ChangeListener] []
-                                                                                                     (changed [_event _actor]
-                                                                                                       (on-click)))))})]
-                                                                   :window/add-close-button? true}))))))})]
+                                                   (let [window (Window. ^String label ^Skin skin)]
+                                                     (doseq [{:keys [label on-click]} items]
+                                                       (.add ^Table window ^Actor (doto (TextButton. label skin)
+                                                                                    (.addListener (proxy [ChangeListener] []
+                                                                                                    (changed [_event _actor]
+                                                                                                      (on-click)))))))
+                                                     (.row ^Table window)
+                                                     (.pack ^Layout window)
+                                                     (.add ^Table (.getTitleTable ^Window window)
+                                                           ^Actor (doto (TextButton. "X" ^Skin skin)
+                                                                    (.addListener (proxy [ChangeListener] []
+                                                                                    (changed [_event _actor]
+                                                                                      (.remove ^Actor window))))))
+                                                     window))))))})]
       (.add ^Table table ^Actor (:actor cell)))
     (.row ^Table table)
     (.pack table)
