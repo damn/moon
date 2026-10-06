@@ -49,7 +49,3 @@
   (doseq [[k v] opts :when (set-opt-fns k)]
     ((set-opt-fns k) table v))
   table)
-
-(defn create [opts]
-  (doto (Table.)
-    (set-opts! opts)))
