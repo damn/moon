@@ -1894,7 +1894,7 @@
             (when rotate-in-movement-direction?
               (swap! eid assoc :entity/rotation-angle
                      (v2/angle-from-vector direction)))
-            (world/relocate-eid! @world eid)
+            (world/relocate-eid! world eid)
             nil))))
 
     nil))
@@ -2034,24 +2034,17 @@
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]
-      (try
-        (do
-          (when show-body-bounds?
-            (draw-entity-rectangle! ctx shape-drawer
-                                    entity
-                                    (if (:entity/collides? entity)
-                                      (:colors/debug-body-outline-collides colors)
-                                      (:colors/debug-body-outline colors))))
-          (doseq [[k v] entity
-                  :when (get render-layer k)]
-            (draw-component shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
-                            textures colors player elapsed-time active-entities raycaster
-                            entity k v)))
-        (catch Throwable t
-          (draw-entity-rectangle! ctx shape-drawer
-                                  entity
-                                  (:colors/debug-body-outline-render-error colors))
-          (throwable/pretty-pst t))))))
+      (when show-body-bounds?
+        (draw-entity-rectangle! ctx shape-drawer
+                                entity
+                                (if (:entity/collides? entity)
+                                  (:colors/debug-body-outline-collides colors)
+                                  (:colors/debug-body-outline colors))))
+      (doseq [[k v] entity
+              :when (get render-layer k)]
+        (draw-component shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+                        textures colors player elapsed-time active-entities raycaster
+                        entity k v)))))
 
 (defn- highlight-mouseover-tile
   [ctx shape-drawer world-mouse-position]
@@ -2456,28 +2449,23 @@
             active-entities @active-entities
             raycaster @raycaster
             elapsed-time @elapsed-time]
-        (try
-          (letfn [(apply-effects! [effect-ctx effects]
-                    (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                      (handle-effect effect effect-ctx world-mouse-position
-                                     spawn-entity!
-                                     audiovisual!
-                                     apply-effects!
-                                     handle-fsm-event!
-                                     active-entities
-                                     colors
-                                     raycaster
-                                     elapsed-time)))]
-            (doseq [eid @active-entities
-                    component @eid]
-              (try (tick-component nil world-mouse-position
+        (letfn [(apply-effects! [effect-ctx effects]
+                  (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+                    (handle-effect effect effect-ctx world-mouse-position
+                                   spawn-entity!
+                                   audiovisual!
                                    apply-effects!
                                    handle-fsm-event!
-                                   eid component)
-                   (catch Throwable t
-                     (throw (ex-info "Error at `entity/tick`:" {:eid eid} t))))))
-          (catch Throwable t
-            (throwable/pretty-pst t)))))
+                                   active-entities
+                                   colors
+                                   raycaster
+                                   elapsed-time)))]
+          (doseq [eid active-entities
+                  component @eid]
+            (tick-component nil world-mouse-position
+                            apply-effects!
+                            handle-fsm-event!
+                            eid component)))))
     (doseq [eid (world/destroyed-eids @world)]
       (world/unregister-eid! @world eid)
       (doseq [[k v] @eid]
