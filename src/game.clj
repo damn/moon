@@ -1,4 +1,4 @@
-(ns moon.game
+(ns game
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.math :as math]

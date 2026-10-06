@@ -23,9 +23,9 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "dev"      ["run" "-m" "moon.loop" "((requiring-resolve 'moon.game/-main))"]
-            "levelgen" ["run" "-m" "moon.loop" "((requiring-resolve 'moon.levelgen/-main))"]
-            "editor"   ["run" "-m" "moon.loop" "((requiring-resolve 'moon.editor/-main))"]
+            "dev"      ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
+            "levelgen" ["run" "-m" "loop" "((requiring-resolve 'levelgen/-main))"]
+            "editor"   ["run" "-m" "loop" "((requiring-resolve 'editor/-main))"]
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]
@@ -41,6 +41,6 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [moon.game]}}
+  :profiles {:uberjar {:aot [game]}}
   :uberjar-name "moon.jar"
-  :main moon.game)
+  :main game)

@@ -1,4 +1,4 @@
-(ns moon.levelgen
+(ns levelgen
   (:require [moon.db :as db]
             [moon.camera :as orthographic-camera]
             [moon.level.modules :as modules]

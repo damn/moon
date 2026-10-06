@@ -1,4 +1,4 @@
-(ns moon.editor
+(ns editor
   (:require [moon.db :as db]
             [clojure.edn :as edn]
             [clojure.pprint :refer [pprint]]
