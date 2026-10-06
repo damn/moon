@@ -45,11 +45,6 @@
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-; 1. step only use ctx bag in listener fns
-; 2. step remove ctx bag and just bind state over the fns
-; 3. pass capabilitites/receive libgdx capabilities as functions
-(q/defrecord EntityRecord [])
-
 (def minimum-size 0.39)
 
 (def max-delta 0.04)
@@ -784,7 +779,6 @@
                        {}
                        entity)
         entity (prepare-entity-geometry entity)
-        entity (merge (map->EntityRecord {}) entity)
         eid (atom entity)]
     (world/register-eid! @world eid)
     (doseq [component @eid]
