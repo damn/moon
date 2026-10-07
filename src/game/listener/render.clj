@@ -207,7 +207,7 @@
       (reset! delta-time delta-ms)
       (swap! elapsed-time + delta-ms))
     (doseq [[faction max-iterations] factions-iterations]
-      (world/update-potential-fields! @world)
+      (world/update-potential-fields! @world
                                       potential-field-cache
                                       faction
                                       @active-entities

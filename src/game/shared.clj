@@ -26,9 +26,9 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Gdx Input Input$Keys)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics Color OrthographicCamera Texture)
+           (com.badlogic.gdx.graphics Color Texture)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
-           (com.badlogic.gdx.math Vector2 Vector3)
+           (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label Skin Stack Table TextButton TextTooltip Widget Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable TextureRegionDrawable)
@@ -1104,18 +1104,6 @@
   (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
   (.line ^ShapeDrawer shape-drawer (float sx) (float sy) (float ex) (float ey)))
 
-(defn- draw-fn-grid [shape-drawer leftx bottomy gridw gridh cellw cellh color-float-bits]
-  (let [w (* (float gridw) (float cellw))
-        h (* (float gridh) (float cellh))
-        topy (+ (float bottomy) (float h))
-        rightx (+ (float leftx) (float w))]
-    (doseq [idx (range (inc (float gridw)))
-            :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (draw-fn-line shape-drawer [linex topy] [linex bottomy] color-float-bits))
-    (doseq [idx (range (inc (float gridh)))
-            :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (draw-fn-line shape-drawer [leftx liney] [rightx liney] color-float-bits))))
-
 (defn draw-fn-rectangle [shape-drawer x y w h color-float-bits]
   (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
   (.rectangle ^ShapeDrawer shape-drawer x y w h))
@@ -2043,115 +2031,6 @@
       (.pack)
       (.setFillParent true))))
 
-(def ^:private render-layers
-  [#{:entity/mouseover?
-     :stunned
-     :player-item-on-cursor}
-   #{:entity/clickable
-     :entity/animation
-     :entity/image
-     :entity/line-render}
-   #{:npc-sleeping
-     :entity/temp-modifier
-     :entity/string-effect}
-   #{:entity/stats
-     :active-skill}])
-
-(defn draw-tile-grid
-  [ctx shape-drawer ^Viewport world-viewport show-tile-grid?]
-  (when @show-tile-grid?
-    (let [^OrthographicCamera camera (.getCamera world-viewport)
-          plane-points (mapv (fn [^Vector3 v3]
-                               [(.x v3) (.y v3) (.z v3)])
-                             (.planePoints (.frustum camera)))
-          frustum-points (take 4 plane-points)
-          left-x   (apply min (map first  frustum-points))
-          bottom-y (apply min (map second frustum-points))]
-      (draw-fn-grid shape-drawer
-                     (int left-x)
-                     (int bottom-y)
-                     (inc (int (.getWorldWidth world-viewport)))
-                     (+ 2 (int (.getWorldHeight world-viewport)))
-                     1
-                     1
-                     (float-bits [1 1 1 0.8])))))
-
 (def factions-iterations
   {:good 15
    :evil 5})
-
-(defn draw-cell-debug
-  [ctx shape-drawer ^Viewport world-viewport world
-   show-cell-entities? show-cell-occupied? show-potential-field-colors?]
-  (let [world @world
-        ^OrthographicCamera camera (.getCamera world-viewport)
-        plane-points (mapv (fn [^Vector3 v3]
-                             [(.x v3) (.y v3) (.z v3)])
-                           (.planePoints (.frustum camera)))
-        frustum-points (take 4 plane-points)
-        left-x   (apply min (map first  frustum-points))
-        right-x  (apply max (map first  frustum-points))
-        bottom-y (apply min (map second frustum-points))
-        top-y    (apply max (map second frustum-points))
-        tile-positions (for [x (range (int left-x) (int right-x))
-                             y (range (int bottom-y) (+ 2 (int top-y)))]
-                         [x y])]
-    (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
-      (when (and @show-cell-entities? (seq (:entities cell*)))
-        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-entities colors)))
-      (when (and @show-cell-occupied? (seq (:occupied cell*)))
-        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-occupied colors)))
-      (when-let [faction @show-potential-field-colors?]
-        (let [{:keys [distance]} (faction cell*)]
-          (when distance
-            (let [ratio (/ distance (factions-iterations faction))]
-              (draw-fn-filled-rectangle shape-drawer x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
-
-(defn draw-entity-rectangle!
-  [ctx shape-drawer entity color-float-bits]
-  (let [{:keys [entity/position entity/width entity/height]} entity
-        [x y] [(- (position 0) (/ width 2))
-               (- (position 1) (/ height 2))]]
-    (draw-fn-rectangle shape-drawer x y width height color-float-bits)))
-
-(defn draw-entities!
-  [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
-   player-eid raycaster elapsed-time show-body-bounds? active-entities]
-  (let [player-eid @player-eid
-        raycaster @raycaster
-        elapsed-time @elapsed-time
-        show-body-bounds? @show-body-bounds?
-        active-entities @active-entities
-        entities (map deref active-entities)
-        player @player-eid
-        should-draw? (fn [entity z-order]
-                       (or (= z-order :z-order/effect)
-                           (raycaster/line-of-sight? raycaster player entity)))]
-    (doseq [[z-order entities] (coll/sort-by-order (group-by :entity/z-order entities)
-                                                first
-                                                render-z-order)
-            render-layer render-layers
-            entity entities
-            :when (should-draw? entity z-order)]
-      (when show-body-bounds?
-        (draw-entity-rectangle! ctx shape-drawer
-                                entity
-                                (if (:entity/collides? entity)
-                                  (:colors/debug-body-outline-collides colors)
-                                  (:colors/debug-body-outline colors))))
-      (doseq [[k v] entity
-              :when (get render-layer k)]
-        (draw-component shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
-                        textures colors player elapsed-time active-entities raycaster
-                        entity k v)))))
-
-(defn highlight-mouseover-tile
-  [ctx shape-drawer world-mouse-position world]
-  (let [world @world
-        [x y] (mapv int world-mouse-position)
-        cell (world/cell-at world [x y])]
-    (when (and cell (#{:air :none} (:movement cell)))
-      (draw-fn-rectangle shape-drawer x y 1 1
-                         (case (:movement cell)
-                           :air (:colors/mouseover-tile-air colors)
-                           :none (:colors/mouseover-tile-none colors))))))

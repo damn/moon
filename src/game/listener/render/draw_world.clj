@@ -1,9 +1,9 @@
 (ns game.listener.render.draw-world
-  (:require [game.shared :refer [draw-cell-debug
-                                 draw-entities!
-                                 draw-tile-grid
-                                 highlight-mouseover-tile
-                                 mouseover-actor
+  (:require [game.listener.render.draw-world.draw-cell-debug :refer [draw-cell-debug]]
+            [game.listener.render.draw-world.draw-entities :refer [draw-entities!]]
+            [game.listener.render.draw-world.draw-tile-grid :refer [draw-tile-grid]]
+            [game.listener.render.draw-world.highlight-mouseover-tile :refer [highlight-mouseover-tile]]
+            [game.shared :refer [mouseover-actor
                                  ui-mouse-position
                                  world-mouse-position]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
