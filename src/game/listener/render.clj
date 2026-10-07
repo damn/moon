@@ -37,7 +37,6 @@
                                  update-time
                                  world
                                  world-mouse-position
-                                 world-unit-scale
                                  world-viewport]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
@@ -81,7 +80,7 @@
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! []
+(defn draw-tiled-map! [world-unit-scale]
   (let [raycaster @raycaster
         ^Viewport world-viewport @world-viewport
         tiled-map @tiled-map
@@ -104,7 +103,7 @@
   (let [[x y] (ui-mouse-position)]
     (mouseover-actor @stage x y)))
 
-(defn draw-world! []
+(defn draw-world! [world-unit-scale]
   (let [default-font @default-font
         shape-drawer @shape-drawer
         ^Viewport world-viewport @world-viewport
@@ -118,7 +117,7 @@
       (reset! unit-scale world-unit-scale)
       (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport)
                        #(draw-cell-debug % shape-drawer world-viewport)
-                       #(draw-entities! % shape-drawer @batch default-font unit-scale mouseover-actor* (world-mouse-position))
+                       #(draw-entities! % shape-drawer @batch default-font unit-scale world-unit-scale mouseover-actor* (world-mouse-position))
                        #(highlight-mouseover-tile % shape-drawer (world-mouse-position))]]
         (draw-fn nil))
       (reset! unit-scale 1)

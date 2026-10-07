@@ -36,8 +36,6 @@
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(def world-unit-scale (float (/ 48)))
-
 (def db (db/create))
 (def world (atom nil))
 (def tiled-map (atom nil))
@@ -1180,7 +1178,7 @@
                                 (.getRegionHeight ^TextureRegion texture-region)]]
                   (if (= @unit-scale 1)
                     dimensions
-                    (mapv (comp float (partial * world-unit-scale))
+                    (mapv (comp float (partial * @unit-scale))
                           dimensions)))]
     (if center?
       (Batch/.draw ^Batch batch
@@ -1266,7 +1264,7 @@
               visible-tile-color))))))
 
 (defn draw-component
-  [shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+  [shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
    textures colors player elapsed-time active-entities raycaster
    entity k v]
   (case k
@@ -2139,7 +2137,7 @@
     (draw-fn-rectangle shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position]
+  [ctx shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position]
   (let [player-eid @player-eid
         raycaster @raycaster
         textures @textures
@@ -2165,7 +2163,7 @@
                                   (:colors/debug-body-outline colors))))
       (doseq [[k v] entity
               :when (get render-layer k)]
-        (draw-component shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+        (draw-component shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
                         textures colors player elapsed-time active-entities raycaster
                         entity k v)))))
 

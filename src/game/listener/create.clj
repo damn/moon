@@ -34,7 +34,6 @@
                                  windows-create
                                  world
                                  world-mouse-position
-                                 world-unit-scale
                                  world-viewport]]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
@@ -167,7 +166,7 @@
   (textures/create files {:folder "resources/"
                           :extensions #{"png" "bmp"}}))
 
-(defn create-world-viewport! []
+(defn create-world-viewport! [world-unit-scale]
   (let [world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)]
     (FitViewport. (float world-width)

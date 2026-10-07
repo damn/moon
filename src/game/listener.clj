@@ -55,6 +55,8 @@
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
+(def world-unit-scale (float (/ 48)))
+
 (def listener
   (reify ApplicationListener
     (create [_]
@@ -71,7 +73,7 @@
       (put-pretty-name-color!)
       (reset! cursors (create-cursors! Gdx/files))
       (reset! textures (create-textures! Gdx/files))
-      (reset! world-viewport (create-world-viewport!))
+      (reset! world-viewport (create-world-viewport! world-unit-scale))
       (reset! default-font (create-default-font! Gdx/files))
       (doseq [^Actor actor (create-ui-actors)]
         (.addActor ^Stage @stage actor))
@@ -105,8 +107,8 @@
         (update-mouseover-eid!)
         (update-active-entities!)
         (set-camera-to-player!)
-        (draw-tiled-map!)
-        (draw-world!)
+        (draw-tiled-map! world-unit-scale)
+        (draw-world! world-unit-scale)
         (assoc-interaction-state (current-mouseover-actor) (world-mouse-position))
         (update-cursor!)
         (handle-player-input! key-pressed? button-just-pressed?)
