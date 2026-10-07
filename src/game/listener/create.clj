@@ -17,7 +17,6 @@
                                  handle-clicked-inventory-cell
                                  hp-mana-bar-create
                                  inventory-window-create
-                                 level-fn
                                  mouseover-eid
                                  paused?
                                  player-eid
@@ -222,6 +221,8 @@
 (defn add-ui-actors! []
   (doseq [actor (create-ui-actors)]
     (.addActor ^Stage @stage actor)))
+
+(def level-fn uf-caves/create)
 
 (defn create-level! []
   (let [{level-tiled-map :tiled-map

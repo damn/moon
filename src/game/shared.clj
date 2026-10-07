@@ -1,9 +1,7 @@
 (ns game.shared
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.tiled-map :as moon-tiled-map]
             [moon.body :as body]
-            [moon.cell :as cell]
             [moon.coll :as coll]
             [moon.db :as db]
             [moon.faction :as faction]
@@ -15,7 +13,6 @@
             [moon.level.uf-caves :as uf-caves]
             [moon.m :as m]
             [moon.mods :as mods]
-            [moon.world :as world]
             [moon.number :as number]
             [moon.rand :as rand]
             [moon.raycaster :as raycaster]
@@ -25,46 +22,19 @@
             [moon.timer :as timer]
             [moon.v2 :as v2]
             [moon.val-max :as val-max]
-            [qrecord.core :as q]
+            [moon.world :as world]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Audio Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
+  (:import (com.badlogic.gdx Gdx Graphics Input Input$Keys)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color Colors Cursor GL20 OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
-           (com.badlogic.gdx.maps.tiled TiledMap)
-           (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.graphics.glutils PixmapTextureData)
+           (com.badlogic.gdx.graphics Color OrthographicCamera Texture)
+           (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
            (com.badlogic.gdx.math Vector2 Vector3)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Cell HorizontalGroup Image ImageButton Label ScrollPane Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label Skin Stack Table TextButton TextTooltip Widget Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport Viewport)
+           (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(def minimum-size 0.39)
-
-(def max-delta 0.04)
-
-(def level-fn uf-caves/create)
-
-(def pausing? true)
-
-(def state->pause-game?
-  {:active-skill false
-   :stunned false
-   :player-moving false
-   :player-idle true
-   :player-dead true
-   :player-item-on-cursor true})
-
-(def factions-iterations
-  {:good 15
-   :evil 5})
-
-(def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
-(def spiderweb-duration 5)
 
 (def world-unit-scale (float (/ 48)))
 
@@ -328,6 +298,8 @@
                         (str "\n" (info-text v elapsed-time))))))
          (str/join "\n")
          string/remove-newlines)))
+
+(def minimum-size 0.39)
 
 (defn- prepare-entity-geometry [entity]
   (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
@@ -878,6 +850,9 @@
             nil))
         nil))))
 
+(def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
+(def spiderweb-duration 5)
+
 ; handle-fsm-event haengt an handle-effect
 (defn handle-effect
   [[k v] effect-ctx world-mouse-position apply-effects!
@@ -1121,6 +1096,8 @@
   [debug-flags-menu-item
    help-menu-item
    select-world-menu-item])
+
+(def max-delta 0.04)
 
 (def max-speed
   (/ minimum-size max-delta))
@@ -2123,6 +2100,10 @@
                      1
                      1
                      (float-bits [1 1 1 0.8])))))
+
+(def factions-iterations
+  {:good 15
+   :evil 5})
 
 (defn draw-cell-debug
   [ctx shape-drawer ^Viewport world-viewport]

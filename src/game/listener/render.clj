@@ -22,7 +22,6 @@
                                  mouseover-actor
                                  mouseover-eid
                                  paused?
-                                 pausing?
                                  player-eid
                                  raycaster
                                  render-z-order
@@ -160,6 +159,16 @@
 
 (defn clear-interaction-state! []
   (reset! interaction-state nil))
+
+(def pausing? true)
+
+(def state->pause-game?
+  {:active-skill false
+   :stunned false
+   :player-moving false
+   :player-idle true
+   :player-dead true
+   :player-item-on-cursor true})
 
 (defn update-paused! [key-pressed? key-just-pressed?]
   (reset! paused?
