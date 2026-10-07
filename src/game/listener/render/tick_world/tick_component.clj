@@ -1,8 +1,7 @@
 (ns game.listener.render.tick-world.tick-component
   (:require [effect.applicable :refer [applicable?]]
             [effect.useful :refer [useful?]]
-            [game.shared :refer [handle-fsm-event!
-                                 max-speed]]
+            [game.shared :refer [handle-fsm-event!]]
             [moon.body :as body]
             [moon.number :as number]
             [moon.raycaster :as raycaster]
@@ -50,7 +49,9 @@
       (dissoc effect-ctx :effect/target))))
 
 (defn tick-component
-  [world raycaster elapsed-time delta-time audio skin stage textures z-orders ctx world-mouse-position apply-effects! eid [k v]]
+  [world raycaster elapsed-time delta-time audio skin stage textures z-orders
+   minimum-size max-speed
+   ctx world-mouse-position apply-effects! eid [k v]]
   (let [elapsed-time* @elapsed-time]
     (case k
       :entity/animation
@@ -77,7 +78,7 @@
                                      :radius 4}
                                     (world/circle->entities @world)
                                     (filter #(= (:entity/faction @%) faction)))]
-            (handle-fsm-event! world elapsed-time audio skin stage textures z-orders friendly-eid world-mouse-position :alert)))
+            (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size friendly-eid world-mouse-position :alert)))
         nil)
 
       :entity/string-effect
@@ -130,11 +131,11 @@
         (cond
          (not (seq (filter #(applicable? % effect-ctx)
                            (:skill/effects skill))))
-         (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :action-done)
+         (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :action-done)
 
          (timer/stopped? elapsed-time* counter)
          (do (apply-effects! effect-ctx (:skill/effects skill))
-             (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :action-done)
+             (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :action-done)
              nil)))
 
       :entity/delete-after-duration
@@ -145,24 +146,24 @@
       :stunned
       (let [{:keys [counter]} v]
         (when (timer/stopped? elapsed-time* counter)
-          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :effect-wears-off)))
+          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :effect-wears-off)))
 
       :npc-moving
       (let [{:keys [timer]} v]
         (when (timer/stopped? elapsed-time* timer)
-          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :timer-finished)))
+          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :timer-finished)))
 
       :npc-sleeping
       (let [entity @eid]
         (when-let [distance (world/nearest-enemy-distance @world entity)]
           (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-            (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :alert))))
+            (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :alert))))
 
       :npc-idle
       (let [effect-ctx (create-effect-ctx world raycaster ctx eid)]
         (if-let [skill (choose-skill (partial raycaster/blocked? @raycaster) @eid effect-ctx)]
-          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :start-action [skill effect-ctx])
-          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :movement-direction (or (world/find-direction @world eid)
+          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :start-action [skill effect-ctx])
+          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (world/find-direction @world eid)
                                                              [0 0]))))
 
       :entity/movement

@@ -32,9 +32,7 @@
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(def minimum-size 0.39)
-
-(defn- prepare-entity-geometry [z-orders entity]
+(defn- prepare-entity-geometry [z-orders minimum-size entity]
   (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
     (assert position)
     (assert width)
@@ -451,13 +449,13 @@
   (assert (contains? sounds sound-name) (str sound-name))
   (.play ^Sound (get sounds sound-name)))
 
-(defn spawn-entity! [world elapsed-time skin stage textures z-orders entity]
+(defn spawn-entity! [world elapsed-time skin stage textures z-orders minimum-size entity]
   (let [elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (create-component elapsed-time* k v)))
                        {}
                        entity)
-        entity (prepare-entity-geometry z-orders entity)
+        entity (prepare-entity-geometry z-orders minimum-size entity)
         eid (atom entity)]
     (world/register-eid! @world eid)
     (doseq [component @eid]
@@ -467,16 +465,16 @@
                               eid
                               component))))
 
-(defn audiovisual! [db world elapsed-time audio skin stage textures z-orders position audiovisual]
+(defn audiovisual! [db world elapsed-time audio skin stage textures z-orders minimum-size position audiovisual]
   (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
     (play-sound! audio sound)
-    (spawn-entity! world elapsed-time skin stage textures z-orders
+    (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
-(defn handle-fsm-event! [world elapsed-time audio skin stage textures z-orders eid world-mouse-position event & [params]]
+(defn handle-fsm-event! [world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position event & [params]]
   (let [elapsed-time* @elapsed-time
         fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -499,7 +497,7 @@
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
                 (play-sound! audio "bfxr_itemputground")
-                (spawn-entity! world elapsed-time skin stage textures z-orders
+                (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                                (spawn-item (item-place-position (:entity/position entity)
                                                                 world-mouse-position
                                                                 (- (:entity/click-distance-tiles entity) 0.1))
@@ -511,7 +509,7 @@
 
             :npc-sleeping
             (do (swap! eid add-text-effect elapsed-time* "[WHITE]!" 1)
-                (spawn-entity! world elapsed-time skin stage textures z-orders
+                (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                                (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 elapsed-time*)))
 
             :npc-moving
@@ -568,20 +566,20 @@
 
 ; handle-fsm-event haengt an handle-effect
 (defn handle-effect
-  [db world elapsed-time audio skin stage textures z-orders
+  [db world elapsed-time audio skin stage textures z-orders minimum-size
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities colors raycaster]
   (let [elapsed-time* @elapsed-time]
     (case k
       :effects/audiovisual
-      (audiovisual! db world elapsed-time audio skin stage textures z-orders (:effect/target-position effect-ctx) v)
+      (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:effect/target-position effect-ctx) v)
 
       :effects/projectile
       (let [source (:effect/source effect-ctx)
             source* @source
             direction (:effect/target-direction effect-ctx)
             size (:projectile/size v)]
-        (spawn-entity! world elapsed-time skin stage textures z-orders
+        (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                        (spawn-projectile
                         {:position (v2/add (:entity/position source*)
                                            (v2/scale direction
@@ -592,7 +590,7 @@
 
       :effects/spawn
       (let [source (:effect/source effect-ctx)]
-        (spawn-entity! world elapsed-time skin stage textures z-orders
+        (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                        (spawn-creature {:position (:effect/target-position effect-ctx)
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
@@ -603,7 +601,7 @@
       (let [source (:effect/source effect-ctx)
             source* @source]
         (doseq [target (affected-targets active-entities raycaster source*)]
-          (spawn-entity! world elapsed-time skin stage textures z-orders
+          (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                          (spawn-line
                           {:start (:entity/position source*)
                            :end (:entity/position @target)
@@ -621,7 +619,7 @@
             target-body @target
             {:keys [maxrange entity-effects]} v]
         (if (body/in-range? body target-body maxrange)
-          (do (spawn-entity! world elapsed-time skin stage textures z-orders
+          (do (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                              (spawn-line
                               {:start (body/start-point body target-body)
                                :end (:entity/position target-body)
@@ -629,12 +627,12 @@
                                :color (:colors/target-entity-line colors)
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
-          (audiovisual! db world elapsed-time audio skin stage textures z-orders
+          (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size
                         (body/end-point body target-body maxrange)
                         :audiovisuals/hit-ground)))
 
       :effects.target/audiovisual
-      (audiovisual! db world elapsed-time audio skin stage textures z-orders (:entity/position @(:effect/target effect-ctx)) v)
+      (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position @(:effect/target effect-ctx)) v)
 
       :effects.target/convert
       (let [source (:effect/source effect-ctx)
@@ -675,16 +673,16 @@
                dmg-text (str "[RED]" dmg-amount "[]")]
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
-           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-           (audiovisual! db world elapsed-time audio skin stage textures z-orders (:entity/position target*) :audiovisuals/damage))))
+           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size target world-mouse-position (if (zero? new-hp-val) :kill :alert))
+           (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
-      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders (:effect/target effect-ctx) world-mouse-position :kill)
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size (:effect/target effect-ctx) world-mouse-position :kill)
 
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle-effect db world elapsed-time audio skin stage textures z-orders
+      (handle-effect db world elapsed-time audio skin stage textures z-orders minimum-size
                      [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
                      effect-ctx
                      world-mouse-position
@@ -703,7 +701,7 @@
           nil))
 
       :effects.target/stun
-      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders (:effect/target effect-ctx) world-mouse-position :stun v))))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size (:effect/target effect-ctx) world-mouse-position :stun v))))
 
 (defn toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)
@@ -758,11 +756,6 @@
    :close-windows-key Input$Keys/ESCAPE
    :toggle-inventory Input$Keys/I
    :toggle-entity-info Input$Keys/E})
-
-(def max-delta 0.04)
-
-(def max-speed
-  (/ minimum-size max-delta))
 
 (defn draw-fn-filled-rectangle [shape-drawer x y w h color-float-bits]
   (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))

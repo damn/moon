@@ -147,13 +147,13 @@
                    (not (or (key-just-pressed? (:unpause-once controls))
                             (key-pressed? (:unpause-continously controls))))))))
 
-(defn destroy-entities! [db world elapsed-time audio skin stage textures z-orders]
+(defn destroy-entities! [db world elapsed-time audio skin stage textures z-orders minimum-size]
   (doseq [eid (world/destroyed-eids @world)]
     (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
-        (audiovisual! db world elapsed-time audio skin stage textures z-orders (:entity/position @eid) v)
+        (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position @eid) v)
         nil))))
 
 (defn- zoom-in! [world-viewport]

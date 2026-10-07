@@ -45,6 +45,13 @@
 
 (def world-unit-scale (float (/ 48)))
 
+(def minimum-size 0.39)
+
+(def max-delta 0.04)
+
+(def max-speed
+  (/ minimum-size max-delta))
+
 (def z-orders
   [:z-order/on-ground
    :z-order/ground
@@ -120,6 +127,7 @@
                                              show-potential-field-colors?
                                              unit-scale
                                              z-orders
+                                             minimum-size
                                              @audio
                                              @default-font
                                              @shape-drawer
@@ -135,9 +143,9 @@
       (reset! world (create-world! @tiled-map))
       (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
       (reset! raycaster (create-raycaster! @world))
-      (spawn-player! db world elapsed-time start-position @skin @stage @textures z-orders)
+      (spawn-player! db world elapsed-time start-position @skin @stage @textures z-orders minimum-size)
       (bind-player-eid! world player-eid)
-      (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures z-orders))
+      (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures z-orders minimum-size))
 
     (dispose [_]
       (run! Disposable/.dispose (vals @audio))
@@ -210,13 +218,14 @@
                       [:interaction-state/no-skill-selected]))))
         (update-cursor! cursors interaction-state player-eid)
         (handle-player-input! world elapsed-time interaction-state player-eid
-                              audio skin stage textures z-orders world-viewport
+                              audio skin stage textures z-orders minimum-size world-viewport
                               key-pressed? button-just-pressed?)
         (clear-interaction-state! interaction-state)
         (update-paused! paused? player-eid key-pressed? key-just-pressed?)
         (tick-game! db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
-                    audio skin stage textures world-viewport factions-iterations z-orders)
-        (destroy-entities! db world elapsed-time audio skin stage textures z-orders)
+                    audio skin stage textures world-viewport factions-iterations z-orders
+                    minimum-size max-delta max-speed)
+        (destroy-entities! db world elapsed-time audio skin stage textures z-orders minimum-size)
         (handle-controls! stage world-viewport key-pressed? key-just-pressed?)
         (let [^Stage stage stage]
           (.act stage)

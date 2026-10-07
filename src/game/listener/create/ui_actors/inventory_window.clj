@@ -11,14 +11,14 @@
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener Drawable TextureRegionDrawable)))
 
 (defn handle-clicked-inventory-cell
-  [world elapsed-time player-eid audio skin stage textures z-orders ui-set-item! ui-remove-item! cell world-mouse-position]
+  [world elapsed-time player-eid audio skin stage textures z-orders minimum-size ui-set-item! ui-remove-item! cell world-mouse-position]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (get-in (:entity/inventory @player-eid) cell)]
       (play-sound! audio "bfxr_takeit")
       (swap! player-eid remove-item cell)
       (ui-remove-item! cell)
-      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :pickup-item item))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item))
 
     :player-item-on-cursor
     (let [entity @player-eid
@@ -32,7 +32,7 @@
            (play-sound! audio "bfxr_itemput")
            (swap! player-eid set-item cell item-on-cursor)
            (ui-set-item! cell item-on-cursor)
-           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :dropped-item))
+           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :dropped-item))
 
        (and item-in-cell
             (inventory/valid-slot? cell item-on-cursor))
@@ -42,8 +42,8 @@
            (ui-remove-item! cell)
            (swap! player-eid set-item cell item-on-cursor)
            (ui-set-item! cell item-on-cursor)
-           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :dropped-item)
-           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :pickup-item item-in-cell))))
+           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :dropped-item)
+           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item-in-cell))))
 
     nil))
 

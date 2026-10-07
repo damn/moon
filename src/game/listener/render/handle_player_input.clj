@@ -29,7 +29,7 @@
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
-(defn- interaction-state->txs [[k params] world elapsed-time stage audio skin textures z-orders ui-set-item! player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] world elapsed-time stage audio skin textures z-orders minimum-size ui-set-item! player-eid world-mouse-position]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -50,7 +50,7 @@
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! audio "bfxr_takeit")
-                  (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :pickup-item item))
+                  (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item))
 
               (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -73,7 +73,7 @@
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :start-action [skill effect-ctx]))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :start-action [skill effect-ctx]))
 
     :interaction-state.skill/not-usable
     (let [state params]
@@ -91,7 +91,7 @@
 
 (defn handle-player-input!
   [world elapsed-time interaction-state player-eid
-   audio skin stage textures z-orders world-viewport key-pressed? button-just-pressed?]
+   audio skin stage textures z-orders minimum-size world-viewport key-pressed? button-just-pressed?]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -103,7 +103,7 @@
     (case state-k
       :player-idle
       (if move-v
-        (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-pos :movement-input move-v)
+        (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-pos :movement-input move-v)
         (when left-button-pressed?
           (interaction-state->txs @interaction-state
                                   world
@@ -113,6 +113,7 @@
                                   skin
                                   textures
                                   z-orders
+                                  minimum-size
                                   #(ui-set-item! skin stage textures %1 %2)
                                   eid
                                   world-mouse-pos)))
@@ -123,11 +124,11 @@
                                                :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                           0)})
             nil)
-        (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-pos :no-movement-input))
+        (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-pos :no-movement-input))
 
       :player-item-on-cursor
       (when (and left-button-pressed?
                  (not mouseover-actor*))
-        (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-pos :drop-item))
+        (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-pos :drop-item))
 
       nil)))
