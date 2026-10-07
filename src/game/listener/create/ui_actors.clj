@@ -1,20 +1,19 @@
 (ns game.listener.create.ui-actors
-  (:require [game.shared :refer [colors
-                                 create-action-bar
-                                 create-dev-menu
-                                 dev-menus
+  (:require [game.listener.create.ui-actors.action-bar :refer [create-action-bar]]
+            [game.listener.create.ui-actors.dev-menu :refer [create-dev-menu dev-menus]]
+            [game.listener.create.ui-actors.entity-info :refer [stage-info-window-create]]
+            [game.listener.create.ui-actors.hp-mana-bar :refer [hp-mana-bar-create]]
+            [game.listener.create.ui-actors.inventory-window :refer [handle-clicked-inventory-cell
+                                                                     inventory-window-create]]
+            [game.listener.create.ui-actors.player-message :refer [player-message-actor-create]]
+            [game.listener.create.ui-actors.player-state-draw :refer [player-state-draw-create]]
+            [game.listener.create.ui-actors.windows :refer [windows-create]]
+            [game.shared :refer [colors
                                  draw-fn-filled-rectangle
                                  draw-fn-rectangle
-                                 handle-clicked-inventory-cell
-                                 hp-mana-bar-create
-                                 inventory-window-create
-                                 player-message-actor-create
-                                 player-state-draw-create
-                                 stage-info-window-create
                                  ui-mouse-position
                                  ui-remove-item!
                                  ui-set-item!
-                                 windows-create
                                  world-mouse-position]]
             [moon.inventory :as inventory]
             [moon.number :as number])
