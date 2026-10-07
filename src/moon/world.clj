@@ -4,7 +4,8 @@
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]
             [moon.g2d :as g2d]
-            [moon.grid :as grid])
+            [moon.grid :as grid]
+            [moon.potential-field :as potential-field])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn register-eid! [world eid]
@@ -47,13 +48,13 @@
   (grid/try-move-solid-body (:world/grid world) body entity-id movement))
 
 (defn nearest-enemy [world entity]
-  (grid/nearest-enemy (:world/grid world) entity))
+  (potential-field/nearest-enemy (:world/grid world) entity))
 
 (defn nearest-enemy-distance [world entity]
-  (grid/nearest-enemy-distance (:world/grid world) entity))
+  (potential-field/nearest-enemy-distance (:world/grid world) entity))
 
 (defn find-direction [world eid]
-  (grid/find-direction (:world/grid world) eid))
+  (potential-field/find-direction (:world/grid world) eid))
 
 (defn point->entities [world position]
   (grid/point->entities (:world/grid world) position))
@@ -80,7 +81,7 @@
   (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids world))))
 
 (defn update-potential-fields! [world pf-cache faction entities max-iterations]
-  (grid/update! (:world/grid world) pf-cache faction entities max-iterations))
+  (potential-field/update! (:world/grid world) pf-cache faction entities max-iterations))
 
 (defn raycaster-data [world]
   (let [grid (:world/grid world)
