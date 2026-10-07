@@ -1,8 +1,8 @@
 (ns game.listener.render.handle-player-input
-  (:require [game.shared :refer [handle-fsm-event!
+  (:require [game.entity :refer [set-item]]
+            [game.shared :refer [handle-fsm-event!
                                  mouseover-actor
                                  play-sound!
-                                 set-item
                                  toggle-inventory-visible!
                                  ui-mouse-position
                                  ui-set-item!

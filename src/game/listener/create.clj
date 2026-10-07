@@ -1,8 +1,8 @@
 (ns game.listener.create
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game.shared :refer [spawn-creature
-                                 spawn-entity!]]
+            [entity.spawn :refer [spawn-entity!]]
+            [game.shared :refer [spawn-creature]]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
             [moon.level.uf-caves :as uf-caves]
