@@ -2,14 +2,10 @@
   (:require [game.shared :refer [audiovisual!
                                  colors
                                  controls
-                                 draw-cell-debug
-                                 draw-entities!
-                                 draw-tile-grid
                                  effect-applicable?
                                  factions-iterations
                                  handle-effect
                                  handle-input
-                                 highlight-mouseover-tile
                                  max-delta
                                  mouseover-actor
                                  render-z-order
@@ -25,10 +21,8 @@
             [moon.world :as world])
   (:import (com.badlogic.gdx Gdx Graphics Input Input$Buttons Input$Keys)
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
-           (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.scenes.scene2d Group Stage)
-           (com.badlogic.gdx.utils.viewport Viewport)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn update-mouseover-eid! [world raycaster player-eid mouseover-eid stage world-viewport]
   (let [old-mouseover-eid @mouseover-eid
@@ -81,30 +75,6 @@
 (defn current-mouseover-actor [stage]
   (let [[x y] (ui-mouse-position stage)]
     (mouseover-actor stage x y)))
-
-(defn draw-world!
-  [batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
-   world player-eid raycaster elapsed-time show-body-bounds? active-entities
-   show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?]
-  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
-        mouseover-actor* (current-mouseover-actor stage)
-        world-mouse-pos (world-mouse-position world-viewport)]
-    (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
-    (.setProjectionMatrix ^Batch batch (.combined camera))
-    (.begin ^Batch batch)
-    (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
-      (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))
-      (reset! unit-scale world-unit-scale)
-      (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport show-tile-grid?)
-                       #(draw-cell-debug % shape-drawer world-viewport world
-                                         show-cell-entities? show-cell-occupied? show-potential-field-colors?)
-                       #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
-                                        player-eid raycaster elapsed-time show-body-bounds? active-entities)
-                       #(highlight-mouseover-tile % shape-drawer world-mouse-pos world)]]
-        (draw-fn nil))
-      (reset! unit-scale 1)
-      (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width))
-    (.end ^Batch batch)))
 
 (defn update-cursor! [cursors interaction-state player-eid]
   (let [eid @player-eid

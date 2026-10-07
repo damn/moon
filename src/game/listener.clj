@@ -23,7 +23,6 @@
                                           current-mouseover-actor
                                           destroy-entities!
                                           draw-tiled-map!
-                                          draw-world!
                                           handle-controls!
                                           handle-player-input!
                                           set-camera-to-player!
@@ -32,6 +31,7 @@
                                           update-cursor!
                                           update-mouseover-eid!
                                           update-paused!]]
+            [game.listener.render.draw-world :refer [draw-world!]]
             [game.shared :refer [action-bar-selected-skill
                                  mouseover-actor-info
                                  player-effect-ctx
