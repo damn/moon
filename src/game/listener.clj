@@ -34,10 +34,10 @@
             [game.listener.render.tick-world :refer [tick-game!]]
             [game.shared :refer [action-bar-selected-skill
                                  mouseover-actor-info
-                                 skill-usable-state
                                  world-mouse-position]]
             [moon.db :as db]
-            [moon.v2 :as v2])
+            [moon.v2 :as v2]
+            [skill.usable-state :refer [usable-state]])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
@@ -203,7 +203,7 @@
                                         :effect/target-position target-position
                                         :effect/target-direction (v2/direction (:entity/position @player-eid)
                                                                               target-position)}
-                            state (skill-usable-state skill entity effect-ctx)]
+                            state (usable-state skill entity effect-ctx)]
                         (if (= state :usable)
                           [:interaction-state.skill/usable [skill effect-ctx]]
                           [:interaction-state.skill/not-usable state]))

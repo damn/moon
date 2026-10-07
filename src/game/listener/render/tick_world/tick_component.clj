@@ -1,16 +1,16 @@
 (ns game.listener.render.tick-world.tick-component
-  (:require [game.shared :refer [effect-applicable?
-                                 effect-useful?
-                                 handle-fsm-event!
-                                 max-speed
-                                 skill-usable-state]]
+  (:require [effect.applicable :refer [applicable?]]
+            [effect.useful :refer [useful?]]
+            [game.shared :refer [handle-fsm-event!
+                                 max-speed]]
             [moon.body :as body]
             [moon.number :as number]
             [moon.raycaster :as raycaster]
             [moon.stats :as stats]
             [moon.timer :as timer]
             [moon.v2 :as v2]
-            [moon.world :as world]))
+            [moon.world :as world]
+            [skill.usable-state :refer [usable-state]]))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
   (->> entity
@@ -18,10 +18,10 @@
        vals
        (sort-by :skill/cost)
        reverse
-       (filter #(and (= :usable (skill-usable-state % entity effect-ctx))
+       (filter #(and (= :usable (usable-state % entity effect-ctx))
                      (->> (:skill/effects %)
-                          (filter (fn [e] (effect-applicable? e effect-ctx)))
-                          (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
+                          (filter (fn [e] (applicable? e effect-ctx)))
+                          (some (fn [e] (useful? e effect-ctx ray-blocked?))))))
        first))
 
 (defn- create-effect-ctx
@@ -128,7 +128,7 @@
       (let [{:keys [skill effect-ctx counter]} v
             effect-ctx (update-effect-ctx @raycaster effect-ctx)]
         (cond
-         (not (seq (filter #(effect-applicable? % effect-ctx)
+         (not (seq (filter #(applicable? % effect-ctx)
                            (:skill/effects skill))))
          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :action-done)
 

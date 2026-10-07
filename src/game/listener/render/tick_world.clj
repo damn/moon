@@ -1,7 +1,7 @@
 (ns game.listener.render.tick-world
   (:require [game.listener.render.tick-world.tick-component :refer [tick-component]]
+            [effect.applicable :refer [applicable?]]
             [game.shared :refer [colors
-                                 effect-applicable?
                                  handle-effect
                                  max-delta
                                  world-mouse-position]]
@@ -15,7 +15,7 @@
         raycaster* @raycaster
         world-mouse-pos (world-mouse-position world-viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
-              (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+              (doseq [effect (filter #(applicable? % effect-ctx) effects)]
                 (handle-effect db world elapsed-time audio skin stage textures z-orders
                                effect effect-ctx world-mouse-pos
                                apply-effects!

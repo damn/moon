@@ -1,5 +1,5 @@
 (ns game.listener.create.ui-actors.entity-info
-  (:require [game.shared :refer [info-text]])
+  (:require [info-text :refer [info-text]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label Skin Window)))
 
