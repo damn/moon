@@ -1,6 +1,6 @@
 (ns game.listener.render.draw-world.draw-cell-debug
-  (:require [game.shared :refer [colors
-                                 draw-fn-filled-rectangle]]
+  (:require [game.colors :refer [colors]]
+            [game.draw :refer [draw-fn-filled-rectangle]]
             [moon.world :as world])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.math Vector3)

@@ -1,12 +1,10 @@
 (ns game.listener.render
-  (:require [game.shared :refer [audiovisual!
-                                 colors
-                                 controls
-                                 mouseover-actor
-                                 tile-color-setter*
-                                 toggle-inventory-visible!
-                                 ui-mouse-position
-                                 world-mouse-position]]
+  (:require [game.audio :refer [audiovisual!]]
+            [game.colors :refer [colors]]
+            [game.controls :refer [controls]]
+            [game.mouse :refer [mouseover-actor ui-mouse-position world-mouse-position]]
+            [game.tile-color :refer [tile-color-setter*]]
+            [game.ui :refer [toggle-inventory-visible!]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]

@@ -1,5 +1,5 @@
 (ns game.listener.create.ui-actors.player-message
-  (:require [game.shared :refer [draw-fn-text]])
+  (:require [game.draw :refer [draw-fn-text]])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn player-message-actor-create [default-font unit-scale]

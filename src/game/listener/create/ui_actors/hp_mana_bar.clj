@@ -1,5 +1,5 @@
 (ns game.listener.create.ui-actors.hp-mana-bar
-  (:require [game.shared :refer [draw-fn-text draw-fn-texture-region]]
+  (:require [game.draw :refer [draw-fn-text draw-fn-texture-region]]
             [moon.number :as number]
             [moon.stats :as stats]
             [moon.textures :as textures]

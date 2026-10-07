@@ -1,6 +1,6 @@
 (ns game.listener.render.draw-world.highlight-mouseover-tile
-  (:require [game.shared :refer [colors
-                                 draw-fn-rectangle]]
+  (:require [game.colors :refer [colors]]
+            [game.draw :refer [draw-fn-rectangle]]
             [moon.world :as world]))
 
 (defn highlight-mouseover-tile

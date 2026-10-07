@@ -1,7 +1,7 @@
 (ns game.listener.render.tick-world.tick-component
   (:require [effect.applicable :refer [applicable?]]
             [effect.useful :refer [useful?]]
-            [game.shared :refer [handle-fsm-event!]]
+            [game.fsm :refer [handle-fsm-event!]]
             [moon.body :as body]
             [moon.number :as number]
             [moon.raycaster :as raycaster]

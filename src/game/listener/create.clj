@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [entity.spawn :refer [spawn-entity!]]
-            [game.shared :refer [spawn-creature]]
+            [game.spawn :refer [spawn-creature]]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
             [moon.level.uf-caves :as uf-caves]

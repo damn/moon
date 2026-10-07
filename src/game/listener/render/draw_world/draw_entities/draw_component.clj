@@ -1,9 +1,9 @@
 (ns game.listener.render.draw-world.draw-entities.draw-component
   (:require [clojure.math :as math]
-            [game.shared :refer [draw-fn-filled-rectangle
-                                 draw-fn-text
-                                 draw-fn-texture-region
-                                 item-place-position]]
+            [game.draw :refer [draw-fn-filled-rectangle
+                               draw-fn-text
+                               draw-fn-texture-region]]
+            [game.spawn :refer [item-place-position]]
             [game.target-all :refer [affected-targets]]
             [moon.body :as body]
             [moon.faction :as faction]

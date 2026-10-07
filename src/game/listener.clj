@@ -32,9 +32,8 @@
             [game.listener.render.draw-world :refer [draw-world!]]
             [game.listener.render.handle-player-input :refer [handle-player-input!]]
             [game.listener.render.tick-world :refer [tick-game!]]
-            [game.shared :refer [action-bar-selected-skill
-                                 mouseover-actor-info
-                                 world-mouse-position]]
+            [game.mouse :refer [mouseover-actor-info world-mouse-position]]
+            [game.ui :refer [action-bar-selected-skill]]
             [moon.db :as db]
             [moon.v2 :as v2]
             [skill.usable-state :refer [usable-state]])

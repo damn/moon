@@ -1,6 +1,7 @@
 (ns game.listener.create.ui-actors.inventory-window
   (:require [game.entity :refer [remove-item set-item]]
-            [game.shared :refer [handle-fsm-event! play-sound!]]
+            [game.audio :refer [play-sound!]]
+            [game.fsm :refer [handle-fsm-event!]]
             [moon.inventory :as inventory]
             [moon.textures :as textures])
   (:import (com.badlogic.gdx Gdx Input)

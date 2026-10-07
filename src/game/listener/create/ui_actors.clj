@@ -8,13 +8,10 @@
             [game.listener.create.ui-actors.player-message :refer [player-message-actor-create]]
             [game.listener.create.ui-actors.player-state-draw :refer [player-state-draw-create]]
             [game.listener.create.ui-actors.windows :refer [windows-create]]
-            [game.shared :refer [colors
-                                 draw-fn-filled-rectangle
-                                 draw-fn-rectangle
-                                 ui-mouse-position
-                                 ui-remove-item!
-                                 ui-set-item!
-                                 world-mouse-position]]
+            [game.colors :refer [colors]]
+            [game.draw :refer [draw-fn-filled-rectangle draw-fn-rectangle]]
+            [game.mouse :refer [ui-mouse-position world-mouse-position]]
+            [game.ui :refer [ui-remove-item! ui-set-item!]]
             [moon.inventory :as inventory]
             [moon.number :as number])
   (:import (com.badlogic.gdx Gdx Graphics)

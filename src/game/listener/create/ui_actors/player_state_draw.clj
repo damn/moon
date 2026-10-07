@@ -1,5 +1,6 @@
 (ns game.listener.create.ui-actors.player-state-draw
-  (:require [game.shared :refer [draw-fn-texture-region mouseover-actor ui-mouse-position]]
+  (:require [game.draw :refer [draw-fn-texture-region]]
+            [game.mouse :refer [mouseover-actor ui-mouse-position]]
             [moon.textures :as textures]))
 
 (defn- entity-state-draw-ui-view

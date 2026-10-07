@@ -1,12 +1,9 @@
 (ns game.listener.render.handle-player-input
   (:require [game.entity :refer [set-item]]
-            [game.shared :refer [handle-fsm-event!
-                                 mouseover-actor
-                                 play-sound!
-                                 toggle-inventory-visible!
-                                 ui-mouse-position
-                                 ui-set-item!
-                                 world-mouse-position]]
+            [game.audio :refer [play-sound!]]
+            [game.fsm :refer [handle-fsm-event!]]
+            [game.mouse :refer [mouseover-actor ui-mouse-position world-mouse-position]]
+            [game.ui :refer [toggle-inventory-visible! ui-set-item!]]
             [moon.inventory :as inventory]
             [moon.item :as item]
             [moon.stats :as stats]

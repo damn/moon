@@ -3,9 +3,9 @@
             [game.listener.render.draw-world.draw-entities :refer [draw-entities!]]
             [game.listener.render.draw-world.draw-tile-grid :refer [draw-tile-grid]]
             [game.listener.render.draw-world.highlight-mouseover-tile :refer [highlight-mouseover-tile]]
-            [game.shared :refer [mouseover-actor
-                                 ui-mouse-position
-                                 world-mouse-position]])
+            [game.mouse :refer [mouseover-actor
+                                ui-mouse-position
+                                world-mouse-position]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.utils.viewport Viewport)

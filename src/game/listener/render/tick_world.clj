@@ -1,9 +1,9 @@
 (ns game.listener.render.tick-world
   (:require [game.listener.render.tick-world.tick-component :refer [tick-component]]
             [effect.applicable :refer [applicable?]]
-            [game.shared :refer [colors
-                                 handle-effect
-                                 world-mouse-position]]
+            [effect.handle :refer [handle-effect]]
+            [game.colors :refer [colors]]
+            [game.mouse :refer [world-mouse-position]]
             [moon.world :as world])
   (:import (com.badlogic.gdx Gdx Graphics)))
 
