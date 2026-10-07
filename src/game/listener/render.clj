@@ -27,7 +27,6 @@
                                  render-z-order
                                  shape-drawer
                                  stage
-                                 state->pause-game?
                                  tick-component
                                  tiled-map
                                  tile-color-setter*

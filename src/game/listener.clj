@@ -1,6 +1,5 @@
 (ns game.listener
-  (:require [game.listener.create :refer [add-ui-actors!
-                                          bind-player-eid!
+  (:require [game.listener.create :refer [bind-player-eid!
                                           create-audio!
                                           create-batch!
                                           create-cursors!
@@ -9,14 +8,14 @@
                                           create-level!
                                           create-raycaster!
                                           create-shape-drawer!
+                                          create-shape-drawer-texture!
                                           create-skin!
                                           create-stage!
                                           create-textures!
+                                          create-ui-actors
                                           create-world!
                                           create-world-viewport!
-                                          init-shape-drawer-texture!
                                           init-tooltip-manager!
-                                          init-unit-scale!
                                           put-pretty-name-color!
                                           spawn-map-creatures!
                                           spawn-player!]]
@@ -38,39 +37,51 @@
                                  batch
                                  cursors
                                  default-font
+                                 explored-tile-corners
+                                 raycaster
+                                 shape-drawer
                                  shape-drawer-texture
                                  skin
                                  stage
+                                 start-position
                                  textures
                                  tiled-map
+                                 unit-scale
+                                 world
                                  world-mouse-position
                                  world-viewport]])
-  (:import (com.badlogic.gdx ApplicationListener Gdx Input)
-           (com.badlogic.gdx.scenes.scene2d Stage)
+  (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
+           (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def listener
   (reify ApplicationListener
     (create [_]
-      (create-audio! Gdx/audio Gdx/files)
-      (create-batch!)
-      (init-unit-scale!)
-      (init-shape-drawer-texture!)
-      (create-shape-drawer!)
-      (create-skin! Gdx/files)
-      (create-stage! Gdx/input)
+      (reset! audio (create-audio! Gdx/audio Gdx/files))
+      (reset! batch (create-batch!))
+      (reset! unit-scale 1)
+      (reset! shape-drawer-texture (create-shape-drawer-texture!))
+      (reset! shape-drawer (create-shape-drawer! @batch @shape-drawer-texture))
+      (reset! skin (create-skin! Gdx/files))
+      (let [s (create-stage! @batch)]
+        (.setInputProcessor ^Input Gdx/input ^InputProcessor s)
+        (reset! stage s))
       (init-tooltip-manager!)
       (put-pretty-name-color!)
-      (create-cursors! Gdx/files)
-      (create-textures! Gdx/files)
-      (create-world-viewport!)
-      (create-default-font! Gdx/files)
-      (add-ui-actors!)
-      (create-level!)
-      (create-world!)
-      (create-explored-tile-corners!)
-      (create-raycaster!)
+      (reset! cursors (create-cursors! Gdx/files))
+      (reset! textures (create-textures! Gdx/files))
+      (reset! world-viewport (create-world-viewport!))
+      (reset! default-font (create-default-font! Gdx/files))
+      (doseq [^Actor actor (create-ui-actors)]
+        (.addActor ^Stage @stage actor))
+      (let [{level-tiled-map :tiled-map
+             level-start :start-position} (create-level! @textures)]
+        (reset! tiled-map level-tiled-map)
+        (reset! start-position level-start))
+      (reset! world (create-world! @tiled-map))
+      (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
+      (reset! raycaster (create-raycaster! @world))
       (spawn-player!)
       (bind-player-eid!)
       (spawn-map-creatures!))

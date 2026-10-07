@@ -2,18 +2,15 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [game.shared :refer [audio
-                                 batch
                                  colors
                                  create-action-bar
                                  create-dev-menu
-                                 cursors
                                  db
                                  default-font
                                  dev-menus
                                  draw-fn-filled-rectangle
                                  draw-fn-rectangle
                                  elapsed-time
-                                 explored-tile-corners
                                  handle-clicked-inventory-cell
                                  hp-mana-bar-create
                                  inventory-window-create
@@ -22,13 +19,10 @@
                                  player-eid
                                  player-message-actor-create
                                  player-state-draw-create
-                                 raycaster
                                  shape-drawer
-                                 shape-drawer-texture
                                  skin
                                  spawn-creature
                                  spawn-entity!
-                                 stage
                                  stage-info-window-create
                                  start-position
                                  textures
@@ -45,13 +39,14 @@
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
             [moon.inventory :as inventory]
+            [moon.level.uf-caves :as uf-caves]
             [moon.number :as number]
             [moon.tiled-map :as moon-tiled-map]
             [moon.textures :as textures]
             [moon.world :as world])
-  (:import (com.badlogic.gdx Audio Files Gdx Graphics Input InputProcessor)
+  (:import (com.badlogic.gdx Audio Files Gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color Colors Cursor OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
+           (com.badlogic.gdx.graphics Color Colors OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
@@ -62,7 +57,7 @@
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn create-shape-drawer-texture []
+(defn create-shape-drawer-texture! []
   (let [pixmap (doto ^Pixmap (Pixmap. (int 1) (int 1) Pixmap$Format/RGBA8888)
                  (.setColor 1 1 1 1)
                  (.drawPixel (int 0) (int 0)))
@@ -129,39 +124,28 @@
      (player-message-actor-create @default-font unit-scale)]))
 
 (defn create-audio! [gdx-audio files]
-  (reset! audio
-          (into {}
-                (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
-                      :let [path (format "sounds/%s.wav" sound-name)]]
-                  [sound-name
-                   (.newSound ^Audio gdx-audio (.internal ^Files files path))]))))
+  (into {}
+        (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
+              :let [path (format "sounds/%s.wav" sound-name)]]
+          [sound-name
+           (.newSound ^Audio gdx-audio (.internal ^Files files path))])))
 
 (defn create-batch! []
-  (reset! batch (SpriteBatch.)))
+  (SpriteBatch.))
 
-(defn init-unit-scale! []
-  (reset! unit-scale 1))
-
-(defn init-shape-drawer-texture! []
-  (reset! shape-drawer-texture (create-shape-drawer-texture)))
-
-(defn create-shape-drawer! []
-  (reset! shape-drawer
-          (ShapeDrawer. @batch
-                        (TextureRegion. ^Texture @shape-drawer-texture (int 1) (int 0) (int 1) (int 1)))))
+(defn create-shape-drawer! [batch texture]
+  (ShapeDrawer. batch
+                (TextureRegion. ^Texture texture (int 1) (int 0) (int 1) (int 1))))
 
 (defn create-skin! [files]
-  (reset! skin
-          (let [s (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
-            (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                                  (.getData (.getFont ^Skin s "default-font")))
-                  true)
-            s)))
+  (let [s (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
+    (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                          (.getData (.getFont ^Skin s "default-font")))
+          true)
+    s))
 
-(defn create-stage! [input]
-  (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
-    (.setInputProcessor ^Input input ^InputProcessor stage*)
-    (reset! stage stage*)))
+(defn create-stage! [batch]
+  (Stage. (FitViewport. (float 1440) (float 900)) batch))
 
 (defn init-tooltip-manager! []
   (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0))
@@ -170,86 +154,77 @@
   (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1)))
 
 (defn create-cursors! [files]
-  (reset! cursors
-          (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
-            (update-vals data
-                         (fn [[path-segment [hotspot-x hotspot-y]]]
-                           (let [path (format path-format path-segment)
-                                 pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
-                                 cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
-                             (Disposable/.dispose pixmap*)
-                             cursor))))))
+  (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
+    (update-vals data
+                 (fn [[path-segment [hotspot-x hotspot-y]]]
+                   (let [path (format path-format path-segment)
+                         pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
+                         cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
+                     (Disposable/.dispose pixmap*)
+                     cursor)))))
 
 (defn create-textures! [files]
-  (reset! textures
-          (textures/create files {:folder "resources/"
-                                  :extensions #{"png" "bmp"}})))
+  (textures/create files {:folder "resources/"
+                          :extensions #{"png" "bmp"}}))
 
 (defn create-world-viewport! []
-  (reset! world-viewport
-          (let [world-width (* 1440 world-unit-scale)
-                world-height (* 900 world-unit-scale)]
-            (FitViewport. (float world-width)
-                          (float world-height)
-                          (doto (OrthographicCamera.)
-                            (.setToOrtho false world-width world-height))))))
+  (let [world-width (* 1440 world-unit-scale)
+        world-height (* 900 world-unit-scale)]
+    (FitViewport. (float world-width)
+                  (float world-height)
+                  (doto (OrthographicCamera.)
+                    (.setToOrtho false world-width world-height)))))
 
 (defn create-default-font! [files]
-  (reset! default-font
-          (let [{:keys [path
-                        size
-                        quality-scaling
-                        use-integer-positions?]} {:path "fonts/films.EXL_____.ttf"
-                                                  :size 16
-                                                  :quality-scaling 2
-                                                  :use-integer-positions? false}
-                generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
-                parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                            (set! (.size p) (* size quality-scaling))
-                            (set! (.minFilter p) Texture$TextureFilter/Linear)
-                            (set! (.magFilter p) Texture$TextureFilter/Linear)
-                            p)
-                font (.generateFont ^FreeTypeFontGenerator generator
-                                    ^FreeTypeFontGenerator$FreeTypeFontParameter parameter)
-                font-data (.getData ^BitmapFont font)]
-            (Disposable/.dispose generator)
-            (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
-            (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
-            (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
-            font)))
-
-(defn add-ui-actors! []
-  (doseq [actor (create-ui-actors)]
-    (.addActor ^Stage @stage actor)))
+  (let [{:keys [path
+                size
+                quality-scaling
+                use-integer-positions?]} {:path "fonts/films.EXL_____.ttf"
+                                          :size 16
+                                          :quality-scaling 2
+                                          :use-integer-positions? false}
+        generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
+        parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                    (set! (.size p) (* size quality-scaling))
+                    (set! (.minFilter p) Texture$TextureFilter/Linear)
+                    (set! (.magFilter p) Texture$TextureFilter/Linear)
+                    p)
+        font (.generateFont ^FreeTypeFontGenerator generator
+                            ^FreeTypeFontGenerator$FreeTypeFontParameter parameter)
+        font-data (.getData ^BitmapFont font)]
+    (Disposable/.dispose generator)
+    (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
+    (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
+    (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
+    font))
 
 (def level-fn uf-caves/create)
 
-(defn create-level! []
+(defn create-level! [textures]
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
         (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
                                                (db/all-raw db :properties/creatures)
-                                               #(textures/texture-region @textures %))
-                   :textures @textures})]
-    (reset! tiled-map level-tiled-map)
-    (reset! start-position level-start)))
+                                               #(textures/texture-region textures %))
+                   :textures textures})]
+    {:tiled-map level-tiled-map
+     :start-position level-start}))
 
-(defn create-world! []
-  (reset! world (world/create @tiled-map)))
+(defn create-world! [tiled-map]
+  (world/create tiled-map))
 
-(defn create-explored-tile-corners! []
-  (reset! explored-tile-corners
-          (let [props (.getProperties ^TiledMap @tiled-map)]
-            (moon-g2d/create (.get props "width")
-                             (.get props "height")
-                             (constantly false)))))
+(defn create-explored-tile-corners! [tiled-map]
+  (let [props (.getProperties ^TiledMap tiled-map)]
+    (moon-g2d/create (.get props "width")
+                     (.get props "height")
+                     (constantly false))))
 
-(defn create-raycaster! []
-  (let [{:keys [width height cells]} (world/raycaster-data @world)
+(defn create-raycaster! [world]
+  (let [{:keys [width height cells]} (world/raycaster-data world)
         arr (make-array Boolean/TYPE width height)]
     (doseq [[[x y] blocked?] cells]
       (aset arr x y (boolean blocked?)))
-    (reset! raycaster [arr width height])))
+    [arr width height]))
 
 (defn spawn-player! []
   (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @start-position)
