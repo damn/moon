@@ -12,13 +12,13 @@
                                           create-skin!
                                           create-stage!
                                           create-textures!
-                                          create-ui-actors
                                           create-world!
                                           create-world-viewport!
                                           init-tooltip-manager!
                                           put-pretty-name-color!
                                           spawn-map-creatures!
                                           spawn-player!]]
+            [game.listener.create.ui-actors :refer [create-ui-actors]]
             [game.listener.render :refer [clear-interaction-state!
                                           current-mouseover-actor
                                           destroy-entities!
