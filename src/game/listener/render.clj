@@ -2,7 +2,6 @@
   (:require [game.shared :refer [audiovisual!
                                  colors
                                  controls
-                                 handle-input
                                  mouseover-actor
                                  tile-color-setter*
                                  toggle-inventory-visible!
@@ -11,9 +10,8 @@
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.v2 :as v2]
             [moon.world :as world])
-  (:import (com.badlogic.gdx Gdx Graphics Input Input$Buttons Input$Keys)
+  (:import (com.badlogic.gdx Gdx Graphics)
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d Group Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -127,29 +125,6 @@
                      (cursor-fn eid))]
     (assert (contains? cursors cursor-key))
     (.setCursor ^Graphics Gdx/graphics ^Cursor (get cursors cursor-key))))
-
-(defn- movement-vector [key-pressed?]
-  (let [r (when (key-pressed? Input$Keys/D) [1  0])
-        l (when (key-pressed? Input$Keys/A) [-1 0])
-        u (when (key-pressed? Input$Keys/W) [0  1])
-        d (when (key-pressed? Input$Keys/S) [0 -1])]
-    (when (or r l u d)
-      (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
-        (when (pos? (v2/length v))
-          v)))))
-
-(defn handle-player-input!
-  [world elapsed-time interaction-state player-eid
-   audio skin stage textures z-orders world-viewport key-pressed? button-just-pressed?]
-  (let [eid @player-eid
-        entity @eid
-        state-k (:state (:entity/fsm entity))]
-    (handle-input world elapsed-time interaction-state
-                  state-k eid nil audio skin stage textures z-orders
-                  (button-just-pressed? Input$Buttons/LEFT)
-                  (movement-vector key-pressed?)
-                  (current-mouseover-actor stage)
-                  (world-mouse-position world-viewport))))
 
 (defn clear-interaction-state! [interaction-state]
   (reset! interaction-state nil))

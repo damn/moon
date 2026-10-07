@@ -24,17 +24,16 @@
                                           destroy-entities!
                                           draw-tiled-map!
                                           handle-controls!
-                                          handle-player-input!
                                           set-camera-to-player!
                                           update-active-entities!
                                           update-cursor!
                                           update-mouseover-eid!
                                           update-paused!]]
             [game.listener.render.draw-world :refer [draw-world!]]
+            [game.listener.render.handle-player-input :refer [handle-player-input!]]
             [game.listener.render.tick-world :refer [tick-game!]]
             [game.shared :refer [action-bar-selected-skill
                                  mouseover-actor-info
-                                 player-effect-ctx
                                  skill-usable-state
                                  world-mouse-position]]
             [moon.db :as db]
@@ -196,7 +195,14 @@
                                           action-bar-selected-skill)]
                       (let [entity @player-eid
                             skill (skill-id (:entity/skills entity))
-                            effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
+                            target-position (or (and mouseover-eid
+                                                     (:entity/position @mouseover-eid))
+                                                world-mouse-position)
+                            effect-ctx {:effect/source player-eid
+                                        :effect/target mouseover-eid
+                                        :effect/target-position target-position
+                                        :effect/target-direction (v2/direction (:entity/position @player-eid)
+                                                                              target-position)}
                             state (skill-usable-state skill entity effect-ctx)]
                         (if (= state :usable)
                           [:interaction-state.skill/usable [skill effect-ctx]]
