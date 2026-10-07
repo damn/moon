@@ -1,6 +1,5 @@
 (ns game.listener.render
-  (:require [game.shared :refer [active-entities
-                                 assoc-interaction-state
+  (:require [game.shared :refer [assoc-interaction-state
                                  audiovisual!
                                  colors
                                  controls
@@ -8,28 +7,18 @@
                                  draw-entities!
                                  draw-tile-grid
                                  effect-applicable?
-                                 elapsed-time
-                                 explored-tile-corners
                                  handle-effect
                                  handle-input
                                  highlight-mouseover-tile
-                                 interaction-state
                                  k->cursor
                                  mouseover-actor
-                                 mouseover-eid
-                                 paused?
-                                 player-eid
-                                 raycaster
                                  render-z-order
                                  tick-component
-                                 tiled-map
                                  tile-color-setter*
                                  toggle-inventory-visible!
                                  ui-mouse-position
-                                 unit-scale
                                  update-potential-fields
                                  update-time
-                                 world
                                  world-mouse-position]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
@@ -43,7 +32,7 @@
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn update-mouseover-eid! [stage world-viewport]
+(defn update-mouseover-eid! [world raycaster player-eid mouseover-eid stage world-viewport]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
@@ -62,10 +51,10 @@
       (swap! new-eid assoc :entity/mouseover? true))
     (reset! mouseover-eid new-eid)))
 
-(defn update-active-entities! []
+(defn update-active-entities! [world player-eid active-entities]
   (reset! active-entities (world/active-entities @world @@player-eid)))
 
-(defn set-camera-to-player! [world-viewport]
+(defn set-camera-to-player! [player-eid world-viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         pos (.position camera)
         [x y] (:entity/position @@player-eid)]
@@ -73,7 +62,7 @@
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! [batch world-viewport world-unit-scale]
+(defn draw-tiled-map! [batch world-viewport tiled-map raycaster explored-tile-corners world-unit-scale]
   (let [raycaster @raycaster
         tiled-map @tiled-map
         ^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
@@ -95,7 +84,10 @@
   (let [[x y] (ui-mouse-position stage)]
     (mouseover-actor stage x y)))
 
-(defn draw-world! [batch default-font shape-drawer stage textures world-viewport world-unit-scale]
+(defn draw-world!
+  [batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
+   world player-eid raycaster elapsed-time show-body-bounds? active-entities
+   show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         mouseover-actor* (current-mouseover-actor stage)
         world-mouse-pos (world-mouse-position world-viewport)]
@@ -105,20 +97,22 @@
     (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
       (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))
       (reset! unit-scale world-unit-scale)
-      (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport)
-                       #(draw-cell-debug % shape-drawer world-viewport)
-                       #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos)
-                       #(highlight-mouseover-tile % shape-drawer world-mouse-pos)]]
+      (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport show-tile-grid?)
+                       #(draw-cell-debug % shape-drawer world-viewport world
+                                         show-cell-entities? show-cell-occupied? show-potential-field-colors?)
+                       #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
+                                        player-eid raycaster elapsed-time show-body-bounds? active-entities)
+                       #(highlight-mouseover-tile % shape-drawer world-mouse-pos world)]]
         (draw-fn nil))
       (reset! unit-scale 1)
       (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width))
     (.end ^Batch batch)))
 
-(defn update-cursor! [cursors]
+(defn update-cursor! [cursors interaction-state player-eid]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
-        cursor-fn (k->cursor state-k)
+        cursor-fn (get (k->cursor interaction-state) state-k)
         cursor-key (if (keyword? cursor-fn)
                      cursor-fn
                      (cursor-fn eid))]
@@ -135,17 +129,20 @@
         (when (pos? (v2/length v))
           v)))))
 
-(defn handle-player-input! [audio skin stage textures world-viewport key-pressed? button-just-pressed?]
+(defn handle-player-input!
+  [world elapsed-time interaction-state player-eid
+   audio skin stage textures world-viewport key-pressed? button-just-pressed?]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))]
-    (handle-input state-k eid nil audio skin stage textures
+    (handle-input world elapsed-time interaction-state
+                  state-k eid nil audio skin stage textures
                   (button-just-pressed? Input$Buttons/LEFT)
                   (movement-vector key-pressed?)
                   (current-mouseover-actor stage)
                   (world-mouse-position world-viewport))))
 
-(defn clear-interaction-state! []
+(defn clear-interaction-state! [interaction-state]
   (reset! interaction-state nil))
 
 (def pausing? true)
@@ -158,7 +155,7 @@
    :player-dead true
    :player-item-on-cursor true})
 
-(defn update-paused! [key-pressed? key-just-pressed?]
+(defn update-paused! [paused? player-eid key-pressed? key-just-pressed?]
   (reset! paused?
           (or #_error
               (and pausing?
@@ -166,40 +163,43 @@
                    (not (or (key-just-pressed? (:unpause-once controls))
                             (key-pressed? (:unpause-continously controls))))))))
 
-(defn- tick-entities! [audio skin stage textures world-viewport]
-  (let [active-entities @active-entities
-        raycaster @raycaster
-        elapsed-time @elapsed-time
+(defn- tick-entities!
+  [db world raycaster elapsed-time delta-time active-entities
+   audio skin stage textures world-viewport]
+  (let [active-entities* @active-entities
+        raycaster* @raycaster
         world-mouse-pos (world-mouse-position world-viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                (handle-effect audio skin stage textures
+                (handle-effect db world elapsed-time audio skin stage textures
                                effect effect-ctx world-mouse-pos
                                apply-effects!
-                               active-entities
+                               active-entities*
                                colors
-                               raycaster
-                               elapsed-time)))]
-      (doseq [eid active-entities
+                               raycaster*)))]
+      (doseq [eid active-entities*
               component @eid]
-        (tick-component audio skin stage textures
+        (tick-component world raycaster elapsed-time delta-time audio skin stage textures
                         nil world-mouse-pos
                         apply-effects!
                         eid component)))))
 
-(defn tick-game! [audio skin stage textures world-viewport]
+(defn tick-game!
+  [db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
+   audio skin stage textures world-viewport]
   (when-not @paused?
-    (update-time)
-    (update-potential-fields)
-    (tick-entities! audio skin stage textures world-viewport)))
+    (update-time delta-time elapsed-time)
+    (update-potential-fields world potential-field-cache active-entities)
+    (tick-entities! db world raycaster elapsed-time delta-time active-entities
+                    audio skin stage textures world-viewport)))
 
-(defn destroy-entities! [audio skin stage textures]
+(defn destroy-entities! [db world elapsed-time audio skin stage textures]
   (doseq [eid (world/destroyed-eids @world)]
     (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
-        (audiovisual! audio skin stage textures (:entity/position @eid) v)
+        (audiovisual! db world elapsed-time audio skin stage textures (:entity/position @eid) v)
         nil))))
 
 (defn- zoom-in! [world-viewport]

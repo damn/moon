@@ -33,13 +33,8 @@
                                           update-mouseover-eid!
                                           update-paused!]]
             [game.shared :refer [assoc-interaction-state
-                                 explored-tile-corners
-                                 raycaster
-                                 start-position
-                                 tiled-map
-                                 unit-scale
-                                 world
-                                 world-mouse-position]])
+                                 world-mouse-position]]
+            [moon.db :as db])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
@@ -57,6 +52,27 @@
 (def textures (atom nil))
 (def skin (atom nil))
 (def stage (atom nil))
+
+(def db (db/create))
+(def world (atom nil))
+(def tiled-map (atom nil))
+(def start-position (atom nil))
+(def raycaster (atom nil))
+(def player-eid (atom nil))
+(def explored-tile-corners (atom nil))
+(def potential-field-cache (atom nil))
+(def active-entities (atom nil))
+(def delta-time (atom nil))
+(def mouseover-eid (atom nil))
+(def elapsed-time (atom 0))
+(def paused? (atom false))
+(def show-potential-field-colors? (atom nil))
+(def show-cell-entities? (atom false))
+(def show-cell-occupied? (atom false))
+(def show-body-bounds? (atom false))
+(def show-tile-grid? (atom false))
+(def interaction-state (atom nil))
+(def unit-scale (atom 1))
 
 (def listener
   (reify ApplicationListener
@@ -76,7 +92,18 @@
       (reset! textures (create-textures! Gdx/files))
       (reset! world-viewport (create-world-viewport! world-unit-scale))
       (reset! default-font (create-default-font! Gdx/files))
-      (doseq [^Actor actor (create-ui-actors @audio
+      (doseq [^Actor actor (create-ui-actors world
+                                             elapsed-time
+                                             mouseover-eid
+                                             paused?
+                                             player-eid
+                                             show-tile-grid?
+                                             show-cell-entities?
+                                             show-cell-occupied?
+                                             show-body-bounds?
+                                             show-potential-field-colors?
+                                             unit-scale
+                                             @audio
                                              @default-font
                                              @shape-drawer
                                              @skin
@@ -85,15 +112,15 @@
                                              @world-viewport)]
         (.addActor ^Stage @stage actor))
       (let [{level-tiled-map :tiled-map
-             level-start :start-position} (create-level! @textures)]
+             level-start :start-position} (create-level! db @textures)]
         (reset! tiled-map level-tiled-map)
         (reset! start-position level-start))
       (reset! world (create-world! @tiled-map))
       (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
       (reset! raycaster (create-raycaster! @world))
-      (spawn-player! @skin @stage @textures)
-      (bind-player-eid!)
-      (spawn-map-creatures! @skin @stage @textures))
+      (spawn-player! db world elapsed-time start-position @skin @stage @textures)
+      (bind-player-eid! world player-eid)
+      (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures))
 
     (dispose [_]
       (run! Disposable/.dispose (vals @audio))
@@ -120,21 +147,28 @@
             textures @textures
             world-viewport @world-viewport]
         (ScreenUtils/clear 0 0 0 0)
-        (update-mouseover-eid! stage world-viewport)
-        (update-active-entities!)
-        (set-camera-to-player! world-viewport)
-        (draw-tiled-map! batch world-viewport world-unit-scale)
-        (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale)
-        (assoc-interaction-state (current-mouseover-actor stage)
+        (update-mouseover-eid! world raycaster player-eid mouseover-eid stage world-viewport)
+        (update-active-entities! world player-eid active-entities)
+        (set-camera-to-player! player-eid world-viewport)
+        (draw-tiled-map! batch world-viewport tiled-map raycaster explored-tile-corners world-unit-scale)
+        (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
+                     world player-eid raycaster elapsed-time show-body-bounds? active-entities
+                     show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?)
+        (assoc-interaction-state interaction-state
+                                 (current-mouseover-actor stage)
                                  (world-mouse-position world-viewport)
-                                 stage)
-        (update-cursor! cursors)
-        (handle-player-input! audio skin stage textures world-viewport
+                                 stage
+                                 player-eid
+                                 mouseover-eid)
+        (update-cursor! cursors interaction-state player-eid)
+        (handle-player-input! world elapsed-time interaction-state player-eid
+                              audio skin stage textures world-viewport
                               key-pressed? button-just-pressed?)
-        (clear-interaction-state!)
-        (update-paused! key-pressed? key-just-pressed?)
-        (tick-game! audio skin stage textures world-viewport)
-        (destroy-entities! audio skin stage textures)
+        (clear-interaction-state! interaction-state)
+        (update-paused! paused? player-eid key-pressed? key-just-pressed?)
+        (tick-game! db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
+                    audio skin stage textures world-viewport)
+        (destroy-entities! db world elapsed-time audio skin stage textures)
         (handle-controls! stage world-viewport key-pressed? key-just-pressed?)
         (let [^Stage stage stage]
           (.act stage)
