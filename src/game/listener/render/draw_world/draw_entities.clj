@@ -1,6 +1,6 @@
 (ns game.listener.render.draw-world.draw-entities
-  (:require [game.shared :refer [colors
-                                 draw-component
+  (:require [game.listener.render.draw-world.draw-entities.draw-component :refer [draw-component]]
+            [game.shared :refer [colors
                                  draw-fn-rectangle]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]))
