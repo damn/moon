@@ -1,5 +1,6 @@
 (ns game.shared
   (:require [clojure.string :as str]
+            [game.entity :refer [add-text-effect]]
             [game.target-all :refer [affected-targets]]
             [moon.body :as body]
             [moon.coll :as coll]
@@ -32,20 +33,6 @@
            (com.badlogic.gdx.utils Align)
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(defn projectile-start-point [entity direction size]
-  (v2/add (:entity/position entity)
-          (v2/scale direction
-                    (+ (/ (:entity/width entity) 2) size 0.1))))
-
-(defn- add-text-effect [entity elapsed-time text duration]
-  (assoc entity :entity/string-effect
-         (if-let [existing (:entity/string-effect entity)]
-           (-> existing
-               (update :text str "\n" text)
-               (update :counter timer/increment duration))
-           {:text text
-            :counter (timer/create elapsed-time duration)})))
 
 (defn effect-applicable?
   [[k v] effect-ctx]
@@ -795,14 +782,17 @@
       (audiovisual! db world elapsed-time audio skin stage textures z-orders (:effect/target-position effect-ctx) v)
 
       :effects/projectile
-      (let [source (:effect/source effect-ctx)]
+      (let [source (:effect/source effect-ctx)
+            source* @source
+            direction (:effect/target-direction effect-ctx)
+            size (:projectile/size v)]
         (spawn-entity! world elapsed-time skin stage textures z-orders
                        (spawn-projectile
-                        {:position (projectile-start-point @source
-                                                           (:effect/target-direction effect-ctx)
-                                                           (:projectile/size v))
-                         :direction (:effect/target-direction effect-ctx)
-                         :faction (:entity/faction @source)}
+                        {:position (v2/add (:entity/position source*)
+                                           (v2/scale direction
+                                                     (+ (/ (:entity/width source*) 2) size 0.1)))
+                         :direction direction
+                         :faction (:entity/faction source*)}
                         v)))
 
       :effects/spawn
