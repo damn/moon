@@ -78,6 +78,10 @@
 (def interaction-state (atom nil))
 (def unit-scale (atom 1))
 
+(def factions-iterations
+  {:good 15
+   :evil 5})
+
 (def listener
   (reify ApplicationListener
     (create [_]
@@ -157,7 +161,8 @@
         (draw-tiled-map! batch world-viewport tiled-map raycaster explored-tile-corners world-unit-scale)
         (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
                      world player-eid raycaster elapsed-time show-body-bounds? active-entities
-                     show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?)
+                     show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
+                     factions-iterations)
         (reset! interaction-state
                 (let [player-eid @player-eid
                       mouseover-eid @mouseover-eid
@@ -194,7 +199,7 @@
         (clear-interaction-state! interaction-state)
         (update-paused! paused? player-eid key-pressed? key-just-pressed?)
         (tick-game! db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
-                    audio skin stage textures world-viewport)
+                    audio skin stage textures world-viewport factions-iterations)
         (destroy-entities! db world elapsed-time audio skin stage textures)
         (handle-controls! stage world-viewport key-pressed? key-just-pressed?)
         (let [^Stage stage stage]

@@ -3,7 +3,6 @@
                                  colors
                                  controls
                                  effect-applicable?
-                                 factions-iterations
                                  handle-effect
                                  handle-input
                                  max-delta
@@ -201,7 +200,7 @@
 
 (defn tick-game!
   [db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
-   audio skin stage textures world-viewport]
+   audio skin stage textures world-viewport factions-iterations]
   (when-not @paused?
     (let [delta-ms (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
       (reset! delta-time delta-ms)

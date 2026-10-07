@@ -1,7 +1,6 @@
 (ns game.listener.render.draw-world.draw-cell-debug
   (:require [game.shared :refer [colors
-                                 draw-fn-filled-rectangle
-                                 factions-iterations]]
+                                 draw-fn-filled-rectangle]]
             [moon.world :as world])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.math Vector3)
@@ -9,7 +8,8 @@
 
 (defn draw-cell-debug
   [ctx shape-drawer ^Viewport world-viewport world
-   show-cell-entities? show-cell-occupied? show-potential-field-colors?]
+   show-cell-entities? show-cell-occupied? show-potential-field-colors?
+   factions-iterations]
   (let [world @world
         ^OrthographicCamera camera (.getCamera world-viewport)
         plane-points (mapv (fn [^Vector3 v3]

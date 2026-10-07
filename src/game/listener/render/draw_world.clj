@@ -14,7 +14,8 @@
 (defn draw-world!
   [batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
    world player-eid raycaster elapsed-time show-body-bounds? active-entities
-   show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?]
+   show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
+   factions-iterations]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         [x y] (ui-mouse-position stage)
         mouseover-actor* (mouseover-actor stage x y)
@@ -27,7 +28,8 @@
       (reset! unit-scale world-unit-scale)
       (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport show-tile-grid?)
                        #(draw-cell-debug % shape-drawer world-viewport world
-                                         show-cell-entities? show-cell-occupied? show-potential-field-colors?)
+                                         show-cell-entities? show-cell-occupied? show-potential-field-colors?
+                                         factions-iterations)
                        #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
                                         player-eid raycaster elapsed-time show-body-bounds? active-entities)
                        #(highlight-mouseover-tile % shape-drawer world-mouse-pos world)]]

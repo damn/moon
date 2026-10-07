@@ -2030,7 +2030,3 @@
     (doto table
       (.pack)
       (.setFillParent true))))
-
-(def factions-iterations
-  {:good 15
-   :evil 5})
