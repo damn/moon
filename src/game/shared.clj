@@ -55,17 +55,7 @@
 (def show-body-bounds? (atom false))
 (def show-tile-grid? (atom false))
 (def interaction-state (atom nil))
-(def audio (atom nil))
-(def batch (atom nil))
 (def unit-scale (atom 1))
-(def cursors (atom nil))
-(def default-font (atom nil))
-(def world-viewport (atom nil))
-(def shape-drawer (atom nil))
-(def shape-drawer-texture (atom nil))
-(def textures (atom nil))
-(def skin (atom nil))
-(def stage (atom nil))
 
 (def z-orders
   [:z-order/on-ground
@@ -588,14 +578,14 @@
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
 
-(defn ui-mouse-position []
-  (let [v2 (.unproject (.getViewport ^Stage @stage)
+(defn ui-mouse-position [stage]
+  (let [v2 (.unproject (.getViewport ^Stage stage)
                        (Vector2. (float (.getX ^Input Gdx/input))
                                  (float (.getY ^Input Gdx/input))))]
     [(.x v2) (.y v2)]))
 
-(defn world-mouse-position []
-  (let [v2 (.unproject ^Viewport @world-viewport
+(defn world-mouse-position [world-viewport]
+  (let [v2 (.unproject ^Viewport world-viewport
                        (Vector2. (float (.getX ^Input Gdx/input))
                                  (float (.getY ^Input Gdx/input))))]
     [(.x v2) (.y v2)]))
@@ -714,33 +704,27 @@
                   (float Align/center))
     (.addActor stage window)))
 
-(defn ui-set-item! [ctx cell item]
-  (let [skin @skin
-        stage @stage
-        textures @textures]
-    (-> (.getRoot ^Stage stage)
-        (.findActor "moon.ui.windows.inventory")
-        (inventory-window-set-item! cell
-                                    {:texture-region (textures/texture-region textures (:entity/image item))
-                                     :tooltip-text (item/info-text item)}
-                                    skin))))
+(defn ui-set-item! [skin stage textures cell item]
+  (-> (.getRoot ^Stage stage)
+      (.findActor "moon.ui.windows.inventory")
+      (inventory-window-set-item! cell
+                                  {:texture-region (textures/texture-region textures (:entity/image item))
+                                   :tooltip-text (item/info-text item)}
+                                  skin)))
 
-(defn- ui-set-skill! [ctx elapsed-time skill]
-  (let [skin @skin
-        stage @stage
-        textures @textures]
-    (-> (.getRoot ^Stage stage)
-        (.findActor "moon.ui.action-bar")
-        (action-bar-add-skill! {:skill-id (:property/id skill)
-                                :texture-region (textures/texture-region textures (:entity/image skill))
-                                :tooltip-text (info-text skill elapsed-time)}
-                               skin))))
+(defn- ui-set-skill! [skin stage textures elapsed-time skill]
+  (-> (.getRoot ^Stage stage)
+      (.findActor "moon.ui.action-bar")
+      (action-bar-add-skill! {:skill-id (:property/id skill)
+                              :texture-region (textures/texture-region textures (:entity/image skill))
+                              :tooltip-text (info-text skill elapsed-time)}
+                             skin)))
 
 (defn- play-sound! [sounds sound-name]
   (assert (contains? sounds sound-name) (str sound-name))
   (.play ^Sound (get sounds sound-name)))
 
-(defn spawn-entity! [entity]
+(defn spawn-entity! [skin stage textures entity]
   (let [elapsed-time @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (create-component elapsed-time k v)))
@@ -750,21 +734,22 @@
         eid (atom entity)]
     (world/register-eid! @world eid)
     (doseq [component @eid]
-      (after-create-component #(ui-set-skill! nil elapsed-time %)
-                              #(ui-set-item! nil %1 %2)
+      (after-create-component #(ui-set-skill! skin stage textures elapsed-time %)
+                              #(ui-set-item! skin stage textures %1 %2)
                               elapsed-time
                               eid
                               component))))
 
-(defn audiovisual! [position audiovisual]
+(defn audiovisual! [audio skin stage textures position audiovisual]
   (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
-    (play-sound! @audio sound)
-    (spawn-entity! (spawn-effect position
+    (play-sound! audio sound)
+    (spawn-entity! skin stage textures
+                   (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
-(defn handle-fsm-event! [eid world-mouse-position event & [params]]
+(defn handle-fsm-event! [audio skin stage textures eid world-mouse-position event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
         old-state-k (:state fsm)
@@ -785,11 +770,12 @@
                   item (:entity/item-on-cursor entity)]
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
-                (play-sound! @audio "bfxr_itemputground")
-                (spawn-entity! (spawn-item (item-place-position (:entity/position entity)
-                                                                    world-mouse-position
-                                                                    (- (:entity/click-distance-tiles entity) 0.1))
-                                               item))))
+                (play-sound! audio "bfxr_itemputground")
+                (spawn-entity! skin stage textures
+                               (spawn-item (item-place-position (:entity/position entity)
+                                                                world-mouse-position
+                                                                (- (:entity/click-distance-tiles entity) 0.1))
+                                           item))))
 
             :player-moving
             (do (swap! eid dissoc :entity/movement)
@@ -797,7 +783,8 @@
 
             :npc-sleeping
             (do (swap! eid add-text-effect @elapsed-time "[WHITE]!" 1)
-                (spawn-entity! (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 @elapsed-time)))
+                (spawn-entity! skin stage textures
+                               (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 @elapsed-time)))
 
             :npc-moving
             (do (swap! eid dissoc :entity/movement)
@@ -816,7 +803,7 @@
               (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
               (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
                      (timer/create @elapsed-time (:skill/cooldown skill)))
-              (play-sound! @audio (:skill/start-action-sound skill))
+              (play-sound! audio (:skill/start-action-sound skill))
               nil)
 
             :npc-dead
@@ -831,11 +818,11 @@
               nil)
 
             :player-dead
-            (do (play-sound! @audio "bfxr_playerdeath")
-                (show-modal! @skin @stage {:title "YOU DIED - again!"
-                                                               :text "Good luck next time!"
-                                                               :button-text "OK"
-                                                               :on-click (fn [])})
+            (do (play-sound! audio "bfxr_playerdeath")
+                (show-modal! skin stage {:title "YOU DIED - again!"
+                                         :text "Good luck next time!"
+                                         :button-text "OK"
+                                         :on-click (fn [])})
                 nil)
 
             :npc-moving
@@ -853,15 +840,17 @@
 
 ; handle-fsm-event haengt an handle-effect
 (defn handle-effect
-  [[k v] effect-ctx world-mouse-position apply-effects!
+  [audio skin stage textures
+   [k v] effect-ctx world-mouse-position apply-effects!
    active-entities colors raycaster elapsed-time]
   (case k
     :effects/audiovisual
-    (audiovisual! (:effect/target-position effect-ctx) v)
+    (audiovisual! audio skin stage textures (:effect/target-position effect-ctx) v)
 
     :effects/projectile
     (let [source (:effect/source effect-ctx)]
-      (spawn-entity! (spawn-projectile
+      (spawn-entity! skin stage textures
+                     (spawn-projectile
                       {:position (projectile-start-point @source
                                                          (:effect/target-direction effect-ctx)
                                                          (:projectile/size v))
@@ -871,7 +860,8 @@
 
     :effects/spawn
     (let [source (:effect/source effect-ctx)]
-      (spawn-entity! (spawn-creature {:position (:effect/target-position effect-ctx)
+      (spawn-entity! skin stage textures
+                     (spawn-creature {:position (:effect/target-position effect-ctx)
                                       :creature-property v
                                       :components {:entity/fsm {:fsm :fsms/npc
                                                                 :initial-state :npc-idle}
@@ -881,7 +871,8 @@
     (let [source (:effect/source effect-ctx)
           source* @source]
       (doseq [target (affected-targets active-entities raycaster source*)]
-        (spawn-entity! (spawn-line
+        (spawn-entity! skin stage textures
+                       (spawn-line
                         {:start (:entity/position source*)
                          :end (:entity/position @target)
                          :duration 0.05
@@ -898,18 +889,20 @@
           target-body @target
           {:keys [maxrange entity-effects]} v]
       (if (body/in-range? body target-body maxrange)
-        (do (spawn-entity! (spawn-line
+        (do (spawn-entity! skin stage textures
+                           (spawn-line
                             {:start (body/start-point body target-body)
                              :end (:entity/position target-body)
                              :duration 0.05
                              :color (:colors/target-entity-line colors)
                              :thick? true}))
             (apply-effects! effect-ctx entity-effects))
-        (audiovisual! (body/end-point body target-body maxrange)
+        (audiovisual! audio skin stage textures
+                      (body/end-point body target-body maxrange)
                       :audiovisuals/hit-ground)))
 
     :effects.target/audiovisual
-    (audiovisual! (:entity/position @(:effect/target effect-ctx)) v)
+    (audiovisual! audio skin stage textures (:entity/position @(:effect/target effect-ctx)) v)
 
     :effects.target/convert
     (let [source (:effect/source effect-ctx)
@@ -950,16 +943,17 @@
              dmg-text (str "[RED]" dmg-amount "[]")]
          (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
          (swap! target add-text-effect elapsed-time dmg-text 0.3)
-         (handle-fsm-event! target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-         (audiovisual! (:entity/position target*) :audiovisuals/damage))))
+         (handle-fsm-event! audio skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
+         (audiovisual! audio skin stage textures (:entity/position target*) :audiovisuals/damage))))
 
     :effects.target/kill
-    (handle-fsm-event! (:effect/target effect-ctx) world-mouse-position :kill)
+    (handle-fsm-event! audio skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
 
     :effects.target/melee-damage
     ; TODO AT EFFECT CREATION MAKE
     ; same @ applicable
-    (handle-effect [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
+    (handle-effect audio skin stage textures
+                   [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
                    effect-ctx
                    world-mouse-position
                    apply-effects!
@@ -978,7 +972,7 @@
         nil))
 
     :effects.target/stun
-    (handle-fsm-event! (:effect/target effect-ctx) world-mouse-position :stun v)))
+    (handle-fsm-event! audio skin stage textures (:effect/target effect-ctx) world-mouse-position :stun v)))
 
 (defn toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)
@@ -1394,11 +1388,8 @@
     (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (:colors/stunned colors))))
 
 (defn hp-mana-bar-create
-  []
-  (let [default-font @default-font
-        stage @stage
-        textures @textures
-        {:keys [rahmen-file
+  [default-font stage textures]
+  (let [{:keys [rahmen-file
                 rahmenw
                 rahmenh
                 hpcontent-file
@@ -1439,20 +1430,20 @@
             (draw-hpmana-bar! nil batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
             (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
-(defn ui-remove-item! [ctx cell]
-  (-> (.getRoot ^Stage @stage)
+(defn ui-remove-item! [stage cell]
+  (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.windows.inventory")
       (inventory-window-remove-item! cell)))
 
 (defn handle-clicked-inventory-cell
-  [player-eid audio ui-set-item! ui-remove-item! cell world-mouse-position]
+  [player-eid audio skin stage textures ui-set-item! ui-remove-item! cell world-mouse-position]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (get-in (:entity/inventory @player-eid) cell)]
       (play-sound! audio "bfxr_takeit")
       (swap! player-eid remove-item cell)
       (ui-remove-item! cell)
-      (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
+      (handle-fsm-event! audio skin stage textures player-eid world-mouse-position :pickup-item item))
 
     :player-item-on-cursor
     (let [entity @player-eid
@@ -1466,7 +1457,7 @@
            (play-sound! audio "bfxr_itemput")
            (swap! player-eid set-item cell item-on-cursor)
            (ui-set-item! cell item-on-cursor)
-           (handle-fsm-event! player-eid world-mouse-position :dropped-item))
+           (handle-fsm-event! audio skin stage textures player-eid world-mouse-position :dropped-item))
 
        (and item-in-cell
             (inventory/valid-slot? cell item-on-cursor))
@@ -1476,8 +1467,8 @@
            (ui-remove-item! cell)
            (swap! player-eid set-item cell item-on-cursor)
            (ui-set-item! cell item-on-cursor)
-           (handle-fsm-event! player-eid world-mouse-position :dropped-item)
-           (handle-fsm-event! player-eid world-mouse-position :pickup-item item-in-cell))))
+           (handle-fsm-event! audio skin stage textures player-eid world-mouse-position :dropped-item)
+           (handle-fsm-event! audio skin stage textures player-eid world-mouse-position :pickup-item item-in-cell))))
 
     nil))
 
@@ -1561,11 +1552,8 @@
     window))
 
 (defn inventory-window-create
-  [on-click-cell draw-cell-rect!]
-  (let [skin @skin
-        stage @stage
-        textures @textures
-        slot->y-sprite-idx #:inventory.slot {:weapon 0
+  [on-click-cell draw-cell-rect! skin stage textures]
+  (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
                                              :shield 1
                                              :rings 2
                                              :necklace 3
@@ -1633,36 +1621,34 @@
     window))
 
 (defn stage-info-window-create
-  []
-  (let [skin @skin
-        stage @stage]
-    (create-info-window
-     {:title "Entity Info"
-      :actor-name "moon.ui.windows.entity-info"
-      :visible? false
-      :position [(.getWorldWidth (.getViewport ^Stage stage)) 0]
-      :set-label-text! (fn []
-                         (if-let [eid @mouseover-eid]
-                           (info-text (apply dissoc @eid [:entity/skills
-                                                          :entity/faction
-                                                          :active-skill])
-                                      @elapsed-time)
-                           ""))
-      :skin skin})))
+  [skin stage]
+  (create-info-window
+   {:title "Entity Info"
+    :actor-name "moon.ui.windows.entity-info"
+    :visible? false
+    :position [(.getWorldWidth (.getViewport ^Stage stage)) 0]
+    :set-label-text! (fn []
+                       (if-let [eid @mouseover-eid]
+                         (info-text (apply dissoc @eid [:entity/skills
+                                                        :entity/faction
+                                                        :active-skill])
+                                    @elapsed-time)
+                         ""))
+    :skin skin}))
 
 (defn entity-state-draw-ui-view
-  [[k _v] eid batch unit-scale mouseover-actor ui-mouse-position]
+  [[k _v] eid batch unit-scale textures mouseover-actor ui-mouse-position]
   (case k
     :player-item-on-cursor
     (when mouseover-actor
       (draw-fn-texture-region batch unit-scale
-                              (textures/texture-region @textures (:entity/image (:entity/item-on-cursor @eid)))
+                              (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-position
                               {:center? true}))
 
     nil))
 
-(defn player-state-draw-create [unit-scale]
+(defn player-state-draw-create [unit-scale textures]
   (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
     (act [delta]
       (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
@@ -1672,13 +1658,15 @@
             player-eid @player-eid
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            [x y] (ui-mouse-position)]
+            mouse-pos (ui-mouse-position stage)
+            [x y] mouse-pos]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
                                    batch
                                    unit-scale
+                                   textures
                                    (mouseover-actor stage x y)
-                                   (ui-mouse-position))))))
+                                   mouse-pos)))))
 
 (defn player-message-actor-create [default-font unit-scale]
   (let [message-duration-seconds 0.5]
@@ -1705,7 +1693,7 @@
       (.setName "player-message")
       (.setUserObject (atom nil)))))
 
-(defn- interaction-state->txs [[k params] stage audio ui-set-item! player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] stage audio skin textures ui-set-item! player-eid world-mouse-position]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -1726,7 +1714,7 @@
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! audio "bfxr_takeit")
-                  (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
+                  (handle-fsm-event! audio skin stage textures player-eid world-mouse-position :pickup-item item))
 
               (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -1749,7 +1737,7 @@
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! player-eid world-mouse-position :start-action [skill effect-ctx]))
+      (handle-fsm-event! audio skin stage textures player-eid world-mouse-position :start-action [skill effect-ctx]))
 
     :interaction-state.skill/not-usable
     (let [state params]
@@ -1766,16 +1754,18 @@
         nil)))
 
 (defn handle-input
-  [state-k eid ctx audio left-button-pressed? movement-vector mouseover-actor world-mouse-position]
+  [state-k eid ctx audio skin stage textures left-button-pressed? movement-vector mouseover-actor world-mouse-position]
   (case state-k
     :player-idle
     (if movement-vector
-      (handle-fsm-event! eid world-mouse-position :movement-input movement-vector)
+      (handle-fsm-event! audio skin stage textures eid world-mouse-position :movement-input movement-vector)
       (when left-button-pressed?
         (interaction-state->txs @interaction-state
-                                @stage
+                                stage
                                 audio
-                                #(ui-set-item! ctx %1 %2)
+                                skin
+                                textures
+                                #(ui-set-item! skin stage textures %1 %2)
                                 eid
                                 world-mouse-position)))
 
@@ -1785,12 +1775,12 @@
                                              :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                         0)})
           nil)
-      (handle-fsm-event! eid world-mouse-position :no-movement-input))
+      (handle-fsm-event! audio skin stage textures eid world-mouse-position :no-movement-input))
 
     :player-item-on-cursor
     (when (and left-button-pressed?
                (not mouseover-actor))
-      (handle-fsm-event! eid world-mouse-position :drop-item))
+      (handle-fsm-event! audio skin stage textures eid world-mouse-position :drop-item))
 
     nil))
 
@@ -1842,7 +1832,7 @@
       (dissoc effect-ctx :effect/target))))
 
 (defn tick-component
-  [ctx world-mouse-position apply-effects! eid [k v]]
+  [audio skin stage textures ctx world-mouse-position apply-effects! eid [k v]]
   (case k
     :entity/animation
     (let [{:keys [delete-after-stopped?
@@ -1868,7 +1858,7 @@
                                    :radius 4}
                                   (world/circle->entities @world)
                                   (filter #(= (:entity/faction @%) faction)))]
-          (handle-fsm-event! friendly-eid world-mouse-position :alert)))
+          (handle-fsm-event! audio skin stage textures friendly-eid world-mouse-position :alert)))
       nil)
 
     :entity/string-effect
@@ -1922,11 +1912,11 @@
       (cond
        (not (seq (filter #(effect-applicable? % effect-ctx)
                          (:skill/effects skill))))
-       (handle-fsm-event! eid world-mouse-position :action-done)
+       (handle-fsm-event! audio skin stage textures eid world-mouse-position :action-done)
 
        (timer/stopped? elapsed-time counter)
        (do (apply-effects! effect-ctx (:skill/effects skill))
-           (handle-fsm-event! eid world-mouse-position :action-done)
+           (handle-fsm-event! audio skin stage textures eid world-mouse-position :action-done)
            nil)))
 
     :entity/delete-after-duration
@@ -1937,24 +1927,24 @@
     :stunned
     (let [{:keys [counter]} v]
       (when (timer/stopped? @elapsed-time counter)
-        (handle-fsm-event! eid world-mouse-position :effect-wears-off)))
+        (handle-fsm-event! audio skin stage textures eid world-mouse-position :effect-wears-off)))
 
     :npc-moving
     (let [{:keys [timer]} v]
       (when (timer/stopped? @elapsed-time timer)
-        (handle-fsm-event! eid world-mouse-position :timer-finished)))
+        (handle-fsm-event! audio skin stage textures eid world-mouse-position :timer-finished)))
 
     :npc-sleeping
     (let [entity @eid]
       (when-let [distance (world/nearest-enemy-distance @world entity)]
         (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-          (handle-fsm-event! eid world-mouse-position :alert))))
+          (handle-fsm-event! audio skin stage textures eid world-mouse-position :alert))))
 
     :npc-idle
     (let [effect-ctx (create-effect-ctx ctx eid)]
       (if-let [skill (choose-skill (partial raycaster/blocked? @raycaster) @eid effect-ctx)]
-        (handle-fsm-event! eid world-mouse-position :start-action [skill effect-ctx])
-        (handle-fsm-event! eid world-mouse-position :movement-direction (or (world/find-direction @world eid)
+        (handle-fsm-event! audio skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
+        (handle-fsm-event! audio skin stage textures eid world-mouse-position :movement-direction (or (world/find-direction @world eid)
                                                            [0 0]))))
 
     :entity/movement
@@ -2137,10 +2127,9 @@
     (draw-fn-rectangle shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [ctx shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position]
+  [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position]
   (let [player-eid @player-eid
         raycaster @raycaster
-        textures @textures
         elapsed-time @elapsed-time
         show-body-bounds? @show-body-bounds?
         active-entities @active-entities
@@ -2179,10 +2168,9 @@
                            :none (:colors/mouseover-tile-none colors))))))
 
 (defn- make-interaction-state
-  [mouseover-actor world-mouse-position]
+  [mouseover-actor world-mouse-position stage]
   (let [player-eid @player-eid
-        mouseover-eid @mouseover-eid
-        stage @stage]
+        mouseover-eid @mouseover-eid]
     (cond
       mouseover-actor
       [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -2208,8 +2196,8 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(defn assoc-interaction-state [mouseover-actor world-mouse-position]
-  (reset! interaction-state (make-interaction-state mouseover-actor world-mouse-position)))
+(defn assoc-interaction-state [mouseover-actor world-mouse-position stage]
+  (reset! interaction-state (make-interaction-state mouseover-actor world-mouse-position stage)))
 
 (def k->cursor
   {:player-item-on-cursor :cursors/hand-grab

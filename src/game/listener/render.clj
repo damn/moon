@@ -1,13 +1,9 @@
 (ns game.listener.render
   (:require [game.shared :refer [active-entities
                                  assoc-interaction-state
-                                 audio
                                  audiovisual!
-                                 batch
                                  colors
                                  controls
-                                 cursors
-                                 default-font
                                  draw-cell-debug
                                  draw-entities!
                                  draw-tile-grid
@@ -25,8 +21,6 @@
                                  player-eid
                                  raycaster
                                  render-z-order
-                                 shape-drawer
-                                 stage
                                  tick-component
                                  tiled-map
                                  tile-color-setter*
@@ -36,8 +30,7 @@
                                  update-potential-fields
                                  update-time
                                  world
-                                 world-mouse-position
-                                 world-viewport]]
+                                 world-mouse-position]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]
@@ -50,14 +43,14 @@
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn update-mouseover-eid! []
+(defn update-mouseover-eid! [stage world-viewport]
   (let [old-mouseover-eid @mouseover-eid
-        [x y] (ui-mouse-position)
-        new-eid (if (mouseover-actor @stage x y)
+        [x y] (ui-mouse-position stage)
+        new-eid (if (mouseover-actor stage x y)
                   nil
                   (let [player @@player-eid
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (world/point->entities @world (world-mouse-position)))]
+                                     (world/point->entities @world (world-mouse-position world-viewport)))]
                     (->> render-z-order
                          (coll/sort-by-order hits #(:entity/z-order @%))
                          reverse
@@ -72,22 +65,21 @@
 (defn update-active-entities! []
   (reset! active-entities (world/active-entities @world @@player-eid)))
 
-(defn set-camera-to-player! []
-  (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)
+(defn set-camera-to-player! [world-viewport]
+  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         pos (.position camera)
         [x y] (:entity/position @@player-eid)]
     (set! (.x pos) x)
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! [world-unit-scale]
+(defn draw-tiled-map! [batch world-viewport world-unit-scale]
   (let [raycaster @raycaster
-        ^Viewport world-viewport @world-viewport
         tiled-map @tiled-map
-        ^OrthographicCamera camera (.getCamera world-viewport)
+        ^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         pos (.position camera)]
     (moon-tiled-map/draw! tiled-map
-                          @batch
+                          batch
                           world-unit-scale
                           camera
                           (tile-color-setter*
@@ -99,32 +91,30 @@
                             :visible-tile-color (:colors/visible-tile colors)
                             :invisible-tile-color (:colors/invisible-tile colors)}))))
 
-(defn current-mouseover-actor []
-  (let [[x y] (ui-mouse-position)]
-    (mouseover-actor @stage x y)))
+(defn current-mouseover-actor [stage]
+  (let [[x y] (ui-mouse-position stage)]
+    (mouseover-actor stage x y)))
 
-(defn draw-world! [world-unit-scale]
-  (let [default-font @default-font
-        shape-drawer @shape-drawer
-        ^Viewport world-viewport @world-viewport
-        ^OrthographicCamera camera (.getCamera world-viewport)
-        mouseover-actor* (current-mouseover-actor)]
-    (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-    (.setProjectionMatrix ^Batch @batch (.combined camera))
-    (.begin ^Batch @batch)
+(defn draw-world! [batch default-font shape-drawer stage textures world-viewport world-unit-scale]
+  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
+        mouseover-actor* (current-mouseover-actor stage)
+        world-mouse-pos (world-mouse-position world-viewport)]
+    (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
+    (.setProjectionMatrix ^Batch batch (.combined camera))
+    (.begin ^Batch batch)
     (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
       (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))
       (reset! unit-scale world-unit-scale)
       (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport)
                        #(draw-cell-debug % shape-drawer world-viewport)
-                       #(draw-entities! % shape-drawer @batch default-font unit-scale world-unit-scale mouseover-actor* (world-mouse-position))
-                       #(highlight-mouseover-tile % shape-drawer (world-mouse-position))]]
+                       #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos)
+                       #(highlight-mouseover-tile % shape-drawer world-mouse-pos)]]
         (draw-fn nil))
       (reset! unit-scale 1)
       (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width))
-    (.end ^Batch @batch)))
+    (.end ^Batch batch)))
 
-(defn update-cursor! []
+(defn update-cursor! [cursors]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -132,8 +122,8 @@
         cursor-key (if (keyword? cursor-fn)
                      cursor-fn
                      (cursor-fn eid))]
-    (assert (contains? @cursors cursor-key))
-    (.setCursor ^Graphics Gdx/graphics ^Cursor (get @cursors cursor-key))))
+    (assert (contains? cursors cursor-key))
+    (.setCursor ^Graphics Gdx/graphics ^Cursor (get cursors cursor-key))))
 
 (defn- movement-vector [key-pressed?]
   (let [r (when (key-pressed? Input$Keys/D) [1  0])
@@ -145,15 +135,15 @@
         (when (pos? (v2/length v))
           v)))))
 
-(defn handle-player-input! [key-pressed? button-just-pressed?]
+(defn handle-player-input! [audio skin stage textures world-viewport key-pressed? button-just-pressed?]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))]
-    (handle-input state-k eid nil @audio
+    (handle-input state-k eid nil audio skin stage textures
                   (button-just-pressed? Input$Buttons/LEFT)
                   (movement-vector key-pressed?)
-                  (current-mouseover-actor)
-                  (world-mouse-position))))
+                  (current-mouseover-actor stage)
+                  (world-mouse-position world-viewport))))
 
 (defn clear-interaction-state! []
   (reset! interaction-state nil))
@@ -176,13 +166,15 @@
                    (not (or (key-just-pressed? (:unpause-once controls))
                             (key-pressed? (:unpause-continously controls))))))))
 
-(defn- tick-entities! []
+(defn- tick-entities! [audio skin stage textures world-viewport]
   (let [active-entities @active-entities
         raycaster @raycaster
-        elapsed-time @elapsed-time]
+        elapsed-time @elapsed-time
+        world-mouse-pos (world-mouse-position world-viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                (handle-effect effect effect-ctx (world-mouse-position)
+                (handle-effect audio skin stage textures
+                               effect effect-ctx world-mouse-pos
                                apply-effects!
                                active-entities
                                colors
@@ -190,55 +182,56 @@
                                elapsed-time)))]
       (doseq [eid active-entities
               component @eid]
-        (tick-component nil (world-mouse-position)
+        (tick-component audio skin stage textures
+                        nil world-mouse-pos
                         apply-effects!
                         eid component)))))
 
-(defn tick-game! []
+(defn tick-game! [audio skin stage textures world-viewport]
   (when-not @paused?
     (update-time)
     (update-potential-fields)
-    (tick-entities!)))
+    (tick-entities! audio skin stage textures world-viewport)))
 
-(defn destroy-entities! []
+(defn destroy-entities! [audio skin stage textures]
   (doseq [eid (world/destroyed-eids @world)]
     (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
-        (audiovisual! (:entity/position @eid) v)
+        (audiovisual! audio skin stage textures (:entity/position @eid) v)
         nil))))
 
-(defn- zoom-in! []
-  (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+(defn- zoom-in! [world-viewport]
+  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
     (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
     (.update camera)))
 
-(defn- zoom-out! []
-  (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+(defn- zoom-out! [world-viewport]
+  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
     (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
     (.update camera)))
 
-(defn- close-windows! []
-  (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
+(defn- close-windows! [stage]
+  (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
        (run! (fn [actor]
                (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor actor false)))))
 
-(defn- toggle-inventory! []
-  (toggle-inventory-visible! @stage))
+(defn- toggle-inventory! [stage]
+  (toggle-inventory-visible! stage))
 
-(defn- toggle-entity-info! []
-  (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
+(defn- toggle-entity-info! [stage]
+  (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
     (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info
                  (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
 
-(defn handle-controls! [key-pressed? key-just-pressed?]
-  (doseq [[k f] {(:zoom-in controls) zoom-in!
-                 (:zoom-out controls) zoom-out!}]
+(defn handle-controls! [stage world-viewport key-pressed? key-just-pressed?]
+  (doseq [[k f] {(:zoom-in controls) #(zoom-in! world-viewport)
+                 (:zoom-out controls) #(zoom-out! world-viewport)}]
     (when (key-pressed? k)
       (f)))
-  (doseq [[k f] {(:close-windows-key controls) close-windows!
-                 (:toggle-inventory controls) toggle-inventory!
-                 (:toggle-entity-info controls) toggle-entity-info!}]
+  (doseq [[k f] {(:close-windows-key controls) #(close-windows! stage)
+                 (:toggle-inventory controls) #(toggle-inventory! stage)
+                 (:toggle-entity-info controls) #(toggle-entity-info! stage)}]
     (when (key-just-pressed? k)
       (f))))

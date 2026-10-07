@@ -33,29 +33,30 @@
                                           update-mouseover-eid!
                                           update-paused!]]
             [game.shared :refer [assoc-interaction-state
-                                 audio
-                                 batch
-                                 cursors
-                                 default-font
                                  explored-tile-corners
                                  raycaster
-                                 shape-drawer
-                                 shape-drawer-texture
-                                 skin
-                                 stage
                                  start-position
-                                 textures
                                  tiled-map
                                  unit-scale
                                  world
-                                 world-mouse-position
-                                 world-viewport]])
+                                 world-mouse-position]])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def world-unit-scale (float (/ 48)))
+
+(def audio (atom nil))
+(def batch (atom nil))
+(def cursors (atom nil))
+(def default-font (atom nil))
+(def world-viewport (atom nil))
+(def shape-drawer (atom nil))
+(def shape-drawer-texture (atom nil))
+(def textures (atom nil))
+(def skin (atom nil))
+(def stage (atom nil))
 
 (def listener
   (reify ApplicationListener
@@ -75,7 +76,13 @@
       (reset! textures (create-textures! Gdx/files))
       (reset! world-viewport (create-world-viewport! world-unit-scale))
       (reset! default-font (create-default-font! Gdx/files))
-      (doseq [^Actor actor (create-ui-actors)]
+      (doseq [^Actor actor (create-ui-actors @audio
+                                             @default-font
+                                             @shape-drawer
+                                             @skin
+                                             @stage
+                                             @textures
+                                             @world-viewport)]
         (.addActor ^Stage @stage actor))
       (let [{level-tiled-map :tiled-map
              level-start :start-position} (create-level! @textures)]
@@ -84,9 +91,9 @@
       (reset! world (create-world! @tiled-map))
       (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
       (reset! raycaster (create-raycaster! @world))
-      (spawn-player!)
+      (spawn-player! @skin @stage @textures)
       (bind-player-eid!)
-      (spawn-map-creatures!))
+      (spawn-map-creatures! @skin @stage @textures))
 
     (dispose [_]
       (run! Disposable/.dispose (vals @audio))
@@ -102,22 +109,34 @@
       (let [input Gdx/input
             key-pressed? #(.isKeyPressed ^Input input (int %))
             key-just-pressed? #(.isKeyJustPressed ^Input input (int %))
-            button-just-pressed? #(.isButtonJustPressed ^Input input (int %))]
+            button-just-pressed? #(.isButtonJustPressed ^Input input (int %))
+            audio @audio
+            batch @batch
+            cursors @cursors
+            default-font @default-font
+            shape-drawer @shape-drawer
+            skin @skin
+            stage @stage
+            textures @textures
+            world-viewport @world-viewport]
         (ScreenUtils/clear 0 0 0 0)
-        (update-mouseover-eid!)
+        (update-mouseover-eid! stage world-viewport)
         (update-active-entities!)
-        (set-camera-to-player!)
-        (draw-tiled-map! world-unit-scale)
-        (draw-world! world-unit-scale)
-        (assoc-interaction-state (current-mouseover-actor) (world-mouse-position))
-        (update-cursor!)
-        (handle-player-input! key-pressed? button-just-pressed?)
+        (set-camera-to-player! world-viewport)
+        (draw-tiled-map! batch world-viewport world-unit-scale)
+        (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale)
+        (assoc-interaction-state (current-mouseover-actor stage)
+                                 (world-mouse-position world-viewport)
+                                 stage)
+        (update-cursor! cursors)
+        (handle-player-input! audio skin stage textures world-viewport
+                              key-pressed? button-just-pressed?)
         (clear-interaction-state!)
         (update-paused! key-pressed? key-just-pressed?)
-        (tick-game!)
-        (destroy-entities!)
-        (handle-controls! key-pressed? key-just-pressed?)
-        (let [^Stage stage @stage]
+        (tick-game! audio skin stage textures world-viewport)
+        (destroy-entities! audio skin stage textures)
+        (handle-controls! stage world-viewport key-pressed? key-just-pressed?)
+        (let [^Stage stage stage]
           (.act stage)
           (.draw stage))))
 

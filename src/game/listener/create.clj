@@ -1,12 +1,10 @@
 (ns game.listener.create
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game.shared :refer [audio
-                                 colors
+            [game.shared :refer [colors
                                  create-action-bar
                                  create-dev-menu
                                  db
-                                 default-font
                                  dev-menus
                                  draw-fn-filled-rectangle
                                  draw-fn-rectangle
@@ -19,13 +17,10 @@
                                  player-eid
                                  player-message-actor-create
                                  player-state-draw-create
-                                 shape-drawer
-                                 skin
                                  spawn-creature
                                  spawn-entity!
                                  stage-info-window-create
                                  start-position
-                                 textures
                                  tiled-map
                                  ui-mouse-position
                                  ui-remove-item!
@@ -33,8 +28,7 @@
                                  unit-scale
                                  windows-create
                                  world
-                                 world-mouse-position
-                                 world-viewport]]
+                                 world-mouse-position]]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
             [moon.inventory :as inventory]
@@ -67,7 +61,7 @@
     (Disposable/.dispose pixmap)
     texture))
 
-(defn create-ui-actors []
+(defn create-ui-actors [audio default-font shape-drawer skin stage textures* world-viewport]
   (let [cell-size 48]
     [(create-action-bar)
      (create-dev-menu
@@ -88,39 +82,45 @@
                                    :update-fn (fn [] @paused?)}
                                   {:label "GUI"
                                    :update-fn (fn []
-                                                (mapv int (ui-mouse-position)))}
+                                                (mapv int (ui-mouse-position stage)))}
                                   {:label "World"
                                    :update-fn (fn []
-                                                (mapv int (world-mouse-position)))}
+                                                (mapv int (world-mouse-position world-viewport)))}
                                   {:label "Zoom"
                                    :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (.getCamera ^Viewport @world-viewport)))
+                                                (.zoom ^OrthographicCamera (.getCamera ^Viewport world-viewport)))
                                    :icon "images/zoom.png"}]]
                         (if (:icon item)
-                          (update item :icon #(get @textures %))
+                          (update item :icon #(get textures* %))
                           item))
-       :skin @skin})
-     (hp-mana-bar-create)
-     (windows-create [stage-info-window-create
+       :skin skin})
+     (hp-mana-bar-create default-font stage textures*)
+     (windows-create [#(stage-info-window-create skin stage)
                       #(inventory-window-create
                         (fn [_event cell]
                           (handle-clicked-inventory-cell @player-eid
-                                                         @audio
-                                                         (fn [cell item] (ui-set-item! nil cell item))
-                                                         (fn [cell] (ui-remove-item! nil cell))
+                                                         audio
+                                                         skin
+                                                         stage
+                                                         textures*
+                                                         (fn [cell item] (ui-set-item! skin stage textures* cell item))
+                                                         (fn [cell] (ui-remove-item! stage cell))
                                                          cell
-                                                         (world-mouse-position)))
+                                                         (world-mouse-position world-viewport)))
                         (fn [player-entity x y mouseover? cell]
-                          (draw-fn-rectangle @shape-drawer x y cell-size cell-size (:colors/item-rect colors))
+                          (draw-fn-rectangle shape-drawer x y cell-size cell-size (:colors/item-rect colors))
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
                                   color (if (inventory/valid-slot? cell item)
                                           (:colors/droppable-item colors)
                                           (:colors/not-allowed-drop-item colors))]
-                              (draw-fn-filled-rectangle @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
-     (player-state-draw-create unit-scale)
-     (player-message-actor-create @default-font unit-scale)]))
+                              (draw-fn-filled-rectangle shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+                        skin
+                        stage
+                        textures*)])
+     (player-state-draw-create unit-scale textures*)
+     (player-message-actor-create default-font unit-scale)]))
 
 (defn create-audio! [gdx-audio files]
   (into {}
@@ -199,13 +199,13 @@
 
 (def level-fn uf-caves/create)
 
-(defn create-level! [textures]
+(defn create-level! [textures*]
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
         (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
                                                (db/all-raw db :properties/creatures)
-                                               #(textures/texture-region textures %))
-                   :textures textures})]
+                                               #(textures/texture-region textures* %))
+                   :textures textures*})]
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
@@ -225,28 +225,30 @@
       (aset arr x y (boolean blocked?)))
     [arr width height]))
 
-(defn spawn-player! []
-  (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @start-position)
-                                   :creature-property (db/build db :creatures/vampire)
-                                   :components {:entity/fsm {:fsm :fsms/player
-                                                             :initial-state :player-idle}
-                                                :entity/faction :good
-                                                :entity/player? true
-                                                :entity/free-skill-points 3
-                                                :entity/clickable {:type :clickable/player}
-                                                :entity/click-distance-tiles 1.5}})))
+(defn spawn-player! [skin stage textures*]
+  (spawn-entity! skin stage textures*
+                 (spawn-creature {:position (mapv (partial + 0.5) @start-position)
+                                  :creature-property (db/build db :creatures/vampire)
+                                  :components {:entity/fsm {:fsm :fsms/player
+                                                            :initial-state :player-idle}
+                                               :entity/faction :good
+                                               :entity/player? true
+                                               :entity/free-skill-points 3
+                                               :entity/clickable {:type :clickable/player}
+                                               :entity/click-distance-tiles 1.5}})))
 
 (defn bind-player-eid! []
   (let [eid (world/entity-by-id @world 1)]
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 
-(defn spawn-map-creatures! []
+(defn spawn-map-creatures! [skin stage textures*]
   (let [sp @start-position]
     (doseq [[position creature-id] (moon-tiled-map/spawn-positions @tiled-map)
             :when (not= position sp)]
-      (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) position)
-                                       :creature-property (db/build db (keyword creature-id))
-                                       :components {:entity/fsm {:fsm :fsms/npc
-                                                                 :initial-state :npc-sleeping}
-                                                    :entity/faction :evil}})))))
+      (spawn-entity! skin stage textures*
+                     (spawn-creature {:position (mapv (partial + 0.5) position)
+                                      :creature-property (db/build db (keyword creature-id))
+                                      :components {:entity/fsm {:fsm :fsms/npc
+                                                                :initial-state :npc-sleeping}
+                                                   :entity/faction :evil}})))))
