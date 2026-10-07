@@ -1,24 +1,22 @@
 (ns game.listener.render
-  (:require [game.shared :refer [assoc-interaction-state
-                                 audiovisual!
+  (:require [game.shared :refer [audiovisual!
                                  colors
                                  controls
                                  draw-cell-debug
                                  draw-entities!
                                  draw-tile-grid
                                  effect-applicable?
+                                 factions-iterations
                                  handle-effect
                                  handle-input
                                  highlight-mouseover-tile
-                                 k->cursor
+                                 max-delta
                                  mouseover-actor
                                  render-z-order
                                  tick-component
                                  tile-color-setter*
                                  toggle-inventory-visible!
                                  ui-mouse-position
-                                 update-potential-fields
-                                 update-time
                                  world-mouse-position]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
@@ -112,7 +110,54 @@
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
-        cursor-fn (get (k->cursor interaction-state) state-k)
+        cursor-fn (get {:player-item-on-cursor :cursors/hand-grab
+                        :player-dead :cursors/black-x
+                        :active-skill :cursors/sandclock
+                        :stunned :cursors/denied
+                        :player-moving :cursors/walking
+                        :player-idle (fn
+                                       [eid]
+                                       (let [[k params] @interaction-state]
+                                         (case k
+                                           :interaction-state/mouseover-actor
+                                           (let [[actor-type params] params
+                                                 inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
+                                                                                (let [inventory-slot params]
+                                                                                  (get-in (:entity/inventory @eid) inventory-slot)))]
+                                             (cond
+                                               inventory-cell-with-item?
+                                               :cursors/hand-before-grab
+
+                                               (= actor-type :mouseover-actor/window-title-bar)
+                                               :cursors/move-window
+
+                                               (= actor-type :mouseover-actor/button)
+                                               :cursors/over-button
+
+                                               (= actor-type :mouseover-actor/unspecified)
+                                               :cursors/default
+
+                                               :else
+                                               :cursors/default))
+
+                                           :interaction-state/clickable-mouseover-eid
+                                           (let [{:keys [clicked-eid
+                                                         in-click-range?]} params]
+                                             (case (:type (:entity/clickable @clicked-eid))
+                                               :clickable/item (if in-click-range?
+                                                                 :cursors/hand-before-grab
+                                                                 :cursors/hand-before-grab-gray)
+                                               :clickable/player :cursors/bag))
+
+                                           :interaction-state.skill/usable
+                                           :cursors/use-skill
+
+                                           :interaction-state.skill/not-usable
+                                           :cursors/skill-not-usable
+
+                                           :interaction-state/no-skill-selected
+                                           :cursors/no-skill-selected)))}
+                       state-k)
         cursor-key (if (keyword? cursor-fn)
                      cursor-fn
                      (cursor-fn eid))]
@@ -188,8 +233,15 @@
   [db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
    audio skin stage textures world-viewport]
   (when-not @paused?
-    (update-time delta-time elapsed-time)
-    (update-potential-fields world potential-field-cache active-entities)
+    (let [delta-ms (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
+      (reset! delta-time delta-ms)
+      (swap! elapsed-time + delta-ms))
+    (doseq [[faction max-iterations] factions-iterations]
+      (world/update-potential-fields! @world)
+                                      potential-field-cache
+                                      faction
+                                      @active-entities
+                                      max-iterations))
     (tick-entities! db world raycaster elapsed-time delta-time active-entities
                     audio skin stage textures world-viewport)))
 

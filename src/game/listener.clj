@@ -32,9 +32,13 @@
                                           update-cursor!
                                           update-mouseover-eid!
                                           update-paused!]]
-            [game.shared :refer [assoc-interaction-state
+            [game.shared :refer [action-bar-selected-skill
+                                 mouseover-actor-info
+                                 player-effect-ctx
+                                 skill-usable-state
                                  world-mouse-position]]
-            [moon.db :as db])
+            [moon.db :as db]
+            [moon.v2 :as v2])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
@@ -154,12 +158,35 @@
         (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
                      world player-eid raycaster elapsed-time show-body-bounds? active-entities
                      show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?)
-        (assoc-interaction-state interaction-state
-                                 (current-mouseover-actor stage)
-                                 (world-mouse-position world-viewport)
-                                 stage
-                                 player-eid
-                                 mouseover-eid)
+        (reset! interaction-state
+                (let [player-eid @player-eid
+                      mouseover-eid @mouseover-eid
+                      mouseover-actor (current-mouseover-actor stage)
+                      world-mouse-position (world-mouse-position world-viewport)]
+                  (cond
+                    mouseover-actor
+                    [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+
+                    (and mouseover-eid
+                         (:entity/clickable @mouseover-eid))
+                    [:interaction-state/clickable-mouseover-eid
+                     {:clicked-eid mouseover-eid
+                      :in-click-range? (< (v2/distance (:entity/position @player-eid)
+                                                       (:entity/position @mouseover-eid))
+                                          (:entity/click-distance-tiles @player-eid))}]
+
+                    :else
+                    (if-let [skill-id (-> (.getRoot ^Stage stage)
+                                          (.findActor "moon.ui.action-bar")
+                                          action-bar-selected-skill)]
+                      (let [entity @player-eid
+                            skill (skill-id (:entity/skills entity))
+                            effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
+                            state (skill-usable-state skill entity effect-ctx)]
+                        (if (= state :usable)
+                          [:interaction-state.skill/usable [skill effect-ctx]]
+                          [:interaction-state.skill/not-usable state]))
+                      [:interaction-state/no-skill-selected]))))
         (update-cursor! cursors interaction-state player-eid)
         (handle-player-input! world elapsed-time interaction-state player-eid
                               audio skin stage textures world-viewport

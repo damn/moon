@@ -24,7 +24,7 @@
             [moon.val-max :as val-max]
             [moon.world :as world]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Gdx Graphics Input Input$Keys)
+  (:import (com.badlogic.gdx Gdx Input Input$Keys)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Color OrthographicCamera Texture)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
@@ -144,7 +144,7 @@
 
     true))
 
-(defn- skill-usable-state
+(defn skill-usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
    entity
    effect-ctx]
@@ -459,7 +459,7 @@
     (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
-(defn- action-bar-selected-skill [action-bar]
+(defn action-bar-selected-skill [action-bar]
   (when-let [skill-button (.getChecked ^ButtonGroup (:button-group (action-bar-get-data action-bar)))]
     (.getUserObject ^Actor skill-button)))
 
@@ -576,7 +576,7 @@
         (when-let [parent (.getParent ^Actor actor)]
           (button-class? parent)))))
 
-(defn- mouseover-actor-info [actor]
+(defn mouseover-actor-info [actor]
   (let [inventory-slot (and (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)
                             (= "inventory-cell" (.getName ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))
                             (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))]
@@ -2155,99 +2155,3 @@
                          (case (:movement cell)
                            :air (:colors/mouseover-tile-air colors)
                            :none (:colors/mouseover-tile-none colors))))))
-
-(defn- make-interaction-state
-  [mouseover-actor world-mouse-position stage player-eid mouseover-eid]
-  (let [player-eid @player-eid
-        mouseover-eid @mouseover-eid]
-    (cond
-      mouseover-actor
-      [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
-
-      (and mouseover-eid
-           (:entity/clickable @mouseover-eid))
-      [:interaction-state/clickable-mouseover-eid
-       {:clicked-eid mouseover-eid
-        :in-click-range? (< (v2/distance (:entity/position @player-eid)
-                                        (:entity/position @mouseover-eid))
-                            (:entity/click-distance-tiles @player-eid))}]
-
-      :else
-      (if-let [skill-id (-> (.getRoot ^Stage stage)
-                            (.findActor "moon.ui.action-bar")
-                            action-bar-selected-skill)]
-        (let [entity @player-eid
-              skill (skill-id (:entity/skills entity))
-              effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
-              state (skill-usable-state skill entity effect-ctx)]
-          (if (= state :usable)
-            [:interaction-state.skill/usable [skill effect-ctx]]
-            [:interaction-state.skill/not-usable state]))
-        [:interaction-state/no-skill-selected]))))
-
-(defn assoc-interaction-state [interaction-state mouseover-actor world-mouse-position stage player-eid mouseover-eid]
-  (reset! interaction-state (make-interaction-state mouseover-actor world-mouse-position stage player-eid mouseover-eid)))
-
-(defn k->cursor [interaction-state]
-  {:player-item-on-cursor :cursors/hand-grab
-   :player-dead :cursors/black-x
-   :active-skill :cursors/sandclock
-   :stunned :cursors/denied
-   :player-moving :cursors/walking
-   :player-idle (fn
-                  [eid]
-                  (let [[k params] @interaction-state]
-                    (case k
-                      :interaction-state/mouseover-actor
-                      (let [[actor-type params] params
-                            inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
-                                                           (let [inventory-slot params]
-                                                             (get-in (:entity/inventory @eid) inventory-slot)))]
-                        (cond
-                         inventory-cell-with-item?
-                         :cursors/hand-before-grab
-
-                         (= actor-type :mouseover-actor/window-title-bar)
-                         :cursors/move-window
-
-                         (= actor-type :mouseover-actor/button)
-                         :cursors/over-button
-
-                         (= actor-type :mouseover-actor/unspecified)
-                         :cursors/default
-
-                         :else
-                         :cursors/default))
-
-                      :interaction-state/clickable-mouseover-eid
-                      (let [{:keys [clicked-eid
-                                    in-click-range?]} params]
-                        (case (:type (:entity/clickable @clicked-eid))
-                          :clickable/item (if in-click-range?
-                                            :cursors/hand-before-grab
-                                            :cursors/hand-before-grab-gray)
-                          :clickable/player :cursors/bag))
-
-                      :interaction-state.skill/usable
-                      :cursors/use-skill
-
-                      :interaction-state.skill/not-usable
-                      :cursors/skill-not-usable
-
-                      :interaction-state/no-skill-selected
-                      :cursors/no-skill-selected)))})
-
-(defn update-time [delta-time elapsed-time]
-  (let [delta-ms (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
-    (reset! delta-time delta-ms)
-    (swap! elapsed-time + delta-ms)))
-
-(defn update-potential-fields
-  [world potential-field-cache active-entities]
-  (doseq [[faction max-iterations] factions-iterations]
-    (world/update-potential-fields! @world
-                                    potential-field-cache
-                                    faction
-                                    @active-entities
-                                    max-iterations))
-  nil)
