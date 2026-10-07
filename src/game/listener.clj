@@ -26,12 +26,12 @@
                                           handle-controls!
                                           handle-player-input!
                                           set-camera-to-player!
-                                          tick-game!
                                           update-active-entities!
                                           update-cursor!
                                           update-mouseover-eid!
                                           update-paused!]]
             [game.listener.render.draw-world :refer [draw-world!]]
+            [game.listener.render.tick-world :refer [tick-game!]]
             [game.shared :refer [action-bar-selected-skill
                                  mouseover-actor-info
                                  player-effect-ctx
@@ -45,6 +45,15 @@
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def world-unit-scale (float (/ 48)))
+
+(def z-orders
+  [:z-order/on-ground
+   :z-order/ground
+   :z-order/flying
+   :z-order/effect])
+
+(def render-z-order
+  (apply hash-map (interleave z-orders (range))))
 
 (def audio (atom nil))
 (def batch (atom nil))
@@ -111,6 +120,7 @@
                                              show-body-bounds?
                                              show-potential-field-colors?
                                              unit-scale
+                                             z-orders
                                              @audio
                                              @default-font
                                              @shape-drawer
@@ -126,9 +136,9 @@
       (reset! world (create-world! @tiled-map))
       (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
       (reset! raycaster (create-raycaster! @world))
-      (spawn-player! db world elapsed-time start-position @skin @stage @textures)
+      (spawn-player! db world elapsed-time start-position @skin @stage @textures z-orders)
       (bind-player-eid! world player-eid)
-      (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures))
+      (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures z-orders))
 
     (dispose [_]
       (run! Disposable/.dispose (vals @audio))
@@ -155,14 +165,14 @@
             textures @textures
             world-viewport @world-viewport]
         (ScreenUtils/clear 0 0 0 0)
-        (update-mouseover-eid! world raycaster player-eid mouseover-eid stage world-viewport)
+        (update-mouseover-eid! world raycaster player-eid mouseover-eid stage world-viewport render-z-order)
         (update-active-entities! world player-eid active-entities)
         (set-camera-to-player! player-eid world-viewport)
         (draw-tiled-map! batch world-viewport tiled-map raycaster explored-tile-corners world-unit-scale)
         (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
                      world player-eid raycaster elapsed-time show-body-bounds? active-entities
                      show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
-                     factions-iterations)
+                     factions-iterations render-z-order)
         (reset! interaction-state
                 (let [player-eid @player-eid
                       mouseover-eid @mouseover-eid
@@ -194,13 +204,13 @@
                       [:interaction-state/no-skill-selected]))))
         (update-cursor! cursors interaction-state player-eid)
         (handle-player-input! world elapsed-time interaction-state player-eid
-                              audio skin stage textures world-viewport
+                              audio skin stage textures z-orders world-viewport
                               key-pressed? button-just-pressed?)
         (clear-interaction-state! interaction-state)
         (update-paused! paused? player-eid key-pressed? key-just-pressed?)
         (tick-game! db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
-                    audio skin stage textures world-viewport factions-iterations)
-        (destroy-entities! db world elapsed-time audio skin stage textures)
+                    audio skin stage textures world-viewport factions-iterations z-orders)
+        (destroy-entities! db world elapsed-time audio skin stage textures z-orders)
         (handle-controls! stage world-viewport key-pressed? key-just-pressed?)
         (let [^Stage stage stage]
           (.act stage)

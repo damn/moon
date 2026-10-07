@@ -15,7 +15,7 @@
   [batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
    world player-eid raycaster elapsed-time show-body-bounds? active-entities
    show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
-   factions-iterations]
+   factions-iterations render-z-order]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         [x y] (ui-mouse-position stage)
         mouseover-actor* (mouseover-actor stage x y)
@@ -31,7 +31,7 @@
                                          show-cell-entities? show-cell-occupied? show-potential-field-colors?
                                          factions-iterations)
                        #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
-                                        player-eid raycaster elapsed-time show-body-bounds? active-entities)
+                                        player-eid raycaster elapsed-time show-body-bounds? active-entities render-z-order)
                        #(highlight-mouseover-tile % shape-drawer world-mouse-pos world)]]
         (draw-fn nil))
       (reset! unit-scale 1)

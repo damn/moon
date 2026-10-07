@@ -136,8 +136,8 @@
       (aset arr x y (boolean blocked?)))
     [arr width height]))
 
-(defn spawn-player! [db* world elapsed-time start-position skin stage textures*]
-  (spawn-entity! world elapsed-time skin stage textures*
+(defn spawn-player! [db* world elapsed-time start-position skin stage textures* z-orders]
+  (spawn-entity! world elapsed-time skin stage textures* z-orders
                  (spawn-creature {:position (mapv (partial + 0.5) @start-position)
                                   :creature-property (db/build db* :creatures/vampire)
                                   :components {:entity/fsm {:fsm :fsms/player
@@ -153,11 +153,11 @@
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 
-(defn spawn-map-creatures! [db* world elapsed-time start-position tiled-map skin stage textures*]
+(defn spawn-map-creatures! [db* world elapsed-time start-position tiled-map skin stage textures* z-orders]
   (let [sp @start-position]
     (doseq [[position creature-id] (moon-tiled-map/spawn-positions @tiled-map)
             :when (not= position sp)]
-      (spawn-entity! world elapsed-time skin stage textures*
+      (spawn-entity! world elapsed-time skin stage textures* z-orders
                      (spawn-creature {:position (mapv (partial + 0.5) position)
                                       :creature-property (db/build db* (keyword creature-id))
                                       :components {:entity/fsm {:fsm :fsms/npc

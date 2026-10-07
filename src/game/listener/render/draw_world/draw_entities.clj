@@ -1,8 +1,7 @@
 (ns game.listener.render.draw-world.draw-entities
   (:require [game.shared :refer [colors
                                  draw-component
-                                 draw-fn-rectangle
-                                 render-z-order]]
+                                 draw-fn-rectangle]]
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]))
 
@@ -29,7 +28,7 @@
 
 (defn draw-entities!
   [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
-   player-eid raycaster elapsed-time show-body-bounds? active-entities]
+   player-eid raycaster elapsed-time show-body-bounds? active-entities render-z-order]
   (let [player-eid @player-eid
         raycaster @raycaster
         elapsed-time @elapsed-time

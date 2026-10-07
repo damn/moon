@@ -25,6 +25,7 @@
   [world elapsed-time mouseover-eid paused? player-eid
    show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
    unit-scale
+   z-orders
    audio default-font shape-drawer skin stage textures* world-viewport]
   (let [cell-size 48]
     [(create-action-bar)
@@ -69,6 +70,7 @@
                                                          skin
                                                          stage
                                                          textures*
+                                                         z-orders
                                                          (fn [cell item] (ui-set-item! skin stage textures* cell item))
                                                          (fn [cell] (ui-remove-item! stage cell))
                                                          cell

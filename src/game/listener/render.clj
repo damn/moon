@@ -2,13 +2,8 @@
   (:require [game.shared :refer [audiovisual!
                                  colors
                                  controls
-                                 effect-applicable?
-                                 handle-effect
                                  handle-input
-                                 max-delta
                                  mouseover-actor
-                                 render-z-order
-                                 tick-component
                                  tile-color-setter*
                                  toggle-inventory-visible!
                                  ui-mouse-position
@@ -23,7 +18,7 @@
            (com.badlogic.gdx.scenes.scene2d Group Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
-(defn update-mouseover-eid! [world raycaster player-eid mouseover-eid stage world-viewport]
+(defn update-mouseover-eid! [world raycaster player-eid mouseover-eid stage world-viewport render-z-order]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
@@ -145,12 +140,12 @@
 
 (defn handle-player-input!
   [world elapsed-time interaction-state player-eid
-   audio skin stage textures world-viewport key-pressed? button-just-pressed?]
+   audio skin stage textures z-orders world-viewport key-pressed? button-just-pressed?]
   (let [eid @player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))]
     (handle-input world elapsed-time interaction-state
-                  state-k eid nil audio skin stage textures
+                  state-k eid nil audio skin stage textures z-orders
                   (button-just-pressed? Input$Buttons/LEFT)
                   (movement-vector key-pressed?)
                   (current-mouseover-actor stage)
@@ -177,50 +172,13 @@
                    (not (or (key-just-pressed? (:unpause-once controls))
                             (key-pressed? (:unpause-continously controls))))))))
 
-(defn- tick-entities!
-  [db world raycaster elapsed-time delta-time active-entities
-   audio skin stage textures world-viewport]
-  (let [active-entities* @active-entities
-        raycaster* @raycaster
-        world-mouse-pos (world-mouse-position world-viewport)]
-    (letfn [(apply-effects! [effect-ctx effects]
-              (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                (handle-effect db world elapsed-time audio skin stage textures
-                               effect effect-ctx world-mouse-pos
-                               apply-effects!
-                               active-entities*
-                               colors
-                               raycaster*)))]
-      (doseq [eid active-entities*
-              component @eid]
-        (tick-component world raycaster elapsed-time delta-time audio skin stage textures
-                        nil world-mouse-pos
-                        apply-effects!
-                        eid component)))))
-
-(defn tick-game!
-  [db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
-   audio skin stage textures world-viewport factions-iterations]
-  (when-not @paused?
-    (let [delta-ms (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
-      (reset! delta-time delta-ms)
-      (swap! elapsed-time + delta-ms))
-    (doseq [[faction max-iterations] factions-iterations]
-      (world/update-potential-fields! @world
-                                      potential-field-cache
-                                      faction
-                                      @active-entities
-                                      max-iterations))
-    (tick-entities! db world raycaster elapsed-time delta-time active-entities
-                    audio skin stage textures world-viewport)))
-
-(defn destroy-entities! [db world elapsed-time audio skin stage textures]
+(defn destroy-entities! [db world elapsed-time audio skin stage textures z-orders]
   (doseq [eid (world/destroyed-eids @world)]
     (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
-        (audiovisual! db world elapsed-time audio skin stage textures (:entity/position @eid) v)
+        (audiovisual! db world elapsed-time audio skin stage textures z-orders (:entity/position @eid) v)
         nil))))
 
 (defn- zoom-in! [world-viewport]

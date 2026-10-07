@@ -1,6 +1,7 @@
 (ns game.shared
   (:require [clojure.math :as math]
             [clojure.string :as str]
+            [game.target-all :refer [affected-targets]]
             [moon.body :as body]
             [moon.coll :as coll]
             [moon.db :as db]
@@ -32,19 +33,6 @@
            (com.badlogic.gdx.utils Align)
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(def z-orders
-  [:z-order/on-ground
-   :z-order/ground
-   :z-order/flying
-   :z-order/effect])
-
-(defn affected-targets
-  [active-entities raycaster entity]
-  (->> active-entities
-       (filter #(:entity/species @%))
-       (filter #(raycaster/line-of-sight? raycaster entity @%))
-       (remove #(:entity/player? @%))))
 
 (defn projectile-start-point [entity direction size]
   (v2/add (:entity/position entity)
@@ -265,7 +253,7 @@
 
 (def minimum-size 0.39)
 
-(defn- prepare-entity-geometry [entity]
+(defn- prepare-entity-geometry [z-orders entity]
   (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
     (assert position)
     (assert width)
@@ -682,13 +670,13 @@
   (assert (contains? sounds sound-name) (str sound-name))
   (.play ^Sound (get sounds sound-name)))
 
-(defn spawn-entity! [world elapsed-time skin stage textures entity]
+(defn spawn-entity! [world elapsed-time skin stage textures z-orders entity]
   (let [elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (create-component elapsed-time* k v)))
                        {}
                        entity)
-        entity (prepare-entity-geometry entity)
+        entity (prepare-entity-geometry z-orders entity)
         eid (atom entity)]
     (world/register-eid! @world eid)
     (doseq [component @eid]
@@ -698,16 +686,16 @@
                               eid
                               component))))
 
-(defn audiovisual! [db world elapsed-time audio skin stage textures position audiovisual]
+(defn audiovisual! [db world elapsed-time audio skin stage textures z-orders position audiovisual]
   (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
     (play-sound! audio sound)
-    (spawn-entity! world elapsed-time skin stage textures
+    (spawn-entity! world elapsed-time skin stage textures z-orders
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
-(defn handle-fsm-event! [world elapsed-time audio skin stage textures eid world-mouse-position event & [params]]
+(defn handle-fsm-event! [world elapsed-time audio skin stage textures z-orders eid world-mouse-position event & [params]]
   (let [elapsed-time* @elapsed-time
         fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -730,7 +718,7 @@
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
                 (play-sound! audio "bfxr_itemputground")
-                (spawn-entity! world elapsed-time skin stage textures
+                (spawn-entity! world elapsed-time skin stage textures z-orders
                                (spawn-item (item-place-position (:entity/position entity)
                                                                 world-mouse-position
                                                                 (- (:entity/click-distance-tiles entity) 0.1))
@@ -742,7 +730,7 @@
 
             :npc-sleeping
             (do (swap! eid add-text-effect elapsed-time* "[WHITE]!" 1)
-                (spawn-entity! world elapsed-time skin stage textures
+                (spawn-entity! world elapsed-time skin stage textures z-orders
                                (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 elapsed-time*)))
 
             :npc-moving
@@ -799,17 +787,17 @@
 
 ; handle-fsm-event haengt an handle-effect
 (defn handle-effect
-  [db world elapsed-time audio skin stage textures
+  [db world elapsed-time audio skin stage textures z-orders
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities colors raycaster]
   (let [elapsed-time* @elapsed-time]
     (case k
       :effects/audiovisual
-      (audiovisual! db world elapsed-time audio skin stage textures (:effect/target-position effect-ctx) v)
+      (audiovisual! db world elapsed-time audio skin stage textures z-orders (:effect/target-position effect-ctx) v)
 
       :effects/projectile
       (let [source (:effect/source effect-ctx)]
-        (spawn-entity! world elapsed-time skin stage textures
+        (spawn-entity! world elapsed-time skin stage textures z-orders
                        (spawn-projectile
                         {:position (projectile-start-point @source
                                                            (:effect/target-direction effect-ctx)
@@ -820,7 +808,7 @@
 
       :effects/spawn
       (let [source (:effect/source effect-ctx)]
-        (spawn-entity! world elapsed-time skin stage textures
+        (spawn-entity! world elapsed-time skin stage textures z-orders
                        (spawn-creature {:position (:effect/target-position effect-ctx)
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
@@ -831,7 +819,7 @@
       (let [source (:effect/source effect-ctx)
             source* @source]
         (doseq [target (affected-targets active-entities raycaster source*)]
-          (spawn-entity! world elapsed-time skin stage textures
+          (spawn-entity! world elapsed-time skin stage textures z-orders
                          (spawn-line
                           {:start (:entity/position source*)
                            :end (:entity/position @target)
@@ -849,7 +837,7 @@
             target-body @target
             {:keys [maxrange entity-effects]} v]
         (if (body/in-range? body target-body maxrange)
-          (do (spawn-entity! world elapsed-time skin stage textures
+          (do (spawn-entity! world elapsed-time skin stage textures z-orders
                              (spawn-line
                               {:start (body/start-point body target-body)
                                :end (:entity/position target-body)
@@ -857,12 +845,12 @@
                                :color (:colors/target-entity-line colors)
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
-          (audiovisual! db world elapsed-time audio skin stage textures
+          (audiovisual! db world elapsed-time audio skin stage textures z-orders
                         (body/end-point body target-body maxrange)
                         :audiovisuals/hit-ground)))
 
       :effects.target/audiovisual
-      (audiovisual! db world elapsed-time audio skin stage textures (:entity/position @(:effect/target effect-ctx)) v)
+      (audiovisual! db world elapsed-time audio skin stage textures z-orders (:entity/position @(:effect/target effect-ctx)) v)
 
       :effects.target/convert
       (let [source (:effect/source effect-ctx)
@@ -903,16 +891,16 @@
                dmg-text (str "[RED]" dmg-amount "[]")]
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
-           (handle-fsm-event! world elapsed-time audio skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-           (audiovisual! db world elapsed-time audio skin stage textures (:entity/position target*) :audiovisuals/damage))))
+           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders target world-mouse-position (if (zero? new-hp-val) :kill :alert))
+           (audiovisual! db world elapsed-time audio skin stage textures z-orders (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
-      (handle-fsm-event! world elapsed-time audio skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders (:effect/target effect-ctx) world-mouse-position :kill)
 
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle-effect db world elapsed-time audio skin stage textures
+      (handle-effect db world elapsed-time audio skin stage textures z-orders
                      [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
                      effect-ctx
                      world-mouse-position
@@ -931,7 +919,7 @@
           nil))
 
       :effects.target/stun
-      (handle-fsm-event! world elapsed-time audio skin stage textures (:effect/target effect-ctx) world-mouse-position :stun v))))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders (:effect/target effect-ctx) world-mouse-position :stun v))))
 
 (defn toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)
@@ -996,9 +984,6 @@
 
 (def max-speed
   (/ minimum-size max-delta))
-
-(def render-z-order
-  (apply hash-map (interleave z-orders (range))))
 
 (def ^:private active-skill-radius
   (let [tile-size 48
@@ -1283,7 +1268,7 @@
       (.findActor "moon.ui.windows.inventory")
       (inventory-window-remove-item! cell)))
 
-(defn- interaction-state->txs [[k params] world elapsed-time stage audio skin textures ui-set-item! player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] world elapsed-time stage audio skin textures z-orders ui-set-item! player-eid world-mouse-position]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -1304,7 +1289,7 @@
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! audio "bfxr_takeit")
-                  (handle-fsm-event! world elapsed-time audio skin stage textures player-eid world-mouse-position :pickup-item item))
+                  (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :pickup-item item))
 
               (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -1327,7 +1312,7 @@
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! world elapsed-time audio skin stage textures player-eid world-mouse-position :start-action [skill effect-ctx]))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders player-eid world-mouse-position :start-action [skill effect-ctx]))
 
     :interaction-state.skill/not-usable
     (let [state params]
@@ -1345,11 +1330,11 @@
 
 (defn handle-input
   [world elapsed-time interaction-state
-   state-k eid ctx audio skin stage textures left-button-pressed? movement-vector mouseover-actor world-mouse-position]
+   state-k eid ctx audio skin stage textures z-orders left-button-pressed? movement-vector mouseover-actor world-mouse-position]
   (case state-k
     :player-idle
     (if movement-vector
-      (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :movement-input movement-vector)
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :movement-input movement-vector)
       (when left-button-pressed?
         (interaction-state->txs @interaction-state
                                 world
@@ -1358,6 +1343,7 @@
                                 audio
                                 skin
                                 textures
+                                z-orders
                                 #(ui-set-item! skin stage textures %1 %2)
                                 eid
                                 world-mouse-position)))
@@ -1368,12 +1354,12 @@
                                              :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                         0)})
           nil)
-      (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :no-movement-input))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :no-movement-input))
 
     :player-item-on-cursor
     (when (and left-button-pressed?
                (not mouseover-actor))
-      (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :drop-item))
+      (handle-fsm-event! world elapsed-time audio skin stage textures z-orders eid world-mouse-position :drop-item))
 
     nil))
 
@@ -1386,185 +1372,3 @@
      :effect/target-position target-position
      :effect/target-direction (v2/direction (:entity/position @player-eid)
                                          target-position)}))
-
-(defn- choose-skill [ray-blocked? entity effect-ctx]
-  (->> entity
-       :entity/skills
-       vals
-       (sort-by :skill/cost)
-       reverse
-       (filter #(and (= :usable (skill-usable-state % entity effect-ctx))
-                     (->> (:skill/effects %)
-                          (filter (fn [e] (effect-applicable? e effect-ctx)))
-                          (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
-       first))
-
-(defn- create-effect-ctx
-  [world raycaster ctx eid]
-  (let [world @world
-        raycaster @raycaster
-        entity @eid
-        target (world/nearest-enemy world entity)
-        target (when (and target
-                          (raycaster/line-of-sight? raycaster entity @target))
-                 target)]
-    {:effect/source eid
-     :effect/target target
-     :effect/target-direction (when target
-                                (body/direction entity
-                                                @target))}))
-
-(defn- update-effect-ctx
-  [raycaster effect-ctx]
-  (let [source (:effect/source effect-ctx)
-        target (:effect/target effect-ctx)]
-    (if (and target
-             (not (:entity/destroyed? @target))
-             (raycaster/line-of-sight? raycaster @source @target))
-      effect-ctx
-      (dissoc effect-ctx :effect/target))))
-
-(defn tick-component
-  [world raycaster elapsed-time delta-time audio skin stage textures ctx world-mouse-position apply-effects! eid [k v]]
-  (let [elapsed-time* @elapsed-time]
-    (case k
-      :entity/animation
-      (let [{:keys [delete-after-stopped?
-                    looping?
-                    cnt
-                    maxcnt]
-             :as animation} v]
-        (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
-                                                 newcnt (+ (float cnt) (float @delta-time))]
-                                             (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
-                                                                         looping? (min maxcnt (- newcnt maxcnt))
-                                                                         :else maxcnt))))
-        (when (and delete-after-stopped?
-                   (and (not looping?) (>= cnt maxcnt)))
-          (swap! eid assoc :entity/destroyed? true))
-        nil)
-
-      :entity/alert-friendlies-after-duration
-      (let [{:keys [counter faction]} v]
-        (when (timer/stopped? elapsed-time* counter)
-          (swap! eid assoc :entity/destroyed? true)
-          (doseq [friendly-eid (->> {:position (:entity/position @eid)
-                                     :radius 4}
-                                    (world/circle->entities @world)
-                                    (filter #(= (:entity/faction @%) faction)))]
-            (handle-fsm-event! world elapsed-time audio skin stage textures friendly-eid world-mouse-position :alert)))
-        nil)
-
-      :entity/string-effect
-      (let [{:keys [counter]} v]
-        (when (timer/stopped? elapsed-time* counter)
-          (swap! eid dissoc :entity/string-effect))
-        nil)
-
-      :entity/skills
-      (do (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
-                  :when (and cooling-down?
-                             (timer/stopped? elapsed-time* cooling-down?))]
-            (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
-          nil)
-
-      :entity/temp-modifier
-      (let [{:keys [modifiers counter]} v]
-        (when (timer/stopped? elapsed-time* counter)
-          (swap! eid dissoc :entity/temp-modifier)
-          (swap! eid update :entity/stats stats/remove-mods modifiers))
-        nil)
-
-      :entity/projectile-collision
-      (let [{:keys [entity-effects already-hit-bodies piercing?]} v
-            world* @world
-            entity @eid
-            hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
-                                            (not= (:entity/faction entity)
-                                                  (:entity/faction @%))
-                                            (:entity/collides? @%)
-                                            (body/overlaps? entity
-                                                            @%))
-                                      (world/entities-at-touched-tiles world* entity)))
-            destroy? (or (and hit-entity (not piercing?))
-                         (world/blocked-at-touched-tiles? world* entity (:entity/z-order entity)))]
-        (when hit-entity
-          (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
-                 (conj already-hit-bodies hit-entity)))
-        (when destroy?
-          (swap! eid assoc :entity/destroyed? true))
-        (when hit-entity
-          (apply-effects! {:effect/source eid
-                           :effect/target hit-entity}
-                          entity-effects))
-        nil)
-
-      :active-skill
-      (let [{:keys [skill effect-ctx counter]} v
-            effect-ctx (update-effect-ctx @raycaster effect-ctx)]
-        (cond
-         (not (seq (filter #(effect-applicable? % effect-ctx)
-                           (:skill/effects skill))))
-         (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :action-done)
-
-         (timer/stopped? elapsed-time* counter)
-         (do (apply-effects! effect-ctx (:skill/effects skill))
-             (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :action-done)
-             nil)))
-
-      :entity/delete-after-duration
-      (do (when (timer/stopped? elapsed-time* v)
-            (swap! eid assoc :entity/destroyed? true))
-          nil)
-
-      :stunned
-      (let [{:keys [counter]} v]
-        (when (timer/stopped? elapsed-time* counter)
-          (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :effect-wears-off)))
-
-      :npc-moving
-      (let [{:keys [timer]} v]
-        (when (timer/stopped? elapsed-time* timer)
-          (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :timer-finished)))
-
-      :npc-sleeping
-      (let [entity @eid]
-        (when-let [distance (world/nearest-enemy-distance @world entity)]
-          (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-            (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :alert))))
-
-      :npc-idle
-      (let [effect-ctx (create-effect-ctx world raycaster ctx eid)]
-        (if-let [skill (choose-skill (partial raycaster/blocked? @raycaster) @eid effect-ctx)]
-          (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
-          (handle-fsm-event! world elapsed-time audio skin stage textures eid world-mouse-position :movement-direction (or (world/find-direction @world eid)
-                                                             [0 0]))))
-
-      :entity/movement
-      (let [{:keys [direction
-                    speed
-                    rotate-in-movement-direction?]
-             :as movement} v]
-        (assert (<= 0 speed max-speed)
-                (pr-str speed))
-        (assert (vector? direction))
-        (assert (or (zero? (v2/length direction))
-                    (number/nearly-equal? 1 (v2/length direction)))
-                (str "cannot understand direction: " (pr-str direction)))
-        (when-not (or (zero? (v2/length direction))
-                      (nil? speed)
-                      (zero? speed))
-          (let [world* @world
-                movement (assoc movement :delta-time @delta-time)
-                body @eid]
-            (when-let [body (if (:entity/collides? body)
-                               (world/try-move-solid-body world* body (:entity/id @eid) movement)
-                               (update body :entity/position v2/move movement))]
-              (swap! eid assoc :entity/position (:entity/position body))
-              (when rotate-in-movement-direction?
-                (swap! eid assoc :entity/rotation-angle
-                       (v2/angle-from-vector direction)))
-              (world/relocate-eid! world* eid)
-              nil))))
-
-      nil)))
