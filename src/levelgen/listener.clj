@@ -6,11 +6,12 @@
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.textures :as textures]
-            [moon.tiled-map :as moon-tiled-map])
+            [moon.tiled-map :as moon-tiled-map]
+            [moon.tiled-map.draw :as tiled-map.draw])
   (:import (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer)
            (com.badlogic.gdx ApplicationListener Files Gdx Input Input$Keys InputProcessor)
            (com.badlogic.gdx.graphics Color OrthographicCamera)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch)
+           (com.badlogic.gdx.graphics.g2d Batch SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
@@ -103,13 +104,18 @@
         (Disposable/.dispose @tiled-map))
 
       (render [_]
-        (let [^OrthographicCamera camera* @camera]
+        (let [^OrthographicCamera camera* @camera
+              ^Batch batch* @batch
+              ^OrthographicCamera world-camera (.getCamera ^Viewport @world-viewport)]
           (ScreenUtils/clear 0 0 0 0)
-          (moon-tiled-map/draw! @tiled-map
-                                @batch
+          (.setProjectionMatrix batch* (.combined world-camera))
+          (.begin batch*)
+          (tiled-map.draw/draw! @tiled-map
+                                batch*
                                 world-unit-scale
-                                (.getCamera ^Viewport @world-viewport)
+                                world-camera
                                 (constantly (.toFloatBits Color/WHITE)))
+          (.end batch*)
           (doseq [[k f] {Input$Keys/MINUS (fn []
                                             (set! (.zoom camera*) (max 0.1 (+ (.zoom camera*) 0.1)))
                                             (.update camera*))

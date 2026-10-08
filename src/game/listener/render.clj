@@ -7,10 +7,11 @@
             [moon.content-grid :as content-grid]
             [moon.grid :as grid]
             [moon.raycaster :as raycaster]
-            [moon.tiled-map :as moon-tiled-map]
+            [moon.tiled-map.draw :as tiled-map.draw]
             [world.unregister-eid :refer [unregister-eid!]])
   (:import (com.badlogic.gdx Gdx Graphics)
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
+           (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn update-mouseover-eid! [world player-eid mouseover-eid stage world-viewport render-z-order]
@@ -48,8 +49,11 @@
   (let [world* @world
         tiled-map @tiled-map
         ^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
-        pos (.position camera)]
-    (moon-tiled-map/draw! tiled-map
+        pos (.position camera)
+        ^Batch batch batch]
+    (.setProjectionMatrix batch (.combined camera))
+    (.begin batch)
+    (tiled-map.draw/draw! tiled-map
                           batch
                           world-unit-scale
                           camera
@@ -60,7 +64,8 @@
                             :see-all-tiles? false
                             :explored-tile-color (:colors/explored-tile colors)
                             :visible-tile-color (:colors/visible-tile colors)
-                            :invisible-tile-color (:colors/invisible-tile colors)}))))
+                            :invisible-tile-color (:colors/invisible-tile colors)}))
+    (.end batch)))
 
 (defn current-mouseover-actor [stage]
   (let [[x y] (ui-mouse-position stage)]
