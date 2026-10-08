@@ -9,39 +9,6 @@
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn print-grid [{:keys [grid] :as world-fn-ctx}]
-  (g2d/print-y-up grid)
-  (println " - ")
-  world-fn-ctx)
-
-(defn- initial-grid
-  [{:keys [initial-grid-fn
-           grid2d-fix-nads-fn
-           world/map-size]
-    :as world-fn-ctx}]
-  (let [{:keys [start grid]} (initial-grid-fn (rand/new-random) map-size map-size :wide)
-        grid (grid2d-fix-nads-fn grid)]
-    (assoc world-fn-ctx
-           :start start
-           :grid grid)))
-
-(defn- assoc-transitions
-  [{:keys [grid] :as world-fn-ctx}]
-  (let [grid (reduce #(assoc %1 %2 :transition)
-                     grid
-                     (g2d/adjacent-wall-positions grid))]
-    (assert (or
-             (= #{:wall :ground :transition} (set (g2d/cells grid)))
-             (= #{:ground :transition} (set (g2d/cells grid))))
-            (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
-    (assoc world-fn-ctx :grid grid)))
-
-(defn- create-scaled-grid [w]
-  (assoc w :scaled-grid (g2d/scale-by (:grid w) (:scale w))))
-
-(defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
-
 (defn- module-index->tiled-map-positions
   [[module-x module-y]
    [modules-width modules-height]
@@ -141,19 +108,6 @@
                             unscaled-transition-positions)]
     scaled-grid))
 
-(defn- place-modules
-  [{:keys [scale
-           scaled-grid
-           grid
-           schema-tiled-map]
-    :as w}]
-  (assoc w :scaled-grid (place-step schema-tiled-map
-                                    scale
-                                    scaled-grid
-                                    grid
-                                    (filter #(= :ground (get grid %)) (g2d/posis grid))
-                                    (filter #(= :transition (get grid %)) (g2d/posis grid)))))
-
 (defn- grid->tiled-map
   [^TiledMap schema-tiled-map grid]
   (let [copy-tile (memoize
@@ -207,25 +161,8 @@
         (.add (.getLayers tiled-map) ^MapLayer layer)))
     tiled-map))
 
-(defn- convert-to-tiled-map
-  [{:keys [scaled-grid
-           schema-tiled-map]
-    :as w}]
-  (assoc w :tiled-map (create-tiled-map schema-tiled-map scaled-grid)))
-
-(defn- calculate-start [{:keys [start scale] :as w}]
-  (assoc w :start-position (mapv * start scale)))
-
 (defn- last-steps
-  [{:keys [world/max-area-level
-           world/spawn-rate
-           level/creature-properties
-           grid
-           start
-           scale
-           scaled-grid
-           tiled-map
-           start-position]}]
+  [max-area-level spawn-rate creature-properties grid start scale scaled-grid tiled-map start-position]
   (let [^TiledMap tiled-map tiled-map
         can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
@@ -270,25 +207,41 @@
      :area-level-grid scaled-area-level-grid}))
 
 (defn create
-  [world-fn-ctx]
-  (let [world-fn-ctx (merge {:initial-grid-fn caves/create
-                             :grid2d-fix-nads-fn g2d/fix-nads
-                             :world/map-size 5
-                             :world/max-area-level 3
-                             :world/spawn-rate 0.05}
-                            world-fn-ctx)
-        {:keys [world/map-size
-                world/max-area-level]} world-fn-ctx]
-    (assert (<= max-area-level map-size))
-    (-> world-fn-ctx
-        (assoc :scale [32 20])
-        initial-grid
-        #_print-grid
-        assoc-transitions
-        #_print-grid
-        create-scaled-grid
-        load-schema-tiled-map
-        place-modules
-        convert-to-tiled-map
-        calculate-start
-        last-steps)))
+  [{:keys [level/creature-properties
+           world/map-size
+           world/max-area-level
+           world/spawn-rate]
+    :or {map-size 5
+         max-area-level 3
+         spawn-rate 0.05}}]
+  (assert (<= max-area-level map-size))
+  (let [scale [32 20]
+        {:keys [start grid]} (caves/create (rand/new-random) map-size map-size :wide)
+        grid (g2d/fix-nads grid)
+        grid (let [grid (reduce #(assoc %1 %2 :transition)
+                                grid
+                                (g2d/adjacent-wall-positions grid))]
+               (assert (or
+                        (= #{:wall :ground :transition} (set (g2d/cells grid)))
+                        (= #{:ground :transition} (set (g2d/cells grid))))
+                       (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
+               grid)
+        scaled-grid (g2d/scale-by grid scale)
+        schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")
+        scaled-grid (place-step schema-tiled-map
+                                scale
+                                scaled-grid
+                                grid
+                                (filter #(= :ground (get grid %)) (g2d/posis grid))
+                                (filter #(= :transition (get grid %)) (g2d/posis grid)))
+        tiled-map (create-tiled-map schema-tiled-map scaled-grid)
+        start-position (mapv * start scale)]
+    (last-steps max-area-level
+                spawn-rate
+                creature-properties
+                grid
+                start
+                scale
+                scaled-grid
+                tiled-map
+                start-position)))
