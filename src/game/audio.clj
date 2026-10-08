@@ -9,6 +9,6 @@
                                              (db/build db audiovisual)
                                              audiovisual)]
     (play-sound! audio sound)
-    (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
+    (spawn-entity! world elapsed-time z-orders minimum-size
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))

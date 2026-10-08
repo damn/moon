@@ -28,7 +28,7 @@
             source* @source
             direction (:effect/target-direction effect-ctx)
             size (:projectile/size v)]
-        (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
+        (spawn-entity! world elapsed-time z-orders minimum-size
                        (spawn-projectile
                         {:position (v2/add (:entity/position source*)
                                            (v2/scale direction
@@ -39,7 +39,7 @@
 
       :effects/spawn
       (let [source (:effect/source effect-ctx)]
-        (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
+        (spawn-entity! world elapsed-time z-orders minimum-size
                        (spawn-creature {:position (:effect/target-position effect-ctx)
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
@@ -50,7 +50,7 @@
       (let [source (:effect/source effect-ctx)
             source* @source]
         (doseq [target (affected-targets active-entities raycaster source*)]
-          (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
+          (spawn-entity! world elapsed-time z-orders minimum-size
                          (spawn-line
                           {:start (:entity/position source*)
                            :end (:entity/position @target)
@@ -68,7 +68,7 @@
             target-body @target
             {:keys [maxrange entity-effects]} v]
         (if (body/in-range? body target-body maxrange)
-          (do (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
+          (do (spawn-entity! world elapsed-time z-orders minimum-size
                              (spawn-line
                               {:start (body/start-point body target-body)
                                :end (:entity/position target-body)

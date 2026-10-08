@@ -1,20 +1,13 @@
 (ns entity.spawn
   (:require [animation.create :as animation.create]
             [game.entity :refer [set-item]]
-            [info-text :refer [info-text]]
             [moon.g2d :as moon-g2d]
             [moon.inventory :as inventory]
             [moon.item :as item]
             [moon.stats :as stats]
-            [moon.textures :as textures]
             [moon.timer :as timer]
-            [moon.world :as world]
             [reduce-fsm :as fsm]
-            [world.register-eid :refer [register-eid!]])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Image ImageButton Skin TextTooltip)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)))
+            [world.register-eid :refer [register-eid!]]))
 
 (defn create-component
   [elapsed-time k v]
@@ -128,64 +121,8 @@
           nil)
          :state initial-state))
 
-(defn- action-bar-get-data
-  [action-bar]
-  {:post [(:horizontal-group %)
-          (:button-group %)]}
-  (let [group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")]
-    {:horizontal-group group
-     :button-group (.getUserObject ^Actor group)}))
-
-(defn- action-bar-add-skill!
-  [action-bar
-   {:keys [skill-id
-           texture-region
-           tooltip-text]}
-   skin]
-  (let [scale 2
-        {:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
-        button (doto (ImageButton.
-                      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                        (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                                     (* scale (.getRegionHeight ^TextureRegion texture-region)))))
-                 (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
-                 (.setUserObject skill-id))]
-    (.addActor ^Group horizontal-group ^Actor button)
-    (.add ^ButtonGroup button-group ^Button button)
-    nil))
-
-(defn- inventory-window-get-cell [inventory-window cell]
-  (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))
-       (filter #(= (.getUserObject ^Actor %) cell))
-       first))
-
-(defn- inventory-window-set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
-  (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (.findActor ^Group cell-widget "image-widget")
-        cell-size (:cell-size (.getUserObject ^Actor image-widget))]
-    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                                  (.setMinSize cell-size cell-size)))
-    (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
-    nil))
-
-(defn- ui-set-item! [skin stage textures cell item]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.windows.inventory")
-      (inventory-window-set-item! cell
-                                  {:texture-region (textures/texture-region textures (:entity/image item))
-                                   :tooltip-text (item/info-text item)}
-                                  skin)))
-
-(defn- ui-set-skill! [skin stage textures elapsed-time skill]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.action-bar")
-      (action-bar-add-skill! {:skill-id (:property/id skill)
-                              :texture-region (textures/texture-region textures (:entity/image skill))
-                              :tooltip-text (info-text skill elapsed-time)}
-                             skin)))
-
 (defn after-create-component
-  [ui-set-skill! ui-set-item! elapsed-time eid [k v]]
+  [elapsed-time eid [k v]]
   (case k
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
@@ -198,9 +135,7 @@
       (swap! eid assoc :entity/skills nil)
       (doseq [{:keys [property/id] :as skill} v]
         (assert (not (contains? (:entity/skills @eid) id)))
-        (swap! eid update :entity/skills assoc id skill)
-        (when (:entity/player? @eid)
-          (ui-set-skill! skill)))
+        (swap! eid update :entity/skills assoc id skill))
       nil)
 
     :entity/inventory
@@ -224,14 +159,12 @@
         (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
           (assert cell)
           (assert (nil? cell-item))
-          (swap! eid set-item cell item)
-          (when (:entity/player? @eid)
-            (ui-set-item! cell item))))
+          (swap! eid set-item cell item)))
       nil)
 
     nil))
 
-(defn spawn-entity! [world elapsed-time skin stage textures z-orders minimum-size entity]
+(defn spawn-entity! [world elapsed-time z-orders minimum-size entity]
   (let [elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (create-component elapsed-time* k v)))
@@ -255,8 +188,5 @@
         eid (atom entity)]
     (register-eid! @world eid)
     (doseq [component @eid]
-      (after-create-component #(ui-set-skill! skin stage textures elapsed-time* %)
-                              #(ui-set-item! skin stage textures %1 %2)
-                              elapsed-time*
-                              eid
-                              component))))
+      (after-create-component elapsed-time* eid component))
+    eid))

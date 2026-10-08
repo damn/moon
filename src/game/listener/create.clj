@@ -3,6 +3,7 @@
             [clojure.java.io :as io]
             [entity.spawn :refer [spawn-entity!]]
             [game.spawn :refer [spawn-creature]]
+            [game.ui :refer [sync-player-ui!]]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
             [moon.level.uf-caves :as uf-caves]
@@ -115,27 +116,28 @@
     [arr width height]))
 
 (defn spawn-player! [db* world elapsed-time start-position skin stage textures* z-orders minimum-size]
-  (spawn-entity! world elapsed-time skin stage textures* z-orders minimum-size
-                 (spawn-creature {:position (mapv (partial + 0.5) @start-position)
-                                  :creature-property (db/build db* :creatures/vampire)
-                                  :components {:entity/fsm {:fsm :fsms/player
-                                                            :initial-state :player-idle}
-                                               :entity/faction :good
-                                               :entity/player? true
-                                               :entity/free-skill-points 3
-                                               :entity/clickable {:type :clickable/player}
-                                               :entity/click-distance-tiles 1.5}})))
+  (let [eid (spawn-entity! world elapsed-time z-orders minimum-size
+                           (spawn-creature {:position (mapv (partial + 0.5) @start-position)
+                                            :creature-property (db/build db* :creatures/vampire)
+                                            :components {:entity/fsm {:fsm :fsms/player
+                                                                      :initial-state :player-idle}
+                                                         :entity/faction :good
+                                                         :entity/player? true
+                                                         :entity/free-skill-points 3
+                                                         :entity/clickable {:type :clickable/player}
+                                                         :entity/click-distance-tiles 1.5}}))]
+    (sync-player-ui! skin stage textures* @elapsed-time eid)))
 
 (defn bind-player-eid! [world player-eid]
   (let [eid (get @(:world/entity-ids @world) 1)]
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 
-(defn spawn-map-creatures! [db* world elapsed-time start-position tiled-map skin stage textures* z-orders minimum-size]
+(defn spawn-map-creatures! [db* world elapsed-time start-position tiled-map z-orders minimum-size]
   (let [sp @start-position]
     (doseq [[position creature-id] (moon-tiled-map/spawn-positions @tiled-map)
             :when (not= position sp)]
-      (spawn-entity! world elapsed-time skin stage textures* z-orders minimum-size
+      (spawn-entity! world elapsed-time z-orders minimum-size
                      (spawn-creature {:position (mapv (partial + 0.5) position)
                                       :creature-property (db/build db* (keyword creature-id))
                                       :components {:entity/fsm {:fsm :fsms/npc

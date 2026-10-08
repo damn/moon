@@ -1,9 +1,10 @@
 (ns game.ui
-  (:require [moon.item :as item]
+  (:require [info-text :refer [info-text]]
+            [moon.item :as item]
             [moon.textures :as textures])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Image Skin TextTooltip)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Image ImageButton Skin TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)))
 
 (defn- action-bar-get-data
@@ -13,6 +14,24 @@
   (let [group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
      :button-group (.getUserObject ^Actor group)}))
+
+(defn- action-bar-add-skill!
+  [action-bar
+   {:keys [skill-id
+           texture-region
+           tooltip-text]}
+   skin]
+  (let [scale 2
+        {:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
+        button (doto (ImageButton.
+                      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                        (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                                     (* scale (.getRegionHeight ^TextureRegion texture-region)))))
+                 (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
+                 (.setUserObject skill-id))]
+    (.addActor ^Group horizontal-group ^Actor button)
+    (.add ^ButtonGroup button-group ^Button button)
+    nil))
 
 (defn- action-bar-remove-skill!
   [action-bar skill-id]
@@ -58,10 +77,26 @@
                                    :tooltip-text (item/info-text item)}
                                   skin)))
 
+(defn ui-set-skill! [skin stage textures elapsed-time skill]
+  (-> (.getRoot ^Stage stage)
+      (.findActor "moon.ui.action-bar")
+      (action-bar-add-skill! {:skill-id (:property/id skill)
+                              :texture-region (textures/texture-region textures (:entity/image skill))
+                              :tooltip-text (info-text skill elapsed-time)}
+                             skin)))
+
 (defn ui-remove-item! [stage cell]
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.windows.inventory")
       (inventory-window-remove-item! cell)))
+
+(defn sync-player-ui! [skin stage textures elapsed-time eid]
+  (doseq [skill (vals (:entity/skills @eid))]
+    (ui-set-skill! skin stage textures elapsed-time skill))
+  (doseq [[slot grid] (:entity/inventory @eid)
+          [position item] grid
+          :when item]
+    (ui-set-item! skin stage textures [slot position] item)))
 
 (defn toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)

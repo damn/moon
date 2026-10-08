@@ -137,7 +137,7 @@
         (reset! raycaster (create-raycaster! @world))
         (spawn-player! db world elapsed-time start-position @skin @stage @textures z-orders minimum-size)
         (bind-player-eid! world player-eid)
-        (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures z-orders minimum-size))
+        (spawn-map-creatures! db world elapsed-time start-position tiled-map z-orders minimum-size))
 
       (dispose [_]
         (audio.dispose/dispose! @audio)
