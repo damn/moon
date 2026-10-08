@@ -31,7 +31,8 @@
             [game.listener.render.handle-player-input :refer [handle-player-input!]]
             [game.listener.render.tick-world :refer [tick-game!]]
             [game.mouse :refer [mouseover-actor-info world-mouse-position]]
-            [game.ui :refer [action-bar-selected-skill toggle-inventory-visible!]]
+            [game.ui :refer [toggle-inventory-visible!]]
+            [ui.action-bar :as action-bar]
             [moon.db :as db]
             [moon.level.uf-caves :as uf-caves]
             [moon.textures :as textures]
@@ -199,7 +200,7 @@
                       :else
                       (if-let [skill-id (-> (.getRoot ^Stage stage)
                                             (.findActor "moon.ui.action-bar")
-                                            action-bar-selected-skill)]
+                                            action-bar/selected-skill)]
                         (let [entity @player-eid
                               skill (skill-id (:entity/skills entity))
                               target-position (or (and mouseover-eid

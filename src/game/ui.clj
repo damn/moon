@@ -1,45 +1,12 @@
 (ns game.ui
   (:require [info-text :refer [info-text]]
             [moon.item :as item]
-            [moon.textures :as textures])
+            [moon.textures :as textures]
+            [ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Image ImageButton Skin TextTooltip)
+           (com.badlogic.gdx.scenes.scene2d.ui Image Skin TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)))
-
-(defn- action-bar-add-skill!
-  [action-bar
-   {:keys [skill-id
-           texture-region
-           tooltip-text]}
-   skin]
-  (let [scale 2
-        horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (.getUserObject ^Actor horizontal-group)
-        button (doto (ImageButton.
-                      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                        (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                                     (* scale (.getRegionHeight ^TextureRegion texture-region)))))
-                 (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
-                 (.setUserObject skill-id))]
-    (.addActor ^Group horizontal-group ^Actor button)
-    (.add ^ButtonGroup button-group ^Button button)
-    nil))
-
-(defn- action-bar-remove-skill!
-  [action-bar skill-id]
-  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (.getUserObject ^Actor horizontal-group)
-        button (get horizontal-group skill-id)]
-    (.remove ^Actor button)
-    (.remove ^ButtonGroup button-group ^Button button)
-    nil))
-
-(defn action-bar-selected-skill [action-bar]
-  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (.getUserObject ^Actor horizontal-group)]
-    (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
-      (.getUserObject ^Actor skill-button))))
 
 (defn- inventory-window-get-cell [inventory-window cell]
   (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))
@@ -76,7 +43,7 @@
 (defn ui-set-skill! [skin stage textures elapsed-time skill]
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.action-bar")
-      (action-bar-add-skill! {:skill-id (:property/id skill)
+      (action-bar/add-skill! {:skill-id (:property/id skill)
                               :texture-region (textures/texture-region textures (:entity/image skill))
                               :tooltip-text (info-text skill elapsed-time)}
                              skin)))
