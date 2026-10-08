@@ -11,8 +11,7 @@
             [moon.world :as world])
   (:import (com.badlogic.gdx Audio Files Gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color Colors OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
-           (com.badlogic.gdx.graphics.glutils PixmapTextureData)
+           (com.badlogic.gdx.graphics Color Colors OrthographicCamera Pixmap Texture Texture$TextureFilter)
            (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
@@ -21,17 +20,6 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(defn create-shape-drawer-texture! []
-  (let [pixmap (doto ^Pixmap (Pixmap. (int 1) (int 1) Pixmap$Format/RGBA8888)
-                 (.setColor 1 1 1 1)
-                 (.drawPixel (int 0) (int 0)))
-        texture (Texture. ^TextureData (PixmapTextureData. ^Pixmap pixmap
-                                                           ^Pixmap$Format (Pixmap/.getFormat ^Pixmap pixmap)
-                                                           false
-                                                           false))]
-    (Disposable/.dispose pixmap)
-    texture))
 
 (defn create-audio! [gdx-audio files]
   (into {}

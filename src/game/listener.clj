@@ -18,6 +18,7 @@
                                           put-pretty-name-color!
                                           spawn-map-creatures!
                                           spawn-player!]]
+            [texture.white-pixel :refer [white-pixel-texture]]
             [game.listener.create.ui-actors :refer [create-ui-actors]]
             [game.listener.render :refer [clear-interaction-state!
                                           current-mouseover-actor
@@ -89,7 +90,7 @@
         (reset! audio (create-audio! Gdx/audio Gdx/files))
         (reset! batch (create-batch!))
         (reset! unit-scale 1)
-        (reset! shape-drawer-texture (create-shape-drawer-texture!))
+        (reset! shape-drawer-texture (white-pixel-texture))
         (reset! shape-drawer (create-shape-drawer! @batch @shape-drawer-texture))
         (reset! skin (create-skin! Gdx/files))
         (let [s (create-stage! @batch)]
