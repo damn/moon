@@ -8,7 +8,8 @@
             [moon.coll :as coll]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.world :as world])
+            [moon.world :as world]
+            [world.unregister-eid :refer [unregister-eid!]])
   (:import (com.badlogic.gdx Gdx Graphics)
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d Group Stage)
@@ -147,7 +148,7 @@
 
 (defn destroy-entities! [db world elapsed-time audio skin stage textures z-orders minimum-size]
   (doseq [eid (world/destroyed-eids @world)]
-    (world/unregister-eid! @world eid)
+    (unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual

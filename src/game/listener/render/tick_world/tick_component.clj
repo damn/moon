@@ -9,7 +9,8 @@
             [moon.timer :as timer]
             [moon.v2 :as v2]
             [moon.world :as world]
-            [skill.usable-state :refer [usable-state]]))
+            [skill.usable-state :refer [usable-state]]
+            [world.relocate-eid :refer [relocate-eid!]]))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
   (->> entity
@@ -190,7 +191,7 @@
               (when rotate-in-movement-direction?
                 (swap! eid assoc :entity/rotation-angle
                        (v2/angle-from-vector direction)))
-              (world/relocate-eid! world* eid)
+              (relocate-eid! world* eid)
               nil))))
 
       nil)))

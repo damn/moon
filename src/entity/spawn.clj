@@ -8,7 +8,8 @@
             [moon.textures :as textures]
             [moon.timer :as timer]
             [moon.world :as world]
-            [reduce-fsm :as fsm])
+            [reduce-fsm :as fsm]
+            [world.register-eid :refer [register-eid!]])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Image ImageButton Skin TextTooltip)
@@ -261,7 +262,7 @@
                         :entity/height (float height)
                         :entity/rotation-angle (or rotation-angle 0)))
         eid (atom entity)]
-    (world/register-eid! @world eid)
+    (register-eid! @world eid)
     (doseq [component @eid]
       (after-create-component #(ui-set-skill! skin stage textures elapsed-time* %)
                               #(ui-set-item! skin stage textures %1 %2)

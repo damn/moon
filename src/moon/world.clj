@@ -8,42 +8,6 @@
             [moon.potential-field :as potential-field])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
-(defn register-eid! [world eid]
-  (assert (and (not (contains? @eid :entity/id))))
-  (let [id (swap! (:world/id-counter world) inc)]
-    (assert (number? id))
-    (swap! eid assoc :entity/id id)
-    (swap! (:world/entity-ids world) assoc id eid))
-
-  (assert (:entity/position @eid))
-  (content-grid/update-entity! (:world/content-grid world) eid)
-
-  (assert (:entity/position @eid))
-  (when (:entity/collides? @eid)
-    (assert (grid/valid-position? (:world/grid world) @eid (:entity/id @eid))))
-  (grid/set-touched-cells! (:world/grid world) eid)
-  (when (:entity/collides? @eid)
-    (grid/set-occupied-cells! (:world/grid world) eid))
-  nil)
-
-(defn unregister-eid! [world eid]
-  (let [id (:entity/id @eid)]
-    (swap! (:world/entity-ids world) dissoc id)
-    (content-grid/remove-entity! (:world/content-grid world) eid)
-    (grid/remove-from-touched-cells! (:world/grid world) eid)
-    (when (:entity/collides? @eid)
-      (grid/remove-from-occupied-cells! (:world/grid world) eid)))
-  nil)
-
-(defn relocate-eid! [world eid]
-  (content-grid/update-entity! (:world/content-grid world) eid)
-  (grid/remove-from-touched-cells! (:world/grid world) eid)
-  (grid/set-touched-cells! (:world/grid world) eid)
-  (when (:entity/collides? @eid)
-    (grid/remove-from-occupied-cells! (:world/grid world) eid)
-    (grid/set-occupied-cells! (:world/grid world) eid))
-  nil)
-
 (defn try-move-solid-body [world body entity-id movement]
   (grid/try-move-solid-body (:world/grid world) body entity-id movement))
 
