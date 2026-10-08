@@ -40,10 +40,11 @@
   [[_k [skill effect-ctx]] eid elapsed-time]
   {:skill skill
    :effect-ctx effect-ctx
-   :counter (->> skill
-                 :skill/action-time
-                 (stats/apply-action-speed-modifier (:entity/stats @eid) skill)
-                 (timer/create elapsed-time))})
+   :counter (timer/create elapsed-time
+                          (/ (:skill/action-time skill)
+                             (or (stats/get-value (:entity/stats @eid)
+                                                  (:skill/action-time-modifier-key skill))
+                                 1)))})
 
 (defmethod create-entity-state :stunned
   [[_k duration] _eid elapsed-time]

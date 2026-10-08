@@ -85,8 +85,13 @@
               nil)
 
             :active-skill
-            (let [{:keys [skill]} state-v]
-              (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
+            (let [{:keys [skill]} state-v
+                  cost (:skill/cost skill)]
+              (swap! eid update :entity/stats
+                     (fn [stats]
+                       (let [mana-val ((stats/get-mana stats) 0)]
+                         (assert (<= cost mana-val))
+                         (assoc-in stats [:stats/mana 0] (- mana-val cost)))))
               (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
                      (timer/create elapsed-time* (:skill/cooldown skill)))
               (play-sound! audio (:skill/start-action-sound skill))

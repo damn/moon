@@ -3,16 +3,6 @@
             [clojure.string :as str]
             [moon.val-max :refer [apply-min apply-max]]))
 
-(def ^:private non-val-max-stat-ks
-  [:stats/movement-speed
-   :stats/aggro-range
-   :stats/reaction-time
-   :stats/strength
-   :stats/cast-speed
-   :stats/attack-speed
-   :stats/armor-save
-   :stats/armor-pierce])
-
 (defn get-hitpoints
   [{:keys [stats/hp
            stats/modifiers]}]
@@ -22,15 +12,6 @@
   [{:keys [stats/mana
            stats/modifiers]}]
   (apply-max mana modifiers :modifier/mana-max))
-
-(defn not-enough-mana?
-  [stats {:keys [skill/cost]}]
-  (> cost ((get-mana stats) 0)))
-
-(defn pay-mana-cost [stats cost]
-  (let [mana-val ((get-mana stats) 0)]
-    (assert (<= cost mana-val))
-    (assoc-in stats [:stats/mana 0] (- mana-val cost))))
 
 (defn get-value
   [stats stat-k]
@@ -44,11 +25,6 @@
 
 (defn remove-mods [stats mods]
   (update stats :stats/modifiers mods/remove mods))
-
-(defn apply-action-speed-modifier [stats skill action-time]
-  (/ action-time
-     (or (get-value stats (:skill/action-time-modifier-key skill))
-         1)))
 
 (defn calc-damage
   ([source target damage]
@@ -79,6 +55,13 @@
                    ["*STATS*"
                     (str "Mana: " (get-mana stats))
                     (str "Hitpoints: " (get-hitpoints stats))]
-                   (for [stat-k non-val-max-stat-ks]
+                   (for [stat-k [:stats/movement-speed
+                                 :stats/aggro-range
+                                 :stats/reaction-time
+                                 :stats/strength
+                                 :stats/cast-speed
+                                 :stats/attack-speed
+                                 :stats/armor-save
+                                 :stats/armor-pierce]]
                      (str (str/capitalize (name stat-k)) ": "
                           (get-value stats stat-k))))))
