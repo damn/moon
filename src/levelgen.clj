@@ -17,21 +17,6 @@
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)))
 
-(def ^:private config
-  {:initial-level-fn uf-caves/create
-   :level-fns [["Vampire" tmx/vampire]
-               ["UF Caves" uf-caves/create]
-               ["Modules" modules/create]]
-   :ui-viewport-width 1440
-   :ui-viewport-height 900
-   :world-viewport-width 1440
-   :world-viewport-height 900
-   :tile-size 48
-   :ui-skin-path "skin/uiskin.json"
-   :textures-config {:folder "resources/"
-                     :extensions #{"png" "bmp"}}
-   :camera-movement-speed 1})
-
 (defn- generate-level
   [db textures ^OrthographicCamera camera level-fn]
   (let [level (level-fn {:level/creature-properties
@@ -92,7 +77,7 @@
   (let [pos (.position camera)
         [x y] (update [(.x pos) (.y pos) (.z pos)]
                       idx
-                      #(f % (:camera-movement-speed config)))]
+                      #(f % 1))]
     (set! (.x pos) x)
     (set! (.y pos) y)
     (.update camera)))
@@ -119,19 +104,10 @@
     (when (.isKeyPressed ^Input Gdx/input k)
       (f camera))))
 
-(defn listener
-  [{:keys [tile-size
-           world-viewport-width
-           world-viewport-height
-           ui-viewport-width
-           ui-viewport-height
-           ui-skin-path
-           level-fns
-           textures-config
-           initial-level-fn]}]
-  (let [world-unit-scale (float (/ tile-size))
-        world-width (* world-viewport-width world-unit-scale)
-        world-height (* world-viewport-height world-unit-scale)
+(defn listener []
+  (let [world-unit-scale (float (/ 48))
+        world-width (* 1440 world-unit-scale)
+        world-height (* 900 world-unit-scale)
         batch (atom nil)
         skin (atom nil)
         ui-stage (atom nil)
@@ -140,7 +116,9 @@
         db (atom nil)
         textures (atom nil)
         tiled-map (atom nil)
-        buttons (for [[label level-fn] level-fns]
+        buttons (for [[label level-fn] [["Vampire" tmx/vampire]
+                                        ["UF Caves" uf-caves/create]
+                                        ["Modules" modules/create]]]
                   [(str "Generate " label)
                    (fn []
                      (Disposable/.dispose @tiled-map)
@@ -149,9 +127,9 @@
     (reify ApplicationListener
       (create [_]
         (reset! batch (SpriteBatch.))
-        (reset! skin (create-skin (.internal ^Files Gdx/files ui-skin-path))) ; same ?
+        (reset! skin (create-skin (.internal ^Files Gdx/files "skin/uiskin.json")))
         (reset! ui-stage (create-stage @batch
-                                       (FitViewport. ui-viewport-width ui-viewport-height) ; requires gl context ?
+                                       (FitViewport. 1440 900)
                                        (let [^Skin skin @skin
                                              window (Window. "Edit" skin)]
                                          (doseq [[label on-click!] buttons]
@@ -160,11 +138,12 @@
                                          (.pack window)
                                          window)))
         (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
-        (reset! world-viewport (create-viewport world-width world-height)) ; same requires context?
-        (reset! camera (.getCamera ^Viewport @world-viewport)) ; ?? sep?
-        (reset! db (db/create)) ; needs reloading?
-        (reset! textures (textures/create Gdx/files textures-config))
-        (reset! tiled-map (generate-level @db @textures @camera initial-level-fn)))
+        (reset! world-viewport (create-viewport world-width world-height))
+        (reset! camera (.getCamera ^Viewport @world-viewport))
+        (reset! db (db/create))
+        (reset! textures (textures/create Gdx/files {:folder "resources/"
+                                                     :extensions #{"png" "bmp"}}))
+        (reset! tiled-map (generate-level @db @textures @camera uf-caves/create)))
 
       (dispose [_]
         (Disposable/.dispose @batch)
@@ -194,7 +173,7 @@
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (listener config)
+  (Lwjgl3Application. (listener)
                       (doto (Lwjgl3ApplicationConfiguration.)
                         (.setTitle "Levelgen Test")
                         (.setWindowedMode 1440 900)
