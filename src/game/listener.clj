@@ -5,7 +5,6 @@
             [clojure.java.io :as io]
             [files.create :refer [create-sound-file-handles!]]
             [game.listener.create :refer [bind-player-eid!
-                                          create-batch!
                                           create-cursors!
                                           create-default-font!
                                           create-explored-tile-corners!
