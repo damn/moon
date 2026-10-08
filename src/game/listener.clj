@@ -18,15 +18,13 @@
             [texture.white-pixel :refer [white-pixel-texture]]
             [game.listener.create.ui-actors :refer [create-ui-actors]]
             [game.controls :refer [controls]]
-            [game.listener.render :refer [clear-interaction-state!
-                                          current-mouseover-actor
+            [game.listener.render :refer [current-mouseover-actor
                                           destroy-entities!
                                           draw-tiled-map!
                                           set-camera-to-player!
                                           update-active-entities!
                                           update-cursor!
-                                          update-mouseover-eid!
-                                          update-paused!]]
+                                          update-mouseover-eid!]]
             [game.listener.render.draw-world :refer [draw-world!]]
             [game.listener.render.handle-player-input :refer [handle-player-input!]]
             [game.listener.render.tick-world :refer [tick-game!]]
@@ -95,7 +93,14 @@
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
         interaction-state (atom nil)
-        unit-scale (atom 1)]
+        unit-scale (atom 1)
+        pausing? true
+        state->pause-game? {:active-skill false
+                            :stunned false
+                            :player-moving false
+                            :player-idle true
+                            :player-dead true
+                            :player-item-on-cursor true}]
     (reify ApplicationListener
       (create [_]
         (reset! audio (create-audio! Gdx/audio
@@ -220,8 +225,13 @@
           (handle-player-input! world elapsed-time interaction-state player-eid
                                 audio skin stage textures z-orders minimum-size world-viewport
                                 key-pressed? button-just-pressed?)
-          (clear-interaction-state! interaction-state)
-          (update-paused! paused? player-eid key-pressed? key-just-pressed?)
+          (reset! interaction-state nil)
+          (reset! paused?
+                  (or #_error
+                      (and pausing?
+                           (state->pause-game? (:state (:entity/fsm @@player-eid)))
+                           (not (or (key-just-pressed? (:unpause-once controls))
+                                    (key-pressed? (:unpause-continously controls)))))))
           (tick-game! db schemas world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
                       audio skin stage textures world-viewport factions-iterations z-orders
                       minimum-size max-delta max-speed)

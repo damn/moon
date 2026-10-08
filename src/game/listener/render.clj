@@ -1,7 +1,6 @@
 (ns game.listener.render
   (:require [game.audio :refer [audiovisual!]]
             [game.colors :refer [colors]]
-            [game.controls :refer [controls]]
             [game.mouse :refer [mouseover-actor ui-mouse-position world-mouse-position]]
             [game.tile-color :refer [tile-color-setter*]]
             [moon.coll :as coll]
@@ -123,27 +122,6 @@
                      (cursor-fn eid))]
     (assert (contains? cursors cursor-key))
     (.setCursor ^Graphics Gdx/graphics ^Cursor (get cursors cursor-key))))
-
-(defn clear-interaction-state! [interaction-state]
-  (reset! interaction-state nil))
-
-(def pausing? true)
-
-(def state->pause-game?
-  {:active-skill false
-   :stunned false
-   :player-moving false
-   :player-idle true
-   :player-dead true
-   :player-item-on-cursor true})
-
-(defn update-paused! [paused? player-eid key-pressed? key-just-pressed?]
-  (reset! paused?
-          (or #_error
-              (and pausing?
-                   (state->pause-game? (:state (:entity/fsm @@player-eid)))
-                   (not (or (key-just-pressed? (:unpause-once controls))
-                            (key-pressed? (:unpause-continously controls))))))))
 
 (defn destroy-entities! [db schemas world elapsed-time audio skin stage textures z-orders minimum-size]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
