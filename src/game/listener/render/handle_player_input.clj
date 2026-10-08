@@ -1,6 +1,6 @@
 (ns game.listener.render.handle-player-input
   (:require [game.entity :refer [set-item]]
-            [game.audio :refer [play-sound!]]
+            [audio.play :refer [play-sound!]]
             [game.fsm :refer [handle-fsm-event!]]
             [game.mouse :refer [mouseover-actor ui-mouse-position world-mouse-position]]
             [game.ui :refer [toggle-inventory-visible! ui-set-item!]]
@@ -46,12 +46,12 @@
                   (.findActor "moon.ui.windows.inventory")
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (play-sound! audio "bfxr_takeit")
+                  (play-sound! audio "bfxr_takeit.wav")
                   (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item))
 
               (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (play-sound! audio "bfxr_pickup")
+                  (play-sound! audio "bfxr_pickup.wav")
                   (assert (item/valid? item))
                   (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
                     (assert cell)
@@ -61,10 +61,10 @@
                   nil)
 
               :else
-              (do (play-sound! audio "bfxr_denied")
+              (do (play-sound! audio "bfxr_denied.wav")
                   (show-message! stage "Your Inventory is full")
                   nil))))
-        (do (play-sound! audio "bfxr_denied")
+        (do (play-sound! audio "bfxr_denied.wav")
             (show-message! stage "Too far away")
             nil)))
 
@@ -74,7 +74,7 @@
 
     :interaction-state.skill/not-usable
     (let [state params]
-      (do (play-sound! audio "bfxr_denied")
+      (do (play-sound! audio "bfxr_denied.wav")
           (show-message! stage (case state
                                  :cooldown "Skill is still on cooldown"
                                  :not-enough-mana "Not enough mana"
@@ -82,7 +82,7 @@
           nil))
 
     :interaction-state/no-skill-selected
-    (do (play-sound! audio "bfxr_denied")
+    (do (play-sound! audio "bfxr_denied.wav")
         (show-message! stage "No selected skill")
         nil)))
 

@@ -21,7 +21,7 @@
                  ]
   :java-source-paths ["java-src"]
   :source-paths ["src"]
-  :resource-paths ["resources/"]
+  :resource-paths ["resources/" "wav/" "edn/"]
   :aliases {
             "dev"      ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
             "levelgen" ["run" "-m" "loop" "((requiring-resolve 'levelgen/-main))"]

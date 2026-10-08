@@ -7,7 +7,7 @@
      :image/bounds [96 64 32 32]}),
    :animation/looping? false},
   :property/id :audiovisuals/convert,
-  :tx/sound "bfxr_burrow"}
+  :tx/sound "bfxr_burrow.wav"}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -19,7 +19,7 @@
      :image/bounds [240 0 48 48]}),
    :animation/looping? false},
   :property/id :audiovisuals/damage,
-  :tx/sound "bfxr_normalhit"}
+  :tx/sound "bfxr_normalhit.wav"}
  {:entity/animation
   {:animation/frame-duration 0.025,
    :animation/frames
@@ -31,7 +31,7 @@
     {:image/file "images/uf_FX.png", :image/bounds [120 168 24 24]}),
    :animation/looping? false},
   :property/id :audiovisuals/hit-wall,
-  :tx/sound "bfxr_projectile_wallhit"}
+  :tx/sound "bfxr_projectile_wallhit.wav"}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -43,7 +43,7 @@
     {:image/file "images/uf_FX.png", :image/bounds [216 144 24 24]}),
    :animation/looping? false},
   :property/id :audiovisuals/creature-die,
-  :tx/sound "bfxr_defaultmonsterdeath"}
+  :tx/sound "bfxr_defaultmonsterdeath.wav"}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -54,7 +54,7 @@
      :image/bounds [96 48 48 48]}),
    :animation/looping? false},
   :property/id :audiovisuals/hit-ground,
-  :tx/sound "bfxr_fisthit"}
+  :tx/sound "bfxr_fisthit.wav"}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -66,7 +66,7 @@
      :image/bounds [384 48 48 48]}),
    :animation/looping? false},
   :property/id :audiovisuals/spawn,
-  :tx/sound "bfxr_curse"}
+  :tx/sound "bfxr_curse.wav"}
  {:creature/level 1,
   :entity/animation
   {:animation/frame-duration 0.1,
@@ -4426,7 +4426,7 @@
   :skill/cooldown 0,
   :skill/cost 0,
   :skill/effects {:effects/projectile :projectiles/double-fireball},
-  :skill/start-action-sound "bfxr_cast"}
+  :skill/start-action-sound "bfxr_cast.wav"}
  {:entity/image
   {:image/bounds [160 64 32 32], :image/file "images/skills.png"},
   :property/id :skills/spawn,
@@ -4438,7 +4438,7 @@
   :skill/effects
   {:effects/audiovisual :audiovisuals/spawn,
    :effects/spawn :creatures/skeleton-warrior},
-  :skill/start-action-sound "bfxr_minedeath"}
+  :skill/start-action-sound "bfxr_minedeath.wav"}
  {:entity/image
   {:image/bounds [0 64 32 32], :image/file "images/skills.png"},
   :property/id :skills/convert,
@@ -4453,7 +4453,7 @@
     {:effects.target/audiovisual :audiovisuals/convert,
      :effects.target/convert true},
     :maxrange 10}},
-  :skill/start-action-sound "bfxr_portaluse"}
+  :skill/start-action-sound "bfxr_portaluse.wav"}
  {:entity/image
   {:image/bounds [128 0 32 32], :image/file "images/skills.png"},
   :property/id :skills/blood-curse,
@@ -4464,7 +4464,7 @@
   :skill/cost 1,
   :skill/effects
   {:effects/target-all {:entity-effects {:effects.target/convert {}}}},
-  :skill/start-action-sound "bfxr_healmonsters"}
+  :skill/start-action-sound "bfxr_healmonsters.wav"}
  {:entity/image
   {:image/bounds [96 64 32 32], :image/file "images/skills.png"},
   :property/id :skills/bow,
@@ -4477,7 +4477,7 @@
   {:effects/target-entity
    {:entity-effects {:effects.target/damage {:damage/min-max [1 10]}},
     :maxrange 5}},
-  :skill/start-action-sound "slash"}
+  :skill/start-action-sound "slash.wav"}
  {:entity/image
   {:image/bounds [64 64 32 32], :image/file "images/skills.png"},
   :property/id :skills/slow,
@@ -4489,7 +4489,7 @@
   :skill/effects
   {:effects/target-entity
    {:entity-effects {:effects.target/spiderweb true}, :maxrange 10}},
-  :skill/start-action-sound "bfxr_monkheal"}
+  :skill/start-action-sound "bfxr_monkheal.wav"}
  {:entity/image
   {:image/bounds [64 96 32 32], :image/file "images/skills.png"},
   :property/id :skills/meditation,
@@ -4499,7 +4499,7 @@
   :skill/cooldown 0,
   :skill/cost 0,
   :skill/effects {},
-  :skill/start-action-sound "shoot"}
+  :skill/start-action-sound "shoot.wav"}
  {:entity/image
   {:image/bounds [32 96 32 32], :image/file "images/skills.png"},
   :property/id :skills/death-ray,
@@ -4511,7 +4511,7 @@
   :skill/effects
   {:effects/target-entity
    {:entity-effects {:effects.target/kill true}, :maxrange 10}},
-  :skill/start-action-sound "bfxr_bossdeath"}
+  :skill/start-action-sound "bfxr_bossdeath.wav"}
  {:entity/image
   {:image/bounds [96 32 32 32], :image/file "images/skills.png"},
   :property/id :skills/projectile,
@@ -4521,7 +4521,7 @@
   :skill/cooldown 0,
   :skill/cost 4,
   :skill/effects {:effects/projectile :projectiles/black},
-  :skill/start-action-sound "bfxr_cast"}
+  :skill/start-action-sound "bfxr_cast.wav"}
  {:entity/image
   {:image/bounds [0 0 32 32], :image/file "images/skills.png"},
   :property/id :skills/melee-attack,
@@ -4534,4 +4534,4 @@
   {:effects/target-entity
    {:entity-effects {:effects.target/melee-damage true},
     :maxrange 0.5}},
-  :skill/start-action-sound "slash"})
+  :skill/start-action-sound "slash.wav"})

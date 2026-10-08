@@ -9,7 +9,7 @@
             [moon.tiled-map :as moon-tiled-map]
             [moon.textures :as textures]
             [moon.world :as world])
-  (:import (com.badlogic.gdx Audio Files Gdx Graphics)
+  (:import (com.badlogic.gdx Files Gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color Colors OrthographicCamera Pixmap Texture Texture$TextureFilter)
            (com.badlogic.gdx.maps.tiled TiledMap)
@@ -20,13 +20,6 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(defn create-audio! [^Audio audio ^Files files]
-  (into {}
-        (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
-              :let [path (format "sounds/%s.wav" sound-name)]]
-          [sound-name
-           (.newSound audio (.internal files path))])))
 
 (defn create-shape-drawer! [batch texture]
   (ShapeDrawer. batch
@@ -49,7 +42,7 @@
   (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1)))
 
 (defn create-cursors! [files]
-  (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
+  (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
     (update-vals data
                  (fn [[path-segment [hotspot-x hotspot-y]]]
                    (let [path (format path-format path-segment)

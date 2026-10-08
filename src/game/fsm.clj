@@ -1,6 +1,6 @@
 (ns game.fsm
   (:require [entity.spawn :refer [create-entity-state spawn-entity!]]
-            [game.audio :refer [play-sound!]]
+            [audio.play :refer [play-sound!]]
             [game.entity :refer [add-text-effect]]
             [game.spawn :refer [item-place-position spawn-alert spawn-item]]
             [moon.stats :as stats]
@@ -56,7 +56,7 @@
                   item (:entity/item-on-cursor entity)]
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
-                (play-sound! audio "bfxr_itemputground")
+                (play-sound! audio "bfxr_itemputground.wav")
                 (spawn-entity! world elapsed-time skin stage textures z-orders minimum-size
                                (spawn-item (item-place-position (:entity/position entity)
                                                                 world-mouse-position
@@ -104,7 +104,7 @@
               nil)
 
             :player-dead
-            (do (play-sound! audio "bfxr_playerdeath")
+            (do (play-sound! audio "bfxr_playerdeath.wav")
                 (show-modal! skin stage {:title "YOU DIED - again!"
                                          :text "Good luck next time!"
                                          :button-text "OK"

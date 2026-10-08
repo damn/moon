@@ -1,6 +1,6 @@
 (comment
 
- (spit "config/sounds.edn"
+ (spit "edn/sounds.edn"
        (vec (clojure.file/list-files "wav/" ".wav")))
 
 

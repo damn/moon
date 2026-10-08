@@ -1,12 +1,8 @@
 (ns game.audio
-  (:require [entity.spawn :refer [spawn-entity!]]
+  (:require [audio.play :refer [play-sound!]]
+            [entity.spawn :refer [spawn-entity!]]
             [game.spawn :refer [spawn-effect]]
-            [moon.db :as db])
-  (:import (com.badlogic.gdx.audio Sound)))
-
-(defn play-sound! [sounds sound-name]
-  (assert (contains? sounds sound-name) (str sound-name))
-  (.play ^Sound (get sounds sound-name)))
+            [moon.db :as db]))
 
 (defn audiovisual! [db world elapsed-time audio skin stage textures z-orders minimum-size position audiovisual]
   (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)

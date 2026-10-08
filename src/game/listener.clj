@@ -1,6 +1,10 @@
 (ns game.listener
-  (:require [game.listener.create :refer [bind-player-eid!
-                                          create-audio!
+  (:require [audio.create :refer [create-audio!]]
+            [audio.dispose :as audio.dispose]
+            [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [files.create :refer [create-sound-file-handles!]]
+            [game.listener.create :refer [bind-player-eid!
                                           create-batch!
                                           create-cursors!
                                           create-default-font!
@@ -55,6 +59,7 @@
         render-z-order (apply hash-map (interleave z-orders (range)))
         factions-iterations {:good 15
                              :evil 5}
+        sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
         audio (atom nil)
         batch (atom nil)
         cursors (atom nil)
@@ -87,7 +92,8 @@
         unit-scale (atom 1)]
     (reify ApplicationListener
       (create [_]
-        (reset! audio (create-audio! Gdx/audio Gdx/files))
+        (reset! audio (create-audio! Gdx/audio
+                                     (create-sound-file-handles! Gdx/files sound-paths)))
         (reset! batch (SpriteBatch.))
         (reset! unit-scale 1)
         (reset! shape-drawer-texture (white-pixel-texture))
@@ -135,7 +141,7 @@
         (spawn-map-creatures! db world elapsed-time start-position tiled-map @skin @stage @textures z-orders minimum-size))
 
       (dispose [_]
-        (run! Disposable/.dispose (vals @audio))
+        (audio.dispose/dispose! @audio)
         (Disposable/.dispose @batch)
         (run! Disposable/.dispose (vals @cursors))
         (Disposable/.dispose @default-font)

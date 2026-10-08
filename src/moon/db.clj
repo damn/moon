@@ -6,8 +6,8 @@
             [moon.schemas :refer [validate]]))
 
 (defn create []
-  (let [schemas (-> "config/schema.edn" io/resource slurp edn/read-string)
-        properties-file (io/resource "config/properties.edn")
+  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
+        properties-file (io/resource "properties.edn")
         properties (-> properties-file slurp edn/read-string)]
     (assert (or (empty? properties)
                 (apply distinct? (map :property/id properties))))

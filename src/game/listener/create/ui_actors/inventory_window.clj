@@ -1,6 +1,6 @@
 (ns game.listener.create.ui-actors.inventory-window
   (:require [game.entity :refer [remove-item set-item]]
-            [game.audio :refer [play-sound!]]
+            [audio.play :refer [play-sound!]]
             [game.fsm :refer [handle-fsm-event!]]
             [moon.inventory :as inventory]
             [moon.textures :as textures])
@@ -17,7 +17,7 @@
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (get-in (:entity/inventory @player-eid) cell)]
-      (play-sound! audio "bfxr_takeit")
+      (play-sound! audio "bfxr_takeit.wav")
       (swap! player-eid remove-item cell)
       (ui-remove-item! cell)
       (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item))
@@ -31,7 +31,7 @@
        (and (not item-in-cell)
             (inventory/valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (play-sound! audio "bfxr_itemput")
+           (play-sound! audio "bfxr_itemput.wav")
            (swap! player-eid set-item cell item-on-cursor)
            (ui-set-item! cell item-on-cursor)
            (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size player-eid world-mouse-position :dropped-item))
@@ -39,7 +39,7 @@
        (and item-in-cell
             (inventory/valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (play-sound! audio "bfxr_itemput")
+           (play-sound! audio "bfxr_itemput.wav")
            (swap! player-eid remove-item cell)
            (ui-remove-item! cell)
            (swap! player-eid set-item cell item-on-cursor)
