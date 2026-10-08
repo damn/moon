@@ -2,8 +2,17 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
+            [malli.core :as m]
+            [malli.error :as me]
             [moon.m :refer [recur-sort]]
-            [moon.schemas :refer [validate]]))
+            [moon.schema :as schema]))
+
+(defn- validate [schemas k value]
+  (let [schema (m/schema (schema/malli-form (get schemas k) schemas))]
+    (when-not (m/validate schema value)
+      (throw (ex-info (str (me/humanize (m/explain schema value)))
+                      {:value value
+                       :schema (m/form schema)})))))
 
 (defn create []
   (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
