@@ -7,7 +7,6 @@
             [moon.tiled-map :as moon-tiled-map])
   (:import (com.badlogic.gdx.maps.tiled TiledMap TiledMapTileLayer)
            (com.badlogic.gdx ApplicationListener Files Gdx Input Input$Keys InputProcessor)
-           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Stage)
@@ -43,65 +42,11 @@
       (.update camera))
     tiled-map))
 
-(defn- create-viewport [world-width world-height]
-  (FitViewport. (float world-width)
-                (float world-height)
-                (doto (OrthographicCamera.)
-                  (.setToOrtho false
-                               world-width
-                               world-height))))
-
-(defn- create-skin [file-handle]
-  (Skin. ^FileHandle file-handle))
-
-(defn- create-stage [batch viewport actor]
-  (doto (Stage. viewport batch)
-    (.addActor actor)))
-
 (defn- text-button ^TextButton [^Skin skin ^String label on-click!]
   (doto (TextButton. label skin)
     (.addListener (proxy [ChangeListener] []
                     (changed [_event _actor]
                       (on-click!))))))
-
-(defn- zoom-in! [^OrthographicCamera camera]
-  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.1)))
-  (.update camera))
-
-(defn- zoom-out! [^OrthographicCamera camera]
-  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.1)))
-  (.update camera))
-
-(defn- move-camera! [^OrthographicCamera camera idx f]
-  (let [pos (.position camera)
-        [x y] (update [(.x pos) (.y pos) (.z pos)]
-                      idx
-                      #(f % 1))]
-    (set! (.x pos) x)
-    (set! (.y pos) y)
-    (.update camera)))
-
-(defn- move-left! [camera]
-  (move-camera! camera 0 -))
-
-(defn- move-right! [camera]
-  (move-camera! camera 0 +))
-
-(defn- move-up! [camera]
-  (move-camera! camera 1 +))
-
-(defn- move-down! [camera]
-  (move-camera! camera 1 -))
-
-(defn- handle-controls! [camera]
-  (doseq [[k f] {Input$Keys/MINUS zoom-in!
-                 Input$Keys/EQUALS zoom-out!
-                 Input$Keys/LEFT move-left!
-                 Input$Keys/RIGHT move-right!
-                 Input$Keys/UP move-up!
-                 Input$Keys/DOWN move-down!}]
-    (when (.isKeyPressed ^Input Gdx/input k)
-      (f camera))))
 
 (defn listener []
   (let [world-unit-scale (float (/ 48))
@@ -126,18 +71,23 @@
     (reify ApplicationListener
       (create [_]
         (reset! batch (SpriteBatch.))
-        (reset! skin (create-skin (.internal ^Files Gdx/files "skin/uiskin.json")))
-        (reset! ui-stage (create-stage @batch
-                                       (FitViewport. 1440 900)
-                                       (let [^Skin skin @skin
-                                             window (Window. "Edit" skin)]
-                                         (doseq [[label on-click!] buttons]
-                                           (.add window (text-button skin label on-click!))
-                                           (.row window))
-                                         (.pack window)
-                                         window)))
+        (reset! skin (Skin. (.internal ^Files Gdx/files "skin/uiskin.json")))
+        (let [s (Stage. (FitViewport. 1440 900) @batch)
+              ^Skin skin* @skin
+              window (Window. "Edit" skin*)]
+          (doseq [[label on-click!] buttons]
+            (.add window (text-button skin* label on-click!))
+            (.row window))
+          (.pack window)
+          (.addActor s window)
+          (reset! ui-stage s))
         (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
-        (reset! world-viewport (create-viewport world-width world-height))
+        (reset! world-viewport (FitViewport. (float world-width)
+                                             (float world-height)
+                                             (doto (OrthographicCamera.)
+                                               (.setToOrtho false
+                                                            world-width
+                                                            world-height))))
         (reset! camera (.getCamera ^Viewport @world-viewport))
         (reset! db (db/create))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
@@ -151,14 +101,37 @@
         (Disposable/.dispose @tiled-map))
 
       (render [_]
-        (let [camera* @camera]
+        (let [^OrthographicCamera camera* @camera]
           (ScreenUtils/clear 0 0 0 0)
           (moon-tiled-map/draw! @tiled-map
                                 @batch
                                 world-unit-scale
                                 (.getCamera ^Viewport @world-viewport)
                                 (constantly (.toFloatBits Color/WHITE)))
-          (handle-controls! camera*)
+          (doseq [[k f] {Input$Keys/MINUS (fn []
+                                            (set! (.zoom camera*) (max 0.1 (+ (.zoom camera*) 0.1)))
+                                            (.update camera*))
+                         Input$Keys/EQUALS (fn []
+                                             (set! (.zoom camera*) (max 0.1 (+ (.zoom camera*) -0.1)))
+                                             (.update camera*))
+                         Input$Keys/LEFT (fn []
+                                           (let [pos (.position camera*)]
+                                             (set! (.x pos) (- (.x pos) 1))
+                                             (.update camera*)))
+                         Input$Keys/RIGHT (fn []
+                                            (let [pos (.position camera*)]
+                                              (set! (.x pos) (+ (.x pos) 1))
+                                              (.update camera*)))
+                         Input$Keys/UP (fn []
+                                         (let [pos (.position camera*)]
+                                           (set! (.y pos) (+ (.y pos) 1))
+                                           (.update camera*)))
+                         Input$Keys/DOWN (fn []
+                                           (let [pos (.position camera*)]
+                                             (set! (.y pos) (- (.y pos) 1))
+                                             (.update camera*)))}]
+            (when (.isKeyPressed ^Input Gdx/input k)
+              (f)))
           (.act ^Stage @ui-stage)
           (.draw ^Stage @ui-stage)))
 
