@@ -80,6 +80,6 @@
          rectangle/touched-tiles
          (keep g2d)
          (map deref)
-         entities
+         (into #{} (mapcat :entities))
          (filter #(Intersector/overlaps ^Circle gdx-circle
                                         ^Rectangle (body/rectangle @%))))))
