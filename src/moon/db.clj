@@ -7,13 +7,6 @@
             [moon.m :refer [recur-sort]]
             [moon.schema :as schema]))
 
-(defn- validate [schemas k value]
-  (let [schema (m/schema (schema/malli-form (get schemas k) schemas))]
-    (when-not (m/validate schema value)
-      (throw (ex-info (str (me/humanize (m/explain schema value)))
-                      {:value value
-                       :schema (m/form schema)})))))
-
 (defn create []
   (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
         properties-file (io/resource "properties.edn")
@@ -21,7 +14,11 @@
     (assert (or (empty? properties)
                 (apply distinct? (map :property/id properties))))
     (doseq [property properties]
-      (validate schemas (keyword "properties" (namespace (:property/id property))) property))
+      (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+        (when-not (m/validate schema property)
+          (throw (ex-info (str (me/humanize (m/explain schema property)))
+                          {:value property
+                           :schema (m/form schema)})))))
     {:db/data (zipmap (map :property/id properties) properties)
      :db/file properties-file
      :db/schemas schemas}))
@@ -44,7 +41,11 @@
 (defn update! [{:keys [db/data db/schemas] :as this} {:keys [property/id] :as property}]
   (assert (contains? property :property/id))
   (assert (contains? data id))
-  (validate schemas (keyword "properties" (namespace (:property/id property))) property)
+  (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+    (when-not (m/validate schema property)
+      (throw (ex-info (str (me/humanize (m/explain schema property)))
+                      {:value property
+                       :schema (m/form schema)}))))
   (let [new-db (update this :db/data assoc id property)]
     (save! new-db)
     new-db))
