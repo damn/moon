@@ -8,7 +8,6 @@
                                           create-level!
                                           create-raycaster!
                                           create-shape-drawer!
-                                          create-shape-drawer-texture!
                                           create-skin!
                                           create-stage!
                                           create-textures!
