@@ -116,7 +116,7 @@
                                             (:entity/collides? @%)
                                             (body/overlaps? entity
                                                             @%))
-                                      (grid/entities touched-cells)))
+                                      (into #{} (mapcat :entities) touched-cells)))
             destroy? (or (and hit-entity (not piercing?))
                          (some #(cell/blocked? % (:entity/z-order entity)) touched-cells))]
         (when hit-entity

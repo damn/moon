@@ -7,15 +7,11 @@
             [moon.rectangle :as rectangle])
   (:import (com.badlogic.gdx.math Circle Intersector Rectangle)))
 
-(defn entities [cells]
-  (into #{} (mapcat :entities) cells))
-
 (defn valid-position? [g2d {:keys [entity/z-order] :as body} entity-id]
   (assert (:entity/collides? body))
   (let [cells* (map deref (keep g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
-         (->> cells*
-              entities
+         (->> (into #{} (mapcat :entities) cells*)
               (not-any? (fn [other-entity]
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)
