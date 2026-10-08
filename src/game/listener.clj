@@ -22,11 +22,11 @@
                                           spawn-player!]]
             [texture.white-pixel :refer [white-pixel-texture]]
             [game.listener.create.ui-actors :refer [create-ui-actors]]
+            [game.controls :refer [controls]]
             [game.listener.render :refer [clear-interaction-state!
                                           current-mouseover-actor
                                           destroy-entities!
                                           draw-tiled-map!
-                                          handle-controls!
                                           set-camera-to-player!
                                           update-active-entities!
                                           update-cursor!
@@ -36,13 +36,14 @@
             [game.listener.render.handle-player-input :refer [handle-player-input!]]
             [game.listener.render.tick-world :refer [tick-game!]]
             [game.mouse :refer [mouseover-actor-info world-mouse-position]]
-            [game.ui :refer [action-bar-selected-skill]]
+            [game.ui :refer [action-bar-selected-skill toggle-inventory-visible!]]
             [moon.db :as db]
             [moon.v2 :as v2]
             [skill.usable-state :refer [usable-state]])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
+           (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
-           (com.badlogic.gdx.scenes.scene2d Actor Stage)
+           (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
@@ -218,7 +219,26 @@
                       audio skin stage textures world-viewport factions-iterations z-orders
                       minimum-size max-delta max-speed)
           (destroy-entities! db world elapsed-time audio skin stage textures z-orders minimum-size)
-          (handle-controls! stage world-viewport key-pressed? key-just-pressed?)
+          (doseq [[k f] {(:zoom-in controls) (fn []
+                                               (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
+                                                 (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
+                                                 (.update camera)))
+                         (:zoom-out controls) (fn []
+                                                (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
+                                                  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
+                                                  (.update camera)))}]
+            (when (key-pressed? k)
+              (f)))
+          (doseq [[k f] {(:close-windows-key controls) (fn []
+                                                         (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
+                                                              (run! #(.setVisible ^Actor % false))))
+                         (:toggle-inventory controls) #(toggle-inventory-visible! stage)
+                         (:toggle-entity-info controls) (fn []
+                                                          (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
+                                                            (.setVisible ^Actor entity-info
+                                                                         (not (.isVisible ^Actor entity-info)))))}]
+            (when (key-just-pressed? k)
+              (f)))
           (let [^Stage stage stage]
             (.act stage)
             (.draw stage))))

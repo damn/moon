@@ -4,7 +4,6 @@
             [game.controls :refer [controls]]
             [game.mouse :refer [mouseover-actor ui-mouse-position world-mouse-position]]
             [game.tile-color :refer [tile-color-setter*]]
-            [game.ui :refer [toggle-inventory-visible!]]
             [moon.coll :as coll]
             [moon.content-grid :as content-grid]
             [moon.grid :as grid]
@@ -13,7 +12,6 @@
             [world.unregister-eid :refer [unregister-eid!]])
   (:import (com.badlogic.gdx Gdx Graphics)
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
-           (com.badlogic.gdx.scenes.scene2d Group Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn update-mouseover-eid! [world raycaster player-eid mouseover-eid stage world-viewport render-z-order]
@@ -155,37 +153,3 @@
         :entity/destroy-audiovisual
         (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position @eid) v)
         nil))))
-
-(defn- zoom-in! [world-viewport]
-  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
-    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-    (.update camera)))
-
-(defn- zoom-out! [world-viewport]
-  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
-    (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-    (.update camera)))
-
-(defn- close-windows! [stage]
-  (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
-       (run! (fn [actor]
-               (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor actor false)))))
-
-(defn- toggle-inventory! [stage]
-  (toggle-inventory-visible! stage))
-
-(defn- toggle-entity-info! [stage]
-  (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
-    (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info
-                 (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
-
-(defn handle-controls! [stage world-viewport key-pressed? key-just-pressed?]
-  (doseq [[k f] {(:zoom-in controls) #(zoom-in! world-viewport)
-                 (:zoom-out controls) #(zoom-out! world-viewport)}]
-    (when (key-pressed? k)
-      (f)))
-  (doseq [[k f] {(:close-windows-key controls) #(close-windows! stage)
-                 (:toggle-inventory controls) #(toggle-inventory! stage)
-                 (:toggle-entity-info controls) #(toggle-entity-info! stage)}]
-    (when (key-just-pressed? k)
-      (f))))
