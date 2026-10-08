@@ -7,14 +7,6 @@
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup Image ImageButton Skin TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)))
 
-(defn- action-bar-get-data
-  [action-bar]
-  {:post [(:horizontal-group %)
-          (:button-group %)]}
-  (let [group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")]
-    {:horizontal-group group
-     :button-group (.getUserObject ^Actor group)}))
-
 (defn- action-bar-add-skill!
   [action-bar
    {:keys [skill-id
@@ -22,7 +14,8 @@
            tooltip-text]}
    skin]
   (let [scale 2
-        {:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
+        horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (.getUserObject ^Actor horizontal-group)
         button (doto (ImageButton.
                       (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                         (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
@@ -35,15 +28,18 @@
 
 (defn- action-bar-remove-skill!
   [action-bar skill-id]
-  (let [{:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
+  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (.getUserObject ^Actor horizontal-group)
         button (get horizontal-group skill-id)]
     (.remove ^Actor button)
     (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
 (defn action-bar-selected-skill [action-bar]
-  (when-let [skill-button (.getChecked ^ButtonGroup (:button-group (action-bar-get-data action-bar)))]
-    (.getUserObject ^Actor skill-button)))
+  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (.getUserObject ^Actor horizontal-group)]
+    (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
+      (.getUserObject ^Actor skill-button))))
 
 (defn- inventory-window-get-cell [inventory-window cell]
   (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))
