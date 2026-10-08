@@ -27,12 +27,14 @@
               audio (create-audio! Gdx/audio
                                    (create-sound-file-handles! Gdx/files sound-paths))
               schemas (-> "schema.edn" io/resource slurp edn/read-string)
+              properties-file (io/resource "properties.edn")
               db (db/create schemas)
               textures (textures/create Gdx/files {:folder "resources/"
                                                    :extensions #{"png" "bmp"}})]
           (reset! state {:audio audio
                          :batch batch
                          :db db
+                         :properties-file properties-file
                          :schemas schemas
                          :play-sound! #(play-sound! (:audio @state) %)
                          :skin skin

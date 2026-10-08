@@ -8,8 +8,7 @@
             [moon.schema :as schema]))
 
 (defn create [schemas]
-  (let [properties-file (io/resource "properties.edn")
-        properties (-> properties-file slurp edn/read-string)]
+  (let [properties (-> "properties.edn" io/resource slurp edn/read-string)]
     (assert (or (empty? properties)
                 (apply distinct? (map :property/id properties))))
     (doseq [property properties]
@@ -18,12 +17,10 @@
           (throw (ex-info (str (me/humanize (m/explain schema property)))
                           {:value property
                            :schema (m/form schema)})))))
-    {:db/data (zipmap (map :property/id properties) properties)
-     :db/file properties-file}))
+    (zipmap (map :property/id properties) properties)))
 
-(defn save!
-  [{:keys [db/data db/file]}]
-  (let [data (->> (vals data)
+(defn save! [db file]
+  (let [data (->> (vals db)
                   (sort-by #(keyword "properties" (namespace (:property/id %))))
                   (map recur-sort)
                   doall)]
@@ -36,30 +33,30 @@
                with-out-str
                (spit file))))))))
 
-(defn update! [db schemas {:keys [property/id] :as property}]
+(defn update! [db schemas file {:keys [property/id] :as property}]
   (assert (contains? property :property/id))
-  (assert (contains? (:db/data db) id))
+  (assert (contains? db id))
   (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
     (when-not (m/validate schema property)
       (throw (ex-info (str (me/humanize (m/explain schema property)))
                       {:value property
                        :schema (m/form schema)}))))
-  (let [new-db (update db :db/data assoc id property)]
-    (save! new-db)
+  (let [new-db (assoc db id property)]
+    (save! new-db file)
     new-db))
 
-(defn delete! [{:keys [db/data] :as this} property-id]
-  (assert (contains? data property-id))
-  (let [new-db (update this :db/data dissoc property-id)]
-    (save! new-db)
+(defn delete! [db file property-id]
+  (assert (contains? db property-id))
+  (let [new-db (dissoc db property-id)]
+    (save! new-db file)
     new-db))
 
-(defn get-raw [{:keys [db/data]} property-id]
-  (assert (contains? data property-id))
-  (get data property-id) )
+(defn get-raw [db property-id]
+  (assert (contains? db property-id))
+  (get db property-id))
 
-(defn all-raw [{:keys [db/data]} property-type]
-  (->> (vals data)
+(defn all-raw [db property-type]
+  (->> (vals db)
        (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
 
 (declare build-values)

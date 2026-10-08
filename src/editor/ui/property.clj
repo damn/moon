@@ -51,16 +51,16 @@
 
 (defn property-editor-window [state property]
   (swap! state assoc :rebuild-editor-window! #(rebuild-editor-window! state))
-  (let [{:keys [schemas skin stage]} @state
+  (let [{:keys [properties-file schemas skin stage]} @state
         schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget state schema property)
         scroll-pane-height (.getWorldHeight (.getViewport ^Stage stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
         on-delete (with-window-close state (fn [db]
-                                             (db/delete! db property-id)))
+                                             (db/delete! db properties-file property-id)))
         on-save (with-window-close state (fn [db]
-                                           (db/update! db schemas (get-widget-value))))
+                                           (db/update! db schemas properties-file (get-widget-value))))
         ^Table table (property-editor-table state widget on-save on-delete)
         window (Window. "[SKY]Property[]" skin)]
     (.pad (.defaults window) (float 5))
