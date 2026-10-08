@@ -17,7 +17,7 @@
         u (when (key-pressed? Input$Keys/W) [0  1])
         d (when (key-pressed? Input$Keys/S) [0 -1])]
     (when (or r l u d)
-      (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
+      (let [v (v2/normalise (reduce #(mapv + %1 %2) [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2/length v))
           v)))))
 

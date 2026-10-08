@@ -39,6 +39,9 @@
            [-1 0]
            [-1 1]]]
     [v
-     (v2/angle-from-vector v)]))
+     (let [angle (clojure.math/to-degrees
+                  (clojure.math/atan2 (v2/crs [0 1] v)
+                                      (v2/dot [0 1] v)))]
+       (if (neg? angle) (+ angle 360) angle))]))
 
  )

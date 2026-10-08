@@ -8,14 +8,14 @@
                 (:entity/position other-entity)))
 
 (defn start-point [entity target-entity]
-  (v2/add (:entity/position entity)
-          (v2/scale (direction entity target-entity)
-                    (/ (:entity/width entity) 2))))
+  (mapv + (:entity/position entity)
+        (v2/scale (direction entity target-entity)
+                  (/ (:entity/width entity) 2))))
 
 (defn end-point [entity target-entity maxrange]
-  (v2/add (start-point entity target-entity)
-          (v2/scale (direction entity target-entity)
-                    maxrange)))
+  (mapv + (start-point entity target-entity)
+        (v2/scale (direction entity target-entity)
+                  maxrange)))
 
 (defn in-range? [entity target-entity maxrange]
   (< (- (float (v2/distance (:entity/position entity)

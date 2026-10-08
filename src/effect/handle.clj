@@ -30,9 +30,9 @@
             size (:projectile/size v)]
         (spawn-entity! world elapsed-time z-orders minimum-size
                        (spawn-projectile
-                        {:position (v2/add (:entity/position source*)
-                                           (v2/scale direction
-                                                     (+ (/ (:entity/width source*) 2) size 0.1)))
+                        {:position (mapv + (:entity/position source*)
+                                         (v2/scale direction
+                                                   (+ (/ (:entity/width source*) 2) size 0.1)))
                          :direction direction
                          :faction (:entity/faction source*)}
                         v)))

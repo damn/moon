@@ -13,10 +13,10 @@
         [normal1 normal2] (v2/normal-vectors v)
         normal1 (v2/scale normal1 (/ path-w 2))
         normal2 (v2/scale normal2 (/ path-w 2))
-        start1  (v2/add [start-x  start-y]  normal1)
-        start2  (v2/add [start-x  start-y]  normal2)
-        target1 (v2/add [target-x target-y] normal1)
-        target2 (v2/add [target-x target-y] normal2)]
+        start1  (mapv + [start-x  start-y]  normal1)
+        start2  (mapv + [start-x  start-y]  normal2)
+        target1 (mapv + [target-x target-y] normal1)
+        target2 (mapv + [target-x target-y] normal2)]
     [start1 target1 start2 target2]))
 
 (defn useful?

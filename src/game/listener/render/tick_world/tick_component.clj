@@ -173,8 +173,7 @@
 
       :entity/movement
       (let [{:keys [direction
-                    speed
-                    rotate-in-movement-direction?]
+                    speed]
              :as movement} v]
         (assert (<= 0 speed max-speed)
                 (pr-str speed))
@@ -194,9 +193,6 @@
                                  (update body :entity/position
                                          #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
               (swap! eid assoc :entity/position (:entity/position body))
-              (when rotate-in-movement-direction?
-                (swap! eid assoc :entity/rotation-angle
-                       (v2/angle-from-vector direction)))
               (relocate-eid! world* eid)
               nil))))
 

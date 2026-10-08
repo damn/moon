@@ -1,9 +1,6 @@
 (ns moon.v2
   (:require [clojure.math :as math]))
 
-(defn add [v1 v2]
-  (mapv + v1 v2))
-
 (defn scale [[x y] scalar]
   [(* x scalar)
    (* y scalar)])
@@ -46,19 +43,3 @@
         y-d (- y2 y1)]
     (math/sqrt (+ (* x-d x-d)
                   (* y-d y-d)))))
-
-(defn angle-deg
-  "Returns the angle in degrees of this vector relative to the given reference vector.
-  Angles are towards the positive y-axis (counter-clockwise) in the `[0, 360-` range."
-  [this reference]
-  (let [angle (math/to-degrees
-               (math/atan2 (crs reference this)
-                           (dot reference this)))]
-    (if (neg? angle)
-      (+ angle 360)
-      angle)))
-
-(defn angle-from-vector
-  "converts theta of Vector2 to angle from top (top is 0 degree, moving left is 90 degree etc.), counterclockwise"
-  [v]
-  (angle-deg v [0 1]))

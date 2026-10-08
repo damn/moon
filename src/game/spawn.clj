@@ -1,13 +1,14 @@
 (ns game.spawn
-  (:require [moon.m :as m]
+  (:require [clojure.math :as math]
+            [moon.m :as m]
             [moon.timer :as timer]
             [moon.v2 :as v2]))
 
 (defn item-place-position [player-position world-mouse-position maxrange]
-  (v2/add player-position
-          (v2/scale (v2/direction player-position world-mouse-position)
-                    (min maxrange
-                         (v2/distance player-position world-mouse-position)))))
+  (mapv + player-position
+        (v2/scale (v2/direction player-position world-mouse-position)
+                  (min maxrange
+                       (v2/distance player-position world-mouse-position)))))
 
 (defn spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
@@ -60,7 +61,12 @@
    :entity/width size
    :entity/height size
    :entity/z-order :z-order/flying
-   :entity/rotation-angle (v2/angle-from-vector direction)
+   :entity/rotation-angle (let [angle (math/to-degrees
+                                       (math/atan2 (v2/crs [0 1] direction)
+                                                   (v2/dot [0 1] direction)))]
+                            (if (neg? angle)
+                              (+ angle 360)
+                              angle))
    :entity/movement {:direction direction :speed speed}
    :entity/image image
    :entity/faction faction
