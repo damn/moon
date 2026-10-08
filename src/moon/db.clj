@@ -64,15 +64,27 @@
   (->> (vals data)
        (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
 
-; SCHEMA
-(defmulti create-value (fn [[k] _v _db]
-                         k))
+(declare build-values)
 
-(defmethod create-value :default
-  [_ v _db]
-  v)
+(defn- create-value [[k] v db]
+  (case k
+    :s/map
+    (build-values (:db/schemas db) v db)
 
-; SCHEMAS
+    :s/one-to-many
+    (set (map (fn [property-id]
+                (build-values (:db/schemas db)
+                              (get-raw db property-id)
+                              db))
+              v))
+
+    :s/one-to-one
+    (build-values (:db/schemas db)
+                  (get-raw db v)
+                  db)
+
+    v))
+
 (defn build-values [schemas property db]
   (reduce (fn [m k]
             (assoc m k
@@ -83,24 +95,6 @@
           property
           (keys property)))
 
-(defmethod create-value :s/map
-  [_ v db]
-  (build-values (:db/schemas db) v db))
-
-(defmethod create-value :s/one-to-many
-  [_ property-ids db]
-  (set (map (fn [property-id]
-              (build-values (:db/schemas db)
-                            (get-raw db property-id)
-                            db))
-            property-ids)))
-
-(defmethod create-value :s/one-to-one
-  [_ property-id db]
-  (build-values (:db/schemas db)
-                (get-raw db property-id)
-                db))
-
 (defn build [{:keys [db/schemas] :as this} property-id]
   (build-values schemas
                 (get-raw this property-id)
@@ -109,6 +103,3 @@
 (defn build-all [{:keys [db/schemas] :as this} property-type]
   (map #(build-values schemas % this)
        (all-raw this property-type)))
-
-(defn property-types [{:keys [db/schemas]}]
-  (filter #(= "properties" (namespace %)) (keys schemas)))

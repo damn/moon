@@ -10,7 +10,7 @@
 (defn main-window [state]
   (let [{:keys [db skin stage]} @state
         window (Window. "Edit" skin)]
-    (doseq [property-type (sort (db/property-types db))]
+    (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys (:db/schemas db))))]
       (.add window (doto (TextButton. (str/capitalize (name property-type)) skin)
                      (.addListener (proxy [ChangeListener] []
                                      (changed [event _actor]
