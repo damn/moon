@@ -9,61 +9,34 @@
             [reduce-fsm :as fsm]
             [world.register-eid :refer [register-eid!]]))
 
-(defn create-component
-  [elapsed-time k v]
+(defn create-entity-state [[k v] eid elapsed-time]
   (case k
-    :entity/animation
-    (animation.create/create v)
+    :active-skill
+    (let [[skill effect-ctx] v]
+      {:skill skill
+       :effect-ctx effect-ctx
+       :counter (timer/create elapsed-time
+                              (/ (:skill/action-time skill)
+                                 (or (stats/get-value (:entity/stats @eid)
+                                                      (:skill/action-time-modifier-key skill))
+                                     1)))})
 
-    :entity/delete-after-duration
-    (timer/create elapsed-time v)
+    :stunned
+    {:counter (timer/create elapsed-time v)}
 
-    :entity/projectile-collision
-    (assoc v :already-hit-bodies #{})
+    :player-moving
+    {:movement-vector v}
 
-    :entity/stats
-    (-> v
-        (update :stats/mana (fn [v] [v v]))
-        (update :stats/hp   (fn [v] [v v])))
+    :npc-moving
+    {:movement-vector v
+     :timer (timer/create elapsed-time
+                          (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
+                             0.016))}
+
+    :player-item-on-cursor
+    {:item v}
 
     v))
-
-(defmulti create-entity-state
-  (fn [[k _v] _eid _elapsed-time]
-    k))
-
-(defmethod create-entity-state :default
-  [[_k v] _eid _elapsed-time]
-  v)
-
-(defmethod create-entity-state :active-skill
-  [[_k [skill effect-ctx]] eid elapsed-time]
-  {:skill skill
-   :effect-ctx effect-ctx
-   :counter (timer/create elapsed-time
-                          (/ (:skill/action-time skill)
-                             (or (stats/get-value (:entity/stats @eid)
-                                                  (:skill/action-time-modifier-key skill))
-                                 1)))})
-
-(defmethod create-entity-state :stunned
-  [[_k duration] _eid elapsed-time]
-  {:counter (timer/create elapsed-time duration)})
-
-(defmethod create-entity-state :player-moving
-  [[_k movement-vector] _eid _elapsed-time]
-  {:movement-vector movement-vector})
-
-(defmethod create-entity-state :npc-moving
-  [[_k movement-vector] eid elapsed-time]
-  {:movement-vector movement-vector
-   :timer (timer/create elapsed-time
-                        (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
-                           0.016))})
-
-(defmethod create-entity-state :player-item-on-cursor
-  [[_k item] _eid _elapsed-time]
-  {:item item})
 
 (def ^:private fsms
   {:npc (fsm/fsm-inc
@@ -168,7 +141,22 @@
 (defn spawn-entity! [world elapsed-time z-orders minimum-size entity]
   (let [elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
-                         (assoc m k (create-component elapsed-time* k v)))
+                         (assoc m k (case k
+                                      :entity/animation
+                                      (animation.create/create v)
+
+                                      :entity/delete-after-duration
+                                      (timer/create elapsed-time* v)
+
+                                      :entity/projectile-collision
+                                      (assoc v :already-hit-bodies #{})
+
+                                      :entity/stats
+                                      (-> v
+                                          (update :stats/mana (fn [v] [v v]))
+                                          (update :stats/hp   (fn [v] [v v])))
+
+                                      v)))
                        {}
                        entity)
         entity (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
