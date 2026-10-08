@@ -4,8 +4,7 @@
             [moon.cell :as cell]
             [moon.circle :as moon-circle]
             [moon.g2d :as g2d]
-            [moon.rectangle :as rectangle]
-            [moon.v2 :as v2])
+            [moon.rectangle :as rectangle])
   (:import (com.badlogic.gdx.math Circle Intersector Rectangle)))
 
 (defn entities [cells]
@@ -25,7 +24,9 @@
                                                  body)))))))))
 
 (defn try-move [grid body entity-id movement]
-  (let [new-body (update body :entity/position v2/move movement)]
+  (let [{:keys [direction speed delta-time]} movement
+        new-body (update body :entity/position
+                         #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))]
     (when (valid-position? grid new-body entity-id)
       new-body)))
 

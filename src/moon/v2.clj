@@ -4,9 +4,6 @@
 (defn add [v1 v2]
   (mapv + v1 v2))
 
-(defn move [position {:keys [direction speed delta-time]}]
-  (mapv #(+ %1 (* %2 speed delta-time)) position direction))
-
 (defn scale [[x y] scalar]
   [(* x scalar)
    (* y scalar)])
@@ -65,20 +62,3 @@
   "converts theta of Vector2 to angle from top (top is 0 degree, moving left is 90 degree etc.), counterclockwise"
   [v]
   (angle-deg v [0 1]))
-
-(defn double-ray-endpositions
-  [[start-x start-y]
-   [target-x target-y]
-   path-w]
-  {:pre [(< path-w 0.98)]}
-  (let [path-w (+ path-w 0.02)
-        v (direction [start-x start-y]
-                     [target-y target-y])
-        [normal1 normal2] (normal-vectors v)
-        normal1 (scale normal1 (/ path-w 2))
-        normal2 (scale normal2 (/ path-w 2))
-        start1  (add [start-x  start-y]  normal1)
-        start2  (add [start-x  start-y]  normal2)
-        target1 (add [target-x target-y] normal1)
-        target2 (add [target-x target-y] normal2)]
-    [start1 target1 start2 target2]))

@@ -190,7 +190,9 @@
                 body @eid]
             (when-let [body (if (:entity/collides? body)
                                (grid/try-move-solid-body (:world/grid world*) body (:entity/id @eid) movement)
-                               (update body :entity/position v2/move movement))]
+                               (let [{:keys [direction speed delta-time]} movement]
+                                 (update body :entity/position
+                                         #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
               (swap! eid assoc :entity/position (:entity/position body))
               (when rotate-in-movement-direction?
                 (swap! eid assoc :entity/rotation-angle
