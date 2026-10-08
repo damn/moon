@@ -33,24 +33,6 @@
                with-out-str
                (spit file))))))))
 
-(defn update! [db schemas file {:keys [property/id] :as property}]
-  (assert (contains? property :property/id))
-  (assert (contains? db id))
-  (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
-    (when-not (m/validate schema property)
-      (throw (ex-info (str (me/humanize (m/explain schema property)))
-                      {:value property
-                       :schema (m/form schema)}))))
-  (let [new-db (assoc db id property)]
-    (save! new-db file)
-    new-db))
-
-(defn delete! [db file property-id]
-  (assert (contains? db property-id))
-  (let [new-db (dissoc db property-id)]
-    (save! new-db file)
-    new-db))
-
 (defn get-raw [db property-id]
   (assert (contains? db property-id))
   (get db property-id))

@@ -2,7 +2,10 @@
   (:require [clj-commons.pretty.repl :as pretty-repl]
             [editor.ui.util :refer [find-ancestor]]
             [editor.ui.widget :refer [create-widget map-widget-value widget-value]]
-            [moon.db :as db])
+            [malli.core :as m]
+            [malli.error :as me]
+            [moon.db :as db]
+            [moon.schema :as schema])
   (:import (com.badlogic.gdx Gdx Input Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
            (com.badlogic.gdx.scenes.scene2d.ui ScrollPane Table TextButton Window)
@@ -57,10 +60,26 @@
         scroll-pane-height (.getWorldHeight (.getViewport ^Stage stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
-        on-delete (with-window-close state (fn [db]
-                                             (db/delete! db properties-file property-id)))
-        on-save (with-window-close state (fn [db]
-                                           (db/update! db schemas properties-file (get-widget-value))))
+        on-delete (with-window-close state
+                    (fn [db]
+                      (assert (contains? db property-id))
+                      (let [new-db (dissoc db property-id)]
+                        (db/save! new-db properties-file)
+                        new-db)))
+        on-save (with-window-close state
+                  (fn [db]
+                    (let [property (get-widget-value)
+                          id (:property/id property)]
+                      (assert (contains? property :property/id))
+                      (assert (contains? db id))
+                      (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+                        (when-not (m/validate schema property)
+                          (throw (ex-info (str (me/humanize (m/explain schema property)))
+                                          {:value property
+                                           :schema (m/form schema)}))))
+                      (let [new-db (assoc db id property)]
+                        (db/save! new-db properties-file)
+                        new-db))))
         ^Table table (property-editor-table state widget on-save on-delete)
         window (Window. "[SKY]Property[]" skin)]
     (.pad (.defaults window) (float 5))
