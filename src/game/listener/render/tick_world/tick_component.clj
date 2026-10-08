@@ -6,6 +6,7 @@
             [moon.cell :as cell]
             [moon.g2d :as g2d]
             [moon.grid :as grid]
+            [grid.find-direction :refer [find-direction]]
             [moon.number :as number]
             [moon.potential-field :as potential-field]
             [moon.raycaster :as raycaster]
@@ -168,7 +169,7 @@
       (let [effect-ctx (create-effect-ctx world raycaster ctx eid)]
         (if-let [skill (choose-skill (partial raycaster/blocked? @raycaster) @eid effect-ctx)]
           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :start-action [skill effect-ctx])
-          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (potential-field/find-direction (:world/grid @world) eid)
+          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
                                                              [0 0]))))
 
       :entity/movement
