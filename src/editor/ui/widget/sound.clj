@@ -1,4 +1,4 @@
-(ns editor.ui.sound
+(ns editor.ui.widget.sound
   (:require [editor.ui.util :refer [find-ancestor]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
            (com.badlogic.gdx.scenes.scene2d.ui ScrollPane Table TextButton Window)
@@ -73,7 +73,7 @@
   (fn []
     (.addActor ^Stage (:stage @state) (choose-sound-window state table ->sound-columns))))
 
-(defn sound-widget [state sound-name]
+(defn create [state sound-name]
   (let [{:keys [skin]} @state
         table (doto (Table.)
               (#(.pad (.defaults ^Table %) (float 5))))]
