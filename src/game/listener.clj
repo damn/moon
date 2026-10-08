@@ -12,12 +12,7 @@
                                           create-raycaster!
                                           create-shape-drawer!
                                           create-skin!
-                                          create-stage!
-                                          create-textures!
-                                          create-world!
                                           create-world-viewport!
-                                          init-tooltip-manager!
-                                          put-pretty-name-color!
                                           spawn-map-creatures!
                                           spawn-player!]]
             [texture.white-pixel :refer [white-pixel-texture]]
@@ -38,14 +33,18 @@
             [game.mouse :refer [mouseover-actor-info world-mouse-position]]
             [game.ui :refer [action-bar-selected-skill toggle-inventory-visible!]]
             [moon.db :as db]
+            [moon.level.uf-caves :as uf-caves]
+            [moon.textures :as textures]
             [moon.v2 :as v2]
+            [moon.world :as world]
             [skill.usable-state :refer [usable-state]])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
-           (com.badlogic.gdx.graphics OrthographicCamera)
+           (com.badlogic.gdx.graphics Color Colors OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
+           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.utils.viewport FitViewport Viewport)))
 
 (def listener
   (let [world-unit-scale (float (/ 48))
@@ -59,6 +58,11 @@
         render-z-order (apply hash-map (interleave z-orders (range)))
         factions-iterations {:good 15
                              :evil 5}
+        level-fn uf-caves/create
+        default-font-params {:path "fonts/films.EXL_____.ttf"
+                             :size 16
+                             :quality-scaling 2
+                             :use-integer-positions? false}
         sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
         audio (atom nil)
         batch (atom nil)
@@ -98,16 +102,17 @@
         (reset! unit-scale 1)
         (reset! shape-drawer-texture (white-pixel-texture))
         (reset! shape-drawer (create-shape-drawer! @batch @shape-drawer-texture))
-        (reset! skin (create-skin! Gdx/files))
-        (let [s (create-stage! @batch)]
+        (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
+        (let [s (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
           (.setInputProcessor ^Input Gdx/input ^InputProcessor s)
           (reset! stage s))
-        (init-tooltip-manager!)
-        (put-pretty-name-color!)
+        (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
+        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
         (reset! cursors (create-cursors! Gdx/files))
-        (reset! textures (create-textures! Gdx/files))
+        (reset! textures (textures/create Gdx/files {:folder "resources/"
+                                                     :extensions #{"png" "bmp"}}))
         (reset! world-viewport (create-world-viewport! world-unit-scale))
-        (reset! default-font (create-default-font! Gdx/files))
+        (reset! default-font (create-default-font! Gdx/files default-font-params))
         (doseq [^Actor actor (create-ui-actors world
                                                elapsed-time
                                                mouseover-eid
@@ -130,10 +135,10 @@
                                                @world-viewport)]
           (.addActor ^Stage @stage actor))
         (let [{level-tiled-map :tiled-map
-               level-start :start-position} (create-level! db @textures)]
+               level-start :start-position} (create-level! level-fn db @textures)]
           (reset! tiled-map level-tiled-map)
           (reset! start-position level-start))
-        (reset! world (create-world! @tiled-map))
+        (reset! world (world/create @tiled-map))
         (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
         (reset! raycaster (create-raycaster! @world))
         (spawn-player! db world elapsed-time start-position @skin @stage @textures z-orders minimum-size)
