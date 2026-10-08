@@ -1,5 +1,6 @@
 (ns entity.spawn
-  (:require [game.entity :refer [set-item]]
+  (:require [animation.create :as animation.create]
+            [game.entity :refer [set-item]]
             [info-text :refer [info-text]]
             [moon.g2d :as moon-g2d]
             [moon.inventory :as inventory]
@@ -19,17 +20,7 @@
   [elapsed-time k v]
   (case k
     :entity/animation
-    (let [{:keys [animation/frames
-                  animation/frame-duration
-                  animation/looping?
-                  delete-after-stopped?]} v]
-      (assert (not (and looping? delete-after-stopped?)))
-      {:frames (vec frames)
-       :frame-duration frame-duration
-       :looping? looping?
-       :cnt 0
-       :maxcnt (* (count frames) (float frame-duration))
-       :delete-after-stopped? delete-after-stopped?})
+    (animation.create/create v)
 
     :entity/delete-after-duration
     (timer/create elapsed-time v)
