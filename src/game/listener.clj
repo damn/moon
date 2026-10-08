@@ -38,6 +38,7 @@
             [moon.v2 :as v2]
             [skill.usable-state :refer [usable-state]])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input InputProcessor)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Actor Stage)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -87,7 +88,7 @@
     (reify ApplicationListener
       (create [_]
         (reset! audio (create-audio! Gdx/audio Gdx/files))
-        (reset! batch (create-batch!))
+        (reset! batch (SpriteBatch.))
         (reset! unit-scale 1)
         (reset! shape-drawer-texture (white-pixel-texture))
         (reset! shape-drawer (create-shape-drawer! @batch @shape-drawer-texture))

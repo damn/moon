@@ -13,7 +13,7 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color Colors OrthographicCamera Pixmap Texture Texture$TextureFilter)
            (com.badlogic.gdx.maps.tiled TiledMap)
-           (com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
+           (com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin TooltipManager)
@@ -21,15 +21,12 @@
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn create-audio! [gdx-audio files]
+(defn create-audio! [^Audio audio ^Files files]
   (into {}
         (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
               :let [path (format "sounds/%s.wav" sound-name)]]
           [sound-name
-           (.newSound ^Audio gdx-audio (.internal ^Files files path))])))
-
-(defn create-batch! []
-  (SpriteBatch.))
+           (.newSound audio (.internal files path))])))
 
 (defn create-shape-drawer! [batch texture]
   (ShapeDrawer. batch
