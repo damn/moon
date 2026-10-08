@@ -4,7 +4,6 @@
             [game.fsm :refer [handle-fsm-event!]]
             [moon.body :as body]
             [moon.cell :as cell]
-            [moon.g2d :as g2d]
             [moon.grid :as grid]
             [grid.find-direction :refer [find-direction]]
             [moon.number :as number]
@@ -110,7 +109,7 @@
       (let [{:keys [entity-effects already-hit-bodies piercing?]} v
             world* @world
             entity @eid
-            touched-cells (map deref (g2d/get-cells (:world/grid world*) (body/touched-tiles entity)))
+            touched-cells (map deref (keep (:world/grid world*) (body/touched-tiles entity)))
             hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                             (not= (:entity/faction entity)
                                                   (:entity/faction @%))

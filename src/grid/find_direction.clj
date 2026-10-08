@@ -3,7 +3,6 @@
             [moon.cell :as cell]
             [moon.coll :as coll]
             [moon.faction :as faction]
-            [moon.g2d :as g2d]
             [moon.position :as position]
             [moon.potential-field :as potential-field]
             [moon.v2 :as v2]))
@@ -86,7 +85,7 @@
                            own-cell)))}))))
 
 (defn- inside-cell? [grid entity cell]
-  (let [cells (g2d/get-cells grid (body/touched-tiles entity))]
+  (let [cells (keep grid (body/touched-tiles entity))]
     (and (= 1 (count cells))
          (= cell (first cells)))))
 

@@ -1,5 +1,7 @@
 (ns moon.level.modules
-  (:require [moon.rand :as rand]
+  (:require [g2d.fix-nads :refer [fix-nads]]
+            [g2d.flood-fill :refer [flood-fill]]
+            [moon.rand :as rand]
             [moon.tiled-map :as moon-tiled-map]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
@@ -166,7 +168,7 @@
   (let [^TiledMap tiled-map tiled-map
         can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
-        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
+        spawn-positions (flood-fill scaled-grid start-position can-spawn?)
         creatures (for [position spawn-positions
                         :when (and (not= position start-position)
                                    (<= (rand) spawn-rate)
@@ -184,10 +186,14 @@
          spawn-rate 0.05}}]
   (let [scale [32 20]
         {:keys [start grid]} (caves/create (rand/new-random) map-size map-size :wide)
-        grid (g2d/fix-nads grid)
+        grid (fix-nads grid)
         grid (let [grid (reduce #(assoc %1 %2 :transition)
                                 grid
-                                (g2d/adjacent-wall-positions grid))]
+                                (filter (fn [position]
+                                          (and (= :wall (get grid position))
+                                               (some #(= :ground (get grid %))
+                                                     (position/get-8-neighbours position))))
+                                        (g2d/posis grid)))]
                (assert (or
                         (= #{:wall :ground :transition} (set (g2d/cells grid)))
                         (= #{:ground :transition} (set (g2d/cells grid))))

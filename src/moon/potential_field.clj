@@ -1,6 +1,5 @@
 (ns moon.potential-field
   (:require [moon.faction :as faction]
-            [moon.g2d :as g2d]
             [moon.position :as position]))
 
 (defn nearest-entity [cell faction]
@@ -12,10 +11,7 @@
 (defn cached-adjacent-cells [grid cell]
   (if-let [result (:adjacent-cells @cell)]
     result
-    (let [result (->> @cell
-                      :position
-                      position/get-8-neighbours
-                      (g2d/get-cells grid))]
+    (let [result (into [] (keep grid) (position/get-8-neighbours (:position @cell)))]
       (swap! cell assoc :adjacent-cells result)
       result)))
 

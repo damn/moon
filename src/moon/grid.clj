@@ -13,7 +13,7 @@
 
 (defn valid-position? [g2d {:keys [entity/z-order] :as body} entity-id]
   (assert (:entity/collides? body))
-  (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
+  (let [cells* (map deref (keep g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> cells*
               entities
@@ -42,7 +42,7 @@
                 entity/height]
          :as body}]
   (if (or (> (float width) 1) (> (float height) 1))
-    (g2d/get-cells grid (body/touched-tiles body))
+    (keep grid (body/touched-tiles body))
     [(grid (mapv int position))]))
 
 (defn set-occupied-cells! [grid eid]
@@ -53,7 +53,7 @@
     (swap! eid assoc :entity/occupied-cells cells)))
 
 (defn set-touched-cells! [grid eid]
-  (let [cells (g2d/get-cells grid (body/touched-tiles @eid))]
+  (let [cells (keep grid (body/touched-tiles @eid))]
     (assert (not-any? nil? cells))
     (swap! eid assoc :entity/touched-cells cells)
     (doseq [cell cells]
@@ -81,7 +81,7 @@
     (->> circle
          moon-circle/outer-rectangle
          rectangle/touched-tiles
-         (g2d/get-cells g2d)
+         (keep g2d)
          (map deref)
          entities
          (filter #(Intersector/overlaps ^Circle gdx-circle

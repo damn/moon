@@ -1,8 +1,11 @@
 (ns moon.level.uf-caves
-  (:require [moon.tiled-map :as moon-tiled-map]
+  (:require [g2d.fix-nads :refer [fix-nads]]
+            [g2d.flood-fill :refer [flood-fill]]
+            [moon.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
             [moon.caves :as caves]
-            [moon.g2d :as g2d])
+            [moon.g2d :as g2d]
+            [moon.position :as position])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapProperties)
@@ -21,7 +24,7 @@
            :level/start start
            :level/grid grid)))
 
-(defn- fix-nads
+(defn- apply-fix-nads
   [{:keys [level/grid]
     :as level}]
   (let [grid ((:grid2d-fix-nads-fn level) grid)]
@@ -112,14 +115,24 @@
     :as lvlctx}]
   (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
-        grid (g2d/assoc-transition-cells grid)
+        grid (let [grid (reduce #(assoc %1 %2 :transition) grid
+                                (filter (fn [position]
+                                          (and (= :wall (get grid position))
+                                               (some #(= :ground (get grid %))
+                                                     (position/get-8-neighbours position))))
+                                        (g2d/posis grid)))]
+               (assert (or
+                        (= #{:wall :ground :transition} (set (g2d/cells grid)))
+                        (= #{:ground :transition} (set (g2d/cells grid))))
+                       (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
+               grid)
         position->tile (position-tile-fn grid)
         tiled-map (create-tiled-map grid tile-size create-tile position->tile)
         can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
-        spawn-positions (g2d/flood-fill grid start-position can-spawn?)
+        spawn-positions (flood-fill grid start-position can-spawn?)
         creatures (for [position spawn-positions
                         :when (and (not= position start-position)
                                    (<= (rand) spawn-rate))]
@@ -141,7 +154,7 @@
                 cave-size
                 cave-style]}
         (merge {:initial-grid-create-fn caves/create
-                :grid2d-fix-nads-fn g2d/fix-nads
+                :grid2d-fix-nads-fn fix-nads
                 :tile-size 48
                 :texture-path "images/uf_terrain.png"
                 :spawn-rate 0.02
@@ -174,5 +187,5 @@
              :level/scaling scaling
              :level/creature-properties creature-properties}
             [initial-grid
-             fix-nads
+             apply-fix-nads
              last-steps])))
