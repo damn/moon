@@ -30,7 +30,6 @@
   [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
    player-eid raycaster elapsed-time show-body-bounds? active-entities render-z-order]
   (let [player-eid @player-eid
-        raycaster @raycaster
         elapsed-time @elapsed-time
         show-body-bounds? @show-body-bounds?
         active-entities @active-entities

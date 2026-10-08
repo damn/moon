@@ -5,14 +5,6 @@
             [moon.g2d :as g2d])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
-(defn raycaster-data [world]
-  (let [grid (:world/grid world)
-        width (g2d/width grid)
-        height (g2d/height grid)
-        cells (for [cell (map deref (g2d/cells grid))]
-                [(:position cell) (boolean (cell/blocks-vision? cell))])]
-    {:width width :height height :cells cells}))
-
 (defn cell-at [world [x y]]
   (when-let [cell-atom ((:world/grid world) [x y])]
     @cell-atom))
@@ -39,11 +31,23 @@
                      :entities #{}
                      :occupied #{}}))))))
 
+(defn- create-raycaster [grid]
+  (let [width (g2d/width grid)
+        height (g2d/height grid)
+        arr (make-array Boolean/TYPE width height)]
+    (doseq [cell (map deref (g2d/cells grid))]
+      (let [[x y] (:position cell)]
+        (aset arr x y (boolean (cell/blocks-vision? cell)))))
+    [arr width height]))
+
 (defn create [^TiledMap tiled-map]
   (let [props (.getProperties tiled-map)
         width (.get props "width")
-        height (.get props "height")]
+        height (.get props "height")
+        grid (create-grid tiled-map)]
     {:world/id-counter (atom 0)
      :world/entity-ids (atom {})
-     :world/grid (create-grid tiled-map)
-     :world/content-grid (content-grid/create width height 16)}))
+     :world/grid grid
+     :world/content-grid (content-grid/create width height 16)
+     :world/explored-tile-corners (atom (g2d/create width height (constantly false)))
+     :world/raycaster (create-raycaster grid)}))

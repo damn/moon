@@ -13,18 +13,19 @@
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
-(defn update-mouseover-eid! [world raycaster player-eid mouseover-eid stage world-viewport render-z-order]
+(defn update-mouseover-eid! [world player-eid mouseover-eid stage world-viewport render-z-order]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
                   nil
                   (let [player @@player-eid
+                        world* @world
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (grid/point->entities (:world/grid @world) (world-mouse-position world-viewport)))]
+                                     (grid/point->entities (:world/grid world*) (world-mouse-position world-viewport)))]
                     (->> render-z-order
                          (coll/sort-by-order hits #(:entity/z-order @%))
                          reverse
-                         (filter #(raycaster/line-of-sight? @raycaster player @%))
+                         (filter #(raycaster/line-of-sight? (:world/raycaster world*) player @%))
                          first)))]
     (when old-mouseover-eid
       (swap! old-mouseover-eid dissoc :entity/mouseover?))
@@ -43,8 +44,8 @@
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! [batch world-viewport tiled-map raycaster explored-tile-corners world-unit-scale]
-  (let [raycaster @raycaster
+(defn draw-tiled-map! [batch world-viewport tiled-map world world-unit-scale]
+  (let [world* @world
         tiled-map @tiled-map
         ^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         pos (.position camera)]
@@ -53,8 +54,8 @@
                           world-unit-scale
                           camera
                           (tile-color-setter*
-                           {:ray-blocked? (partial raycaster/blocked? raycaster)
-                            :explored-tile-corners explored-tile-corners
+                           {:ray-blocked? (partial raycaster/blocked? (:world/raycaster world*))
+                            :explored-tile-corners (:world/explored-tile-corners world*)
                             :light-position [(.x pos) (.y pos) (.z pos)]
                             :see-all-tiles? false
                             :explored-tile-color (:colors/explored-tile colors)

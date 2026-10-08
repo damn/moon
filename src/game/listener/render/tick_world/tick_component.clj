@@ -28,13 +28,12 @@
        first))
 
 (defn- create-effect-ctx
-  [world raycaster ctx eid]
+  [world ctx eid]
   (let [world @world
-        raycaster @raycaster
         entity @eid
         target (potential-field/nearest-enemy (:world/grid world) entity)
         target (when (and target
-                          (raycaster/line-of-sight? raycaster entity @target))
+                          (raycaster/line-of-sight? (:world/raycaster world) entity @target))
                  target)]
     {:effect/source eid
      :effect/target target
@@ -53,7 +52,7 @@
       (dissoc effect-ctx :effect/target))))
 
 (defn tick-component
-  [world raycaster elapsed-time delta-time audio skin stage textures z-orders
+  [world elapsed-time delta-time audio skin stage textures z-orders
    minimum-size max-speed
    ctx world-mouse-position apply-effects! eid [k v]]
   (let [elapsed-time* @elapsed-time]
@@ -132,7 +131,7 @@
 
       :active-skill
       (let [{:keys [skill effect-ctx counter]} v
-            effect-ctx (update-effect-ctx @raycaster effect-ctx)]
+            effect-ctx (update-effect-ctx (:world/raycaster @world) effect-ctx)]
         (cond
          (not (seq (filter #(applicable? % effect-ctx)
                            (:skill/effects skill))))
@@ -165,8 +164,9 @@
             (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :alert))))
 
       :npc-idle
-      (let [effect-ctx (create-effect-ctx world raycaster ctx eid)]
-        (if-let [skill (choose-skill (partial raycaster/blocked? @raycaster) @eid effect-ctx)]
+      (let [raycaster (:world/raycaster @world)
+            effect-ctx (create-effect-ctx world ctx eid)]
+        (if-let [skill (choose-skill (partial raycaster/blocked? raycaster) @eid effect-ctx)]
           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :start-action [skill effect-ctx])
           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
                                                              [0 0]))))

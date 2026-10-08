@@ -8,10 +8,10 @@
   (:import (com.badlogic.gdx Gdx Graphics)))
 
 (defn- tick-entities!
-  [db schemas world raycaster elapsed-time delta-time active-entities
+  [db schemas world elapsed-time delta-time active-entities
    audio skin stage textures z-orders minimum-size max-speed world-viewport]
   (let [active-entities* @active-entities
-        raycaster* @raycaster
+        raycaster (:world/raycaster @world)
         world-mouse-pos (world-mouse-position world-viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [effect (filter #(applicable? % effect-ctx) effects)]
@@ -20,17 +20,17 @@
                                apply-effects!
                                active-entities*
                                colors
-                               raycaster*)))]
+                               raycaster)))]
       (doseq [eid active-entities*
               component @eid]
-        (tick-component world raycaster elapsed-time delta-time audio skin stage textures z-orders
+        (tick-component world elapsed-time delta-time audio skin stage textures z-orders
                         minimum-size max-speed
                         nil world-mouse-pos
                         apply-effects!
                         eid component)))))
 
 (defn tick-game!
-  [db schemas world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
+  [db schemas world elapsed-time delta-time potential-field-cache active-entities paused?
    audio skin stage textures world-viewport factions-iterations z-orders
    minimum-size max-delta max-speed]
   (when-not @paused?
@@ -43,5 +43,5 @@
                                       faction
                                       @active-entities
                                       max-iterations))
-    (tick-entities! db schemas world raycaster elapsed-time delta-time active-entities
+    (tick-entities! db schemas world elapsed-time delta-time active-entities
                     audio skin stage textures z-orders minimum-size max-speed world-viewport)))

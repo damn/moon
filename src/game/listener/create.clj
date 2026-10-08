@@ -5,14 +5,11 @@
             [game.spawn :refer [spawn-creature]]
             [game.ui :refer [sync-player-ui!]]
             [moon.db :as db]
-            [moon.g2d :as moon-g2d]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.textures :as textures]
-            [moon.world :as world])
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx Files Gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics OrthographicCamera Pixmap Texture Texture$TextureFilter)
-           (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
@@ -77,19 +74,6 @@
                    :textures textures*})]
     {:tiled-map level-tiled-map
      :start-position level-start}))
-
-(defn create-explored-tile-corners! [tiled-map]
-  (let [props (.getProperties ^TiledMap tiled-map)]
-    (moon-g2d/create (.get props "width")
-                     (.get props "height")
-                     (constantly false))))
-
-(defn create-raycaster! [world]
-  (let [{:keys [width height cells]} (world/raycaster-data world)
-        arr (make-array Boolean/TYPE width height)]
-    (doseq [[[x y] blocked?] cells]
-      (aset arr x y (boolean blocked?)))
-    [arr width height]))
 
 (defn spawn-player! [db* schemas world elapsed-time start-position skin stage textures* z-orders minimum-size]
   (let [eid (spawn-entity! world elapsed-time z-orders minimum-size

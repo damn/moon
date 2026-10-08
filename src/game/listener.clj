@@ -7,9 +7,7 @@
             [game.listener.create :refer [bind-player-eid!
                                           create-cursors!
                                           create-default-font!
-                                          create-explored-tile-corners!
                                           create-level!
-                                          create-raycaster!
                                           create-shape-drawer!
                                           create-skin!
                                           create-world-viewport!
@@ -78,9 +76,7 @@
         world (atom nil)
         tiled-map (atom nil)
         start-position (atom nil)
-        raycaster (atom nil)
         player-eid (atom nil)
-        explored-tile-corners (atom nil)
         potential-field-cache (atom nil)
         active-entities (atom nil)
         delta-time (atom nil)
@@ -146,8 +142,6 @@
           (reset! tiled-map level-tiled-map)
           (reset! start-position level-start))
         (reset! world (world/create @tiled-map))
-        (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
-        (reset! raycaster (create-raycaster! @world))
         (spawn-player! db schemas world elapsed-time start-position @skin @stage @textures z-orders minimum-size)
         (bind-player-eid! world player-eid)
         (spawn-map-creatures! db schemas world elapsed-time start-position tiled-map z-orders minimum-size))
@@ -177,12 +171,12 @@
               textures @textures
               world-viewport @world-viewport]
           (ScreenUtils/clear 0 0 0 0)
-          (update-mouseover-eid! world raycaster player-eid mouseover-eid stage world-viewport render-z-order)
+          (update-mouseover-eid! world player-eid mouseover-eid stage world-viewport render-z-order)
           (update-active-entities! world player-eid active-entities)
           (set-camera-to-player! player-eid world-viewport)
-          (draw-tiled-map! batch world-viewport tiled-map raycaster explored-tile-corners world-unit-scale)
+          (draw-tiled-map! batch world-viewport tiled-map world world-unit-scale)
           (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
-                       world player-eid raycaster elapsed-time show-body-bounds? active-entities
+                       world player-eid elapsed-time show-body-bounds? active-entities
                        show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
                        factions-iterations render-z-order)
           (reset! interaction-state
@@ -232,7 +226,7 @@
                            (state->pause-game? (:state (:entity/fsm @@player-eid)))
                            (not (or (key-just-pressed? (:unpause-once controls))
                                     (key-pressed? (:unpause-continously controls)))))))
-          (tick-game! db schemas world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
+          (tick-game! db schemas world elapsed-time delta-time potential-field-cache active-entities paused?
                       audio skin stage textures world-viewport factions-iterations z-orders
                       minimum-size max-delta max-speed)
           (destroy-entities! db schemas world elapsed-time audio skin stage textures z-orders minimum-size)
