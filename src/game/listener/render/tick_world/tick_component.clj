@@ -3,12 +3,15 @@
             [effect.useful :refer [useful?]]
             [game.fsm :refer [handle-fsm-event!]]
             [moon.body :as body]
+            [moon.cell :as cell]
+            [moon.g2d :as g2d]
+            [moon.grid :as grid]
             [moon.number :as number]
+            [moon.potential-field :as potential-field]
             [moon.raycaster :as raycaster]
             [moon.stats :as stats]
             [moon.timer :as timer]
             [moon.v2 :as v2]
-            [moon.world :as world]
             [skill.usable-state :refer [usable-state]]
             [world.relocate-eid :refer [relocate-eid!]]))
 
@@ -29,7 +32,7 @@
   (let [world @world
         raycaster @raycaster
         entity @eid
-        target (world/nearest-enemy world entity)
+        target (potential-field/nearest-enemy (:world/grid world) entity)
         target (when (and target
                           (raycaster/line-of-sight? raycaster entity @target))
                  target)]
@@ -77,7 +80,7 @@
           (swap! eid assoc :entity/destroyed? true)
           (doseq [friendly-eid (->> {:position (:entity/position @eid)
                                      :radius 4}
-                                    (world/circle->entities @world)
+                                    (grid/circle->entities (:world/grid @world))
                                     (filter #(= (:entity/faction @%) faction)))]
             (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size friendly-eid world-mouse-position :alert)))
         nil)
@@ -106,15 +109,16 @@
       (let [{:keys [entity-effects already-hit-bodies piercing?]} v
             world* @world
             entity @eid
+            touched-cells (map deref (g2d/get-cells (:world/grid world*) (body/touched-tiles entity)))
             hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                             (not= (:entity/faction entity)
                                                   (:entity/faction @%))
                                             (:entity/collides? @%)
                                             (body/overlaps? entity
                                                             @%))
-                                      (world/entities-at-touched-tiles world* entity)))
+                                      (grid/entities touched-cells)))
             destroy? (or (and hit-entity (not piercing?))
-                         (world/blocked-at-touched-tiles? world* entity (:entity/z-order entity)))]
+                         (some #(cell/blocked? % (:entity/z-order entity)) touched-cells))]
         (when hit-entity
           (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
                  (conj already-hit-bodies hit-entity)))
@@ -156,7 +160,7 @@
 
       :npc-sleeping
       (let [entity @eid]
-        (when-let [distance (world/nearest-enemy-distance @world entity)]
+        (when-let [distance (potential-field/nearest-enemy-distance (:world/grid @world) entity)]
           (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
             (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :alert))))
 
@@ -164,7 +168,7 @@
       (let [effect-ctx (create-effect-ctx world raycaster ctx eid)]
         (if-let [skill (choose-skill (partial raycaster/blocked? @raycaster) @eid effect-ctx)]
           (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :start-action [skill effect-ctx])
-          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (world/find-direction @world eid)
+          (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (potential-field/find-direction (:world/grid @world) eid)
                                                              [0 0]))))
 
       :entity/movement
@@ -185,7 +189,7 @@
                 movement (assoc movement :delta-time @delta-time)
                 body @eid]
             (when-let [body (if (:entity/collides? body)
-                               (world/try-move-solid-body world* body (:entity/id @eid) movement)
+                               (grid/try-move-solid-body (:world/grid world*) body (:entity/id @eid) movement)
                                (update body :entity/position v2/move movement))]
               (swap! eid assoc :entity/position (:entity/position body))
               (when rotate-in-movement-direction?

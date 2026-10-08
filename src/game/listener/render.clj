@@ -6,9 +6,10 @@
             [game.tile-color :refer [tile-color-setter*]]
             [game.ui :refer [toggle-inventory-visible!]]
             [moon.coll :as coll]
+            [moon.content-grid :as content-grid]
+            [moon.grid :as grid]
             [moon.raycaster :as raycaster]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.world :as world]
             [world.unregister-eid :refer [unregister-eid!]])
   (:import (com.badlogic.gdx Gdx Graphics)
            (com.badlogic.gdx.graphics Cursor OrthographicCamera)
@@ -22,7 +23,7 @@
                   nil
                   (let [player @@player-eid
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (world/point->entities @world (world-mouse-position world-viewport)))]
+                                     (grid/point->entities (:world/grid @world) (world-mouse-position world-viewport)))]
                     (->> render-z-order
                          (coll/sort-by-order hits #(:entity/z-order @%))
                          reverse
@@ -35,7 +36,7 @@
     (reset! mouseover-eid new-eid)))
 
 (defn update-active-entities! [world player-eid active-entities]
-  (reset! active-entities (world/active-entities @world @@player-eid)))
+  (reset! active-entities (content-grid/active-entities (:world/content-grid @world) @@player-eid)))
 
 (defn set-camera-to-player! [player-eid world-viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
@@ -147,7 +148,7 @@
                             (key-pressed? (:unpause-continously controls))))))))
 
 (defn destroy-entities! [db world elapsed-time audio skin stage textures z-orders minimum-size]
-  (doseq [eid (world/destroyed-eids @world)]
+  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
     (unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k

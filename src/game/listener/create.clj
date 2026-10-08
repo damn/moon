@@ -127,7 +127,7 @@
                                                :entity/click-distance-tiles 1.5}})))
 
 (defn bind-player-eid! [world player-eid]
-  (let [eid (world/entity-by-id @world 1)]
+  (let [eid (get @(:world/entity-ids @world) 1)]
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 

@@ -4,7 +4,7 @@
             [effect.handle :refer [handle-effect]]
             [game.colors :refer [colors]]
             [game.mouse :refer [world-mouse-position]]
-            [moon.world :as world])
+            [moon.potential-field :as potential-field])
   (:import (com.badlogic.gdx Gdx Graphics)))
 
 (defn- tick-entities!
@@ -38,10 +38,10 @@
       (reset! delta-time delta-ms)
       (swap! elapsed-time + delta-ms))
     (doseq [[faction max-iterations] factions-iterations]
-      (world/update-potential-fields! @world
-                                      potential-field-cache
-                                      faction
-                                      @active-entities
-                                      max-iterations))
+      (potential-field/update! (:world/grid @world)
+                               potential-field-cache
+                               faction
+                               @active-entities
+                               max-iterations))
     (tick-entities! db world raycaster elapsed-time delta-time active-entities
                     audio skin stage textures z-orders minimum-size max-speed world-viewport)))

@@ -1,51 +1,9 @@
 (ns moon.world
   (:require [moon.tiled-map :as tiled-map]
-            [moon.body :as body]
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]
-            [moon.g2d :as g2d]
-            [moon.grid :as grid]
-            [moon.potential-field :as potential-field])
+            [moon.g2d :as g2d])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
-
-(defn try-move-solid-body [world body entity-id movement]
-  (grid/try-move-solid-body (:world/grid world) body entity-id movement))
-
-(defn nearest-enemy [world entity]
-  (potential-field/nearest-enemy (:world/grid world) entity))
-
-(defn nearest-enemy-distance [world entity]
-  (potential-field/nearest-enemy-distance (:world/grid world) entity))
-
-(defn find-direction [world eid]
-  (potential-field/find-direction (:world/grid world) eid))
-
-(defn point->entities [world position]
-  (grid/point->entities (:world/grid world) position))
-
-(defn circle->entities [world circle]
-  (grid/circle->entities (:world/grid world) circle))
-
-(defn- touched-tile-cells [world entity]
-  (map deref (g2d/get-cells (:world/grid world) (body/touched-tiles entity))))
-
-(defn entities-at-touched-tiles [world entity]
-  (grid/entities (touched-tile-cells world entity)))
-
-(defn blocked-at-touched-tiles? [world entity z-order]
-  (some #(cell/blocked? % z-order) (touched-tile-cells world entity)))
-
-(defn active-entities [world center-entity]
-  (content-grid/active-entities (:world/content-grid world) center-entity))
-
-(defn entity-by-id [world id]
-  (get @(:world/entity-ids world) id))
-
-(defn destroyed-eids [world]
-  (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids world))))
-
-(defn update-potential-fields! [world pf-cache faction entities max-iterations]
-  (potential-field/update! (:world/grid world) pf-cache faction entities max-iterations))
 
 (defn raycaster-data [world]
   (let [grid (:world/grid world)
