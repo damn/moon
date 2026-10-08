@@ -82,8 +82,7 @@
   (.row ^Table table))
 
 (defn- add-component-window [state schema map-widget-table build-widget widget-value]
-  (let [{:keys [db skin]} @state
-        schemas (:db/schemas db)
+  (let [{:keys [schemas skin]} @state
         window (Window. "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-schema/map-keys (schema/malli-form schema schemas))))]
@@ -151,7 +150,7 @@
     table))
 
 (defn create [state schema m build-widget widget-value]
-  (let [schemas (:db/schemas (:db @state))]
+  (let [schemas (:schemas @state)]
     (map-widget-table-create
      {:schema schema
       :build-widget build-widget

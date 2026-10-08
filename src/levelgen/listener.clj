@@ -1,5 +1,7 @@
 (ns levelgen.listener
-  (:require [moon.db :as db]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [moon.db :as db]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
@@ -89,7 +91,7 @@
                                                             world-width
                                                             world-height))))
         (reset! camera (.getCamera ^Viewport @world-viewport))
-        (reset! db (db/create))
+        (reset! db (db/create (-> "schema.edn" io/resource slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
         (reset! tiled-map (generate-level @db @textures @camera uf-caves/create)))

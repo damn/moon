@@ -74,7 +74,8 @@
         textures (atom nil)
         skin (atom nil)
         stage (atom nil)
-        db (db/create)
+        schemas (-> "schema.edn" io/resource slurp edn/read-string)
+        db (db/create schemas)
         world (atom nil)
         tiled-map (atom nil)
         start-position (atom nil)
@@ -141,9 +142,9 @@
         (reset! world (world/create @tiled-map))
         (reset! explored-tile-corners (create-explored-tile-corners! @tiled-map))
         (reset! raycaster (create-raycaster! @world))
-        (spawn-player! db world elapsed-time start-position @skin @stage @textures z-orders minimum-size)
+        (spawn-player! db schemas world elapsed-time start-position @skin @stage @textures z-orders minimum-size)
         (bind-player-eid! world player-eid)
-        (spawn-map-creatures! db world elapsed-time start-position tiled-map z-orders minimum-size))
+        (spawn-map-creatures! db schemas world elapsed-time start-position tiled-map z-orders minimum-size))
 
       (dispose [_]
         (audio.dispose/dispose! @audio)
@@ -220,10 +221,10 @@
                                 key-pressed? button-just-pressed?)
           (clear-interaction-state! interaction-state)
           (update-paused! paused? player-eid key-pressed? key-just-pressed?)
-          (tick-game! db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
+          (tick-game! db schemas world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
                       audio skin stage textures world-viewport factions-iterations z-orders
                       minimum-size max-delta max-speed)
-          (destroy-entities! db world elapsed-time audio skin stage textures z-orders minimum-size)
+          (destroy-entities! db schemas world elapsed-time audio skin stage textures z-orders minimum-size)
           (doseq [[k f] {(:zoom-in controls) (fn []
                                                (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
                                                  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))

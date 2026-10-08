@@ -26,12 +26,14 @@
               stage (Stage. (FitViewport. (float 1440) (float 900)) batch)
               audio (create-audio! Gdx/audio
                                    (create-sound-file-handles! Gdx/files sound-paths))
-              db (db/create)
+              schemas (-> "schema.edn" io/resource slurp edn/read-string)
+              db (db/create schemas)
               textures (textures/create Gdx/files {:folder "resources/"
                                                    :extensions #{"png" "bmp"}})]
           (reset! state {:audio audio
                          :batch batch
                          :db db
+                         :schemas schemas
                          :play-sound! #(play-sound! (:audio @state) %)
                          :skin skin
                          :sound-names (keys audio)

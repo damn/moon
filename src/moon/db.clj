@@ -7,9 +7,8 @@
             [moon.m :refer [recur-sort]]
             [moon.schema :as schema]))
 
-(defn create []
-  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        properties-file (io/resource "properties.edn")
+(defn create [schemas]
+  (let [properties-file (io/resource "properties.edn")
         properties (-> properties-file slurp edn/read-string)]
     (assert (or (empty? properties)
                 (apply distinct? (map :property/id properties))))
@@ -20,8 +19,7 @@
                           {:value property
                            :schema (m/form schema)})))))
     {:db/data (zipmap (map :property/id properties) properties)
-     :db/file properties-file
-     :db/schemas schemas}))
+     :db/file properties-file}))
 
 (defn save!
   [{:keys [db/data db/file]}]
@@ -38,15 +36,15 @@
                with-out-str
                (spit file))))))))
 
-(defn update! [{:keys [db/data db/schemas] :as this} {:keys [property/id] :as property}]
+(defn update! [db schemas {:keys [property/id] :as property}]
   (assert (contains? property :property/id))
-  (assert (contains? data id))
+  (assert (contains? (:db/data db) id))
   (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
     (when-not (m/validate schema property)
       (throw (ex-info (str (me/humanize (m/explain schema property)))
                       {:value property
                        :schema (m/form schema)}))))
-  (let [new-db (update this :db/data assoc id property)]
+  (let [new-db (update db :db/data assoc id property)]
     (save! new-db)
     new-db))
 
@@ -66,20 +64,20 @@
 
 (declare build-values)
 
-(defn- create-value [[k] v db]
+(defn- create-value [[k] v schemas db]
   (case k
     :s/map
-    (build-values (:db/schemas db) v db)
+    (build-values schemas v db)
 
     :s/one-to-many
     (set (map (fn [property-id]
-                (build-values (:db/schemas db)
+                (build-values schemas
                               (get-raw db property-id)
                               db))
               v))
 
     :s/one-to-one
-    (build-values (:db/schemas db)
+    (build-values schemas
                   (get-raw db v)
                   db)
 
@@ -88,18 +86,18 @@
 (defn build-values [schemas property db]
   (reduce (fn [m k]
             (assoc m k
-                   (try (create-value (get schemas k) (k m) db)
+                   (try (create-value (get schemas k) (k m) schemas db)
                         (catch Throwable t
                           (throw (ex-info " " {:k k
                                                :v (k m)} t))))))
           property
           (keys property)))
 
-(defn build [{:keys [db/schemas] :as this} property-id]
+(defn build [db schemas property-id]
   (build-values schemas
-                (get-raw this property-id)
-                this))
+                (get-raw db property-id)
+                db))
 
-(defn build-all [{:keys [db/schemas] :as this} property-type]
-  (map #(build-values schemas % this)
-       (all-raw this property-type)))
+(defn build-all [db schemas property-type]
+  (map #(build-values schemas % db)
+       (all-raw db property-type)))

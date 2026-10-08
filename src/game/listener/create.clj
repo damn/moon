@@ -91,10 +91,10 @@
       (aset arr x y (boolean blocked?)))
     [arr width height]))
 
-(defn spawn-player! [db* world elapsed-time start-position skin stage textures* z-orders minimum-size]
+(defn spawn-player! [db* schemas world elapsed-time start-position skin stage textures* z-orders minimum-size]
   (let [eid (spawn-entity! world elapsed-time z-orders minimum-size
                            (spawn-creature {:position (mapv (partial + 0.5) @start-position)
-                                            :creature-property (db/build db* :creatures/vampire)
+                                            :creature-property (db/build db* schemas :creatures/vampire)
                                             :components {:entity/fsm {:fsm :fsms/player
                                                                       :initial-state :player-idle}
                                                          :entity/faction :good
@@ -109,13 +109,13 @@
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 
-(defn spawn-map-creatures! [db* world elapsed-time start-position tiled-map z-orders minimum-size]
+(defn spawn-map-creatures! [db* schemas world elapsed-time start-position tiled-map z-orders minimum-size]
   (let [sp @start-position]
     (doseq [[position creature-id] (moon-tiled-map/spawn-positions @tiled-map)
             :when (not= position sp)]
       (spawn-entity! world elapsed-time z-orders minimum-size
                      (spawn-creature {:position (mapv (partial + 0.5) position)
-                                      :creature-property (db/build db* (keyword creature-id))
+                                      :creature-property (db/build db* schemas (keyword creature-id))
                                       :components {:entity/fsm {:fsm :fsms/npc
                                                                 :initial-state :npc-sleeping}
                                                    :entity/faction :evil}})))))

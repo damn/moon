@@ -8,14 +8,14 @@
   (:import (com.badlogic.gdx Gdx Graphics)))
 
 (defn- tick-entities!
-  [db world raycaster elapsed-time delta-time active-entities
+  [db schemas world raycaster elapsed-time delta-time active-entities
    audio skin stage textures z-orders minimum-size max-speed world-viewport]
   (let [active-entities* @active-entities
         raycaster* @raycaster
         world-mouse-pos (world-mouse-position world-viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [effect (filter #(applicable? % effect-ctx) effects)]
-                (handle-effect db world elapsed-time audio skin stage textures z-orders minimum-size
+                (handle-effect db schemas world elapsed-time audio skin stage textures z-orders minimum-size
                                effect effect-ctx world-mouse-pos
                                apply-effects!
                                active-entities*
@@ -30,7 +30,7 @@
                         eid component)))))
 
 (defn tick-game!
-  [db world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
+  [db schemas world raycaster elapsed-time delta-time potential-field-cache active-entities paused?
    audio skin stage textures world-viewport factions-iterations z-orders
    minimum-size max-delta max-speed]
   (when-not @paused?
@@ -43,5 +43,5 @@
                                       faction
                                       @active-entities
                                       max-iterations))
-    (tick-entities! db world raycaster elapsed-time delta-time active-entities
+    (tick-entities! db schemas world raycaster elapsed-time delta-time active-entities
                     audio skin stage textures z-orders minimum-size max-speed world-viewport)))

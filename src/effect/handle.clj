@@ -15,13 +15,13 @@
 (def ^:private spiderweb-duration 5)
 
 (defn handle-effect
-  [db world elapsed-time audio skin stage textures z-orders minimum-size
+  [db schemas world elapsed-time audio skin stage textures z-orders minimum-size
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities colors raycaster]
   (let [elapsed-time* @elapsed-time]
     (case k
       :effects/audiovisual
-      (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:effect/target-position effect-ctx) v)
+      (audiovisual! db schemas world elapsed-time audio skin stage textures z-orders minimum-size (:effect/target-position effect-ctx) v)
 
       :effects/projectile
       (let [source (:effect/source effect-ctx)
@@ -76,12 +76,12 @@
                                :color (:colors/target-entity-line colors)
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
-          (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size
+          (audiovisual! db schemas world elapsed-time audio skin stage textures z-orders minimum-size
                         (body/end-point body target-body maxrange)
                         :audiovisuals/hit-ground)))
 
       :effects.target/audiovisual
-      (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position @(:effect/target effect-ctx)) v)
+      (audiovisual! db schemas world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position @(:effect/target effect-ctx)) v)
 
       :effects.target/convert
       (let [source (:effect/source effect-ctx)
@@ -123,7 +123,7 @@
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
            (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-           (audiovisual! db world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position target*) :audiovisuals/damage))))
+           (audiovisual! db schemas world elapsed-time audio skin stage textures z-orders minimum-size (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
       (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size (:effect/target effect-ctx) world-mouse-position :kill)
@@ -131,7 +131,7 @@
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle-effect db world elapsed-time audio skin stage textures z-orders minimum-size
+      (handle-effect db schemas world elapsed-time audio skin stage textures z-orders minimum-size
                      [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
                      effect-ctx
                      world-mouse-position

@@ -8,9 +8,9 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn main-window [state]
-  (let [{:keys [db skin stage]} @state
+  (let [{:keys [schemas skin stage]} @state
         window (Window. "Edit" skin)]
-    (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys (:db/schemas db))))]
+    (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys schemas)))]
       (.add window (doto (TextButton. (str/capitalize (name property-type)) skin)
                      (.addListener (proxy [ChangeListener] []
                                      (changed [event _actor]
