@@ -1,11 +1,8 @@
 (ns moon.grid
   (:require [clojure.math :as math]
             [moon.body :as body]
-            [moon.cell :as cell]
-            [moon.circle :as moon-circle]
-            [moon.g2d :as g2d]
-            [moon.rectangle :as rectangle])
-  (:import (com.badlogic.gdx.math Circle Intersector Rectangle)))
+            [moon.cell :as cell])
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn valid-position? [g2d {:keys [entity/z-order] :as body} entity-id]
   (assert (:entity/collides? body))
@@ -71,15 +68,3 @@
   (when-let [cell (g2d (mapv int pos))]
     (filter #(.contains ^Rectangle (body/rectangle @%) (float (first pos)) (float (second pos)))
             (:entities @cell))))
-
-(defn circle->entities [g2d {:keys [position radius] :as circle}]
-  (let [[x y] position
-        gdx-circle (Circle. (float x) (float y) (float radius))]
-    (->> circle
-         moon-circle/outer-rectangle
-         rectangle/touched-tiles
-         (keep g2d)
-         (map deref)
-         (into #{} (mapcat :entities))
-         (filter #(Intersector/overlaps ^Circle gdx-circle
-                                        ^Rectangle (body/rectangle @%))))))

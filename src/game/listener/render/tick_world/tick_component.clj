@@ -4,16 +4,19 @@
             [game.fsm :refer [handle-fsm-event!]]
             [moon.body :as body]
             [moon.cell :as cell]
+            [moon.circle :as moon-circle]
             [moon.grid :as grid]
             [grid.find-direction :refer [find-direction]]
             [moon.number :as number]
             [moon.potential-field :as potential-field]
             [moon.raycaster :as raycaster]
+            [moon.rectangle :as rectangle]
             [moon.stats :as stats]
             [moon.timer :as timer]
             [moon.v2 :as v2]
             [skill.usable-state :refer [usable-state]]
-            [world.relocate-eid :refer [relocate-eid!]]))
+            [world.relocate-eid :refer [relocate-eid!]])
+  (:import (com.badlogic.gdx.math Circle Intersector Rectangle)))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
   (->> entity
@@ -77,10 +80,20 @@
       (let [{:keys [counter faction]} v]
         (when (timer/stopped? elapsed-time* counter)
           (swap! eid assoc :entity/destroyed? true)
-          (doseq [friendly-eid (->> {:position (:entity/position @eid)
-                                     :radius 4}
-                                    (grid/circle->entities (:world/grid @world))
-                                    (filter #(= (:entity/faction @%) faction)))]
+          (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
+                                             :radius 4}
+                                     [x y] (:position circle)
+                                     g2d (:world/grid @world)
+                                     gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
+                                 (->> circle
+                                      moon-circle/outer-rectangle
+                                      rectangle/touched-tiles
+                                      (keep g2d)
+                                      (map deref)
+                                      (into #{} (mapcat :entities))
+                                      (filter #(Intersector/overlaps ^Circle gdx-circle
+                                                                     ^Rectangle (body/rectangle @%)))
+                                      (filter #(= (:entity/faction @%) faction))))]
             (handle-fsm-event! world elapsed-time audio skin stage textures z-orders minimum-size friendly-eid world-mouse-position :alert)))
         nil)
 
