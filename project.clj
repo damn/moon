@@ -23,7 +23,7 @@
   :source-paths ["src"]
   :resource-paths ["resources/" "wav/" "edn/"]
   :aliases {
-            "dev"      ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
+            "game"     ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
             "levelgen" ["run" "-m" "loop" "((requiring-resolve 'levelgen/-main))"]
             "editor"   ["run" "-m" "loop" "((requiring-resolve 'editor/-main))"]
             }

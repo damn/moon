@@ -1,9 +1,0 @@
-
-            [moon.scene2d.group :as group :refer [find-actor
-                                                  add-actor!
-                                                  get-children]]
-
-  => only verbs -> then pass capabilities instead of actors ? wtf
-  also one namespace only? and / or refer everything ?
-  small functions no nesting of forms symbolic programming
-

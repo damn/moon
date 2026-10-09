@@ -1,8 +1,0 @@
-what is the libgdx engine for the game
-no shared libgdx namespaces?
-one namespace the libgdx stuff for the game (draw,ui,input,?)
--> closed over all libgdx as separate lib.
-
-no editor/levelgen/tmx?
-
--> no imports - ONE namespace = the engine => receives certain callbacks!
