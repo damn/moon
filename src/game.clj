@@ -57,27 +57,6 @@
    :toggle-inventory Input$Keys/I
    :toggle-entity-info Input$Keys/E})
 
-(def ^:private key-pressed-actions
-  {(:zoom-in controls) (fn [{:keys [world-viewport]}]
-                         (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
-                           (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-                           (.update camera)))
-   (:zoom-out controls) (fn [{:keys [world-viewport]}]
-                          (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
-                            (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-                            (.update camera)))})
-
-(def ^:private key-just-pressed-actions
-  {(:close-windows-key controls) (fn [{:keys [stage]}]
-                                   (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
-                                        (run! #(.setVisible ^Actor % false))))
-   (:toggle-inventory controls) (fn [{:keys [stage]}]
-                                  (toggle-inventory-visible! @stage))
-   (:toggle-entity-info controls) (fn [{:keys [stage]}]
-                                    (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
-                                      (.setVisible ^Actor entity-info
-                                                   (not (.isVisible ^Actor entity-info)))))})
-
 (defn- add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
          (if-let [existing (:entity/string-effect entity)]
@@ -279,6 +258,27 @@
   (let [inventory (-> (.getRoot ^Stage stage)
                       (.findActor "moon.ui.windows.inventory"))]
     (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
+
+(def ^:private key-pressed-actions
+  {(:zoom-in controls) (fn [{:keys [world-viewport]}]
+                         (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+                           (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
+                           (.update camera)))
+   (:zoom-out controls) (fn [{:keys [world-viewport]}]
+                          (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+                            (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
+                            (.update camera)))})
+
+(def ^:private key-just-pressed-actions
+  {(:close-windows-key controls) (fn [{:keys [stage]}]
+                                   (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
+                                        (run! #(.setVisible ^Actor % false))))
+   (:toggle-inventory controls) (fn [{:keys [stage]}]
+                                  (toggle-inventory-visible! @stage))
+   (:toggle-entity-info controls) (fn [{:keys [stage]}]
+                                    (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
+                                      (.setVisible ^Actor entity-info
+                                                   (not (.isVisible ^Actor entity-info)))))})
 
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
@@ -2113,7 +2113,7 @@
                         :player-moving :cursors/walking
                         :player-idle (fn
                                        [eid]
-                                       (let [[k params] @interaction-state]
+                                       (let [[k params] interaction-state]
                                          (case k
                                            :interaction-state/mouseover-actor
                                            (let [[actor-type params] params
@@ -2288,7 +2288,7 @@
       (if move-v
         (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-pos :movement-input move-v)
         (when left-button-pressed?
-          (interaction-state->txs @interaction-state
+          (interaction-state->txs interaction-state
                                   world
                                   stage
                                   play-sound!
@@ -2413,11 +2413,48 @@
   (run! Disposable/.dispose (vals @textures))
   (Disposable/.dispose (:world/tiled-map @world)))
 
+(defn- create-interaction-state [world mouseover-eid stage world-viewport]
+  (let [player-eid (:world/player-eid @world)
+        mouseover-eid @mouseover-eid
+        mouseover-actor (current-mouseover-actor stage)
+        world-mouse-position (world-mouse-position world-viewport)]
+    (cond
+      mouseover-actor
+      [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+
+      (and mouseover-eid
+           (:entity/clickable @mouseover-eid))
+      [:interaction-state/clickable-mouseover-eid
+       {:clicked-eid mouseover-eid
+        :in-click-range? (< (v2/distance (:entity/position @player-eid)
+                                         (:entity/position @mouseover-eid))
+                            (:entity/click-distance-tiles @player-eid))}]
+
+      :else
+      (if-let [skill-id (-> (.getRoot ^Stage stage)
+                            (.findActor "moon.ui.action-bar")
+                            action-bar/selected-skill)]
+        (let [entity @player-eid
+              skill (skill-id (:entity/skills entity))
+              target-position (or (and mouseover-eid
+                                       (:entity/position @mouseover-eid))
+                                  world-mouse-position)
+              effect-ctx {:effect/source player-eid
+                          :effect/target mouseover-eid
+                          :effect/target-position target-position
+                          :effect/target-direction (v2/direction (:entity/position @player-eid)
+                                                                target-position)}
+              state (usable-state skill entity effect-ctx)]
+          (if (= state :usable)
+            [:interaction-state.skill/usable [skill effect-ctx]]
+            [:interaction-state.skill/not-usable state]))
+        [:interaction-state/no-skill-selected]))))
+
 (defn- render!
   [{:keys [world mouseover-eid stage world-viewport render-z-order active-entities
            batch world-unit-scale default-font shape-drawer textures unit-scale
            show-body-bounds? show-tile-grid? show-cell-entities? show-cell-occupied?
-           show-potential-field-colors? factions-iterations interaction-state
+           show-potential-field-colors? factions-iterations
            cursors play-sound! skin paused? pausing? state->pause-game?
            db schemas max-delta max-speed]
     :as ctx}]
@@ -2430,48 +2467,12 @@
                world show-body-bounds? active-entities
                show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
                factions-iterations render-z-order)
-  (reset! interaction-state
-          (let [player-eid (:world/player-eid @world)
-                mouseover-eid @mouseover-eid
-                mouseover-actor (current-mouseover-actor @stage)
-                world-mouse-position (world-mouse-position @world-viewport)]
-            (cond
-              mouseover-actor
-              [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
-
-              (and mouseover-eid
-                   (:entity/clickable @mouseover-eid))
-              [:interaction-state/clickable-mouseover-eid
-               {:clicked-eid mouseover-eid
-                :in-click-range? (< (v2/distance (:entity/position @player-eid)
-                                                 (:entity/position @mouseover-eid))
-                                    (:entity/click-distance-tiles @player-eid))}]
-
-              :else
-              (if-let [skill-id (-> (.getRoot ^Stage @stage)
-                                    (.findActor "moon.ui.action-bar")
-                                    action-bar/selected-skill)]
-                (let [entity @player-eid
-                      skill (skill-id (:entity/skills entity))
-                      target-position (or (and mouseover-eid
-                                               (:entity/position @mouseover-eid))
-                                          world-mouse-position)
-                      effect-ctx {:effect/source player-eid
-                                  :effect/target mouseover-eid
-                                  :effect/target-position target-position
-                                  :effect/target-direction (v2/direction (:entity/position @player-eid)
-                                                                        target-position)}
-                      state (usable-state skill entity effect-ctx)]
-                  (if (= state :usable)
-                    [:interaction-state.skill/usable [skill effect-ctx]]
-                    [:interaction-state.skill/not-usable state]))
-                [:interaction-state/no-skill-selected]))))
-  (update-cursor! @cursors interaction-state world)
-  (handle-player-input! world interaction-state
-                        play-sound! @skin @stage @textures @world-viewport
-                        #(.isKeyPressed ^Input Gdx/input (int %))
-                        #(.isButtonJustPressed ^Input Gdx/input (int %)))
-  (reset! interaction-state nil)
+  (let [interaction-state (create-interaction-state world mouseover-eid @stage @world-viewport)]
+    (update-cursor! @cursors interaction-state world)
+    (handle-player-input! world interaction-state
+                          play-sound! @skin @stage @textures @world-viewport
+                          #(.isKeyPressed ^Input Gdx/input (int %))
+                          #(.isButtonJustPressed ^Input Gdx/input (int %))))
   (reset! paused?
           (or #_error
               (and pausing?
@@ -2539,7 +2540,6 @@
         show-cell-occupied? (atom false)
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
-        interaction-state (atom nil)
         unit-scale (atom 1)
         pausing? true
         state->pause-game? {:active-skill false
@@ -2580,7 +2580,6 @@
              :show-cell-occupied? show-cell-occupied?
              :show-body-bounds? show-body-bounds?
              :show-tile-grid? show-tile-grid?
-             :interaction-state interaction-state
              :unit-scale unit-scale
              :pausing? pausing?
              :state->pause-game? state->pause-game?}]
