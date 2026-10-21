@@ -6,8 +6,7 @@
     {:image/file "images/oryx_16bit_scifi_FX_lg_trans.png",
      :image/bounds [96 64 32 32]}),
    :animation/looping? false},
-  :property/id :audiovisuals/convert,
-  :tx/sound "bfxr_burrow.wav"}
+  :property/id :audiovisuals/convert}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -18,8 +17,7 @@
     {:image/file "images/uf_FX_impact.png",
      :image/bounds [240 0 48 48]}),
    :animation/looping? false},
-  :property/id :audiovisuals/damage,
-  :tx/sound "bfxr_normalhit.wav"}
+  :property/id :audiovisuals/damage}
  {:entity/animation
   {:animation/frame-duration 0.025,
    :animation/frames
@@ -30,8 +28,7 @@
     {:image/file "images/uf_FX.png", :image/bounds [96 168 24 24]}
     {:image/file "images/uf_FX.png", :image/bounds [120 168 24 24]}),
    :animation/looping? false},
-  :property/id :audiovisuals/hit-wall,
-  :tx/sound "bfxr_projectile_wallhit.wav"}
+  :property/id :audiovisuals/hit-wall}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -42,8 +39,7 @@
     {:image/file "images/uf_FX.png", :image/bounds [192 144 24 24]}
     {:image/file "images/uf_FX.png", :image/bounds [216 144 24 24]}),
    :animation/looping? false},
-  :property/id :audiovisuals/creature-die,
-  :tx/sound "bfxr_defaultmonsterdeath.wav"}
+  :property/id :audiovisuals/creature-die}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -53,8 +49,7 @@
     {:image/file "images/uf_FX_impact.png",
      :image/bounds [96 48 48 48]}),
    :animation/looping? false},
-  :property/id :audiovisuals/hit-ground,
-  :tx/sound "bfxr_fisthit.wav"}
+  :property/id :audiovisuals/hit-ground}
  {:entity/animation
   {:animation/frame-duration 0.05,
    :animation/frames
@@ -65,8 +60,7 @@
     {:image/file "images/uf_FX_impact.png",
      :image/bounds [384 48 48 48]}),
    :animation/looping? false},
-  :property/id :audiovisuals/spawn,
-  :tx/sound "bfxr_curse.wav"}
+  :property/id :audiovisuals/spawn}
  {:creature/level 1,
   :entity/animation
   {:animation/frame-duration 0.1,

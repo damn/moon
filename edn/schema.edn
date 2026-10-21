@@ -12,10 +12,7 @@
  :animation/looping? [:s/boolean]
  :entity/animation [:s/animation],
 
- :tx/sound [:s/sound],
-
  :properties/audiovisuals [:s/map [:property/id
-                                   :tx/sound
                                    :entity/animation]],
 
  :property/pretty-name [:s/string],

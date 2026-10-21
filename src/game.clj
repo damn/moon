@@ -641,11 +641,10 @@
       (after-create-component elapsed-time* eid component))
     eid))
 
-(defn- audiovisual! [db schemas world play-sound! position audiovisual]
-  (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
-                                             (db/build db schemas audiovisual)
-                                             audiovisual)]
-    (play-sound! sound)
+(defn- audiovisual! [db schemas world position audiovisual]
+  (let [{:keys [entity/animation]} (if (keyword? audiovisual)
+                                     (db/build db schemas audiovisual)
+                                     audiovisual)]
     (spawn-entity! @world
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
@@ -884,7 +883,8 @@
       :effects/spawn
       (let [source (:effect/source effect-ctx)
             position (:effect/target-position effect-ctx)]
-        (audiovisual! db schemas world play-sound! position :audiovisuals/spawn)
+        (play-sound! "bfxr_curse.wav")
+        (audiovisual! db schemas world position :audiovisuals/spawn)
         (spawn-entity! @world
                        (spawn-creature {:position position
                                         :creature-property v
@@ -922,14 +922,16 @@
                                :color (color/float-bits 1 0 0 0.75)
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
-          (audiovisual! db schemas world play-sound!
-                        (body/end-point body target-body maxrange)
-                        :audiovisuals/hit-ground)))
+          (do (play-sound! "bfxr_fisthit.wav")
+              (audiovisual! db schemas world
+                            (body/end-point body target-body maxrange)
+                            :audiovisuals/hit-ground))))
 
       :effects.target/convert
       (let [source (:effect/source effect-ctx)
             target (:effect/target effect-ctx)]
-        (audiovisual! db schemas world play-sound! (:entity/position @target) :audiovisuals/convert)
+        (play-sound! "bfxr_burrow.wav")
+        (audiovisual! db schemas world (:entity/position @target) :audiovisuals/convert)
         (swap! target assoc :entity/faction (:entity/faction @source))
         nil)
 
@@ -969,7 +971,8 @@
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
            (handle-fsm-event! world play-sound! skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-           (audiovisual! db schemas world play-sound! (:entity/position target*) :audiovisuals/damage))))
+           (play-sound! "bfxr_normalhit.wav")
+           (audiovisual! db schemas world (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
       (handle-fsm-event! world play-sound! skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
@@ -2142,7 +2145,10 @@
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
-        (audiovisual! db schemas world play-sound! (:entity/position @eid) v)
+        (do (case v
+              :audiovisuals/creature-die (play-sound! "bfxr_defaultmonsterdeath.wav")
+              :audiovisuals/hit-wall (play-sound! "bfxr_projectile_wallhit.wav"))
+            (audiovisual! db schemas world (:entity/position @eid) v))
         nil))))
 
 (defn draw-world!
