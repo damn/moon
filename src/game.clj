@@ -2456,101 +2456,89 @@
         (Disposable/.dispose @tiled-map))
 
       (render [_]
-        (let [input Gdx/input
-              key-pressed? #(.isKeyPressed ^Input input (int %))
-              key-just-pressed? #(.isKeyJustPressed ^Input input (int %))
-              button-just-pressed? #(.isButtonJustPressed ^Input input (int %))
-              batch @batch
-              cursors @cursors
-              default-font @default-font
-              shape-drawer @shape-drawer
-              skin @skin
-              stage @stage
-              textures @textures
-              world-viewport @world-viewport]
-          (ScreenUtils/clear 0 0 0 0)
-          (update-mouseover-eid! world player-eid mouseover-eid stage world-viewport render-z-order)
-          (update-active-entities! world player-eid active-entities)
-          (set-camera-to-player! player-eid world-viewport)
-          (draw-tiled-map! batch world-viewport tiled-map world world-unit-scale)
-          (draw-world! batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
-                       world player-eid show-body-bounds? active-entities
-                       show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
-                       factions-iterations render-z-order)
-          (reset! interaction-state
-                  (let [player-eid @player-eid
-                        mouseover-eid @mouseover-eid
-                        mouseover-actor (current-mouseover-actor stage)
-                        world-mouse-position (world-mouse-position world-viewport)]
-                    (cond
-                      mouseover-actor
-                      [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+        (ScreenUtils/clear 0 0 0 0)
+        (update-mouseover-eid! world player-eid mouseover-eid @stage @world-viewport render-z-order)
+        (update-active-entities! world player-eid active-entities)
+        (set-camera-to-player! player-eid @world-viewport)
+        (draw-tiled-map! @batch @world-viewport tiled-map world world-unit-scale)
+        (draw-world! @batch @default-font @shape-drawer @stage @textures @world-viewport world-unit-scale unit-scale
+                     world player-eid show-body-bounds? active-entities
+                     show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
+                     factions-iterations render-z-order)
+        (reset! interaction-state
+                (let [player-eid @player-eid
+                      mouseover-eid @mouseover-eid
+                      mouseover-actor (current-mouseover-actor @stage)
+                      world-mouse-position (world-mouse-position @world-viewport)]
+                  (cond
+                    mouseover-actor
+                    [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
 
-                      (and mouseover-eid
-                           (:entity/clickable @mouseover-eid))
-                      [:interaction-state/clickable-mouseover-eid
-                       {:clicked-eid mouseover-eid
-                        :in-click-range? (< (v2/distance (:entity/position @player-eid)
-                                                         (:entity/position @mouseover-eid))
-                                            (:entity/click-distance-tiles @player-eid))}]
-
-                      :else
-                      (if-let [skill-id (-> (.getRoot ^Stage stage)
-                                            (.findActor "moon.ui.action-bar")
-                                            action-bar/selected-skill)]
-                        (let [entity @player-eid
-                              skill (skill-id (:entity/skills entity))
-                              target-position (or (and mouseover-eid
+                    (and mouseover-eid
+                         (:entity/clickable @mouseover-eid))
+                    [:interaction-state/clickable-mouseover-eid
+                     {:clicked-eid mouseover-eid
+                      :in-click-range? (< (v2/distance (:entity/position @player-eid)
                                                        (:entity/position @mouseover-eid))
-                                                  world-mouse-position)
-                              effect-ctx {:effect/source player-eid
-                                          :effect/target mouseover-eid
-                                          :effect/target-position target-position
-                                          :effect/target-direction (v2/direction (:entity/position @player-eid)
-                                                                                target-position)}
-                              state (usable-state skill entity effect-ctx)]
-                          (if (= state :usable)
-                            [:interaction-state.skill/usable [skill effect-ctx]]
-                            [:interaction-state.skill/not-usable state]))
-                        [:interaction-state/no-skill-selected]))))
-          (update-cursor! cursors interaction-state player-eid)
-          (handle-player-input! world interaction-state player-eid
-                                play-sound! skin stage textures world-viewport
-                                key-pressed? button-just-pressed?)
-          (reset! interaction-state nil)
-          (reset! paused?
-                  (or #_error
-                      (and pausing?
-                           (state->pause-game? (:state (:entity/fsm @@player-eid)))
-                           (not (or (key-just-pressed? (:unpause-once controls))
-                                    (key-pressed? (:unpause-continously controls)))))))
-          (tick-game! db schemas world delta-time potential-field-cache active-entities paused?
-                      play-sound! skin stage textures world-viewport factions-iterations
-                      max-delta max-speed)
-          (destroy-entities! db schemas world play-sound! skin stage textures)
-          (doseq [[k f] {(:zoom-in controls) (fn []
-                                               (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
-                                                 (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-                                                 (.update camera)))
-                         (:zoom-out controls) (fn []
-                                                (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)]
-                                                  (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-                                                  (.update camera)))}]
-            (when (key-pressed? k)
-              (f)))
-          (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                         (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
-                                                              (run! #(.setVisible ^Actor % false))))
-                         (:toggle-inventory controls) #(toggle-inventory-visible! stage)
-                         (:toggle-entity-info controls) (fn []
-                                                          (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
-                                                            (.setVisible ^Actor entity-info
-                                                                         (not (.isVisible ^Actor entity-info)))))}]
-            (when (key-just-pressed? k)
-              (f)))
-          (let [^Stage stage stage]
-            (.act stage)
-            (.draw stage))))
+                                          (:entity/click-distance-tiles @player-eid))}]
+
+                    :else
+                    (if-let [skill-id (-> (.getRoot ^Stage @stage)
+                                          (.findActor "moon.ui.action-bar")
+                                          action-bar/selected-skill)]
+                      (let [entity @player-eid
+                            skill (skill-id (:entity/skills entity))
+                            target-position (or (and mouseover-eid
+                                                     (:entity/position @mouseover-eid))
+                                                world-mouse-position)
+                            effect-ctx {:effect/source player-eid
+                                        :effect/target mouseover-eid
+                                        :effect/target-position target-position
+                                        :effect/target-direction (v2/direction (:entity/position @player-eid)
+                                                                              target-position)}
+                            state (usable-state skill entity effect-ctx)]
+                        (if (= state :usable)
+                          [:interaction-state.skill/usable [skill effect-ctx]]
+                          [:interaction-state.skill/not-usable state]))
+                      [:interaction-state/no-skill-selected]))))
+        (update-cursor! @cursors interaction-state player-eid)
+        (handle-player-input! world interaction-state player-eid
+                              play-sound! @skin @stage @textures @world-viewport
+                              #(.isKeyPressed ^Input Gdx/input (int %))
+                              #(.isButtonJustPressed ^Input Gdx/input (int %)))
+        (reset! interaction-state nil)
+        (reset! paused?
+                (or #_error
+                    (and pausing?
+                         (state->pause-game? (:state (:entity/fsm @@player-eid)))
+                         (not (or (.isKeyJustPressed ^Input Gdx/input (int (:unpause-once controls)))
+                                  (.isKeyPressed ^Input Gdx/input (int (:unpause-continously controls))))))))
+        (tick-game! db schemas world delta-time potential-field-cache active-entities paused?
+                    play-sound! @skin @stage @textures @world-viewport factions-iterations
+                    max-delta max-speed)
+        (destroy-entities! db schemas world play-sound! @skin @stage @textures)
+        (doseq [[k f] {(:zoom-in controls) (fn []
+                                             (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
+                                               (.update camera)))
+                       (:zoom-out controls) (fn []
+                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
+                                                (.update camera)))}]
+          (when (.isKeyPressed ^Input Gdx/input (int k))
+            (f)))
+        (doseq [[k f] {(:close-windows-key controls) (fn []
+                                                       (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
+                                                            (run! #(.setVisible ^Actor % false))))
+                       (:toggle-inventory controls) #(toggle-inventory-visible! @stage)
+                       (:toggle-entity-info controls) (fn []
+                                                        (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
+                                                          (.setVisible ^Actor entity-info
+                                                                       (not (.isVisible ^Actor entity-info)))))}]
+          (when (.isKeyJustPressed ^Input Gdx/input (int k))
+            (f)))
+        (.act ^Stage @stage)
+        (.draw ^Stage @stage))
 
       (resize [_ width height]
         (.update (.getViewport ^Stage @stage) width height true)
