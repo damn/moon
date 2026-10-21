@@ -2456,91 +2456,61 @@
   (.update ^Viewport @viewport width height false))
 
 (def listener
-  (let [world-unit-scale (float (/ 48))
-        minimum-size 0.39
+  (let [minimum-size 0.39
         max-delta 0.04
-        max-speed (/ minimum-size max-delta)
         z-orders [:z-order/on-ground
                   :z-order/ground
                   :z-order/flying
                   :z-order/effect]
-        render-z-order (apply hash-map (interleave z-orders (range)))
-        factions-iterations {:good 15
-                             :evil 5}
-        level-fn uf-caves/create
-        default-font-params {:path "fonts/films.EXL_____.ttf"
-                             :size 16
-                             :quality-scaling 2
-                             :use-integer-positions? false}
-        sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
-        audio (atom nil)
-        play-sound! (fn [sound-name]
-                      (let [sounds @audio]
-                        (assert (contains? sounds sound-name) (str sound-name))
-                        (.play ^Sound (get sounds sound-name))))
-        batch (atom nil)
-        cursors (atom nil)
-        default-font (atom nil)
-        viewport (atom nil)
-        shape-drawer (atom nil)
-        shape-drawer-texture (atom nil)
-        textures (atom nil)
-        skin (atom nil)
-        stage (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        db (db/create schemas (-> "properties.edn" io/resource slurp edn/read-string))
-        world (atom nil)
-        active-entities (atom nil)
-        mouseover-eid (atom nil)
-        paused? (atom false)
-        show-potential-field-colors? (atom nil)
-        show-cell-entities? (atom false)
-        show-cell-occupied? (atom false)
-        show-body-bounds? (atom false)
-        show-tile-grid? (atom false)
-        unit-scale (atom 1)
-        pausing? true
-        state->pause-game? {:active-skill false
-                            :stunned false
-                            :player-moving false
-                            :player-idle true
-                            :player-dead true
-                            :player-item-on-cursor true}
-        ctx {:world-unit-scale world-unit-scale
+        audio (atom nil)
+        ctx {:world-unit-scale (float (/ 48))
              :minimum-size minimum-size
              :max-delta max-delta
-             :max-speed max-speed
+             :max-speed (/ minimum-size max-delta)
              :z-orders z-orders
-             :render-z-order render-z-order
-             :factions-iterations factions-iterations
-             :level-fn level-fn
-             :default-font-params default-font-params
-             :sound-paths sound-paths
+             :render-z-order (apply hash-map (interleave z-orders (range)))
+             :factions-iterations {:good 15
+                                   :evil 5}
+             :level-fn uf-caves/create
+             :default-font-params {:path "fonts/films.EXL_____.ttf"
+                                   :size 16
+                                   :quality-scaling 2
+                                   :use-integer-positions? false}
+             :sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
              :audio audio
-             :play-sound! play-sound!
-             :batch batch
-             :cursors cursors
-             :default-font default-font
-             :viewport viewport
-             :shape-drawer shape-drawer
-             :shape-drawer-texture shape-drawer-texture
-             :textures textures
-             :skin skin
-             :stage stage
+             :play-sound! (fn [sound-name]
+                            (let [sounds @audio]
+                              (assert (contains? sounds sound-name) (str sound-name))
+                              (.play ^Sound (get sounds sound-name))))
+             :batch (atom nil)
+             :cursors (atom nil)
+             :default-font (atom nil)
+             :viewport (atom nil)
+             :shape-drawer (atom nil)
+             :shape-drawer-texture (atom nil)
+             :textures (atom nil)
+             :skin (atom nil)
+             :stage (atom nil)
              :schemas schemas
-             :db db
-             :world world
-             :active-entities active-entities
-             :mouseover-eid mouseover-eid
-             :paused? paused?
-             :show-potential-field-colors? show-potential-field-colors?
-             :show-cell-entities? show-cell-entities?
-             :show-cell-occupied? show-cell-occupied?
-             :show-body-bounds? show-body-bounds?
-             :show-tile-grid? show-tile-grid?
-             :unit-scale unit-scale
-             :pausing? pausing?
-             :state->pause-game? state->pause-game?}]
+             :db (db/create schemas (-> "properties.edn" io/resource slurp edn/read-string))
+             :world (atom nil)
+             :active-entities (atom nil)
+             :mouseover-eid (atom nil)
+             :paused? (atom false)
+             :show-potential-field-colors? (atom nil)
+             :show-cell-entities? (atom false)
+             :show-cell-occupied? (atom false)
+             :show-body-bounds? (atom false)
+             :show-tile-grid? (atom false)
+             :unit-scale (atom 1)
+             :pausing? true
+             :state->pause-game? {:active-skill false
+                                  :stunned false
+                                  :player-moving false
+                                  :player-idle true
+                                  :player-dead true
+                                  :player-item-on-cursor true}}]
     (reify ApplicationListener
       (create [_]
         (create! ctx))
