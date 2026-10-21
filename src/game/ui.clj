@@ -4,7 +4,6 @@
             [moon.mods :as mods]
             [moon.number :as number]
             [moon.stats :as stats]
-            [moon.string :as string]
             [moon.textures :as textures]
             [moon.timer :as timer]
             [ui.action-bar :as action-bar])
@@ -97,6 +96,15 @@
                :entity/species "LIGHT_GRAY"
                :entity/temp-modifier "LIGHT_GRAY"}})
 
+(defn- remove-newlines [s]
+  (let [new-s (-> s
+                  (str/replace "\n\n" "\n")
+                  (str/replace #"^\n" "")
+                  str/trim-newline)]
+    (if (= (count new-s) (count s))
+      s
+      (remove-newlines new-s))))
+
 (defn info-text
   [entity elapsed-time]
   (let [{:keys [k->fn
@@ -117,7 +125,7 @@
                       (when (map? v)
                         (str "\n" (info-text v elapsed-time))))))
          (str/join "\n")
-         string/remove-newlines)))
+         remove-newlines)))
 
 (defn- inventory-window-get-cell [inventory-window cell]
   (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))

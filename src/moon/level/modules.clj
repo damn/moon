@@ -1,7 +1,6 @@
 (ns moon.level.modules
   (:require [g2d.fix-nads :refer [fix-nads]]
             [g2d.flood-fill :refer [flood-fill]]
-            [moon.rand :as rand]
             [moon.tiled-map :as moon-tiled-map]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
@@ -9,8 +8,8 @@
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
-
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
+           (java.util Random)))
 (defn- module-index->tiled-map-positions
   [[module-x module-y]
    [modules-width modules-height]
@@ -185,7 +184,7 @@
     :or {map-size 5
          spawn-rate 0.05}}]
   (let [scale [32 20]
-        {:keys [start grid]} (caves/create (rand/new-random) map-size map-size :wide)
+        {:keys [start grid]} (caves/create (Random.) map-size map-size :wide)
         grid (fix-nads grid)
         grid (let [grid (reduce #(assoc %1 %2 :transition)
                                 grid

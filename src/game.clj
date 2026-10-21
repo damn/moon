@@ -19,13 +19,11 @@
             [moon.grid :as grid]
             [moon.inventory :as inventory]
             [moon.item :as item]
-            [moon.m :as m]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.number :as number]
             [moon.potential-field :as potential-field]
-            [moon.rand :as rand]
             [moon.raycaster :as raycaster]
             [moon.rectangle :as rectangle]
             [moon.stats :as stats]
@@ -211,14 +209,15 @@
 
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
-  (-> creature-property
-      (assoc :entity/position position
-             :entity/collides? true
-             :entity/z-order (if (:entity/flying? creature-property)
-                               :z-order/flying
-                               :z-order/ground))
-      (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-      (m/safe-merge components)))
+  (let [entity (-> creature-property
+                   (assoc :entity/position position
+                          :entity/collides? true
+                          :entity/z-order (if (:entity/flying? creature-property)
+                                            :z-order/flying
+                                            :z-order/ground))
+                   (assoc :entity/destroy-audiovisual :audiovisuals/creature-die))]
+    (assert (not-any? #(contains? entity %) (keys components)))
+    (merge entity components)))
 
 (defn- spawn-effect [position components]
   (assoc components
@@ -780,7 +779,9 @@
                                                              (:entity/stats target*)
                                                              v))
                          (:damage/min-max v))
-               dmg-amount (rand/int-between min-max)
+               dmg-amount (let [[lower upper] min-max]
+                            (+ lower (rand-int (inc (- upper lower)))))
+
                new-hp-val (max (- (hp 0) dmg-amount)
                                0)
                dmg-text (str "[RED]" dmg-amount "[]")]

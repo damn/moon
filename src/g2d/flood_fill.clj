@@ -1,6 +1,5 @@
 (ns g2d.flood-fill
-  (:require [moon.m :as m]
-            [moon.position :as position]))
+  (:require [moon.position :as position]))
 
 (defn flood-fill [grid start walk-on-position?]
   (loop [next-positions [start]
@@ -13,5 +12,5 @@
                       (mapcat position/get-8-neighbours
                               next-positions)))
              (concat filled next-positions)
-             (m/assoc-ks grid next-positions nil))
+             (reduce #(assoc %1 %2 nil) grid next-positions))
       filled)))

@@ -4,8 +4,15 @@
             [clojure.pprint :as pprint]
             [malli.core :as m]
             [malli.error :as me]
-            [moon.m :refer [recur-sort]]
             [moon.schema :as schema]))
+
+(defn- recur-sort [m]
+  (into (sorted-map)
+        (zipmap (keys m)
+                (map #(if (map? %)
+                        (recur-sort %)
+                        %)
+                     (vals m)))))
 
 (defn create [schemas]
   (let [properties (-> "properties.edn" io/resource slurp edn/read-string)]

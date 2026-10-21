@@ -2,7 +2,6 @@
   (:require [g2d.fix-nads :refer [fix-nads]]
             [g2d.flood-fill :refer [flood-fill]]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.rand :as rand]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position])
@@ -10,7 +9,8 @@
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
+           (java.util Random)))
 
 (defn- initial-grid
   [{:keys [initial-grid-create-fn
@@ -35,6 +35,19 @@
     {:start-position (mapv #(* % scale) start)
      :grid grid}))
 
+(defn- get-rand-weighted-item
+  "given a sequence of items and their weight, returns a weighted random item.
+  for example {:a 5 :b 1} returns b only in about 1 of 6 cases"
+  [weights]
+  (let [result (rand-int (reduce + (map #(% 1) weights)))]
+    (loop [r 0
+           items weights]
+      (let [[item weight] (first items)
+            r (+ r weight)]
+        (if (> r result)
+          item
+          (recur (int r) (rest items)))))))
+
 (defn- position-tile-fn [grid]
   (let [uf-grounds (for [x [1 5]
                          y (range 5 11)
@@ -45,8 +58,8 @@
                    [x y])
         transition? (fn [[x y]]
                       (= :ground (get grid [x (dec y)])))
-        rand-0-3 (fn [] (rand/get-rand-weighted-item {0 60 1 1 2 1 3 1}))
-        rand-0-5 (fn [] (rand/get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
+        rand-0-3 (fn [] (get-rand-weighted-item {0 60 1 1 2 1 3 1}))
+        rand-0-5 (fn [] (get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
         [ground-x ground-y] (rand-nth uf-grounds)
         {wall-x 0 wall-y 1} (rand-nth uf-walls)
         [transition-x transition-y] [wall-x (inc wall-y)]
@@ -168,7 +181,8 @@
              :grid2d-fix-nads-fn grid2d-fix-nads-fn
              :size cave-size
              :cave-style cave-style
-             :random (rand/new-random)
+             :random (Random.)
+
              :level/tile-size tile-size
              :level/create-tile (let [texture (get textures texture-path)]
                                   (memoize

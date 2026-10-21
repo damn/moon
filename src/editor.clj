@@ -10,7 +10,6 @@
             [moon.db :as db]
             [moon.map-schema :as map-schema]
             [moon.schema :as schema]
-            [moon.string :as string]
             [moon.textures :as textures])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input Input$Keys)
            (com.badlogic.gdx.audio Sound)
@@ -131,10 +130,15 @@
 (defn- default-widget-value [widget]
   ((.getUserObject ^Actor widget) 1))
 
+(defn- truncate ^String [s limit]
+  (if (> (count s) limit)
+    (str (subs s 0 limit) "...")
+    s))
+
 (defn- create-default-widget [skin v]
-  (Label. ^String (string/truncate (binding [*print-level* nil]
-                                     (pr-str v))
-                                   60)
+  (Label. ^String (truncate (binding [*print-level* nil]
+                              (pr-str v))
+                            60)
           skin))
 
 (defn- enum-widget-value [widget]

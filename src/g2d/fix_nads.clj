@@ -1,6 +1,5 @@
 (ns g2d.fix-nads
-  (:require [moon.g2d :refer [cells posis]]
-            [moon.m :as m]))
+  (:require [moon.g2d :refer [cells posis]]))
 
 (defn- nad-corner? [grid [fromx fromy] [tox toy]]
   (and
@@ -54,7 +53,6 @@
 (defn fix-nads [grid]
   {:pre [(= #{:wall :ground} (set (cells grid)))]
    :post [(= #{:wall :ground} (set (cells %)))]}
-  (m/assoc-ks grid
-              (mapcat #(get-tiles-needing-fix-for-nad grid %)
-                      (get-nads grid))
-              :ground))
+  (reduce #(assoc %1 %2 :ground) grid
+          (mapcat #(get-tiles-needing-fix-for-nad grid %)
+                  (get-nads grid))))
