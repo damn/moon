@@ -115,20 +115,20 @@
 (def ^:private spiderweb-duration 5)
 
 (defn handle
-  [db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
+  [db schemas world play-sound! skin stage textures
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities raycaster]
-  (let [elapsed-time* @elapsed-time]
+  (let [elapsed-time* @(:world/elapsed-time @world)]
     (case k
       :effects/audiovisual
-      (audiovisual! db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size (:effect/target-position effect-ctx) v)
+      (audiovisual! db schemas world play-sound! (:effect/target-position effect-ctx) v)
 
       :effects/projectile
       (let [source (:effect/source effect-ctx)
             source* @source
             direction (:effect/target-direction effect-ctx)
             size (:projectile/size v)]
-        (spawn-entity! world elapsed-time z-orders minimum-size
+        (spawn-entity! @world
                        (spawn-projectile
                         {:position (mapv + (:entity/position source*)
                                          (v2/scale direction
@@ -139,7 +139,7 @@
 
       :effects/spawn
       (let [source (:effect/source effect-ctx)]
-        (spawn-entity! world elapsed-time z-orders minimum-size
+        (spawn-entity! @world
                        (spawn-creature {:position (:effect/target-position effect-ctx)
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
@@ -150,7 +150,7 @@
       (let [source (:effect/source effect-ctx)
             source* @source]
         (doseq [target (affected-targets active-entities raycaster source*)]
-          (spawn-entity! world elapsed-time z-orders minimum-size
+          (spawn-entity! @world
                          (spawn-line
                           {:start (:entity/position source*)
                            :end (:entity/position @target)
@@ -168,7 +168,7 @@
             target-body @target
             {:keys [maxrange entity-effects]} v]
         (if (body/in-range? body target-body maxrange)
-          (do (spawn-entity! world elapsed-time z-orders minimum-size
+          (do (spawn-entity! @world
                              (spawn-line
                               {:start (body/start-point body target-body)
                                :end (:entity/position target-body)
@@ -176,12 +176,12 @@
                                :color (color/float-bits 1 0 0 0.75)
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
-          (audiovisual! db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
+          (audiovisual! db schemas world play-sound!
                         (body/end-point body target-body maxrange)
                         :audiovisuals/hit-ground)))
 
       :effects.target/audiovisual
-      (audiovisual! db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size (:entity/position @(:effect/target effect-ctx)) v)
+      (audiovisual! db schemas world play-sound! (:entity/position @(:effect/target effect-ctx)) v)
 
       :effects.target/convert
       (let [source (:effect/source effect-ctx)
@@ -222,16 +222,16 @@
                dmg-text (str "[RED]" dmg-amount "[]")]
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
-           (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-           (audiovisual! db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size (:entity/position target*) :audiovisuals/damage))))
+           (handle-fsm-event! world play-sound! skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
+           (audiovisual! db schemas world play-sound! (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
-      (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size (:effect/target effect-ctx) world-mouse-position :kill)
+      (handle-fsm-event! world play-sound! skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
 
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
+      (handle db schemas world play-sound! skin stage textures
               [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
               effect-ctx
               world-mouse-position
@@ -249,4 +249,4 @@
           nil))
 
       :effects.target/stun
-      (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size (:effect/target effect-ctx) world-mouse-position :stun v))))
+      (handle-fsm-event! world play-sound! skin stage textures (:effect/target effect-ctx) world-mouse-position :stun v))))

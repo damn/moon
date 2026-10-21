@@ -40,7 +40,8 @@
         (aset arr x y (boolean (cell/blocks-vision? cell)))))
     [arr width height]))
 
-(defn create [^TiledMap tiled-map]
+(defn create
+  [^TiledMap tiled-map {:keys [z-orders minimum-size]}]
   (let [props (.getProperties tiled-map)
         width (.get props "width")
         height (.get props "height")
@@ -50,4 +51,7 @@
      :world/grid grid
      :world/content-grid (content-grid/create width height 16)
      :world/explored-tile-corners (atom (g2d/create width height (constantly false)))
-     :world/raycaster (create-raycaster grid)}))
+     :world/raycaster (create-raycaster grid)
+     :world/elapsed-time (atom 0)
+     :world/z-orders z-orders
+     :world/minimum-size minimum-size}))

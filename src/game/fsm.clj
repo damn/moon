@@ -33,8 +33,8 @@
                   (float Align/center))
     (.addActor stage window)))
 
-(defn handle-fsm-event! [world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position event & [params]]
-  (let [elapsed-time* @elapsed-time
+(defn handle-fsm-event! [world play-sound! skin stage textures eid world-mouse-position event & [params]]
+  (let [elapsed-time* @(:world/elapsed-time @world)
         fsm (:entity/fsm @eid)
         _ (assert fsm)
         old-state-k (:state fsm)
@@ -56,7 +56,7 @@
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
                 (play-sound! "bfxr_itemputground.wav")
-                (spawn-entity! world elapsed-time z-orders minimum-size
+                (spawn-entity! @world
                                (spawn-item (item-place-position (:entity/position entity)
                                                                 world-mouse-position
                                                                 (- (:entity/click-distance-tiles entity) 0.1))
@@ -68,7 +68,7 @@
 
             :npc-sleeping
             (do (swap! eid add-text-effect elapsed-time* "[WHITE]!" 1)
-                (spawn-entity! world elapsed-time z-orders minimum-size
+                (spawn-entity! @world
                                (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 elapsed-time*)))
 
             :npc-moving

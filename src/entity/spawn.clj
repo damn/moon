@@ -138,8 +138,9 @@
 
     nil))
 
-(defn spawn-entity! [world elapsed-time z-orders minimum-size entity]
-  (let [elapsed-time* @elapsed-time
+(defn spawn-entity! [world entity]
+  (let [{:world/keys [elapsed-time z-orders minimum-size]} world
+        elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
@@ -175,7 +176,7 @@
                         :entity/height (float height)
                         :entity/rotation-angle (or rotation-angle 0)))
         eid (atom entity)]
-    (register-eid! @world eid)
+    (register-eid! world eid)
     (doseq [component @eid]
       (after-create-component elapsed-time* eid component))
     eid))
