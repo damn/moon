@@ -1083,10 +1083,10 @@
                                                          :entity/click-distance-tiles 1.5}}))]
     (sync-player-ui! skin stage textures* @(:world/elapsed-time @world) eid)))
 
-(defn bind-player-eid! [world player-eid]
+(defn bind-player-eid! [world]
   (let [eid (get @(:world/entity-ids @world) 1)]
     (assert (:entity/player? @eid))
-    (reset! player-eid eid)))
+    (swap! world assoc :world/player-eid eid)))
 
 (defn spawn-map-creatures! [db* schemas world]
   (let [world* @world
@@ -1163,7 +1163,7 @@
     :skin skin}))
 
 (defn hp-mana-bar-create
-  [default-font stage textures unit-scale player-eid]
+  [default-font stage textures unit-scale world]
   (let [{:keys [rahmen-file
                 rahmenw
                 rahmenh
@@ -1200,7 +1200,7 @@
           (proxy-super act delta)))
       (draw [batch parent-alpha]
         (when (.getStage ^Actor this)
-          (let [stats (:entity/stats @@player-eid)
+          (let [stats (:entity/stats @(:world/player-eid @world))
                 bar-x (- x (/ rahmenw 2))]
             (draw-hpmana-bar! nil batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
             (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
@@ -1242,7 +1242,7 @@
 
     nil))
 
-(defn- inventory-window-cell [player-eid on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+(defn- inventory-window-cell [world on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
@@ -1251,7 +1251,7 @@
              [(proxy [Widget] []
                 (draw [batch parent-alpha]
                   (when-let [stage (.getStage ^Actor this)]
-                    (draw-cell-rect! @@player-eid
+                    (draw-cell-rect! @(:world/player-eid @world)
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
                                        (let [v2 (.unproject (.getViewport ^Stage stage)
@@ -1275,7 +1275,7 @@
          (.setUserObject cell)))}))
 
 (defn- inventory-window-build
-  [{:keys [player-eid
+  [{:keys [world
            on-click-cell
            draw-cell-rect!
            skin
@@ -1286,7 +1286,7 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint ^Color (Color. 1 1 1 0.4))))
-        ->cell (partial inventory-window-cell player-eid on-click-cell slot->drawable draw-cell-rect! cell-size)
+        ->cell (partial inventory-window-cell world on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (Table.)
         window (Window. "Inventory" ^Skin skin)]
     (doseq [row (concat [[{:actor nil} {:actor nil}
@@ -1323,7 +1323,7 @@
     window))
 
 (defn inventory-window-create
-  [on-click-cell draw-cell-rect! skin stage textures player-eid]
+  [on-click-cell draw-cell-rect! skin stage textures world]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
                                              :shield 1
                                              :rings 2
@@ -1349,7 +1349,7 @@
                                                            :image/bounds bounds})))
         cell-size 48]
     (inventory-window-build
-     {:player-eid player-eid
+     {:world world
       :on-click-cell on-click-cell
       :draw-cell-rect! draw-cell-rect!
       :skin skin
@@ -1395,14 +1395,14 @@
 
     nil))
 
-(defn player-state-draw-create [unit-scale textures player-eid]
+(defn player-state-draw-create [unit-scale textures world]
   (proxy [Actor] []
     (act [delta]
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha]
       (let [stage (.getStage ^Actor this)
-            player-eid @player-eid
+            player-eid (:world/player-eid @world)
             entity @player-eid
             state-k (:state (:entity/fsm entity))
             mouse-pos (ui-mouse-position stage)
@@ -1680,8 +1680,8 @@
 
 (defn draw-entities!
   [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
-   player-eid raycaster world show-body-bounds? active-entities render-z-order]
-  (let [player-eid @player-eid
+   raycaster world show-body-bounds? active-entities render-z-order]
+  (let [player-eid (:world/player-eid @world)
         elapsed-time @(:world/elapsed-time @world)
         show-body-bounds? @show-body-bounds?
         active-entities @active-entities
@@ -1959,7 +1959,7 @@
    select-world-menu-item])
 
 (defn create-ui-actors
-  [world mouseover-eid paused? player-eid
+  [world mouseover-eid paused?
    show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
    unit-scale
    play-sound! default-font shape-drawer skin stage textures* world-viewport]
@@ -1995,12 +1995,12 @@
                           (update item :icon #(get textures* %))
                           item))
        :skin skin})
-     (hp-mana-bar-create default-font stage textures* unit-scale player-eid)
+     (hp-mana-bar-create default-font stage textures* unit-scale world)
      (windows-create [#(stage-info-window-create skin stage mouseover-eid world)
                       #(inventory-window-create
                         (fn [_event cell]
                           (handle-clicked-inventory-cell world
-                                                         @player-eid
+                                                         (:world/player-eid @world)
                                                          play-sound!
                                                          skin
                                                          stage
@@ -2021,16 +2021,16 @@
                         skin
                         stage
                         textures*
-                        player-eid)])
-     (player-state-draw-create unit-scale textures* player-eid)
+                        world)])
+     (player-state-draw-create unit-scale textures* world)
      (player-message-actor-create default-font unit-scale)]))
 
-(defn update-mouseover-eid! [world player-eid mouseover-eid stage world-viewport render-z-order]
+(defn update-mouseover-eid! [world mouseover-eid stage world-viewport render-z-order]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
                   nil
-                  (let [player @@player-eid
+                  (let [player @(:world/player-eid @world)
                         world* @world
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
                                      (grid/point->entities (:world/grid world*) (world-mouse-position world-viewport)))]
@@ -2045,13 +2045,13 @@
       (swap! new-eid assoc :entity/mouseover? true))
     (reset! mouseover-eid new-eid)))
 
-(defn update-active-entities! [world player-eid active-entities]
-  (reset! active-entities (content-grid/active-entities (:world/content-grid @world) @@player-eid)))
+(defn update-active-entities! [world active-entities]
+  (reset! active-entities (content-grid/active-entities (:world/content-grid @world) @(:world/player-eid @world))))
 
-(defn set-camera-to-player! [player-eid world-viewport]
+(defn set-camera-to-player! [world world-viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         pos (.position camera)
-        [x y] (:entity/position @@player-eid)]
+        [x y] (:entity/position @(:world/player-eid @world))]
     (set! (.x pos) x)
     (set! (.y pos) y)
     (.update camera)))
@@ -2081,8 +2081,8 @@
   (let [[x y] (ui-mouse-position stage)]
     (mouseover-actor stage x y)))
 
-(defn update-cursor! [cursors interaction-state player-eid]
-  (let [eid @player-eid
+(defn update-cursor! [cursors interaction-state world]
+  (let [eid (:world/player-eid @world)
         entity @eid
         state-k (:state (:entity/fsm entity))
         cursor-fn (get {:player-item-on-cursor :cursors/hand-grab
@@ -2153,7 +2153,7 @@
 
 (defn draw-world!
   [batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
-   world player-eid show-body-bounds? active-entities
+   world show-body-bounds? active-entities
    show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
    factions-iterations render-z-order]
   (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
@@ -2170,7 +2170,7 @@
                                          show-cell-entities? show-cell-occupied? show-potential-field-colors?
                                          factions-iterations)
                        #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
-                                        player-eid (:world/raycaster @world) world show-body-bounds? active-entities render-z-order)
+                                        (:world/raycaster @world) world show-body-bounds? active-entities render-z-order)
                        #(highlight-mouseover-tile % shape-drawer world-mouse-pos world)]]
         (draw-fn nil))
       (reset! unit-scale 1))
@@ -2252,9 +2252,9 @@
         nil)))
 
 (defn handle-player-input!
-  [world interaction-state player-eid
+  [world interaction-state
    play-sound! skin stage textures world-viewport key-pressed? button-just-pressed?]
-  (let [eid @player-eid
+  (let [eid (:world/player-eid @world)
         entity @eid
         state-k (:state (:entity/fsm entity))
         left-button-pressed? (button-just-pressed? Input$Buttons/LEFT)
@@ -2313,15 +2313,16 @@
                         eid component)))))
 
 (defn tick-game!
-  [db schemas world potential-field-cache active-entities paused?
+  [db schemas world active-entities paused?
    play-sound! skin stage textures world-viewport factions-iterations
    max-delta max-speed]
   (when-not @paused?
-    (let [delta-time (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
-      (swap! (:world/elapsed-time @world) + delta-time)
+    (let [delta-time (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)
+          world* @world]
+      (swap! (:world/elapsed-time world*) + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
-        (grid/update! (:world/grid @world)
-                      potential-field-cache
+        (grid/update! (:world/grid world*)
+                      (:world/potential-field-cache world*)
                       faction
                       @active-entities
                       max-iterations))
@@ -2363,8 +2364,6 @@
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         db (db/create schemas (-> "properties.edn" io/resource slurp edn/read-string))
         world (atom nil)
-        player-eid (atom nil)
-        potential-field-cache (atom nil)
         active-entities (atom nil)
         mouseover-eid (atom nil)
         paused? (atom false)
@@ -2426,7 +2425,6 @@
         (doseq [^Actor actor (create-ui-actors world
                                                mouseover-eid
                                                paused?
-                                               player-eid
                                                show-tile-grid?
                                                show-cell-entities?
                                                show-cell-occupied?
@@ -2444,7 +2442,7 @@
 
         (spawn-player! db schemas world @skin @stage @textures)
 
-        (bind-player-eid! world player-eid)
+        (bind-player-eid! world)
 
         (spawn-map-creatures! db schemas world)
         )
@@ -2462,21 +2460,21 @@
       (render [_]
         (ScreenUtils/clear 0 0 0 0)
 
-        (update-mouseover-eid! world player-eid mouseover-eid @stage @world-viewport render-z-order)
+        (update-mouseover-eid! world mouseover-eid @stage @world-viewport render-z-order)
 
-        (update-active-entities! world player-eid active-entities)
+        (update-active-entities! world active-entities)
 
-        (set-camera-to-player! player-eid @world-viewport)
+        (set-camera-to-player! world @world-viewport)
 
         (draw-tiled-map! @batch @world-viewport world world-unit-scale)
 
         (draw-world! @batch @default-font @shape-drawer @stage @textures @world-viewport world-unit-scale unit-scale
-                     world player-eid show-body-bounds? active-entities
+                     world show-body-bounds? active-entities
                      show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
                      factions-iterations render-z-order)
 
         (reset! interaction-state
-                (let [player-eid @player-eid
+                (let [player-eid (:world/player-eid @world)
                       mouseover-eid @mouseover-eid
                       mouseover-actor (current-mouseover-actor @stage)
                       world-mouse-position (world-mouse-position @world-viewport)]
@@ -2512,9 +2510,9 @@
                           [:interaction-state.skill/not-usable state]))
                       [:interaction-state/no-skill-selected]))))
 
-        (update-cursor! @cursors interaction-state player-eid)
+        (update-cursor! @cursors interaction-state world)
 
-        (handle-player-input! world interaction-state player-eid
+        (handle-player-input! world interaction-state
                               play-sound! @skin @stage @textures @world-viewport
                               #(.isKeyPressed ^Input Gdx/input (int %))
                               #(.isButtonJustPressed ^Input Gdx/input (int %)))
@@ -2524,11 +2522,11 @@
         (reset! paused?
                 (or #_error
                     (and pausing?
-                         (state->pause-game? (:state (:entity/fsm @@player-eid)))
+                         (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
                          (not (or (.isKeyJustPressed ^Input Gdx/input (int (:unpause-once controls)))
                                   (.isKeyPressed ^Input Gdx/input (int (:unpause-continously controls))))))))
 
-        (tick-game! db schemas world potential-field-cache active-entities paused?
+        (tick-game! db schemas world active-entities paused?
                     play-sound! @skin @stage @textures @world-viewport factions-iterations
                     max-delta max-speed)
 

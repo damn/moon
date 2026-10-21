@@ -99,6 +99,8 @@
         grid (create-grid tiled-map)]
     {:world/tiled-map tiled-map
      :world/start-position start-position
+     :world/player-eid nil
+     :world/potential-field-cache (atom nil)
      :world/id-counter (atom 0)
      :world/entity-ids (atom {})
      :world/grid grid
