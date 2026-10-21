@@ -92,12 +92,14 @@
     [arr width height]))
 
 (defn create
-  [^TiledMap tiled-map {:keys [z-orders minimum-size]}]
+  [^TiledMap tiled-map {:keys [z-orders minimum-size start-position]}]
   (let [props (.getProperties tiled-map)
         width (.get props "width")
         height (.get props "height")
         grid (create-grid tiled-map)]
-    {:world/id-counter (atom 0)
+    {:world/tiled-map tiled-map
+     :world/start-position start-position
+     :world/id-counter (atom 0)
      :world/entity-ids (atom {})
      :world/grid grid
      :world/content-grid (content-grid/create width height 16)

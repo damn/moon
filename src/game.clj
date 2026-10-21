@@ -1071,8 +1071,8 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
-(defn spawn-player! [db* schemas world start-position skin stage textures*]
-  (let [eid (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) @start-position)
+(defn spawn-player! [db* schemas world skin stage textures*]
+  (let [eid (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) (:world/start-position @world))
                                             :creature-property (db/build db* schemas :creatures/vampire)
                                             :components {:entity/fsm {:fsm :fsms/player
                                                                       :initial-state :player-idle}
@@ -1088,9 +1088,10 @@
     (assert (:entity/player? @eid))
     (reset! player-eid eid)))
 
-(defn spawn-map-creatures! [db* schemas world start-position tiled-map]
-  (let [sp @start-position]
-    (doseq [[position creature-id] (moon-tiled-map/spawn-positions @tiled-map)
+(defn spawn-map-creatures! [db* schemas world]
+  (let [world* @world
+        sp (:world/start-position world*)]
+    (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:world/tiled-map world*))
             :when (not= position sp)]
       (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
                                       :creature-property (db/build db* schemas (keyword creature-id))
@@ -2055,15 +2056,14 @@
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! [batch world-viewport tiled-map world world-unit-scale]
+(defn draw-tiled-map! [batch world-viewport world world-unit-scale]
   (let [world* @world
-        tiled-map @tiled-map
         ^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
         pos (.position camera)
         ^Batch batch batch]
     (.setProjectionMatrix batch (.combined camera))
     (.begin batch)
-    (moon-tiled-map/draw! tiled-map
+    (moon-tiled-map/draw! (:world/tiled-map world*)
                           batch
                           world-unit-scale
                           camera
@@ -2363,8 +2363,6 @@
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         db (db/create schemas (-> "properties.edn" io/resource slurp edn/read-string))
         world (atom nil)
-        tiled-map (atom nil)
-        start-position (atom nil)
         player-eid (atom nil)
         potential-field-cache (atom nil)
         active-entities (atom nil)
@@ -2421,11 +2419,9 @@
 
         (let [{level-tiled-map :tiled-map
                level-start :start-position} (create-level! level-fn db @textures)]
-          (reset! tiled-map level-tiled-map)
-          (reset! start-position level-start))
-
-        (reset! world (world/create @tiled-map {:z-orders z-orders
-                                                :minimum-size minimum-size}))
+          (reset! world (world/create level-tiled-map {:z-orders z-orders
+                                                       :minimum-size minimum-size
+                                                       :start-position level-start})))
 
         (doseq [^Actor actor (create-ui-actors world
                                                mouseover-eid
@@ -2446,11 +2442,11 @@
                                                @world-viewport)]
           (.addActor ^Stage @stage actor))
 
-        (spawn-player! db schemas world start-position @skin @stage @textures)
+        (spawn-player! db schemas world @skin @stage @textures)
 
         (bind-player-eid! world player-eid)
 
-        (spawn-map-creatures! db schemas world start-position tiled-map)
+        (spawn-map-creatures! db schemas world)
         )
 
       (dispose [_]
@@ -2461,7 +2457,7 @@
         (Disposable/.dispose @shape-drawer-texture)
         (Disposable/.dispose @skin)
         (run! Disposable/.dispose (vals @textures))
-        (Disposable/.dispose @tiled-map))
+        (Disposable/.dispose (:world/tiled-map @world)))
 
       (render [_]
         (ScreenUtils/clear 0 0 0 0)
@@ -2472,7 +2468,7 @@
 
         (set-camera-to-player! player-eid @world-viewport)
 
-        (draw-tiled-map! @batch @world-viewport tiled-map world world-unit-scale)
+        (draw-tiled-map! @batch @world-viewport world world-unit-scale)
 
         (draw-world! @batch @default-font @shape-drawer @stage @textures @world-viewport world-unit-scale unit-scale
                      world player-eid show-body-bounds? active-entities
