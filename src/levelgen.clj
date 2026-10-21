@@ -1,13 +1,12 @@
 (ns levelgen
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.db :as db]
-            [moon.level.modules :as modules]
-            [moon.level.tmx :as tmx]
-            [moon.level.uf-caves :as uf-caves]
-            [moon.textures :as textures]
-            [moon.tiled-map :as moon-tiled-map]
-            [moon.tiled-map.draw :as tiled-map.draw])
+            [lib.db :as db]
+            [level.modules :as modules]
+            [level.tmx :as tmx]
+            [level.uf-caves :as uf-caves]
+            [lib.textures :as textures]
+            [lib.tiled-map :as moon-tiled-map])
   (:import (com.badlogic.gdx ApplicationListener Files Gdx Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color OrthographicCamera)
@@ -112,7 +111,7 @@
           (ScreenUtils/clear 0 0 0 0)
           (.setProjectionMatrix batch* (.combined world-camera))
           (.begin batch*)
-          (tiled-map.draw/draw! @tiled-map
+          (moon-tiled-map/draw! @tiled-map
                                 batch*
                                 world-unit-scale
                                 world-camera

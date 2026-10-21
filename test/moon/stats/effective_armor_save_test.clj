@@ -1,5 +1,5 @@
 (ns moon.stats.effective-armor-save-test
-  (:require [moon.stats :as stats]))
+  (:require [lib.stats :as stats]))
 
 (comment
 

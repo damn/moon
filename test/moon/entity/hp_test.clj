@@ -1,5 +1,5 @@
 (ns moon.entity.hp-test
-  (:require [moon.stats :as stats]
+  (:require [lib.stats :as stats]
             [clojure.test :refer :all]))
 
 (defn- ->value [hp-base-value hp-mods]

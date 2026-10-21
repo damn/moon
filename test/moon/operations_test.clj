@@ -1,5 +1,5 @@
 (ns moon.operations-test
-  (:require [moon.mods :as mods]
+  (:require [lib.mods :as mods]
             [clojure.test :refer :all]))
 
 (deftest add-and-remove

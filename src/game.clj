@@ -3,42 +3,36 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [grid.find-direction :refer [find-direction]]
+            [level.modules :as modules]
+            [level.tmx :as tmx]
+            [level.uf-caves :as uf-caves]
             [lib.animation :as animation]
+            [lib.body :as body]
+            [lib.cell :as cell]
             [lib.circle :as circle]
             [lib.color :as color]
+            [lib.content-grid :as content-grid]
+            [lib.db :as db]
+            [lib.faction :as faction]
+            [lib.grid :as grid]
+            [lib.inventory :as inventory]
+            [lib.item :as item]
+            [lib.mods :as mods]
+            [lib.number :as number]
+            [lib.potential-field :as potential-field]
+            [lib.raycaster :as raycaster]
+            [lib.rectangle :as rectangle]
             [lib.shape-drawer :as shape-drawer]
-            [moon.body :as body]
-            [moon.cell :as cell]
-            [moon.content-grid :as content-grid]
-            [moon.db :as db]
-            [moon.faction :as faction]
-            [moon.grid :as grid]
-            [moon.inventory :as inventory]
-            [moon.item :as item]
-            [moon.level.modules :as modules]
-            [moon.level.tmx :as tmx]
-            [moon.level.uf-caves :as uf-caves]
-            [moon.mods :as mods]
-            [moon.number :as number]
-            [moon.potential-field :as potential-field]
-            [moon.raycaster :as raycaster]
-            [moon.rectangle :as rectangle]
-            [moon.stats :as stats]
-            [moon.textures :as textures]
-            [moon.tiled-map :as moon-tiled-map]
-            [moon.tiled-map.draw :as tiled-map.draw]
-            [moon.timer :as timer]
-            [moon.v2 :as v2]
-            [moon.val-max :as val-max]
-            [moon.world :as world]
-            [potential-field.update :as potential-field.update]
-            [reduce-fsm :as fsm]
+            [lib.stats :as stats]
+            [lib.textures :as textures]
+            [lib.tiled-map :as moon-tiled-map]
+            [lib.timer :as timer]
             [ui.action-bar :as action-bar]
             [ui.dev-menu :as dev-menu]
-            [world.register-eid :refer [register-eid!]]
-            [world.relocate-eid :refer [relocate-eid!]]
-            [world.unregister-eid :refer [unregister-eid!]])
+            [lib.v2 :as v2]
+            [lib.val-max :as val-max]
+            [lib.world :as world]
+            [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
@@ -642,7 +636,7 @@
                         :entity/height (float height)
                         :entity/rotation-angle (or rotation-angle 0)))
         eid (atom entity)]
-    (register-eid! world eid)
+    (world/register-eid! world eid)
     (doseq [component @eid]
       (after-create-component elapsed-time* eid component))
     eid))
@@ -1887,7 +1881,7 @@
             effect-ctx (create-effect-ctx world ctx eid)]
         (if-let [skill (choose-skill (partial raycaster/blocked? raycaster) @eid effect-ctx)]
           (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
-          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
+          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :movement-direction (or (grid/find-direction (:world/grid @world) eid)
                                                              [0 0]))))
 
       :entity/movement
@@ -1912,7 +1906,7 @@
                                  (update body :entity/position
                                          #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
               (swap! eid assoc :entity/position (:entity/position body))
-              (relocate-eid! world* eid)
+              (world/relocate-eid! world* eid)
               nil))))
 
       nil)))
@@ -2081,7 +2075,7 @@
         ^Batch batch batch]
     (.setProjectionMatrix batch (.combined camera))
     (.begin batch)
-    (tiled-map.draw/draw! tiled-map
+    (moon-tiled-map/draw! tiled-map
                           batch
                           world-unit-scale
                           camera
@@ -2159,7 +2153,7 @@
 
 (defn destroy-entities! [db schemas world play-sound! skin stage textures]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
-    (unregister-eid! @world eid)
+    (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
@@ -2336,7 +2330,7 @@
       (reset! delta-time delta-ms)
       (swap! (:world/elapsed-time @world) + delta-ms))
     (doseq [[faction max-iterations] factions-iterations]
-      (potential-field.update/update! (:world/grid @world)
+      (grid/update! (:world/grid @world)
                                       potential-field-cache
                                       faction
                                       @active-entities

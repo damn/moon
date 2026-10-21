@@ -4,8 +4,8 @@
 ; [clojure.g2d.circle-to-cells :refer [circle->cells]]
 ;
 ;(comment
-; (require '[moon.grid :as grid])
-; (require '[moon.circle :as circle])
+; (require '[lib.grid :as grid])
+; (require '[lib.circle :as circle])
 ; [com.badlogic.gdx.rgba.float-bits :as float-bits]
 ;
 ; (defn geom-test

@@ -7,10 +7,10 @@
             [clojure.string :as str]
             [malli.core :as m]
             [malli.error :as me]
-            [moon.db :as db]
-            [moon.map-schema :as map-schema]
-            [moon.schema :as schema]
-            [moon.textures :as textures])
+            [lib.db :as db]
+            [malli.map-schema :as map-schema]
+            [lib.schema :as schema]
+            [lib.textures :as textures])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input Input$Keys)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
