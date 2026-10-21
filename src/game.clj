@@ -1755,7 +1755,7 @@
                     maxcnt]
              :as animation} v]
         (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
-                                                 newcnt (+ (float cnt) (float @delta-time))]
+                                                 newcnt (+ (float cnt) (float delta-time))]
                                              (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
                                                                          looping? (min maxcnt (- newcnt maxcnt))
                                                                          :else maxcnt))))
@@ -1886,7 +1886,7 @@
                       (nil? speed)
                       (zero? speed))
           (let [world* @world
-                movement (assoc movement :delta-time @delta-time)
+                movement (assoc movement :delta-time delta-time)
                 body @eid]
             (when-let [body (if (:entity/collides? body)
                                (grid/try-move-solid-body (:world/grid world*) body (:entity/id @eid) movement)
@@ -2313,21 +2313,20 @@
                         eid component)))))
 
 (defn tick-game!
-  [db schemas world delta-time potential-field-cache active-entities paused?
+  [db schemas world potential-field-cache active-entities paused?
    play-sound! skin stage textures world-viewport factions-iterations
    max-delta max-speed]
   (when-not @paused?
-    (let [delta-ms (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
-      (reset! delta-time delta-ms)
-      (swap! (:world/elapsed-time @world) + delta-ms))
-    (doseq [[faction max-iterations] factions-iterations]
-      (grid/update! (:world/grid @world)
-                                      potential-field-cache
-                                      faction
-                                      @active-entities
-                                      max-iterations))
-    (tick-entities! db schemas world delta-time active-entities
-                    play-sound! skin stage textures max-speed world-viewport)))
+    (let [delta-time (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
+      (swap! (:world/elapsed-time @world) + delta-time)
+      (doseq [[faction max-iterations] factions-iterations]
+        (grid/update! (:world/grid @world)
+                      potential-field-cache
+                      faction
+                      @active-entities
+                      max-iterations))
+      (tick-entities! db schemas world delta-time active-entities
+                      play-sound! skin stage textures max-speed world-viewport))))
 
 (def listener
   (let [world-unit-scale (float (/ 48))
@@ -2369,7 +2368,6 @@
         player-eid (atom nil)
         potential-field-cache (atom nil)
         active-entities (atom nil)
-        delta-time (atom nil)
         mouseover-eid (atom nil)
         paused? (atom false)
         show-potential-field-colors? (atom nil)
@@ -2534,7 +2532,7 @@
                          (not (or (.isKeyJustPressed ^Input Gdx/input (int (:unpause-once controls)))
                                   (.isKeyPressed ^Input Gdx/input (int (:unpause-continously controls))))))))
 
-        (tick-game! db schemas world delta-time potential-field-cache active-entities paused?
+        (tick-game! db schemas world potential-field-cache active-entities paused?
                     play-sound! @skin @stage @textures @world-viewport factions-iterations
                     max-delta max-speed)
 
