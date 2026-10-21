@@ -83,7 +83,3 @@
   (build-values schemas
                 (get-raw db property-id)
                 db))
-
-(defn build-all [db schemas property-type]
-  (map #(build-values schemas % db)
-       (all-raw db property-type)))
