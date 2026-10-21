@@ -260,12 +260,12 @@
     (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
 
 (def ^:private key-pressed-actions
-  {(:zoom-in controls) (fn [{:keys [world-viewport]}]
-                         (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+  {(:zoom-in controls) (fn [{:keys [viewport]}]
+                         (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
                            (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
                            (.update camera)))
-   (:zoom-out controls) (fn [{:keys [world-viewport]}]
-                          (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+   (:zoom-out controls) (fn [{:keys [viewport]}]
+                          (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
                             (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                             (.update camera)))})
 
@@ -289,8 +289,8 @@
                                  (float (.getY ^Input Gdx/input))))]
     [(.x v2) (.y v2)]))
 
-(defn world-mouse-position [world-viewport]
-  (let [v2 (.unproject ^Viewport world-viewport
+(defn world-mouse-position [viewport]
+  (let [v2 (.unproject ^Viewport viewport
                        (Vector2. (float (.getX ^Input Gdx/input))
                                  (float (.getY ^Input Gdx/input))))]
     [(.x v2) (.y v2)]))
@@ -1055,7 +1055,7 @@
                      (Disposable/.dispose pixmap*)
                      cursor)))))
 
-(defn create-world-viewport! [world-unit-scale]
+(defn create-viewport! [world-unit-scale]
   (let [world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)]
     (FitViewport. (float world-width)
@@ -1443,11 +1443,11 @@
       (.setName "moon.ui.windows"))))
 
 (defn draw-cell-debug
-  [ctx shape-drawer ^Viewport world-viewport world
+  [ctx shape-drawer ^Viewport viewport world
    show-cell-entities? show-cell-occupied? show-potential-field-colors?
    factions-iterations]
   (let [world @world
-        ^OrthographicCamera camera (.getCamera world-viewport)
+        ^OrthographicCamera camera (.getCamera viewport)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
                            (.planePoints (.frustum camera)))
@@ -1483,9 +1483,9 @@
       (shape-drawer/line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
 (defn draw-tile-grid
-  [ctx shape-drawer ^Viewport world-viewport show-tile-grid?]
+  [ctx shape-drawer ^Viewport viewport show-tile-grid?]
   (when @show-tile-grid?
-    (let [^OrthographicCamera camera (.getCamera world-viewport)
+    (let [^OrthographicCamera camera (.getCamera viewport)
           plane-points (mapv (fn [^Vector3 v3]
                                [(.x v3) (.y v3) (.z v3)])
                              (.planePoints (.frustum camera)))
@@ -1495,8 +1495,8 @@
       (draw-fn-grid shape-drawer
                     (int left-x)
                     (int bottom-y)
-                    (inc (int (.getWorldWidth world-viewport)))
-                    (+ 2 (int (.getWorldHeight world-viewport)))
+                    (inc (int (.getWorldWidth viewport)))
+                    (+ 2 (int (.getWorldHeight viewport)))
                     1
                     1
                     (color/float-bits 1 1 1 0.8)))))
@@ -1983,7 +1983,7 @@
   [world mouseover-eid paused?
    show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
    unit-scale
-   play-sound! default-font shape-drawer skin stage textures* world-viewport]
+   play-sound! default-font shape-drawer skin stage textures* viewport]
   (let [cell-size 48]
     [(create-action-bar)
      (dev-menu/create
@@ -2007,10 +2007,10 @@
                                                 (mapv int (ui-mouse-position stage)))}
                                   {:label "World"
                                    :update-fn (fn []
-                                                (mapv int (world-mouse-position world-viewport)))}
+                                                (mapv int (world-mouse-position viewport)))}
                                   {:label "Zoom"
                                    :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (.getCamera ^Viewport world-viewport)))
+                                                (.zoom ^OrthographicCamera (.getCamera ^Viewport viewport)))
                                    :icon "images/zoom.png"}]]
                         (if (:icon item)
                           (update item :icon #(get textures* %))
@@ -2029,7 +2029,7 @@
                                                          (fn [cell item] (ui-set-item! skin stage textures* cell item))
                                                          (fn [cell] (ui-remove-item! stage cell))
                                                          cell
-                                                         (world-mouse-position world-viewport)))
+                                                         (world-mouse-position viewport)))
                         (fn [player-entity x y mouseover? cell]
                           (shape-drawer/rectangle! shape-drawer x y cell-size cell-size (color/float-bits 0.5 0.5 0.5 1))
                           (when (and mouseover?
@@ -2046,7 +2046,7 @@
      (player-state-draw-create unit-scale textures* world)
      (player-message-actor-create default-font unit-scale)]))
 
-(defn update-mouseover-eid! [world mouseover-eid stage world-viewport render-z-order]
+(defn update-mouseover-eid! [world mouseover-eid stage viewport render-z-order]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
@@ -2054,7 +2054,7 @@
                   (let [player @(:world/player-eid @world)
                         world* @world
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (grid/point->entities (:world/grid world*) (world-mouse-position world-viewport)))]
+                                     (grid/point->entities (:world/grid world*) (world-mouse-position viewport)))]
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
@@ -2069,17 +2069,17 @@
 (defn update-active-entities! [world active-entities]
   (reset! active-entities (content-grid/active-entities (:world/content-grid @world) @(:world/player-eid @world))))
 
-(defn set-camera-to-player! [world world-viewport]
-  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
+(defn set-camera-to-player! [world viewport]
+  (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
         pos (.position camera)
         [x y] (:entity/position @(:world/player-eid @world))]
     (set! (.x pos) x)
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! [batch world-viewport world world-unit-scale]
+(defn draw-tiled-map! [batch viewport world world-unit-scale]
   (let [world* @world
-        ^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
+        ^OrthographicCamera camera (.getCamera ^Viewport viewport)
         pos (.position camera)
         ^Batch batch batch]
     (.setProjectionMatrix batch (.combined camera))
@@ -2160,7 +2160,7 @@
     (assert (contains? cursors cursor-key))
     (.setCursor ^Graphics Gdx/graphics ^Cursor (get cursors cursor-key))))
 
-(defn destroy-entities! [db schemas world play-sound! skin stage textures]
+(defn destroy-entities! [db schemas world play-sound!]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
     (world/unregister-eid! @world eid)
     (doseq [[k v] @eid]
@@ -2173,21 +2173,21 @@
         nil))))
 
 (defn draw-world!
-  [batch default-font shape-drawer stage textures world-viewport world-unit-scale unit-scale
+  [batch default-font shape-drawer stage textures viewport world-unit-scale unit-scale
    world show-body-bounds? active-entities
    show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
    factions-iterations render-z-order]
-  (let [^OrthographicCamera camera (.getCamera ^Viewport world-viewport)
+  (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
         [x y] (ui-mouse-position stage)
         mouseover-actor* (mouseover-actor stage x y)
-        world-mouse-pos (world-mouse-position world-viewport)]
+        world-mouse-pos (world-mouse-position viewport)]
     (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
     (.setProjectionMatrix ^Batch batch (.combined camera))
     (.begin ^Batch batch)
     (shape-drawer/with-line-width shape-drawer world-unit-scale
       (reset! unit-scale world-unit-scale)
-      (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport show-tile-grid?)
-                       #(draw-cell-debug % shape-drawer world-viewport world
+      (doseq [draw-fn [#(draw-tile-grid % shape-drawer viewport show-tile-grid?)
+                       #(draw-cell-debug % shape-drawer viewport world
                                          show-cell-entities? show-cell-occupied? show-potential-field-colors?
                                          factions-iterations)
                        #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
@@ -2274,7 +2274,7 @@
 
 (defn handle-player-input!
   [world interaction-state
-   play-sound! skin stage textures world-viewport key-pressed? button-just-pressed?]
+   play-sound! skin stage textures viewport key-pressed? button-just-pressed?]
   (let [eid (:world/player-eid @world)
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -2282,7 +2282,7 @@
         move-v (movement-vector key-pressed?)
         [x y] (ui-mouse-position stage)
         mouseover-actor* (mouseover-actor stage x y)
-        world-mouse-pos (world-mouse-position world-viewport)]
+        world-mouse-pos (world-mouse-position viewport)]
     (case state-k
       :player-idle
       (if move-v
@@ -2315,10 +2315,10 @@
 
 (defn- tick-entities!
   [db schemas world delta-time active-entities
-   play-sound! skin stage textures max-speed world-viewport]
+   play-sound! skin stage textures max-speed viewport]
   (let [active-entities* @active-entities
         raycaster (:world/raycaster @world)
-        world-mouse-pos (world-mouse-position world-viewport)]
+        world-mouse-pos (world-mouse-position viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
                 (handle-effect! db schemas world play-sound! skin stage textures e effect-ctx world-mouse-pos
@@ -2335,7 +2335,7 @@
 
 (defn tick-game!
   [db schemas world active-entities paused?
-   play-sound! skin stage textures world-viewport factions-iterations
+   play-sound! skin stage textures viewport factions-iterations
    max-delta max-speed]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)
@@ -2348,11 +2348,11 @@
                       @active-entities
                       max-iterations))
       (tick-entities! db schemas world delta-time active-entities
-                      play-sound! skin stage textures max-speed world-viewport))))
+                      play-sound! skin stage textures max-speed viewport))))
 
 (defn- create!
   [{:keys [audio sound-paths batch unit-scale shape-drawer-texture shape-drawer
-           skin stage cursors textures world-viewport default-font default-font-params
+           skin stage cursors textures viewport default-font default-font-params
            level-fn db world z-orders minimum-size world-unit-scale
            mouseover-eid paused? show-tile-grid? show-cell-entities? show-cell-occupied?
            show-body-bounds? show-potential-field-colors? play-sound! schemas]}]
@@ -2374,7 +2374,7 @@
   (reset! cursors (create-cursors! Gdx/files))
   (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                :extensions #{"png" "bmp"}}))
-  (reset! world-viewport (create-world-viewport! world-unit-scale))
+  (reset! viewport (create-viewport! world-unit-scale))
   (reset! default-font (create-default-font! Gdx/files default-font-params))
   (let [{level-tiled-map :tiled-map
          level-start :start-position} (create-level! level-fn db @textures)]
@@ -2396,7 +2396,7 @@
                                          @skin
                                          @stage
                                          @textures
-                                         @world-viewport)]
+                                         @viewport)]
     (.addActor ^Stage @stage actor))
   (spawn-player! db schemas world @skin @stage @textures)
   (bind-player-eid! world)
@@ -2413,11 +2413,11 @@
   (run! Disposable/.dispose (vals @textures))
   (Disposable/.dispose (:world/tiled-map @world)))
 
-(defn- create-interaction-state [world mouseover-eid stage world-viewport]
+(defn- create-interaction-state [world mouseover-eid stage viewport]
   (let [player-eid (:world/player-eid @world)
         mouseover-eid @mouseover-eid
         mouseover-actor (current-mouseover-actor stage)
-        world-mouse-position (world-mouse-position world-viewport)]
+        world-mouse-position (world-mouse-position viewport)]
     (cond
       mouseover-actor
       [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -2451,7 +2451,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (defn- render!
-  [{:keys [world mouseover-eid stage world-viewport render-z-order active-entities
+  [{:keys [world mouseover-eid stage viewport render-z-order active-entities
            batch world-unit-scale default-font shape-drawer textures unit-scale
            show-body-bounds? show-tile-grid? show-cell-entities? show-cell-occupied?
            show-potential-field-colors? factions-iterations
@@ -2459,18 +2459,18 @@
            db schemas max-delta max-speed]
     :as ctx}]
   (ScreenUtils/clear 0 0 0 0)
-  (update-mouseover-eid! world mouseover-eid @stage @world-viewport render-z-order)
+  (update-mouseover-eid! world mouseover-eid @stage @viewport render-z-order)
   (update-active-entities! world active-entities)
-  (set-camera-to-player! world @world-viewport)
-  (draw-tiled-map! @batch @world-viewport world world-unit-scale)
-  (draw-world! @batch @default-font @shape-drawer @stage @textures @world-viewport world-unit-scale unit-scale
+  (set-camera-to-player! world @viewport)
+  (draw-tiled-map! @batch @viewport world world-unit-scale)
+  (draw-world! @batch @default-font @shape-drawer @stage @textures @viewport world-unit-scale unit-scale
                world show-body-bounds? active-entities
                show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
                factions-iterations render-z-order)
-  (let [interaction-state (create-interaction-state world mouseover-eid @stage @world-viewport)]
+  (let [interaction-state (create-interaction-state world mouseover-eid @stage @viewport)]
     (update-cursor! @cursors interaction-state world)
     (handle-player-input! world interaction-state
-                          play-sound! @skin @stage @textures @world-viewport
+                          play-sound! @skin @stage @textures @viewport
                           #(.isKeyPressed ^Input Gdx/input (int %))
                           #(.isButtonJustPressed ^Input Gdx/input (int %))))
   (reset! paused?
@@ -2480,9 +2480,9 @@
                    (not (or (.isKeyJustPressed ^Input Gdx/input (int (:unpause-once controls)))
                             (.isKeyPressed ^Input Gdx/input (int (:unpause-continously controls))))))))
   (tick-game! db schemas world active-entities paused?
-              play-sound! @skin @stage @textures @world-viewport factions-iterations
+              play-sound! @skin @stage @textures @viewport factions-iterations
               max-delta max-speed)
-  (destroy-entities! db schemas world play-sound! @skin @stage @textures)
+  (destroy-entities! db schemas world play-sound!)
   (doseq [[k f] key-pressed-actions]
     (when (.isKeyPressed ^Input Gdx/input (int k))
       (f ctx)))
@@ -2493,9 +2493,9 @@
   (.draw ^Stage @stage))
 
 (defn- resize!
-  [{:keys [stage world-viewport]} width height]
+  [{:keys [stage viewport]} width height]
   (.update (.getViewport ^Stage @stage) width height true)
-  (.update ^Viewport @world-viewport width height false))
+  (.update ^Viewport @viewport width height false))
 
 (def listener
   (let [world-unit-scale (float (/ 48))
@@ -2523,7 +2523,7 @@
         batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
-        world-viewport (atom nil)
+        viewport (atom nil)
         shape-drawer (atom nil)
         shape-drawer-texture (atom nil)
         textures (atom nil)
@@ -2563,7 +2563,7 @@
              :batch batch
              :cursors cursors
              :default-font default-font
-             :world-viewport world-viewport
+             :viewport viewport
              :shape-drawer shape-drawer
              :shape-drawer-texture shape-drawer-texture
              :textures textures

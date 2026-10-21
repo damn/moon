@@ -58,7 +58,7 @@
         batch (atom nil)
         skin (atom nil)
         ui-stage (atom nil)
-        world-viewport (atom nil)
+        viewport (atom nil)
         camera (atom nil)
         db (atom nil)
         textures (atom nil)
@@ -85,13 +85,13 @@
           (.addActor s window)
           (reset! ui-stage s))
         (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
-        (reset! world-viewport (FitViewport. (float world-width)
+        (reset! viewport (FitViewport. (float world-width)
                                              (float world-height)
                                              (doto (OrthographicCamera.)
                                                (.setToOrtho false
                                                             world-width
                                                             world-height))))
-        (reset! camera (.getCamera ^Viewport @world-viewport))
+        (reset! camera (.getCamera ^Viewport @viewport))
         (reset! db (db/create (-> "schema.edn" io/resource slurp edn/read-string)
                               (-> "properties.edn" io/resource slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
@@ -107,7 +107,7 @@
       (render [_]
         (let [^OrthographicCamera camera* @camera
               ^Batch batch* @batch
-              ^OrthographicCamera world-camera (.getCamera ^Viewport @world-viewport)]
+              ^OrthographicCamera world-camera (.getCamera ^Viewport @viewport)]
           (ScreenUtils/clear 0 0 0 0)
           (.setProjectionMatrix batch* (.combined world-camera))
           (.begin batch*)
@@ -146,7 +146,7 @@
 
       (resize [_ width height]
         (.update (.getViewport ^Stage @ui-stage) width height true)
-        (.update ^Viewport @world-viewport width height false))
+        (.update ^Viewport @viewport width height false))
 
       (pause [_])
 
