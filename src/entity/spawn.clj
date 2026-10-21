@@ -1,5 +1,5 @@
 (ns entity.spawn
-  (:require [animation.create :as animation.create]
+  (:require [lib.animation :as animation]
             [game.entity :refer [set-item]]
             [moon.g2d :as moon-g2d]
             [moon.inventory :as inventory]
@@ -143,7 +143,7 @@
         entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
-                                      (animation.create/create v)
+                                      (animation/create v)
 
                                       :entity/delete-after-duration
                                       (timer/create elapsed-time* v)

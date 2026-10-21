@@ -1,5 +1,5 @@
 (ns skill.usable-state
-  (:require [effect.applicable :refer [applicable?]]
+  (:require [lib.effect :as effect]
             [moon.stats :as stats]))
 
 (defn usable-state
@@ -13,7 +13,7 @@
    (> (:skill/cost skill) ((stats/get-mana (:entity/stats entity)) 0))
    :not-enough-mana
 
-   (not (seq (filter #(applicable? % effect-ctx) effects)))
+   (not (seq (filter #(effect/applicable? % effect-ctx) effects)))
    :invalid-params
 
    :else

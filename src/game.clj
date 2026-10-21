@@ -3,9 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [effect.applicable :refer [applicable?]]
-            [effect.handle :refer [handle-effect]]
-            [effect.useful :refer [useful?]]
             [entity.spawn :refer [spawn-entity!]]
             [game.audio :refer [audiovisual!]]
             [game.controls :refer [controls]]
@@ -20,6 +17,7 @@
             [grid.find-direction :refer [find-direction]]
             [info-text :refer [info-text]]
             [lib.color :as color]
+            [lib.effect :as effect]
             [lib.shape-drawer :as shape-drawer]
             [moon.body :as body]
             [moon.cell :as cell]
@@ -766,8 +764,8 @@
        reverse
        (filter #(and (= :usable (usable-state % entity effect-ctx))
                      (->> (:skill/effects %)
-                          (filter (fn [e] (applicable? e effect-ctx)))
-                          (some (fn [e] (useful? e effect-ctx ray-blocked?))))))
+                          (filter (fn [e] (effect/applicable? e effect-ctx)))
+                          (some (fn [e] (effect/useful? e effect-ctx ray-blocked?))))))
        first))
 
 (defn- create-effect-ctx
@@ -886,7 +884,7 @@
       (let [{:keys [skill effect-ctx counter]} v
             effect-ctx (update-effect-ctx (:world/raycaster @world) effect-ctx)]
         (cond
-         (not (seq (filter #(applicable? % effect-ctx)
+         (not (seq (filter #(effect/applicable? % effect-ctx)
                            (:skill/effects skill))))
          (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :action-done)
 
@@ -1356,9 +1354,9 @@
         raycaster (:world/raycaster @world)
         world-mouse-pos (world-mouse-position world-viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
-              (doseq [effect (filter #(applicable? % effect-ctx) effects)]
-                (handle-effect db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
-                               effect effect-ctx world-mouse-pos
+              (doseq [e (filter #(effect/applicable? % effect-ctx) effects)]
+                (effect/handle db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
+                               e effect-ctx world-mouse-pos
                                apply-effects!
                                active-entities*
                                raycaster)))]

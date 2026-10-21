@@ -1,4 +1,4 @@
-(ns effect.handle
+(ns lib.effect
   (:require [entity.spawn :refer [spawn-entity!]]
             [game.audio :refer [audiovisual!]]
             [game.entity :refer [add-text-effect]]
@@ -7,15 +7,114 @@
             [game.target-all :refer [affected-targets]]
             [lib.color :as color]
             [moon.body :as body]
+            [moon.faction :as faction]
             [moon.rand :as rand]
             [moon.stats :as stats]
             [moon.timer :as timer]
             [moon.v2 :as v2]))
 
+(defn applicable?
+  [[k v] effect-ctx]
+  (case k
+    :effects/audiovisual
+    (:effect/target-position effect-ctx)
+
+    :effects/projectile
+    (:effect/target-direction effect-ctx)
+
+    :effects/spawn
+    (and (:entity/faction @(:effect/source effect-ctx))
+         (:effect/target-position effect-ctx))
+
+    :effects/target-all
+    true
+
+    :effects/target-entity
+    (and (:effect/target effect-ctx)
+         (seq (filter #(applicable? % effect-ctx) (:entity-effects v))))
+
+    :effects.target/audiovisual
+    (:effect/target effect-ctx)
+
+    :effects.target/convert
+    (let [source (:effect/source effect-ctx)
+          target (:effect/target effect-ctx)]
+      (and target
+           (= (:entity/faction @target)
+              (faction/enemy (:entity/faction @source)))))
+
+    :effects.target/damage
+    (and (:effect/target effect-ctx)
+         #_(:stats/hp @target))
+
+    :effects.target/kill
+    (and (:effect/target effect-ctx)
+         (:entity/fsm @(:effect/target effect-ctx)))
+
+    :effects.target/melee-damage
+    (applicable? [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
+                 effect-ctx)
+
+    :effects.target/spiderweb
+    (:entity/stats @(:effect/target effect-ctx))
+
+    :effects.target/stun
+    (and (:effect/target effect-ctx)
+         (:entity/fsm @(:effect/target effect-ctx)))))
+
+(defn- double-ray-endpositions
+  [[start-x start-y]
+   [target-x target-y]
+   path-w]
+  {:pre [(< path-w 0.98)]}
+  (let [path-w (+ path-w 0.02)
+        v (v2/direction [start-x start-y]
+                        [target-y target-y])
+        [normal1 normal2] (v2/normal-vectors v)
+        normal1 (v2/scale normal1 (/ path-w 2))
+        normal2 (v2/scale normal2 (/ path-w 2))
+        start1  (mapv + [start-x  start-y]  normal1)
+        start2  (mapv + [start-x  start-y]  normal2)
+        target1 (mapv + [target-x target-y] normal1)
+        target2 (mapv + [target-x target-y] normal2)]
+    [start1 target1 start2 target2]))
+
+(defn useful?
+  [[k v] effect-ctx ray-blocked?]
+  (case k
+    :effects/audiovisual
+    false
+
+    :effects/projectile
+    (let [{:keys [projectile/max-range] :as projectile} v
+          source-p (:entity/position @(:effect/source effect-ctx))
+          target-p (:entity/position @(:effect/target effect-ctx))]
+      (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
+                                                                              target-p
+                                                                              (:projectile/size projectile))]
+                  (or
+                   (ray-blocked? start1 target1)
+                   (ray-blocked? start2 target2))))
+           (< (v2/distance source-p target-p)
+              max-range)))
+
+    :effects/target-all
+    false
+
+    :effects/target-entity
+    (body/in-range? @(:effect/source effect-ctx)
+                    @(:effect/target effect-ctx)
+                    (:maxrange v))
+
+    :effects.target/audiovisual
+    false
+
+    true))
+
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def ^:private spiderweb-duration 5)
 
-(defn handle-effect
+(defn handle
   [db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities raycaster]
@@ -132,13 +231,13 @@
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle-effect db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
-                     [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
-                     effect-ctx
-                     world-mouse-position
-                     apply-effects!
-                     active-entities
-                     raycaster)
+      (handle db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
+              [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
+              effect-ctx
+              world-mouse-position
+              apply-effects!
+              active-entities
+              raycaster)
 
       :effects.target/spiderweb
       (let [target (:effect/target effect-ctx)]

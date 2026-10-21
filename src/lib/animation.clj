@@ -1,4 +1,4 @@
-(ns animation.create)
+(ns lib.animation)
 
 (defn create
   [{:keys [animation/frames
