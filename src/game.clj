@@ -285,14 +285,14 @@
 
 (defn ui-mouse-position [stage]
   (let [v2 (.unproject (.getViewport ^Stage stage)
-                       (Vector2. (float (.getX ^Input Gdx/input))
-                                 (float (.getY ^Input Gdx/input))))]
+                       (Vector2. (float (.getX Gdx/input))
+                                 (float (.getY Gdx/input))))]
     [(.x v2) (.y v2)]))
 
 (defn world-mouse-position [viewport]
   (let [v2 (.unproject ^Viewport viewport
-                       (Vector2. (float (.getX ^Input Gdx/input))
-                                 (float (.getY ^Input Gdx/input))))]
+                       (Vector2. (float (.getX Gdx/input))
+                                 (float (.getY Gdx/input))))]
     [(.x v2) (.y v2)]))
 
 (defn- button?
@@ -1051,7 +1051,7 @@
                  (fn [[path-segment [hotspot-x hotspot-y]]]
                    (let [path (format path-format path-segment)
                          pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
-                         cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
+                         cursor (.newCursor Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
                      (Disposable/.dispose pixmap*)
                      cursor)))))
 
@@ -1276,8 +1276,8 @@
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
                                        (let [v2 (.unproject (.getViewport ^Stage stage)
-                                                           (Vector2. (float (.getX ^Input Gdx/input))
-                                                                     (float (.getY ^Input Gdx/input))))
+                                                           (Vector2. (float (.getX Gdx/input))
+                                                                     (float (.getY Gdx/input))))
                                              local (.stageToLocalCoordinates ^Actor this
                                                                              (Vector2. (.x v2) (.y v2)))
                                              x (.x ^Vector2 local)
@@ -1993,7 +1993,7 @@
                                                 (str (number/readable @(:world/elapsed-time @world)) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
-                                   :update-fn (fn [] (.getFramesPerSecond ^Graphics Gdx/graphics))
+                                   :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
                                    :icon "images/fps.png"}
                                   {:label "Mouseover-entity id"
                                    :update-fn (fn []
@@ -2102,7 +2102,7 @@
   (let [[x y] (ui-mouse-position stage)]
     (mouseover-actor stage x y)))
 
-(defn update-cursor! [cursors interaction-state world]
+(defn- cursor-key [interaction-state world]
   (let [eid (:world/player-eid @world)
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -2153,12 +2153,10 @@
 
                                            :interaction-state/no-skill-selected
                                            :cursors/no-skill-selected)))}
-                       state-k)
-        cursor-key (if (keyword? cursor-fn)
-                     cursor-fn
-                     (cursor-fn eid))]
-    (assert (contains? cursors cursor-key))
-    (.setCursor ^Graphics Gdx/graphics ^Cursor (get cursors cursor-key))))
+                       state-k)]
+    (if (keyword? cursor-fn)
+      cursor-fn
+      (cursor-fn eid))))
 
 (defn destroy-entities! [db schemas world play-sound!]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
@@ -2338,7 +2336,7 @@
    play-sound! skin stage textures viewport factions-iterations
    max-delta max-speed]
   (when-not @paused?
-    (let [delta-time (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)
+    (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
           world* @world]
       (swap! (:world/elapsed-time world*) + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
@@ -2367,7 +2365,7 @@
                                                            (int 1) (int 0) (int 1) (int 1))))
   (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
   (let [s (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
-    (.setInputProcessor ^Input Gdx/input ^InputProcessor s)
+    (.setInputProcessor Gdx/input ^InputProcessor s)
     (reset! stage s))
   (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
   (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
@@ -2467,27 +2465,30 @@
                world show-body-bounds? active-entities
                show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
                factions-iterations render-z-order)
-  (let [interaction-state (create-interaction-state world mouseover-eid @stage @viewport)]
-    (update-cursor! @cursors interaction-state world)
+  (let [interaction-state (create-interaction-state world mouseover-eid @stage @viewport)
+        cursor-key (cursor-key interaction-state world)
+        cursors @cursors]
+    (assert (contains? cursors cursor-key))
+    (.setCursor Gdx/graphics ^Cursor (get cursors cursor-key))
     (handle-player-input! world interaction-state
                           play-sound! @skin @stage @textures @viewport
-                          #(.isKeyPressed ^Input Gdx/input (int %))
-                          #(.isButtonJustPressed ^Input Gdx/input (int %))))
+                          #(.isKeyPressed Gdx/input (int %))
+                          #(.isButtonJustPressed Gdx/input (int %))))
   (reset! paused?
           (or #_error
               (and pausing?
                    (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
-                   (not (or (.isKeyJustPressed ^Input Gdx/input (int (:unpause-once controls)))
-                            (.isKeyPressed ^Input Gdx/input (int (:unpause-continously controls))))))))
+                   (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
+                            (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
   (tick-game! db schemas world active-entities paused?
               play-sound! @skin @stage @textures @viewport factions-iterations
               max-delta max-speed)
   (destroy-entities! db schemas world play-sound!)
   (doseq [[k f] key-pressed-actions]
-    (when (.isKeyPressed ^Input Gdx/input (int k))
+    (when (.isKeyPressed Gdx/input (int k))
       (f ctx)))
   (doseq [[k f] key-just-pressed-actions]
-    (when (.isKeyJustPressed ^Input Gdx/input (int k))
+    (when (.isKeyJustPressed Gdx/input (int k))
       (f ctx)))
   (.act ^Stage @stage)
   (.draw ^Stage @stage))

@@ -74,7 +74,7 @@
     (reify ApplicationListener
       (create [_]
         (reset! batch (SpriteBatch.))
-        (reset! skin (Skin. (.internal ^Files Gdx/files "skin/uiskin.json")))
+        (reset! skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
         (let [s (Stage. (FitViewport. 1440 900) @batch)
               ^Skin skin* @skin
               window (Window. "Edit" skin*)]
@@ -84,7 +84,7 @@
           (.pack window)
           (.addActor s window)
           (reset! ui-stage s))
-        (.setInputProcessor ^Input Gdx/input ^InputProcessor @ui-stage)
+        (.setInputProcessor Gdx/input ^InputProcessor @ui-stage)
         (reset! viewport (FitViewport. (float world-width)
                                              (float world-height)
                                              (doto (OrthographicCamera.)
@@ -139,7 +139,7 @@
                                            (let [pos (.position camera*)]
                                              (set! (.y pos) (- (.y pos) 1))
                                              (.update camera*)))}]
-            (when (.isKeyPressed ^Input Gdx/input k)
+            (when (.isKeyPressed Gdx/input k)
               (f)))
           (.act ^Stage @ui-stage)
           (.draw ^Stage @ui-stage)))
