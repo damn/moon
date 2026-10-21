@@ -19,7 +19,7 @@
                  [nrepl "0.9.0"]
                  [org.clojure/tools.namespace "1.3.0"]
                  ]
-  :java-source-paths ["java-src"]
+  :java-source-paths ["java"]
   :source-paths ["src"]
   :resource-paths ["resources/" "wav/" "edn/"]
   :aliases {
