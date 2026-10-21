@@ -2400,29 +2400,44 @@
         (reset! audio (into {}
                             (for [path sound-paths]
                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+
         (reset! batch (SpriteBatch.))
+
         (reset! unit-scale 1)
+
         (reset! shape-drawer-texture (white-pixel-texture))
+
         (reset! shape-drawer (shape-drawer/create @batch
                                                   (TextureRegion. ^Texture @shape-drawer-texture
                                                                  (int 1) (int 0) (int 1) (int 1))))
+
         (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
+
         (let [s (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
           (.setInputProcessor ^Input Gdx/input ^InputProcessor s)
           (reset! stage s))
+
         (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
+
         (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+
         (reset! cursors (create-cursors! Gdx/files))
+
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
+
         (reset! world-viewport (create-world-viewport! world-unit-scale))
+
         (reset! default-font (create-default-font! Gdx/files default-font-params))
+
         (let [{level-tiled-map :tiled-map
                level-start :start-position} (create-level! level-fn db @textures)]
           (reset! tiled-map level-tiled-map)
           (reset! start-position level-start))
+
         (reset! world (world/create @tiled-map {:z-orders z-orders
                                                 :minimum-size minimum-size}))
+
         (doseq [^Actor actor (create-ui-actors world
                                                mouseover-eid
                                                paused?
@@ -2441,9 +2456,13 @@
                                                @textures
                                                @world-viewport)]
           (.addActor ^Stage @stage actor))
+
         (spawn-player! db schemas world start-position @skin @stage @textures)
+
         (bind-player-eid! world player-eid)
-        (spawn-map-creatures! db schemas world start-position tiled-map))
+
+        (spawn-map-creatures! db schemas world start-position tiled-map)
+        )
 
       (dispose [_]
         (run! Sound/.dispose (vals @audio))
@@ -2457,14 +2476,20 @@
 
       (render [_]
         (ScreenUtils/clear 0 0 0 0)
+
         (update-mouseover-eid! world player-eid mouseover-eid @stage @world-viewport render-z-order)
+
         (update-active-entities! world player-eid active-entities)
+
         (set-camera-to-player! player-eid @world-viewport)
+
         (draw-tiled-map! @batch @world-viewport tiled-map world world-unit-scale)
+
         (draw-world! @batch @default-font @shape-drawer @stage @textures @world-viewport world-unit-scale unit-scale
                      world player-eid show-body-bounds? active-entities
                      show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
                      factions-iterations render-z-order)
+
         (reset! interaction-state
                 (let [player-eid @player-eid
                       mouseover-eid @mouseover-eid
@@ -2501,22 +2526,29 @@
                           [:interaction-state.skill/usable [skill effect-ctx]]
                           [:interaction-state.skill/not-usable state]))
                       [:interaction-state/no-skill-selected]))))
+
         (update-cursor! @cursors interaction-state player-eid)
+
         (handle-player-input! world interaction-state player-eid
                               play-sound! @skin @stage @textures @world-viewport
                               #(.isKeyPressed ^Input Gdx/input (int %))
                               #(.isButtonJustPressed ^Input Gdx/input (int %)))
+
         (reset! interaction-state nil)
+
         (reset! paused?
                 (or #_error
                     (and pausing?
                          (state->pause-game? (:state (:entity/fsm @@player-eid)))
                          (not (or (.isKeyJustPressed ^Input Gdx/input (int (:unpause-once controls)))
                                   (.isKeyPressed ^Input Gdx/input (int (:unpause-continously controls))))))))
+
         (tick-game! db schemas world delta-time potential-field-cache active-entities paused?
                     play-sound! @skin @stage @textures @world-viewport factions-iterations
                     max-delta max-speed)
+
         (destroy-entities! db schemas world play-sound! @skin @stage @textures)
+
         (doseq [[k f] {(:zoom-in controls) (fn []
                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
@@ -2527,6 +2559,7 @@
                                                 (.update camera)))}]
           (when (.isKeyPressed ^Input Gdx/input (int k))
             (f)))
+
         (doseq [[k f] {(:close-windows-key controls) (fn []
                                                        (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
                                                             (run! #(.setVisible ^Actor % false))))
@@ -2537,6 +2570,7 @@
                                                                        (not (.isVisible ^Actor entity-info)))))}]
           (when (.isKeyJustPressed ^Input Gdx/input (int k))
             (f)))
+
         (.act ^Stage @stage)
         (.draw ^Stage @stage))
 
