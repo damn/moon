@@ -198,7 +198,13 @@
                         (= #{:ground :transition} (set (g2d/cells grid))))
                        (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
                grid)
-        scaled-grid (g2d/scale-by grid scale)
+        scaled-grid (let [[w h] scale]
+                      (g2d/create (* (g2d/width grid) w)
+                                  (* (g2d/height grid) h)
+                                  (fn [[x y]]
+                                    (get grid
+                                         [(int (/ x w))
+                                          (int (/ y h))]))))
         schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")
         scaled-grid (place-step schema-tiled-map
                                 scale

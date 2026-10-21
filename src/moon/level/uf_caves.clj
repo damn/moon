@@ -31,7 +31,10 @@
     (assoc level :level/grid grid)))
 
 (defn- scale-grid [grid start scale]
-  (let [grid (g2d/scale-uniform grid scale)]
+  (let [grid (g2d/create (* (g2d/width grid) scale)
+                         (* (g2d/height grid) scale)
+                         (fn [posi]
+                           (get grid (mapv #(int (/ % scale)) posi))))]
     {:start-position (mapv #(* % scale) start)
      :grid grid}))
 
