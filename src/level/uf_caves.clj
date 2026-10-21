@@ -10,24 +10,6 @@
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
            (java.util Random)))
 
-(defn- initial-grid
-  [{:keys [initial-grid-create-fn
-           size
-           cave-style
-           random]
-    :as level}]
-  (let [{:keys [start grid]} (initial-grid-create-fn random size size cave-style)]
-    (assert (= #{:wall :ground} (set (apply concat grid))))
-    (assoc level
-           :level/start start
-           :level/grid grid)))
-
-(defn- apply-fix-nads
-  [{:keys [level/grid]
-    :as level}]
-  (let [grid ((:grid2d-fix-nads-fn level) grid)]
-    (assoc level :level/grid grid)))
-
 (defn- scale-grid [grid start scale]
   (let [w (* (count grid) scale)
         h (* (count (grid 0)) scale)
@@ -123,17 +105,41 @@
         (.add (.getLayers tiled-map) ^MapLayer layer)))
     tiled-map))
 
-(defn- last-steps
-  [{:keys [level/grid
-           level/start
-           level/spawn-rate
-           level/creature-properties
-           level/create-tile
-           level/tile-size
-           level/scaling]
-    :as lvlctx}]
-  (assert (= #{:wall :ground} (set (apply concat grid))))
-  (let [{:keys [start-position grid]} (scale-grid grid start scaling)
+(defn create
+  [world-fn-ctx]
+  (let [{:keys [level/creature-properties
+                textures
+                tile-size
+                texture-path
+                spawn-rate
+                scaling
+                cave-size
+                cave-style]}
+        (merge {:tile-size 48
+                :texture-path "images/uf_terrain.png"
+                :spawn-rate 0.02
+                :scaling 3
+                :cave-size 200
+                :cave-style :wide}
+               world-fn-ctx)
+        {:keys [start grid]} (caves/create (Random.) cave-size cave-size cave-style)
+        _ (assert (= #{:wall :ground} (set (apply concat grid))))
+        grid (g2d/fix-nads grid)
+        create-tile (let [texture (get textures texture-path)]
+                      (memoize
+                       (fn [& {:keys [sprite-idx movement]}]
+                         {:pre [#{"all" "air" "none"} movement]}
+                         (let [texture-region (TextureRegion. ^Texture texture
+                                                              (int (* (sprite-idx 0) tile-size))
+                                                              (int (* (sprite-idx 1) tile-size))
+                                                              (int tile-size)
+                                                              (int tile-size))
+                               tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+                           (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile)
+                                 "movement" movement)
+                           tile))))
+        _ (assert (= #{:wall :ground} (set (apply concat grid))))
+        {:keys [start-position grid]} (scale-grid grid start scaling)
         grid (let [grid (reduce #(assoc-in %1 %2 :transition) grid
                                 (filter (fn [position]
                                           (and (= :wall (get-in grid position))
@@ -159,53 +165,3 @@
     (moon-tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
-
-(defn create
-  [world-fn-ctx]
-  (let [{:keys [initial-grid-create-fn
-                grid2d-fix-nads-fn
-                level/creature-properties
-                textures
-                tile-size
-                texture-path
-                spawn-rate
-                scaling
-                cave-size
-                cave-style]}
-        (merge {:initial-grid-create-fn caves/create
-                :grid2d-fix-nads-fn g2d/fix-nads
-                :tile-size 48
-                :texture-path "images/uf_terrain.png"
-                :spawn-rate 0.02
-                :scaling 3
-                :cave-size 200
-                :cave-style :wide}
-               world-fn-ctx)]
-    (reduce (fn [m f]
-              (f m))
-            {:initial-grid-create-fn initial-grid-create-fn
-             :grid2d-fix-nads-fn grid2d-fix-nads-fn
-             :size cave-size
-             :cave-style cave-style
-             :random (Random.)
-
-             :level/tile-size tile-size
-             :level/create-tile (let [texture (get textures texture-path)]
-                                  (memoize
-                                   (fn [& {:keys [sprite-idx movement]}]
-                                     {:pre [#{"all" "air" "none"} movement]}
-                                     (let [texture-region (TextureRegion. ^Texture texture
-                                                                          (int (* (sprite-idx 0) tile-size))
-                                                                          (int (* (sprite-idx 1) tile-size))
-                                                                          (int tile-size)
-                                                                          (int tile-size))
-                                           tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-                                       (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile)
-                                             "movement" movement)
-                                       tile))))
-             :level/spawn-rate spawn-rate
-             :level/scaling scaling
-             :level/creature-properties creature-properties}
-            [initial-grid
-             apply-fix-nads
-             last-steps])))

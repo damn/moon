@@ -2055,27 +2055,6 @@
     (set! (.y pos) y)
     (.update camera)))
 
-(defn draw-tiled-map! [batch viewport world world-unit-scale]
-  (let [world* @world
-        ^OrthographicCamera camera (.getCamera ^Viewport viewport)
-        pos (.position camera)
-        ^Batch batch batch]
-    (.setProjectionMatrix batch (.combined camera))
-    (.begin batch)
-    (moon-tiled-map/draw! (:world/tiled-map world*)
-                          batch
-                          world-unit-scale
-                          camera
-                          (tile-color-setter*
-                           {:ray-blocked? (partial raycaster/blocked? (:world/raycaster world*))
-                            :explored-tile-corners (:world/explored-tile-corners world*)
-                            :light-position [(.x pos) (.y pos) (.z pos)]
-                            :see-all-tiles? false
-                            :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
-                            :visible-tile-color (color/float-bits 1 1 1 1)
-                            :invisible-tile-color (color/float-bits 0 0 0 1)}))
-    (.end batch)))
-
 (defn current-mouseover-actor [stage]
   (let [[x y] (ui-mouse-position stage)]
     (mouseover-actor stage x y)))
@@ -2147,31 +2126,6 @@
               :audiovisuals/hit-wall (play-sound! "bfxr_projectile_wallhit.wav"))
             (audiovisual! db schemas world (:entity/position @eid) v))
         nil))))
-
-(defn draw-world!
-  [batch default-font shape-drawer stage textures viewport world-unit-scale unit-scale
-   world show-body-bounds? active-entities
-   show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
-   factions-iterations render-z-order]
-  (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
-        [x y] (ui-mouse-position stage)
-        mouseover-actor* (mouseover-actor stage x y)
-        world-mouse-pos (world-mouse-position viewport)]
-    (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
-    (.setProjectionMatrix ^Batch batch (.combined camera))
-    (.begin ^Batch batch)
-    (shape-drawer/with-line-width shape-drawer world-unit-scale
-      (reset! unit-scale world-unit-scale)
-      (doseq [draw-fn [#(draw-tile-grid % shape-drawer viewport show-tile-grid?)
-                       #(draw-cell-debug % shape-drawer viewport world
-                                         show-cell-entities? show-cell-occupied? show-potential-field-colors?
-                                         factions-iterations)
-                       #(draw-entities! % shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor* world-mouse-pos
-                                        (:world/raycaster @world) world show-body-bounds? active-entities render-z-order)
-                       #(highlight-mouseover-tile % shape-drawer world-mouse-pos world)]]
-        (draw-fn nil))
-      (reset! unit-scale 1))
-    (.end ^Batch batch)))
 
 (defn- movement-vector [key-pressed?]
   (let [r (when (key-pressed? Input$Keys/D) [1  0])
@@ -2438,11 +2392,36 @@
   (update-mouseover-eid! world mouseover-eid @stage @viewport render-z-order)
   (update-active-entities! world active-entities)
   (set-camera-to-player! world @viewport)
-  (draw-tiled-map! @batch @viewport world world-unit-scale)
-  (draw-world! @batch @default-font @shape-drawer @stage @textures @viewport world-unit-scale unit-scale
-               world show-body-bounds? active-entities
-               show-tile-grid? show-cell-entities? show-cell-occupied? show-potential-field-colors?
-               factions-iterations render-z-order)
+  (.setProjectionMatrix ^Batch @batch (.combined (.getCamera ^Viewport @viewport)))
+  (.begin ^Batch @batch)
+  (moon-tiled-map/draw! (:world/tiled-map @world)
+                        @batch
+                        world-unit-scale
+                        (.getCamera ^Viewport @viewport)
+                        (tile-color-setter*
+                         {:ray-blocked? (partial raycaster/blocked? (:world/raycaster @world))
+                          :explored-tile-corners (:world/explored-tile-corners @world)
+                          :light-position (let [pos (.position (.getCamera ^Viewport @viewport))]
+                                            [(.x pos) (.y pos) (.z pos)])
+                          :see-all-tiles? false
+                          :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
+                          :visible-tile-color (color/float-bits 1 1 1 1)
+                          :invisible-tile-color (color/float-bits 0 0 0 1)}))
+  (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
+  (shape-drawer/with-line-width @shape-drawer world-unit-scale
+    (reset! unit-scale world-unit-scale)
+    (draw-tile-grid nil @shape-drawer @viewport show-tile-grid?)
+    (draw-cell-debug nil @shape-drawer @viewport world
+                     show-cell-entities? show-cell-occupied? show-potential-field-colors?
+                     factions-iterations)
+    (draw-entities! nil @shape-drawer @batch @default-font @textures unit-scale world-unit-scale
+                    (let [[x y] (ui-mouse-position @stage)]
+                      (mouseover-actor @stage x y))
+                    (world-mouse-position @viewport)
+                    (:world/raycaster @world) world show-body-bounds? active-entities render-z-order)
+    (highlight-mouseover-tile nil @shape-drawer (world-mouse-position @viewport) world)
+    (reset! unit-scale 1))
+  (.end ^Batch @batch)
   (let [interaction-state (create-interaction-state world mouseover-eid @stage @viewport)
         cursor-key (cursor-key interaction-state world)
         cursors @cursors]

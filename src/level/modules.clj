@@ -163,21 +163,6 @@
         (.add (.getLayers tiled-map) ^MapLayer layer)))
     tiled-map))
 
-(defn- last-steps
-  [spawn-rate creature-properties scaled-grid tiled-map start-position]
-  (let [^TiledMap tiled-map tiled-map
-        can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
-        _ (assert (can-spawn? start-position))
-        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
-        creatures (for [position spawn-positions
-                        :when (and (not= position start-position)
-                                   (<= (rand) spawn-rate)
-                                   (seq creature-properties))]
-                    [position (rand-nth creature-properties)])]
-    (moon-tiled-map/add-creatures-layer! tiled-map creatures)
-    {:tiled-map tiled-map
-     :start-position start-position}))
-
 (defn create
   [{:keys [level/creature-properties
            world/map-size
@@ -217,9 +202,15 @@
                                 (filter #(= :ground (get-in grid %)) (for [x (range (count grid)) y (range (count (grid 0)))] [x y]))
                                 (filter #(= :transition (get-in grid %)) (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))
         tiled-map (create-tiled-map schema-tiled-map scaled-grid)
-        start-position (mapv * start scale)]
-    (last-steps spawn-rate
-                creature-properties
-                scaled-grid
-                tiled-map
-                start-position)))
+        start-position (mapv * start scale)
+        can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
+        _ (assert (can-spawn? start-position))
+        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
+        creatures (for [position spawn-positions
+                        :when (and (not= position start-position)
+                                   (<= (rand) spawn-rate)
+                                   (seq creature-properties))]
+                    [position (rand-nth creature-properties)])]
+    (moon-tiled-map/add-creatures-layer! tiled-map creatures)
+    {:tiled-map tiled-map
+     :start-position start-position}))
