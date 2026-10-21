@@ -17,7 +17,7 @@
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn main-window [state]
-  (let [{:keys [schemas skin stage]} @state
+  (let [{:keys [schemas skin stage]} state
         window (Window. "Edit" skin)]
     (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys schemas)))]
       (.add window (doto (TextButton. (str/capitalize (name property-type)) skin)
@@ -29,56 +29,66 @@
                                                    property-type
                                                    (fn [_actor id]
                                                      (.addActor ^Stage stage
-                                                                (property-editor-window state (db/get-raw (:db @state) id)))))))))))
+                                                                (property-editor-window state (db/get-raw @(:db state) id)))))))))))
       (.row window))
     (.pack window)
     window))
 
 (defn listener []
-  (let [state (atom nil)
-        sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)]
+  (let [sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
+        schemas (-> "schema.edn" io/resource slurp edn/read-string)
+        properties-file (io/resource "properties.edn")
+        audio (atom nil)
+        batch (atom nil)
+        db (atom nil)
+        rebuild-editor-window! (atom nil)
+        skin (atom nil)
+        stage (atom nil)
+        textures (atom nil)
+        play-sound! (fn [sound-name]
+                      (let [sounds @audio]
+                        (assert (contains? sounds sound-name) (str sound-name))
+                        (.play ^Sound (get sounds sound-name))))]
     (reify ApplicationListener
       (create [_]
-        (let [batch (SpriteBatch.)
-              skin (Skin. (.internal Gdx/files "skin/uiskin.json"))
-              _ (set! (.markupEnabled (.getData (.getFont skin "default-font"))) true)
-              stage (Stage. (FitViewport. (float 1440) (float 900)) batch)
-              audio (into {}
-                          (for [path sound-paths]
-                            [path (.newSound Gdx/audio (.internal Gdx/files path))]))
-              schemas (-> "schema.edn" io/resource slurp edn/read-string)
-              properties-file (io/resource "properties.edn")
-              db (db/create schemas)
-              textures (textures/create Gdx/files {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}})]
-          (reset! state {:audio audio
-                         :batch batch
-                         :db db
-                         :properties-file properties-file
-                         :schemas schemas
-                         :play-sound! (fn [sound-name]
-                                        (assert (contains? (:audio @state) sound-name) (str sound-name))
-                                        (.play ^Sound (get (:audio @state) sound-name)))
-                         :skin skin
-                         :sound-names (keys audio)
-                         :stage stage
-                         :textures textures})
-          (.setInputProcessor Gdx/input stage)
-          (.addActor stage (main-window state))))
+        (reset! batch (SpriteBatch.))
+        (reset! skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
+        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
+        (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
+        (reset! audio (into {}
+                            (for [path sound-paths]
+                              [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+        (reset! db (db/create schemas))
+        (reset! textures (textures/create Gdx/files {:folder "resources/"
+                                                     :extensions #{"png" "bmp"}}))
+        (.setInputProcessor Gdx/input @stage)
+        (.addActor ^Stage @stage
+                   (main-window {:db db
+                                 :play-sound! play-sound!
+                                 :properties-file properties-file
+                                 :rebuild-editor-window! rebuild-editor-window!
+                                 :schemas schemas
+                                 :skin @skin
+                                 :sound-names (keys @audio)
+                                 :stage @stage
+                                 :textures @textures})))
+
       (dispose [_]
-        (let [{:keys [audio batch skin textures]} @state]
-          (run! Sound/.dispose (vals audio))
-          (Disposable/.dispose batch)
-          (Disposable/.dispose skin)
-          (run! Disposable/.dispose (vals textures))))
+        (run! Sound/.dispose (vals @audio))
+        (Disposable/.dispose @batch)
+        (Disposable/.dispose @skin)
+        (run! Disposable/.dispose (vals @textures)))
+
       (render [_]
-        (let [{:keys [stage]} @state]
-          (ScreenUtils/clear 0 0 0 0)
-          (.act ^Stage stage)
-          (.draw ^Stage stage)))
+        (ScreenUtils/clear 0 0 0 0)
+        (.act ^Stage @stage)
+        (.draw ^Stage @stage))
+
       (resize [_ width height]
-        (.update (.getViewport ^Stage (:stage @state)) width height true))
+        (.update (.getViewport ^Stage @stage) width height true))
+
       (pause [_])
+
       (resume [_]))))
 
 (defn -main []

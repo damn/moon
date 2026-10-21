@@ -14,14 +14,14 @@
 (defn- with-window-close [state f]
   (fn [actor]
     (try
-     (swap! state update :db f)
+     (swap! (:db state) f)
      (.remove ^Actor (find-ancestor actor (partial instance? Window)))
      (catch Throwable t
        (binding [*print-level* 3]
          (pretty-repl/pretty-pst t 24))))))
 
 (defn- property-editor-table [state widget on-save on-delete]
-  (let [{:keys [skin]} @state
+  (let [{:keys [skin]} state
         table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
     (doto (.add table ^Actor widget)
@@ -44,7 +44,7 @@
 (declare property-editor-window)
 
 (defn- rebuild-editor-window! [state]
-  (let [{:keys [schemas stage]} @state
+  (let [{:keys [schemas stage]} state
         window (-> (.getRoot ^Stage stage)
                    (.findActor "moon.ui.clojure.editor-window"))
         map-widget-table (.findActor ^Group window "moon.db.schema.map.ui.widget")
@@ -53,8 +53,8 @@
     (.addActor ^Stage stage (property-editor-window state property))))
 
 (defn property-editor-window [state property]
-  (swap! state assoc :rebuild-editor-window! #(rebuild-editor-window! state))
-  (let [{:keys [properties-file schemas skin stage]} @state
+  (reset! (:rebuild-editor-window! state) #(rebuild-editor-window! state))
+  (let [{:keys [properties-file schemas skin stage]} state
         schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget state schema property)
         scroll-pane-height (.getWorldHeight (.getViewport ^Stage stage))

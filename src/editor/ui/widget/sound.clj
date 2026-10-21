@@ -5,14 +5,14 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Layout)))
 
 (defn- play-sound-button [state sound-name]
-  (let [{:keys [play-sound! skin]} @state]
+  (let [{:keys [play-sound! skin]} state]
     (doto (TextButton. "play!" skin)
       (.addListener (proxy [ChangeListener] []
                       (changed [event _actor]
                         (play-sound! sound-name)))))))
 
 (defn- sound-columns [state table sound-name open-select-sounds-handler]
-  (let [{:keys [skin]} @state]
+  (let [{:keys [skin]} state]
     [{:actor (doto (TextButton. sound-name skin)
                (.addListener (proxy [ChangeListener] []
                                (changed [event _actor]
@@ -31,7 +31,7 @@
       (.setUserObject ^Actor table [k sound-name]))))
 
 (defn- choose-sound-button [state table sound-name ->sound-columns]
-  (let [{:keys [skin]} @state]
+  (let [{:keys [skin]} state]
     (doto (TextButton. sound-name skin)
       (.addListener (proxy [ChangeListener] []
                       (changed [event actor]
@@ -48,7 +48,7 @@
     table))
 
 (defn- choose-sound-window [state table ->sound-columns]
-  (let [{:keys [skin sound-names stage]} @state
+  (let [{:keys [skin sound-names stage]} state
         ^Table list-table (list-sounds-table
                            5
                            (for [sound-name sound-names]
@@ -71,10 +71,10 @@
 
 (defn- open-select-sounds-handler [state table ->sound-columns]
   (fn []
-    (.addActor ^Stage (:stage @state) (choose-sound-window state table ->sound-columns))))
+    (.addActor ^Stage (:stage state) (choose-sound-window state table ->sound-columns))))
 
 (defn create [state sound-name]
-  (let [{:keys [skin]} @state
+  (let [{:keys [skin]} state
         table (doto (Table.)
               (#(.pad (.defaults ^Table %) (float 5))))]
     (letfn [(sound-columns-fn [table sound-name]

@@ -40,7 +40,7 @@
            k
            state
            table]}]
-  (let [{:keys [skin]} @state
+  (let [{:keys [skin]} state
         row-table (doto (Table.)
                     (#(.pad (.defaults ^Table %) (float 2))))]
     (doto (.add row-table ^Actor (when display-remove-component-button?
@@ -51,7 +51,7 @@
                                                                                         (and (.getUserObject ^Actor actor)
                                                                                              (= k ((.getUserObject ^Actor actor) 0))))
                                                                                       (.getChildren ^Group table))))
-                                                       ((:rebuild-editor-window! @state))))))))
+                                                       (@(:rebuild-editor-window! state))))))))
       (.left))
     (.add row-table ^Actor (Label. ^String (k-label-text k) skin))
     (.row ^Table row-table)
@@ -82,7 +82,7 @@
   (.row ^Table table))
 
 (defn- add-component-window [state schema map-widget-table build-widget widget-value]
-  (let [{:keys [schemas skin]} @state
+  (let [{:keys [schemas skin]} state
         window (Window. "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-schema/map-keys (schema/malli-form schema schemas))))]
@@ -110,7 +110,7 @@
                                          :state state
                                          :display-remove-component-button? (map-schema/optional? (schema/malli-form schema schemas) k)
                                          :table map-widget-table})
-                                       ((:rebuild-editor-window! @state)))))))
+                                       (@(:rebuild-editor-window! state)))))))
       (.row window))
     (.pack window)
     window))
@@ -124,7 +124,7 @@
            state
            build-widget
            widget-value]}]
-  (let [{:keys [skin stage]} @state
+  (let [{:keys [skin stage]} state
         table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5)))
                 (.setName "moon.db.schema.map.ui.widget"))
@@ -150,7 +150,7 @@
     table))
 
 (defn create [state schema m build-widget widget-value]
-  (let [schemas (:schemas @state)]
+  (let [schemas (:schemas state)]
     (map-widget-table-create
      {:schema schema
       :build-widget build-widget

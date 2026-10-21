@@ -11,4 +11,4 @@
                   (* scale (.getRegionHeight ^TextureRegion texture-region))))))
 
 (defn create [state image]
-  (scaled-image-button (textures/texture-region (:textures @state) image) 2))
+  (scaled-image-button (textures/texture-region (:textures state) image) 2))

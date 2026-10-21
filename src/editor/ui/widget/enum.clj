@@ -6,6 +6,6 @@
   (edn/read-string (.getSelected ^SelectBox widget)))
 
 (defn create [state schema v]
-  (doto ^SelectBox (SelectBox. (:skin @state))
+  (doto ^SelectBox (SelectBox. (:skin state))
     (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
     (.setSelected (pr-str v))))

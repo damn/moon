@@ -33,7 +33,7 @@
                              :extra-info-text (constantly "")}})
 
 (defn- overview-table-rows* [state image-scale rows]
-  (let [{:keys [skin]} @state]
+  (let [{:keys [skin]} state]
     (for [row rows]
       (for [{:keys [texture-region
                     on-clicked
@@ -54,12 +54,12 @@
                   stack)}))))
 
 (defn- property-overview-rows [state property-type clicked-id-fn]
-  (let [{:keys [db textures]} @state
+  (let [{:keys [db textures]} state
         {:keys [sort-by-fn
                 extra-info-text
                 columns
                 image-scale]} (get property-type->overview-table-props property-type)]
-    (->> (db/all-raw db property-type)
+    (->> (db/all-raw @db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
                 {:texture-region (textures/texture-region textures (or (:entity/image property)
@@ -74,7 +74,7 @@
          (overview-table-rows* state image-scale))))
 
 (defn property-overview-window [state property-type clicked-id-fn]
-  (let [{:keys [skin]} @state
+  (let [{:keys [skin]} state
         window (Window. "Edit" skin)]
     (doseq [row (property-overview-rows state property-type clicked-id-fn)]
       (doseq [cell row]

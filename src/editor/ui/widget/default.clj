@@ -10,4 +10,4 @@
   (Label. ^String (string/truncate (binding [*print-level* nil]
                                      (pr-str v))
                                    60)
-          (:skin @state)))
+          (:skin state)))

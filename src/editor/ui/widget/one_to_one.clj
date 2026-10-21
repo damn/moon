@@ -15,7 +15,7 @@
        first))
 
 (defn- add-one-to-one-rows [state table property-type property-id]
-  (let [{:keys [db skin stage textures]} @state
+  (let [{:keys [db skin stage textures]} state
         redo-rows (fn [id]
                     (.clearChildren ^Group table)
                     (add-one-to-one-rows state table property-type id)
@@ -33,7 +33,7 @@
                                                          (.remove ^Actor (find-ancestor actor (partial instance? Window)))
                                                          (redo-rows id))))))))}])
                   property-id
-                  (conj [{:actor (let [property (db/get-raw db property-id)]
+                  (conj [{:actor (let [property (db/get-raw @db property-id)]
                                    (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
                                                                                                      (first (:animation/frames (:entity/animation property))))))
                                      (.addListener (TextTooltip. ^String (binding [*print-level* 2]

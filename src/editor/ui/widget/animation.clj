@@ -9,7 +9,7 @@
                 (#(.pad (.defaults ^Table %) (float 1))))]
     (doseq [image (:animation/frames animation)]
       (.add table ^Actor (scaled-image-button
-                          (textures/texture-region (:textures @state) image)
+                          (textures/texture-region (:textures state) image)
                           2)))
     (.row ^Table table)
     (.pack table)

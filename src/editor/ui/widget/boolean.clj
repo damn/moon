@@ -5,5 +5,5 @@
   (.isChecked ^CheckBox widget))
 
 (defn create [state checked?]
-  (doto (CheckBox. "" (:skin @state))
+  (doto (CheckBox. "" (:skin state))
     (.setChecked checked?)))
