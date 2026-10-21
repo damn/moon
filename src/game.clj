@@ -537,7 +537,7 @@
                     (+ 2 (int (.getWorldHeight world-viewport)))
                     1
                     1
-                    (color/float-bits 1 1 1 0.8))))))
+                    (color/float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
   [ctx shape-drawer world-mouse-position world]
