@@ -57,6 +57,27 @@
    :toggle-inventory Input$Keys/I
    :toggle-entity-info Input$Keys/E})
 
+(def ^:private key-pressed-actions
+  {(:zoom-in controls) (fn [{:keys [world-viewport]}]
+                         (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+                           (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
+                           (.update camera)))
+   (:zoom-out controls) (fn [{:keys [world-viewport]}]
+                          (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
+                            (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
+                            (.update camera)))})
+
+(def ^:private key-just-pressed-actions
+  {(:close-windows-key controls) (fn [{:keys [stage]}]
+                                   (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
+                                        (run! #(.setVisible ^Actor % false))))
+   (:toggle-inventory controls) (fn [{:keys [stage]}]
+                                  (toggle-inventory-visible! @stage))
+   (:toggle-entity-info controls) (fn [{:keys [stage]}]
+                                    (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
+                                      (.setVisible ^Actor entity-info
+                                                   (not (.isVisible ^Actor entity-info)))))})
+
 (defn- add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
          (if-let [existing (:entity/string-effect entity)]
@@ -2398,7 +2419,8 @@
            show-body-bounds? show-tile-grid? show-cell-entities? show-cell-occupied?
            show-potential-field-colors? factions-iterations interaction-state
            cursors play-sound! skin paused? pausing? state->pause-game?
-           db schemas max-delta max-speed]}]
+           db schemas max-delta max-speed]
+    :as ctx}]
   (ScreenUtils/clear 0 0 0 0)
   (update-mouseover-eid! world mouseover-eid @stage @world-viewport render-z-order)
   (update-active-entities! world active-entities)
@@ -2460,26 +2482,12 @@
               play-sound! @skin @stage @textures @world-viewport factions-iterations
               max-delta max-speed)
   (destroy-entities! db schemas world play-sound! @skin @stage @textures)
-  (doseq [[k f] {(:zoom-in controls) (fn []
-                                       (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
-                                         (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-                                         (.update camera)))
-                 (:zoom-out controls) (fn []
-                                        (let [^OrthographicCamera camera (.getCamera ^Viewport @world-viewport)]
-                                          (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-                                          (.update camera)))}]
+  (doseq [[k f] key-pressed-actions]
     (when (.isKeyPressed ^Input Gdx/input (int k))
-      (f)))
-  (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                 (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
-                                                      (run! #(.setVisible ^Actor % false))))
-                 (:toggle-inventory controls) #(toggle-inventory-visible! @stage)
-                 (:toggle-entity-info controls) (fn []
-                                                  (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
-                                                    (.setVisible ^Actor entity-info
-                                                                 (not (.isVisible ^Actor entity-info)))))}]
+      (f ctx)))
+  (doseq [[k f] key-just-pressed-actions]
     (when (.isKeyJustPressed ^Input Gdx/input (int k))
-      (f)))
+      (f ctx)))
   (.act ^Stage @stage)
   (.draw ^Stage @stage))
 
