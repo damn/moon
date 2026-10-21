@@ -5,6 +5,7 @@
             [game.fsm :refer [handle-fsm-event!]]
             [game.spawn :refer [spawn-creature spawn-line spawn-projectile]]
             [game.target-all :refer [affected-targets]]
+            [lib.color :as color]
             [moon.body :as body]
             [moon.rand :as rand]
             [moon.stats :as stats]
@@ -17,7 +18,7 @@
 (defn handle-effect
   [db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
    [k v] effect-ctx world-mouse-position apply-effects!
-   active-entities colors raycaster]
+   active-entities raycaster]
   (let [elapsed-time* @elapsed-time]
     (case k
       :effects/audiovisual
@@ -55,7 +56,7 @@
                           {:start (:entity/position source*)
                            :end (:entity/position @target)
                            :duration 0.05
-                           :color (:colors/target-all-line colors)
+                           :color (color/float-bits 1 0 0 0.75)
                            :thick? true}))
           (apply-effects! {:effect/source source
                            :effect/target target}
@@ -73,7 +74,7 @@
                               {:start (body/start-point body target-body)
                                :end (:entity/position target-body)
                                :duration 0.05
-                               :color (:colors/target-entity-line colors)
+                               :color (color/float-bits 1 0 0 0.75)
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
           (audiovisual! db schemas world elapsed-time play-sound! skin stage textures z-orders minimum-size
@@ -137,7 +138,6 @@
                      world-mouse-position
                      apply-effects!
                      active-entities
-                     colors
                      raycaster)
 
       :effects.target/spiderweb

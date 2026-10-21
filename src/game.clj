@@ -8,7 +8,6 @@
             [effect.useful :refer [useful?]]
             [entity.spawn :refer [spawn-entity!]]
             [game.audio :refer [audiovisual!]]
-            [game.colors :refer [colors]]
             [game.controls :refer [controls]]
             [game.draw :refer [draw-fn-filled-rectangle draw-fn-rectangle draw-fn-text draw-fn-texture-region]]
             [game.entity :refer [remove-item set-item]]
@@ -20,6 +19,7 @@
             [game.ui :refer [sync-player-ui! toggle-inventory-visible! ui-remove-item! ui-set-item!]]
             [grid.find-direction :refer [find-direction]]
             [info-text :refer [info-text]]
+            [lib.color :as color]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.circle :as moon-circle]
@@ -495,14 +495,14 @@
                          [x y])]
     (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and @show-cell-entities? (seq (:entities cell*)))
-        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-entities colors)))
+        (draw-fn-filled-rectangle shape-drawer x y 1 1 (color/float-bits 1 0 0 0.6)))
       (when (and @show-cell-occupied? (seq (:occupied cell*)))
-        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-occupied colors)))
+        (draw-fn-filled-rectangle shape-drawer x y 1 1 (color/float-bits 0 0 1 0.6)))
       (when-let [faction @show-potential-field-colors?]
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
-              (draw-fn-filled-rectangle shape-drawer x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
+              (draw-fn-filled-rectangle shape-drawer x y 1 1 (color/float-bits ratio (- 1 ratio) ratio 0.6)))))))))
 
 (defn- draw-fn-line [shape-drawer [sx sy] [ex ey] color-float-bits]
   (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
@@ -537,7 +537,7 @@
                     (+ 2 (int (.getWorldHeight world-viewport)))
                     1
                     1
-                    (Color/toFloatBits (float 1) (float 1) (float 1) (float 0.8))))))
+                    (color/float-bits 1 1 1 0.8))))))
 
 (defn highlight-mouseover-tile
   [ctx shape-drawer world-mouse-position world]
@@ -547,8 +547,8 @@
     (when (and cell (#{:air :none} (:movement cell)))
       (draw-fn-rectangle shape-drawer x y 1 1
                          (case (:movement cell)
-                           :air (:colors/mouseover-tile-air colors)
-                           :none (:colors/mouseover-tile-none colors))))))
+                           :air (color/float-bits 1 1 0 0.5)
+                           :none (color/float-bits 1 0 0 0.5))))))
 
 (def ^:private active-skill-radius
   (let [tile-size 48
@@ -578,7 +578,7 @@
     (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width)))
 
 (defn- effect-render
-  [[k v] effect-ctx shape-drawer active-entities colors raycaster]
+  [[k v] effect-ctx shape-drawer active-entities raycaster]
   (case k
     :effects/target-all
     (let [source (:effect/source effect-ctx)
@@ -587,7 +587,7 @@
         (draw-fn-line shape-drawer
                       (:entity/position source*)
                       (:entity/position target*)
-                      (:colors/target-all-render colors))))
+                      (color/float-bits 1 0 0 0.5))))
 
     :effects/target-entity
     (when-let [target (:effect/target effect-ctx)]
@@ -599,14 +599,14 @@
                       (body/start-point body target-body)
                       (body/end-point body target-body maxrange)
                       (if (body/in-range? body target-body maxrange)
-                        (:colors/target-entity-in-range colors)
-                        (:colors/target-entity-not-in-range colors)))))
+                        (color/float-bits 1 0 0 0.5)
+                        (color/float-bits 1 1 0 0.5)))))
 
     nil))
 
 (defn- draw-component
   [shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
-   textures colors player elapsed-time active-entities raycaster
+   textures player elapsed-time active-entities raycaster
    entity k v]
   (case k
     :entity/clickable
@@ -656,11 +656,11 @@
     :entity/mouseover?
     (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
           color (cond (= faction (faction/enemy (:entity/faction player)))
-                      (:colors/enemy-color colors)
+                      (color/float-bits 1 0 0 0.4)
                       (= faction (:entity/faction player))
-                      (:colors/friendly-color colors)
+                      (color/float-bits 0 1 0 0.4)
                       :else
-                      (:colors/neutral-color colors))]
+                      (color/float-bits 1 1 1 0.4))]
       (draw-with-line-width! shape-drawer 5
                              #(draw-fn-ellipse shape-drawer position
                                                 (/ width 2)
@@ -676,13 +676,17 @@
               y (+ y (/ height 2))
               height (* 5 world-unit-scale)
               border (* 1 world-unit-scale)]
-          (draw-fn-filled-rectangle shape-drawer x y width height (:colors/hp-bar-rect colors))
+          (draw-fn-filled-rectangle shape-drawer x y width height (color/float-bits 0 0 0 1))
           (draw-fn-filled-rectangle shape-drawer
                                     (+ x border)
                                     (+ y border)
                                     (- (* width ratio) (* 2 border))
                                     (- height (* 2 border))
-                                    ((:colors/hp-bar colors) ratio)))))
+                                    (cond
+                                      (> ratio 0.75) (color/float-bits 0 0.8 0 1)
+                                      (> ratio 0.5) (color/float-bits 0 0.5 0 1)
+                                      (> ratio 0.25) (color/float-bits 0.5 0.5 0 1)
+                                      :else (color/float-bits 0.5 0 0 1))))))
 
     :entity/string-effect
     (let [{:keys [text]} v
@@ -696,7 +700,7 @@
                          :up? true}))
 
     :entity/temp-modifier
-    (draw-fn-filled-circle shape-drawer (:entity/position entity) 0.5 (:colors/temp-modifier colors))
+    (draw-fn-filled-circle shape-drawer (:entity/position entity) 0.5 (color/float-bits 0.5 0.5 0.5 0.4))
 
     :active-skill
     (let [{:keys [skill effect-ctx counter]} v
@@ -709,18 +713,17 @@
                (float (/ (:entity/height entity) 2))
                (float 0.15))
           center [x (+ y radius)]]
-      (draw-fn-filled-circle shape-drawer center radius (:colors/active-skill-circle colors))
+      (draw-fn-filled-circle shape-drawer center radius (color/float-bits 1 1 1 0.125))
       (draw-fn-sector shape-drawer
                       center
                       radius
                       (math/to-radians 90)
                       (math/to-radians (* (float action-counter-ratio) 360))
-                      (:colors/active-skill-sector colors))
+                      (color/float-bits 1 1 1 0.5))
       (draw-fn-texture-region batch unit-scale texture-region [(- (float x) radius) y])
       (doseq [effect effects]
         (effect-render effect effect-ctx shape-drawer
                        active-entities
-                       colors
                        raycaster)))
 
     :npc-sleeping
@@ -732,7 +735,7 @@
                          :up? true}))
 
     :stunned
-    (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (:colors/stunned colors))))
+    (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (color/float-bits 1 1 1 0.6))))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -776,12 +779,12 @@
         (draw-entity-rectangle! ctx shape-drawer
                                 entity
                                 (if (:entity/collides? entity)
-                                  (:colors/debug-body-outline-collides colors)
-                                  (:colors/debug-body-outline colors))))
+                                  (color/float-bits 1 1 1 1)
+                                  (color/float-bits 0.5 0.5 0.5 1))))
       (doseq [[k v] entity
               :when (get render-layer k)]
         (draw-component shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
-                        textures colors player elapsed-time active-entities raycaster
+                        textures player elapsed-time active-entities raycaster
                         entity k v)))))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
@@ -1092,13 +1095,13 @@
                                                          cell
                                                          (world-mouse-position world-viewport)))
                         (fn [player-entity x y mouseover? cell]
-                          (draw-fn-rectangle shape-drawer x y cell-size cell-size (:colors/item-rect colors))
+                          (draw-fn-rectangle shape-drawer x y cell-size cell-size (color/float-bits 0.5 0.5 0.5 1))
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
                                   color (if (inventory/valid-slot? cell item)
-                                          (:colors/droppable-item colors)
-                                          (:colors/not-allowed-drop-item colors))]
+                                          (color/float-bits 0 0.6 0 0.8)
+                                          (color/float-bits 0.6 0 0 0.8))]
                               (draw-fn-filled-rectangle shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                         skin
                         stage
@@ -1155,9 +1158,9 @@
                             :explored-tile-corners (:world/explored-tile-corners world*)
                             :light-position [(.x pos) (.y pos) (.z pos)]
                             :see-all-tiles? false
-                            :explored-tile-color (:colors/explored-tile colors)
-                            :visible-tile-color (:colors/visible-tile colors)
-                            :invisible-tile-color (:colors/invisible-tile colors)}))
+                            :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
+                            :visible-tile-color (color/float-bits 1 1 1 1)
+                            :invisible-tile-color (color/float-bits 0 0 0 1)}))
     (.end batch)))
 
 (defn current-mouseover-actor [stage]
@@ -1389,7 +1392,6 @@
                                effect effect-ctx world-mouse-pos
                                apply-effects!
                                active-entities*
-                               colors
                                raycaster)))]
       (doseq [eid active-entities*
               component @eid]
