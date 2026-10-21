@@ -1,6 +1,5 @@
 (ns game.fsm
   (:require [entity.spawn :refer [create-entity-state spawn-entity!]]
-            [audio.play :refer [play-sound!]]
             [game.entity :refer [add-text-effect]]
             [game.spawn :refer [item-place-position spawn-alert spawn-item]]
             [moon.stats :as stats]
@@ -34,7 +33,7 @@
                   (float Align/center))
     (.addActor stage window)))
 
-(defn handle-fsm-event! [world elapsed-time audio skin stage textures z-orders minimum-size eid world-mouse-position event & [params]]
+(defn handle-fsm-event! [world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position event & [params]]
   (let [elapsed-time* @elapsed-time
         fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -56,7 +55,7 @@
                   item (:entity/item-on-cursor entity)]
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
-                (play-sound! audio "bfxr_itemputground.wav")
+                (play-sound! "bfxr_itemputground.wav")
                 (spawn-entity! world elapsed-time z-orders minimum-size
                                (spawn-item (item-place-position (:entity/position entity)
                                                                 world-mouse-position
@@ -94,7 +93,7 @@
                          (assoc-in stats [:stats/mana 0] (- mana-val cost)))))
               (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
                      (timer/create elapsed-time* (:skill/cooldown skill)))
-              (play-sound! audio (:skill/start-action-sound skill))
+              (play-sound! (:skill/start-action-sound skill))
               nil)
 
             :npc-dead
@@ -109,7 +108,7 @@
               nil)
 
             :player-dead
-            (do (play-sound! audio "bfxr_playerdeath.wav")
+            (do (play-sound! "bfxr_playerdeath.wav")
                 (show-modal! skin stage {:title "YOU DIED - again!"
                                          :text "Good luck next time!"
                                          :button-text "OK"

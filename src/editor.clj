@@ -1,16 +1,13 @@
 (ns editor
-  (:require [audio.create :refer [create-audio!]]
-            [audio.dispose :as audio.dispose]
-            [audio.play :refer [play-sound!]]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as str]
             [editor.ui.overview :refer [property-overview-window]]
             [editor.ui.property :refer [property-editor-window]]
-            [files.create :refer [create-sound-file-handles!]]
             [moon.db :as db]
             [moon.textures :as textures])
-  (:import (com.badlogic.gdx ApplicationListener Gdx)
+  (:import (com.badlogic.gdx.audio Sound)
+           (com.badlogic.gdx ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d Stage)
@@ -46,8 +43,9 @@
               skin (Skin. (.internal Gdx/files "skin/uiskin.json"))
               _ (set! (.markupEnabled (.getData (.getFont skin "default-font"))) true)
               stage (Stage. (FitViewport. (float 1440) (float 900)) batch)
-              audio (create-audio! Gdx/audio
-                                   (create-sound-file-handles! Gdx/files sound-paths))
+              audio (into {}
+                          (for [path sound-paths]
+                            [path (.newSound Gdx/audio (.internal Gdx/files path))]))
               schemas (-> "schema.edn" io/resource slurp edn/read-string)
               properties-file (io/resource "properties.edn")
               db (db/create schemas)
@@ -58,7 +56,9 @@
                          :db db
                          :properties-file properties-file
                          :schemas schemas
-                         :play-sound! #(play-sound! (:audio @state) %)
+                         :play-sound! (fn [sound-name]
+                                        (assert (contains? (:audio @state) sound-name) (str sound-name))
+                                        (.play ^Sound (get (:audio @state) sound-name)))
                          :skin skin
                          :sound-names (keys audio)
                          :stage stage
@@ -67,7 +67,7 @@
           (.addActor stage (main-window state))))
       (dispose [_]
         (let [{:keys [audio batch skin textures]} @state]
-          (audio.dispose/dispose! audio)
+          (run! Sound/.dispose (vals audio))
           (Disposable/.dispose batch)
           (Disposable/.dispose skin)
           (run! Disposable/.dispose (vals textures))))
