@@ -1,6 +1,7 @@
 (ns game
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [clojure.string :as str]
             [effect.applicable :refer [applicable?]]
             [effect.handle :refer [handle-effect]]
             [entity.spawn :refer [spawn-entity!]]
@@ -11,7 +12,6 @@
             [game.entity :refer [set-item]]
             [game.fsm :refer [handle-fsm-event!]]
             [game.listener.create.ui-actors.action-bar :refer [create-action-bar]]
-            [game.listener.create.ui-actors.dev-menu :refer [create-dev-menu dev-menus]]
             [game.listener.create.ui-actors.entity-info :refer [stage-info-window-create]]
             [game.listener.create.ui-actors.hp-mana-bar :refer [hp-mana-bar-create]]
             [game.listener.create.ui-actors.inventory-window :refer [handle-clicked-inventory-cell
@@ -33,6 +33,8 @@
             [moon.grid :as grid]
             [moon.inventory :as inventory]
             [moon.item :as item]
+            [moon.level.modules :as modules]
+            [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.number :as number]
             [moon.raycaster :as raycaster]
@@ -46,6 +48,7 @@
             [skill.usable-state :refer [usable-state]]
             [texture.white-pixel :refer [white-pixel-texture]]
             [ui.action-bar :as action-bar]
+            [ui.dev-menu :as dev-menu]
             [world.unregister-eid :refer [unregister-eid!]])
   (:import (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
@@ -148,6 +151,64 @@
                                                                 :initial-state :npc-sleeping}
                                                    :entity/faction :evil}})))))
 
+(def ^:private controls-info
+  (str/join "\n"
+            ["[W][A][S][D] - Move"
+             "[ESCAPE] - Close windows"
+             "[I] - Inventory window"
+             "[E] - Entity Info window"
+             "[-]/[=] - Zoom"
+             "[P]/[SPACE] - Unpause"
+             "Leftmouse click - use skill/drop item on cursor"]))
+
+(def ^:private help-menu-item
+  {:label "Help"
+   :items [{:label controls-info}]})
+
+(defn- debug-flags-menu-item
+  [show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?]
+  {:label "Debug"
+   :items [{:label "Toggle show-tile-grid?"
+            :on-click #(swap! show-tile-grid? not)}
+           {:label "Toggle show-cell-entities?"
+            :on-click #(swap! show-cell-entities? not)}
+           {:label "Toggle show-cell-occupied?"
+            :on-click #(swap! show-cell-occupied? not)}
+           {:label "Toggle show-body-bounds?"
+            :on-click #(swap! show-body-bounds? not)}
+           {:label "Potential field colors: off"
+            :on-click #(reset! show-potential-field-colors? nil)}
+           {:label "Potential field colors: :good"
+            :on-click #(reset! show-potential-field-colors? :good)}
+           {:label "Potential field colors: :evil"
+            :on-click #(reset! show-potential-field-colors? :evil)}]})
+
+(def ^:private select-world-menu-item
+  {:label "Select World"
+   :items (for [[label world-fn] [["Vampire" tmx/vampire]
+                                  ["UF Caves" uf-caves/create]
+                                  ["Modules" modules/create]]]
+            {:label (str "Start " label)
+             :on-click (fn []
+                         #_(let [rebuild-actors! nil
+                                 #_(fn rebuild-actors! [stage ctx]
+                                     (.clear stage)
+                                     ((requiring-resolve 'game.create.add-actors/step) ctx))
+                                 create-world nil
+                                 #_(requiring-resolve 'game.create.world/step)
+                                 ui stage
+                                 stage (:ctx/stage actor)]
+                             (rebuild-actors! ui ctx)
+                             #_(Disposable/.dispose @tiled-map)
+                             (set! (.ctx ^Stage stage) (create-world ctx world-fn)))
+                         nil)})})
+
+(defn- dev-menus
+  [show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?]
+  [(debug-flags-menu-item show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
+   help-menu-item
+   select-world-menu-item])
+
 (defn create-ui-actors
   [world elapsed-time mouseover-eid paused? player-eid
    show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
@@ -157,7 +218,7 @@
    play-sound! default-font shape-drawer skin stage textures* world-viewport]
   (let [cell-size 48]
     [(create-action-bar)
-     (create-dev-menu
+     (dev-menu/create
       {:menus (dev-menus show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
        :update-labels (for [item [{:label "elapsed-time"
                                    :update-fn (fn []
