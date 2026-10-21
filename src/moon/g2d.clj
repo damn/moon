@@ -1,48 +1,33 @@
-(ns moon.g2d)
+(ns moon.g2d
+  (:refer-clojure :exclude [get assoc]))
 
-(defprotocol G2d
-  (height [_])
-  (width [_])
-  (cells [_])
-  (posis [_]))
+; 2dimvector is 7x faster than a hashmap of [x y] to values
+; like in rich hickey ant demo vectors of vectors:
+; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
 
-(deftype VectorGrid [data]
-  G2d
-  (height [_]
-    (count (data 0)))
+(defn width [grid]
+  (count grid))
 
-  (width [_]
-    (count data))
+(defn height [grid]
+  (count (grid 0)))
 
-  (cells [_]
-    (apply concat data))
+(defn cells [grid]
+  (apply concat grid))
 
-  (posis [this]
-    (for [x (range (width this))
-          y (range (height this))]
-      [x y]))
+(defn posis [grid]
+  (for [x (range (width grid))
+        y (range (height grid))]
+    [x y]))
 
-  clojure.lang.ILookup
-  (valAt [this p]
-    (-> data
-        (nth (p 0) nil)
-        (nth (p 1) nil)))
+(defn get [grid p]
+  (get-in grid p))
 
-  clojure.lang.IFn
-  (invoke [this p] (.valAt this p))
-
-  clojure.lang.Seqable
-  (seq [this]
-    (map #(vector %1 %2) (posis this) (cells this)))
-
-  clojure.lang.Associative
-  (assoc [this p v]
-    (VectorGrid. (assoc-in data p v))))
+(defn assoc [grid p v]
+  (assoc-in grid p v))
 
 (defn create
   [w h xyfn]
   {:pre [(>= w 1) (>= h 1)]}
-  (VectorGrid.
-   (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
-                       (range h)))
-         (range w))))
+  (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                      (range h)))
+        (range w)))

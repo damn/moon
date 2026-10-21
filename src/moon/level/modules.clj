@@ -67,7 +67,7 @@
         offset->tiled-map-position (zipmap offsets tiled-map-positions)
         scaled-position (mapv * unscaled-position modules-scale)]
     (reduce (fn [grid offset]
-              (assoc grid
+              (g2d/assoc grid
                      (mapv + scaled-position offset)
                      (offset->tiled-map-position offset)))
             scaled-grid
@@ -104,7 +104,7 @@
                                              unscaled-position
                                              :transition? true
                                              :transition-neighbor? #(#{:transition :wall}
-                                                                     (get unscaled-grid %))))
+                                                                     (g2d/get unscaled-grid %))))
                             scaled-grid
                             unscaled-transition-positions)]
     scaled-grid))
@@ -129,7 +129,7 @@
                               (zipmap (.getKeys ^MapProperties props)
                                       (.getValues ^MapProperties props)))
                 :tiles (for [position (g2d/posis grid)
-                             :let [local-position (get grid position)]
+                             :let [local-position (g2d/get grid position)]
                              :when local-position]
                          (when (vector? local-position)
                            (when-let [cell (.getCell ^TiledMapTileLayer layer (int (local-position 0)) (int (local-position 1)))]
@@ -186,11 +186,11 @@
   (let [scale [32 20]
         {:keys [start grid]} (caves/create (Random.) map-size map-size :wide)
         grid (fix-nads grid)
-        grid (let [grid (reduce #(assoc %1 %2 :transition)
+        grid (let [grid (reduce #(g2d/assoc %1 %2 :transition)
                                 grid
                                 (filter (fn [position]
-                                          (and (= :wall (get grid position))
-                                               (some #(= :ground (get grid %))
+                                          (and (= :wall (g2d/get grid position))
+                                               (some #(= :ground (g2d/get grid %))
                                                      (position/get-8-neighbours position))))
                                         (g2d/posis grid)))]
                (assert (or
@@ -202,16 +202,16 @@
                       (g2d/create (* (g2d/width grid) w)
                                   (* (g2d/height grid) h)
                                   (fn [[x y]]
-                                    (get grid
-                                         [(int (/ x w))
-                                          (int (/ y h))]))))
+                                    (g2d/get grid
+                                             [(int (/ x w))
+                                              (int (/ y h))]))))
         schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")
         scaled-grid (place-step schema-tiled-map
                                 scale
                                 scaled-grid
                                 grid
-                                (filter #(= :ground (get grid %)) (g2d/posis grid))
-                                (filter #(= :transition (get grid %)) (g2d/posis grid)))
+                                (filter #(= :ground (g2d/get grid %)) (g2d/posis grid))
+                                (filter #(= :transition (g2d/get grid %)) (g2d/posis grid)))
         tiled-map (create-tiled-map schema-tiled-map scaled-grid)
         start-position (mapv * start scale)]
     (last-steps spawn-rate

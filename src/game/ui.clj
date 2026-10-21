@@ -1,5 +1,6 @@
 (ns game.ui
   (:require [clojure.string :as str]
+            [moon.g2d :as g2d]
             [moon.item :as item]
             [moon.mods :as mods]
             [moon.number :as number]
@@ -176,7 +177,8 @@
   (doseq [skill (vals (:entity/skills @eid))]
     (ui-set-skill! skin stage textures elapsed-time skill))
   (doseq [[slot grid] (:entity/inventory @eid)
-          [position item] grid
+          position (g2d/posis grid)
+          :let [item (g2d/get grid position)]
           :when item]
     (ui-set-item! skin stage textures [slot position] item)))
 

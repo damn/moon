@@ -12,16 +12,19 @@
            {:text text
             :counter (timer/create elapsed-time duration)})))
 
+(defn- inventory-cell-path [[slot [x y]]]
+  [:entity/inventory slot x y])
+
 (defn set-item [entity cell item]
-  (assert (and (nil? (get-in (:entity/inventory entity) cell))
+  (assert (and (nil? (get-in entity (inventory-cell-path cell)))
                (inventory/valid-slot? cell item)))
-  (cond-> (assoc-in entity (cons :entity/inventory cell) item)
+  (cond-> (assoc-in entity (inventory-cell-path cell) item)
     (inventory/applies-modifiers? cell)
     (update :entity/stats stats/add-mods (:stats/modifiers item))))
 
 (defn remove-item [entity cell]
-  (let [item (get-in (:entity/inventory entity) cell)]
+  (let [item (get-in entity (inventory-cell-path cell))]
     (assert item)
-    (cond-> (assoc-in entity (cons :entity/inventory cell) nil)
+    (cond-> (assoc-in entity (inventory-cell-path cell) nil)
       (inventory/applies-modifiers? cell)
       (update :entity/stats stats/remove-mods (:stats/modifiers item)))))

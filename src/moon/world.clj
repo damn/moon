@@ -6,7 +6,7 @@
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn cell-at [world [x y]]
-  (when-let [cell-atom ((:world/grid world) [x y])]
+  (when-let [cell-atom (g2d/get (:world/grid world) [x y])]
     @cell-atom))
 
 (defn cells-at [world tile-positions]

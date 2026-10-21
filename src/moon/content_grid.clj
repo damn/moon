@@ -20,8 +20,8 @@
   (let [{:keys [moon.content-grid/content-cell
                 entity/position]} @eid
         [x y] position
-        new-cell (get grid [(int (/ x cell-w))
-                            (int (/ y cell-h))])]
+        new-cell (g2d/get grid [(int (/ x cell-w))
+                                (int (/ y cell-h))])]
     (when-not (= content-cell new-cell)
       (swap! new-cell update :entities conj eid)
       (swap! eid assoc :moon.content-grid/content-cell new-cell)
@@ -40,5 +40,5 @@
                      deref
                      :idx)]
          (cons idx (position/get-8-neighbours idx)))
-       (keep grid)
+       (keep #(g2d/get grid %))
        (mapcat (comp :entities deref))))

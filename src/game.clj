@@ -120,7 +120,7 @@
   (let [light-cache (atom {})]
     (fn tile-color-setter [_color x y]
       (let [position [(int x) (int y)]
-            explored? (get @explored-tile-corners position) ; TODO needs int call ?
+            explored? (moon-g2d/get @explored-tile-corners position) ; TODO needs int call ?
             base-color (if explored?
                          explored-tile-color
                          invisible-tile-color)
@@ -137,7 +137,7 @@
             visible-tile-color
             base-color)
           (do (when-not explored?
-                (swap! explored-tile-corners assoc (mapv int position) true))
+                (swap! explored-tile-corners moon-g2d/assoc (mapv int position) true))
               visible-tile-color))))))
 
 (defn- white-pixel-texture []
@@ -1024,7 +1024,7 @@
   [world player-eid play-sound! skin stage textures ui-set-item! ui-remove-item! cell world-mouse-position]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
-    (when-let [item (get-in (:entity/inventory @player-eid) cell)]
+    (when-let [item (inventory/item-at (:entity/inventory @player-eid) cell)]
       (play-sound! "bfxr_takeit.wav")
       (swap! player-eid remove-item cell)
       (ui-remove-item! cell)
@@ -1033,7 +1033,7 @@
     :player-item-on-cursor
     (let [entity @player-eid
           inventory (:entity/inventory entity)
-          item-in-cell (get-in inventory cell)
+          item-in-cell (inventory/item-at inventory cell)
           item-on-cursor (:entity/item-on-cursor entity)]
       (cond
        (and (not item-in-cell)
@@ -1592,7 +1592,7 @@
                                  (->> circle
                                       circle/outer-rectangle
                                       rectangle/touched-tiles
-                                      (keep g2d)
+                                      (keep #(moon-g2d/get g2d %))
                                       (map deref)
                                       (into #{} (mapcat :entities))
                                       (filter #(Intersector/overlaps ^Circle gdx-circle
@@ -1625,7 +1625,7 @@
       (let [{:keys [entity-effects already-hit-bodies piercing?]} v
             world* @world
             entity @eid
-            touched-cells (map deref (keep (:world/grid world*) (body/touched-tiles entity)))
+            touched-cells (map deref (keep #(moon-g2d/get (:world/grid world*) %) (body/touched-tiles entity)))
             hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                             (not= (:entity/faction entity)
                                                   (:entity/faction @%))
@@ -1914,7 +1914,7 @@
                                            (let [[actor-type params] params
                                                  inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
                                                                                 (let [inventory-slot params]
-                                                                                  (get-in (:entity/inventory @eid) inventory-slot)))]
+                                                                                  (inventory/item-at (:entity/inventory @eid) inventory-slot)))]
                                              (cond
                                                inventory-cell-with-item?
                                                :cursors/hand-before-grab

@@ -34,7 +34,7 @@
   (let [grid (g2d/create (* (g2d/width grid) scale)
                          (* (g2d/height grid) scale)
                          (fn [posi]
-                           (get grid (mapv #(int (/ % scale)) posi))))]
+                           (g2d/get grid (mapv #(int (/ % scale)) posi))))]
     {:start-position (mapv #(* % scale) start)
      :grid grid}))
 
@@ -60,7 +60,7 @@
                        y [13,16,19,22,25,28]]
                    [x y])
         transition? (fn [[x y]]
-                      (= :ground (get grid [x (dec y)])))
+                      (= :ground (g2d/get grid [x (dec y)])))
         rand-0-3 (fn [] (get-rand-weighted-item {0 60 1 1 2 1 3 1}))
         rand-0-5 (fn [] (get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
         [ground-x ground-y] (rand-nth uf-grounds)
@@ -78,7 +78,7 @@
                                     ground-y]
                        :movement "all"})]
     (fn [position]
-      (case (get grid position)
+      (case (g2d/get grid position)
         :wall (wall-tile)
         :transition (if (transition? position)
                       (transition-tile)
@@ -131,10 +131,10 @@
     :as lvlctx}]
   (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
-        grid (let [grid (reduce #(assoc %1 %2 :transition) grid
+        grid (let [grid (reduce #(g2d/assoc %1 %2 :transition) grid
                                 (filter (fn [position]
-                                          (and (= :wall (get grid position))
-                                               (some #(= :ground (get grid %))
+                                          (and (= :wall (g2d/get grid position))
+                                               (some #(= :ground (g2d/get grid %))
                                                      (position/get-8-neighbours position))))
                                         (g2d/posis grid)))]
                (assert (or
