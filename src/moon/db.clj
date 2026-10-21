@@ -1,7 +1,5 @@
 (ns moon.db
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.pprint :as pprint]
+  (:require [clojure.pprint :as pprint]
             [malli.core :as m]
             [malli.error :as me]
             [moon.schema :as schema]))
@@ -14,17 +12,16 @@
                         %)
                      (vals m)))))
 
-(defn create [schemas]
-  (let [properties (-> "properties.edn" io/resource slurp edn/read-string)]
-    (assert (or (empty? properties)
-                (apply distinct? (map :property/id properties))))
-    (doseq [property properties]
-      (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
-        (when-not (m/validate schema property)
-          (throw (ex-info (str (me/humanize (m/explain schema property)))
-                          {:value property
-                           :schema (m/form schema)})))))
-    (zipmap (map :property/id properties) properties)))
+(defn create [schemas properties]
+  (assert (or (empty? properties)
+              (apply distinct? (map :property/id properties))))
+  (doseq [property properties]
+    (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+      (when-not (m/validate schema property)
+        (throw (ex-info (str (me/humanize (m/explain schema property)))
+                        {:value property
+                         :schema (m/form schema)})))))
+  (zipmap (map :property/id properties) properties))
 
 (defn save! [db file]
   (let [data (->> (vals db)

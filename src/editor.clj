@@ -678,7 +678,7 @@
         (reset! audio (into {}
                             (for [path sound-paths]
                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
-        (reset! db (db/create schemas))
+        (reset! db (db/create schemas (-> properties-file slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
         (.setInputProcessor Gdx/input @stage)

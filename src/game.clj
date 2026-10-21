@@ -2176,7 +2176,7 @@
         skin (atom nil)
         stage (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        db (db/create schemas)
+        db (db/create schemas (-> "properties.edn" io/resource slurp edn/read-string))
         world (atom nil)
         tiled-map (atom nil)
         start-position (atom nil)

@@ -93,7 +93,8 @@
                                                             world-width
                                                             world-height))))
         (reset! camera (.getCamera ^Viewport @world-viewport))
-        (reset! db (db/create (-> "schema.edn" io/resource slurp edn/read-string)))
+        (reset! db (db/create (-> "schema.edn" io/resource slurp edn/read-string)
+                              (-> "properties.edn" io/resource slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
         (reset! tiled-map (generate-level @db @textures @camera uf-caves/create)))
