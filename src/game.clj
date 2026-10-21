@@ -15,7 +15,6 @@
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.faction :as faction]
-            [moon.g2d :as moon-g2d]
             [moon.grid :as grid]
             [moon.inventory :as inventory]
             [moon.item :as item]
@@ -120,7 +119,7 @@
   (let [light-cache (atom {})]
     (fn tile-color-setter [_color x y]
       (let [position [(int x) (int y)]
-            explored? (moon-g2d/get @explored-tile-corners position) ; TODO needs int call ?
+            explored? (get-in @explored-tile-corners position) ; TODO needs int call ?
             base-color (if explored?
                          explored-tile-color
                          invisible-tile-color)
@@ -137,7 +136,7 @@
             visible-tile-color
             base-color)
           (do (when-not explored?
-                (swap! explored-tile-corners moon-g2d/assoc (mapv int position) true))
+                (swap! explored-tile-corners assoc-in (mapv int position) true))
               visible-tile-color))))))
 
 (defn- white-pixel-texture []
@@ -390,7 +389,9 @@
                                                               :necklace [1 1]
                                                               :rings    [2 1]}
                                                  (map (fn [[slot [width height]]]
-                                                        [slot (moon-g2d/create width height (constantly nil))]))
+                                                        [slot (mapv (fn [x] (mapv (fn [y] nil)
+                                                                                  (range height)))
+                                                                    (range width))]))
                                                  (into {})))
       (doseq [item v]
         (assert (item/valid? item))
@@ -1592,7 +1593,7 @@
                                  (->> circle
                                       circle/outer-rectangle
                                       rectangle/touched-tiles
-                                      (keep #(moon-g2d/get g2d %))
+                                      (keep #(get-in g2d %))
                                       (map deref)
                                       (into #{} (mapcat :entities))
                                       (filter #(Intersector/overlaps ^Circle gdx-circle
@@ -1625,7 +1626,7 @@
       (let [{:keys [entity-effects already-hit-bodies piercing?]} v
             world* @world
             entity @eid
-            touched-cells (map deref (keep #(moon-g2d/get (:world/grid world*) %) (body/touched-tiles entity)))
+            touched-cells (map deref (keep #(get-in (:world/grid world*) %) (body/touched-tiles entity)))
             hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                             (not= (:entity/faction entity)
                                                   (:entity/faction @%))

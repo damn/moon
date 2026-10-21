@@ -3,8 +3,7 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [moon.g2d :as g2d]
-            [moon.position :as position])
+  (:require [moon.position :as position])
   (:import (java.util Random)))
 
 (defn- sshuffle
@@ -28,13 +27,17 @@
         width (inc (- max-x min-x))
         height (inc (- max-y min-y))
         convert (fn [[x y]] [(- x min-x -1)
-                             (- y min-y -1)])]
+                             (- y min-y -1)])
+        w (+ width 2)
+        h (+ height 2)
+        xyfn (fn [[x y]]
+               ; new grid starts 1 left/top of leftest cell
+               (calc-newgrid-value (get grid [(+ x min-x -1)
+                                              (+ y min-y -1)])))]
     ; +2 so there are walls on all borders around the farthest ground cells
-    [(g2d/create (+ width 2) (+ height 2)
-                 (fn [[x y]]
-                   ; new grid starts 1 left/top of leftest cell
-                   (calc-newgrid-value (get grid [(+ x min-x -1)
-                                                  (+ y min-y -1)]))))
+    [(mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                         (range h)))
+           (range w))
      convert]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5

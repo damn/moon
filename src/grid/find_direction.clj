@@ -2,7 +2,6 @@
   (:require [moon.body :as body]
             [moon.cell :as cell]
             [moon.faction :as faction]
-            [moon.g2d :as g2d]
             [moon.position :as position]
             [moon.potential-field :as potential-field]
             [moon.v2 :as v2]))
@@ -84,13 +83,13 @@
                            own-cell)))}))))
 
 (defn- inside-cell? [grid entity cell]
-  (let [cells (keep #(g2d/get grid %) (body/touched-tiles entity))]
+  (let [cells (keep #(get-in grid %) (body/touched-tiles entity))]
     (and (= 1 (count cells))
          (= cell (first cells)))))
 
 (defn find-direction [grid eid]
   (let [position (:entity/position @eid)
-        own-cell (g2d/get grid (mapv int position))
+        own-cell (get-in grid (mapv int position))
         {:keys [target-entity target-cell]} (find-next-cell grid eid own-cell)]
     (cond
       target-entity

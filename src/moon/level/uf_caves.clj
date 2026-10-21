@@ -3,7 +3,6 @@
             [g2d.flood-fill :refer [flood-fill]]
             [moon.tiled-map :as moon-tiled-map]
             [moon.caves :as caves]
-            [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -19,7 +18,7 @@
            random]
     :as level}]
   (let [{:keys [start grid]} (initial-grid-create-fn random size size cave-style)]
-    (assert (= #{:wall :ground} (set (g2d/cells grid))))
+    (assert (= #{:wall :ground} (set (apply concat grid))))
     (assoc level
            :level/start start
            :level/grid grid)))
@@ -31,10 +30,13 @@
     (assoc level :level/grid grid)))
 
 (defn- scale-grid [grid start scale]
-  (let [grid (g2d/create (* (g2d/width grid) scale)
-                         (* (g2d/height grid) scale)
-                         (fn [posi]
-                           (g2d/get grid (mapv #(int (/ % scale)) posi))))]
+  (let [w (* (count grid) scale)
+        h (* (count (grid 0)) scale)
+        xyfn (fn [posi]
+               (get-in grid (mapv #(int (/ % scale)) posi)))
+        grid (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                                 (range h)))
+                   (range w))]
     {:start-position (mapv #(* % scale) start)
      :grid grid}))
 
@@ -60,7 +62,7 @@
                        y [13,16,19,22,25,28]]
                    [x y])
         transition? (fn [[x y]]
-                      (= :ground (g2d/get grid [x (dec y)])))
+                      (= :ground (get-in grid [x (dec y)])))
         rand-0-3 (fn [] (get-rand-weighted-item {0 60 1 1 2 1 3 1}))
         rand-0-5 (fn [] (get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
         [ground-x ground-y] (rand-nth uf-grounds)
@@ -78,7 +80,7 @@
                                     ground-y]
                        :movement "all"})]
     (fn [position]
-      (case (g2d/get grid position)
+      (case (get-in grid position)
         :wall (wall-tile)
         :transition (if (transition? position)
                       (transition-tile)
@@ -86,14 +88,16 @@
         :ground (ground-tile)))))
 
 (defn- create-tiled-map [grid tile-size create-tile position->tile]
-  (let [properties {"width" (g2d/width grid)
-                    "height" (g2d/height grid)
+  (let [properties {"width" (count grid)
+                    "height" (count (grid 0))
                     "tilewidth" tile-size
                     "tileheight" tile-size}
         layers [{:name "ground"
                  :visible? true
                  :properties {"movement-properties" true}
-                 :tiles (for [position (g2d/posis grid)]
+                 :tiles (for [x (range (count grid))
+                              y (range (count (grid 0)))
+                              :let [position [x y]]]
                           [position (create-tile (position->tile position))])}]
         tiled-map (TiledMap.)]
     (doseq [[k v] properties]
@@ -129,18 +133,18 @@
            level/tile-size
            level/scaling]
     :as lvlctx}]
-  (assert (= #{:wall :ground} (set (g2d/cells grid))))
+  (assert (= #{:wall :ground} (set (apply concat grid))))
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
-        grid (let [grid (reduce #(g2d/assoc %1 %2 :transition) grid
+        grid (let [grid (reduce #(assoc-in %1 %2 :transition) grid
                                 (filter (fn [position]
-                                          (and (= :wall (g2d/get grid position))
-                                               (some #(= :ground (g2d/get grid %))
+                                          (and (= :wall (get-in grid position))
+                                               (some #(= :ground (get-in grid %))
                                                      (position/get-8-neighbours position))))
-                                        (g2d/posis grid)))]
+                                        (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))]
                (assert (or
-                        (= #{:wall :ground :transition} (set (g2d/cells grid)))
-                        (= #{:ground :transition} (set (g2d/cells grid))))
-                       (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
+                        (= #{:wall :ground :transition} (set (apply concat grid)))
+                        (= #{:ground :transition} (set (apply concat grid))))
+                       (str "(set (apply concat grid)): " (set (apply concat grid))))
                grid)
         position->tile (position-tile-fn grid)
         tiled-map (create-tiled-map grid tile-size create-tile position->tile)

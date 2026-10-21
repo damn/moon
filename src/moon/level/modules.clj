@@ -3,13 +3,13 @@
             [g2d.flood-fill :refer [flood-fill]]
             [moon.tiled-map :as moon-tiled-map]
             [moon.caves :as caves]
-            [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
            (java.util Random)))
+
 (defn- module-index->tiled-map-positions
   [[module-x module-y]
    [modules-width modules-height]
@@ -67,7 +67,7 @@
         offset->tiled-map-position (zipmap offsets tiled-map-positions)
         scaled-position (mapv * unscaled-position modules-scale)]
     (reduce (fn [grid offset]
-              (g2d/assoc grid
+              (assoc-in grid
                      (mapv + scaled-position offset)
                      (offset->tiled-map-position offset)))
             scaled-grid
@@ -104,7 +104,7 @@
                                              unscaled-position
                                              :transition? true
                                              :transition-neighbor? #(#{:transition :wall}
-                                                                     (g2d/get unscaled-grid %))))
+                                                                     (get-in unscaled-grid %))))
                             scaled-grid
                             unscaled-transition-positions)]
     scaled-grid))
@@ -120,16 +120,18 @@
     {:properties (merge (let [props (.getProperties schema-tiled-map)]
                           (zipmap (.getKeys props)
                                   (.getValues props)))
-                        {"width" (g2d/width grid)
-                         "height" (g2d/height grid)})
+                        {"width" (count grid)
+                         "height" (count (grid 0))})
      :layers (for [layer (.getLayers schema-tiled-map)]
                {:name (.getName ^TiledMapTileLayer layer)
                 :visible? (.isVisible ^TiledMapTileLayer layer)
                 :properties (let [props (.getProperties ^TiledMapTileLayer layer)]
                               (zipmap (.getKeys ^MapProperties props)
                                       (.getValues ^MapProperties props)))
-                :tiles (for [position (g2d/posis grid)
-                             :let [local-position (g2d/get grid position)]
+                :tiles (for [x (range (count grid))
+                             y (range (count (grid 0)))
+                             :let [position [x y]
+                                   local-position (get-in grid position)]
                              :when local-position]
                          (when (vector? local-position)
                            (when-let [cell (.getCell ^TiledMapTileLayer layer (int (local-position 0)) (int (local-position 1)))]
@@ -186,32 +188,35 @@
   (let [scale [32 20]
         {:keys [start grid]} (caves/create (Random.) map-size map-size :wide)
         grid (fix-nads grid)
-        grid (let [grid (reduce #(g2d/assoc %1 %2 :transition)
+        grid (let [grid (reduce #(assoc-in %1 %2 :transition)
                                 grid
                                 (filter (fn [position]
-                                          (and (= :wall (g2d/get grid position))
-                                               (some #(= :ground (g2d/get grid %))
+                                          (and (= :wall (get-in grid position))
+                                               (some #(= :ground (get-in grid %))
                                                      (position/get-8-neighbours position))))
-                                        (g2d/posis grid)))]
+                                        (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))]
                (assert (or
-                        (= #{:wall :ground :transition} (set (g2d/cells grid)))
-                        (= #{:ground :transition} (set (g2d/cells grid))))
-                       (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
+                        (= #{:wall :ground :transition} (set (apply concat grid)))
+                        (= #{:ground :transition} (set (apply concat grid))))
+                       (str "(set (apply concat grid)): " (set (apply concat grid))))
                grid)
-        scaled-grid (let [[w h] scale]
-                      (g2d/create (* (g2d/width grid) w)
-                                  (* (g2d/height grid) h)
-                                  (fn [[x y]]
-                                    (g2d/get grid
-                                             [(int (/ x w))
-                                              (int (/ y h))]))))
+        scaled-grid (let [[sw sh] scale
+                          w (* (count grid) sw)
+                          h (* (count (grid 0)) sh)
+                          xyfn (fn [[x y]]
+                                 (get-in grid
+                                         [(int (/ x sw))
+                                          (int (/ y sh))]))]
+                      (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                                          (range h)))
+                            (range w)))
         schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")
         scaled-grid (place-step schema-tiled-map
                                 scale
                                 scaled-grid
                                 grid
-                                (filter #(= :ground (g2d/get grid %)) (g2d/posis grid))
-                                (filter #(= :transition (g2d/get grid %)) (g2d/posis grid)))
+                                (filter #(= :ground (get-in grid %)) (for [x (range (count grid)) y (range (count (grid 0)))] [x y]))
+                                (filter #(= :transition (get-in grid %)) (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))
         tiled-map (create-tiled-map schema-tiled-map scaled-grid)
         start-position (mapv * start scale)]
     (last-steps spawn-rate

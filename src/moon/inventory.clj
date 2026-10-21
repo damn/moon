@@ -1,6 +1,5 @@
 (ns moon.inventory
-  (:require [moon.g2d :as g2d]
-            [moon.item :as item]))
+  (:require [moon.item :as item]))
 
 (def slots
   #{:inventory.slot/bag
@@ -21,8 +20,10 @@
 (defn- cells-and-items [inventory slot]
   (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
   (let [grid (slot inventory)]
-    (for [position (g2d/posis grid)]
-      [[slot position] (g2d/get grid position)])))
+    (for [x (range (count grid))
+          y (range (count (grid 0)))
+          :let [position [x y]]]
+      [[slot position] (get-in grid position)])))
 
 (defn- free-cell [inventory slot]
   (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
@@ -36,7 +37,7 @@
       (free-cell inventory :inventory.slot/bag)))
 
 (defn item-at [inventory [slot position]]
-  (g2d/get (slot inventory) position))
+  (get-in (slot inventory) position))
 
 (defn valid-slot? [[slot _] item]
   (or (= :inventory.slot/bag slot)

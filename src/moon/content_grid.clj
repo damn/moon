@@ -1,16 +1,17 @@
 (ns moon.content-grid
-  (:require [moon.g2d :as g2d]
-            [moon.position :as position]))
+  (:require [moon.position :as position]))
 
 (defn create [width height cell-size]
-  {:grid (g2d/create
-          (inc (int (/ width cell-size)))
-          (inc (int (/ height cell-size)))
-          (fn [idx]
-            (atom {:idx idx
-                   :entities #{}})))
-   :cell-w cell-size
-   :cell-h cell-size})
+  (let [w (inc (int (/ width cell-size)))
+        h (inc (int (/ height cell-size)))
+        xyfn (fn [idx]
+               (atom {:idx idx
+                      :entities #{}}))]
+    {:grid (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                               (range h)))
+                 (range w))
+     :cell-w cell-size
+     :cell-h cell-size}))
 
 (defn update-entity!
   [{:keys [grid
@@ -20,8 +21,8 @@
   (let [{:keys [moon.content-grid/content-cell
                 entity/position]} @eid
         [x y] position
-        new-cell (g2d/get grid [(int (/ x cell-w))
-                                (int (/ y cell-h))])]
+        new-cell (get-in grid [(int (/ x cell-w))
+                               (int (/ y cell-h))])]
     (when-not (= content-cell new-cell)
       (swap! new-cell update :entities conj eid)
       (swap! eid assoc :moon.content-grid/content-cell new-cell)
@@ -40,5 +41,5 @@
                      deref
                      :idx)]
          (cons idx (position/get-8-neighbours idx)))
-       (keep #(g2d/get grid %))
+       (keep #(get-in grid %))
        (mapcat (comp :entities deref))))

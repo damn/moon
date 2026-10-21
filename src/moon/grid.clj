@@ -1,13 +1,12 @@
 (ns moon.grid
   (:require [clojure.math :as math]
             [moon.body :as body]
-            [moon.cell :as cell]
-            [moon.g2d :as g2d])
+            [moon.cell :as cell])
   (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn valid-position? [grid {:keys [entity/z-order] :as body} entity-id]
   (assert (:entity/collides? body))
-  (let [cells* (map deref (keep #(g2d/get grid %) (body/touched-tiles body)))]
+  (let [cells* (map deref (keep #(get-in grid %) (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> (into #{} (mapcat :entities) cells*)
               (not-any? (fn [other-entity]
@@ -37,8 +36,8 @@
                 entity/height]
          :as body}]
   (if (or (> (float width) 1) (> (float height) 1))
-    (keep #(g2d/get grid %) (body/touched-tiles body))
-    [(g2d/get grid (mapv int position))]))
+    (keep #(get-in grid %) (body/touched-tiles body))
+    [(get-in grid (mapv int position))]))
 
 (defn set-occupied-cells! [grid eid]
   (let [cells (body->occupied-cells grid @eid)]
@@ -48,7 +47,7 @@
     (swap! eid assoc :entity/occupied-cells cells)))
 
 (defn set-touched-cells! [grid eid]
-  (let [cells (keep #(g2d/get grid %) (body/touched-tiles @eid))]
+  (let [cells (keep #(get-in grid %) (body/touched-tiles @eid))]
     (assert (not-any? nil? cells))
     (swap! eid assoc :entity/touched-cells cells)
     (doseq [cell cells]
@@ -66,6 +65,6 @@
     (swap! cell update :entities disj eid)))
 
 (defn point->entities [grid pos]
-  (when-let [cell (g2d/get grid (mapv int pos))]
+  (when-let [cell (get-in grid (mapv int pos))]
     (filter #(.contains ^Rectangle (body/rectangle @%) (float (first pos)) (float (second pos)))
             (:entities @cell))))

@@ -1,19 +1,20 @@
-(ns g2d.fix-nads
-  (:require [moon.g2d :as g2d]))
+(ns g2d.fix-nads)
 
 (defn- nad-corner? [grid [fromx fromy] [tox toy]]
   (and
-   (= :ground (g2d/get grid [tox toy])) ; also filters nil/out of map
-   (= :wall (g2d/get grid [tox fromy]))
-   (= :wall (g2d/get grid [fromx toy]))))
+   (= :ground (get-in grid [tox toy])) ; also filters nil/out of map
+   (= :wall (get-in grid [tox fromy]))
+   (= :wall (get-in grid [fromx toy]))))
 
 ; could be made faster because accessing the same posis oftentimes at nad-corner? check
 (let [diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]]]
   (defn- get-nads [grid]
     (loop [checkposis (filter (fn [{y 1 :as posi}]
                                 (and (even? y)
-                                     (= :ground (g2d/get grid posi))))
-                              (g2d/posis grid))
+                                     (= :ground (get-in grid posi))))
+                              (for [x (range (count grid))
+                                    y (range (count (grid 0)))]
+                                [x y]))
            result []]
       (if (seq checkposis)
         (let [position (first checkposis)
@@ -51,8 +52,8 @@
         [cell1 cell2 cell3]))))
 
 (defn fix-nads [grid]
-  {:pre [(= #{:wall :ground} (set (g2d/cells grid)))]
-   :post [(= #{:wall :ground} (set (g2d/cells %)))]}
-  (reduce #(g2d/assoc %1 %2 :ground) grid
+  {:pre [(= #{:wall :ground} (set (apply concat grid)))]
+   :post [(= #{:wall :ground} (set (apply concat %)))]}
+  (reduce #(assoc-in %1 %2 :ground) grid
           (mapcat #(get-tiles-needing-fix-for-nad grid %)
                   (get-nads grid))))

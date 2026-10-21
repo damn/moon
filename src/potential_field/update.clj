@@ -1,6 +1,5 @@
 (ns potential-field.update
   (:require [moon.cell :as cell]
-            [moon.g2d :as g2d]
             [moon.potential-field :as potential-field]
             [moon.position :as position]))
 
@@ -28,7 +27,7 @@
 (defn- generate-potential-field
   [grid faction tiles->entities max-iterations]
   (let [entity-cell-seq (for [[tile eid] tiles->entities]
-                          [eid (g2d/get grid tile)])
+                          [eid (get-in grid tile)])
         marked (map second entity-cell-seq)]
     (doseq [[eid cell] entity-cell-seq]
       (swap! cell assoc faction {:distance 0
