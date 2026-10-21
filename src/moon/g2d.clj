@@ -35,25 +35,9 @@
   (seq [this]
     (map #(vector %1 %2) (posis this) (cells this)))
 
-  clojure.lang.IPersistentCollection
-  (equiv [this obj]
-    (and (= VectorGrid (class obj))
-         (= (.data ^VectorGrid obj) data)))
-
   clojure.lang.Associative
   (assoc [this p v]
-    (VectorGrid. (assoc-in data p v)))
-  (containsKey [this [x y]]
-    (and (contains? data x)
-         (contains? (data 0) y)))
-
-  Object
-  (hashCode [this] (.hashCode data))
-  (equals [this obj]
-    (and (= VectorGrid (class obj))
-         (.equals (.data ^VectorGrid obj) data)))
-  (toString [this]
-    (str "width " (width this) ", height " (height this))))
+    (VectorGrid. (assoc-in data p v))))
 
 (defn ->VectorGrid [data]
   (VectorGrid. data))
