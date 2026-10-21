@@ -1,7 +1,6 @@
 (ns grid.find-direction
   (:require [moon.body :as body]
             [moon.cell :as cell]
-            [moon.coll :as coll]
             [moon.faction :as faction]
             [moon.position :as position]
             [moon.potential-field :as potential-field]
@@ -13,9 +12,8 @@
                        (not (zero? y))))]
   (def ^:private diagonal-check-indizes
     (into {} (for [[x y] (filter diagonal? order)]
-               [(first (coll/positions #(= % [x y]) order))
-                (vec (coll/positions #(some #{%} [[x 0] [0 y]])
-                                order))]))))
+               [(.indexOf ^clojure.lang.PersistentVector order [x y])
+                (vec (keep-indexed (fn [i p] (when (#{[x 0] [0 y]} p) i)) order))]))))
 
 (defn- not-allowed-diagonal? [at-idx adjacent-cells]
   (when-let [[a b] (get diagonal-check-indizes at-idx)]

@@ -7,7 +7,6 @@
             [clojure.string :as str]
             [malli.core :as m]
             [malli.error :as me]
-            [moon.coll :as coll]
             [moon.db :as db]
             [moon.map-schema :as map-schema]
             [moon.schema :as schema]
@@ -353,24 +352,25 @@
 
 (declare create-widget widget-value)
 
-(def ^:private property-k-sort-order
-  [:property/id
-   :property/pretty-name
-   :entity/image
-   :entity/animation
-   :entity/species
-   :creature/level
-   :entity/width
-   :entity/height
-   :entity/flying?
-   :item/slot
-   :projectile/speed
-   :projectile/max-range
-   :projectile/piercing?
-   :skill/action-time-modifier-key
-   :skill/action-time
-   :skill/start-action-sound
-   :skill/cost])
+(def ^:private property-k-order-index
+  (zipmap [:property/id
+           :property/pretty-name
+           :entity/image
+           :entity/animation
+           :entity/species
+           :creature/level
+           :entity/width
+           :entity/height
+           :entity/flying?
+           :item/slot
+           :projectile/speed
+           :projectile/max-range
+           :projectile/piercing?
+           :skill/action-time-modifier-key
+           :skill/action-time
+           :skill/start-action-sound
+           :skill/cost]
+          (range)))
 
 (defn- k-label-text [k]
   (name k))
@@ -506,7 +506,7 @@
                        (for [[k v] m]
                          [k (build-widget (get schemas k) k v)]))
       :k->optional? #(map-schema/optional? (schema/malli-form schema schemas) %)
-      :ks-sorted (map first (coll/sort-by-k-order property-k-sort-order m))
+      :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
       :opt? (seq (set/difference (map-schema/optional-keyset (schema/malli-form schema schemas))
                                  (set (keys m))))})))
 

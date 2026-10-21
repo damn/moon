@@ -2,7 +2,6 @@
   (:require [game.listener.render.draw-world.draw-entities.draw-component :refer [draw-component]]
             [game.colors :refer [colors]]
             [game.draw :refer [draw-fn-rectangle]]
-            [moon.coll :as coll]
             [moon.raycaster :as raycaster]))
 
 (def ^:private render-layers
@@ -38,9 +37,8 @@
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (raycaster/line-of-sight? raycaster player entity)))]
-    (doseq [[z-order entities] (coll/sort-by-order (group-by :entity/z-order entities)
-                                                first
-                                                render-z-order)
+    (doseq [[z-order entities] (sort-by (comp render-z-order key) <
+                                        (group-by :entity/z-order entities))
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]

@@ -28,7 +28,6 @@
             [game.spawn :refer [spawn-creature]]
             [game.tile-color :refer [tile-color-setter*]]
             [game.ui :refer [sync-player-ui! toggle-inventory-visible! ui-remove-item! ui-set-item!]]
-            [moon.coll :as coll]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.grid :as grid]
@@ -230,8 +229,8 @@
                         world* @world
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
                                      (grid/point->entities (:world/grid world*) (world-mouse-position world-viewport)))]
-                    (->> render-z-order
-                         (coll/sort-by-order hits #(:entity/z-order @%))
+                    (->> hits
+                         (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
                          (filter #(raycaster/line-of-sight? (:world/raycaster world*) player @%))
                          first)))]

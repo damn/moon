@@ -1,6 +1,5 @@
 (ns info-text
   (:require [clojure.string :as str]
-            [moon.coll :as coll]
             [moon.mods :as mods]
             [moon.number :as number]
             [moon.stats :as stats]
@@ -61,20 +60,21 @@
                           (str "Cost: " v " Mana"))
            :maxrange (fn [v _elapsed-time]
                        (str "Range: " v " Meters."))}
-   :k-order [:property/pretty-name
-             :skill/action-time-modifier-key
-             :skill/action-time
-             :skill/cooldown
-             :skill/cost
-             :skill/effects
-             :entity/species
-             :creature/level
-             :entity/stats
-             :entity/delete-after-duration
-             :projectile/piercing?
-             :entity/projectile-collision
-             :maxrange
-             :entity-effects]
+   :k-order-index (zipmap [:property/pretty-name
+                           :skill/action-time-modifier-key
+                           :skill/action-time
+                           :skill/cooldown
+                           :skill/cost
+                           :skill/effects
+                           :entity/species
+                           :creature/level
+                           :entity/stats
+                           :entity/delete-after-duration
+                           :projectile/piercing?
+                           :entity/projectile-collision
+                           :maxrange
+                           :entity-effects]
+                          (range))
    :k->colors {:property/pretty-name "PRETTY_NAME"
                :stats/modifiers "CYAN"
                :maxrange "LIGHT_GRAY"
@@ -93,7 +93,7 @@
 (defn info-text
   [entity elapsed-time]
   (let [{:keys [k->fn
-                k-order
+                k-order-index
                 k->colors]} info
         component-info (fn [[k v]]
                          (let [s (if-let [info-fn (k->fn k)]
@@ -102,7 +102,7 @@
                              (str "[" color "]" s "[]")
                              s)))]
     (->> entity
-         (coll/sort-by-k-order k-order)
+         (sort-by (fn [[k _]] (get k-order-index k Integer/MAX_VALUE)))
          (keep (fn [{k 0 v 1 :as component}]
                  (str (try (component-info component)
                            (catch Throwable _t
