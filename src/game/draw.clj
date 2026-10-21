@@ -1,16 +1,7 @@
 (ns game.draw
   (:require [clojure.string :as str])
   (:import (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
-           (com.badlogic.gdx.utils Align)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
-
-(defn draw-fn-filled-rectangle [shape-drawer x y w h color-float-bits]
-  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
-  (.filledRectangle ^ShapeDrawer shape-drawer (float x) (float y) (float w) (float h)))
-
-(defn draw-fn-rectangle [shape-drawer x y w h color-float-bits]
-  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
-  (.rectangle ^ShapeDrawer shape-drawer x y w h))
+           (com.badlogic.gdx.utils Align)))
 
 (defn draw-fn-text [batch default-font unit-scale {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
