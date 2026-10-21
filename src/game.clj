@@ -3,8 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [level.modules :as modules]
-            [level.tmx :as tmx]
             [level.uf-caves :as uf-caves]
             [lib.animation :as animation]
             [lib.body :as body]
@@ -1953,31 +1951,11 @@
            {:label "Potential field colors: :evil"
             :on-click #(reset! show-potential-field-colors? :evil)}]})
 
-(def ^:private select-world-menu-item
-  {:label "Select World"
-   :items (for [[label world-fn] [["Vampire" tmx/vampire]
-                                  ["UF Caves" uf-caves/create]
-                                  ["Modules" modules/create]]]
-            {:label (str "Start " label)
-             :on-click (fn []
-                         #_(let [rebuild-actors! nil
-                                 #_(fn rebuild-actors! [stage ctx]
-                                     (.clear stage)
-                                     ((requiring-resolve 'game.create.add-actors/step) ctx))
-                                 create-world nil
-                                 #_(requiring-resolve 'game.create.world/step)
-                                 ui stage
-                                 stage (:ctx/stage actor)]
-                             (rebuild-actors! ui ctx)
-                             #_(Disposable/.dispose @tiled-map)
-                             (set! (.ctx ^Stage stage) (create-world ctx world-fn)))
-                         nil)})})
-
 (defn- dev-menus
   [show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?]
   [(debug-flags-menu-item show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
    help-menu-item
-   select-world-menu-item])
+   ])
 
 (defn create-ui-actors
   [world mouseover-eid paused?
