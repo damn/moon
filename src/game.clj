@@ -768,9 +768,6 @@
 (defn- effect-applicable?
   [[k v] effect-ctx]
   (case k
-    :effects/audiovisual
-    (:effect/target-position effect-ctx)
-
     :effects/projectile
     (:effect/target-direction effect-ctx)
 
@@ -784,9 +781,6 @@
     :effects/target-entity
     (and (:effect/target effect-ctx)
          (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
-
-    :effects.target/audiovisual
-    (:effect/target effect-ctx)
 
     :effects.target/convert
     (let [source (:effect/source effect-ctx)
@@ -834,9 +828,6 @@
 (defn- effect-useful?
   [[k v] effect-ctx ray-blocked?]
   (case k
-    :effects/audiovisual
-    false
-
     :effects/projectile
     (let [{:keys [projectile/max-range] :as projectile} v
           source-p (:entity/position @(:effect/source effect-ctx))
@@ -858,9 +849,6 @@
                     @(:effect/target effect-ctx)
                     (:maxrange v))
 
-    :effects.target/audiovisual
-    false
-
     true))
 
 (defn- affected-targets
@@ -879,9 +867,6 @@
    active-entities raycaster]
   (let [elapsed-time* @(:world/elapsed-time @world)]
     (case k
-      :effects/audiovisual
-      (audiovisual! db schemas world play-sound! (:effect/target-position effect-ctx) v)
-
       :effects/projectile
       (let [source (:effect/source effect-ctx)
             source* @source
@@ -897,9 +882,11 @@
                         v)))
 
       :effects/spawn
-      (let [source (:effect/source effect-ctx)]
+      (let [source (:effect/source effect-ctx)
+            position (:effect/target-position effect-ctx)]
+        (audiovisual! db schemas world play-sound! position :audiovisuals/spawn)
         (spawn-entity! @world
-                       (spawn-creature {:position (:effect/target-position effect-ctx)
+                       (spawn-creature {:position position
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
                                                                   :initial-state :npc-idle}
@@ -939,12 +926,10 @@
                         (body/end-point body target-body maxrange)
                         :audiovisuals/hit-ground)))
 
-      :effects.target/audiovisual
-      (audiovisual! db schemas world play-sound! (:entity/position @(:effect/target effect-ctx)) v)
-
       :effects.target/convert
       (let [source (:effect/source effect-ctx)
             target (:effect/target effect-ctx)]
+        (audiovisual! db schemas world play-sound! (:entity/position @target) :audiovisuals/convert)
         (swap! target assoc :entity/faction (:entity/faction @source))
         nil)
 

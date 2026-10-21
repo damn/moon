@@ -122,7 +122,6 @@
  :projectile/piercing? [:s/boolean],
  :projectile/size [:s/number :any]
  :entity-effects [:s/map [
-                          [:effects.target/audiovisual  {:optional true}]
                           [:effects.target/convert      {:optional true}]
                           [:effects.target/damage       {:optional true}]
                           [:effects.target/kill         {:optional true}]
@@ -143,7 +142,6 @@
  :skill/action-time [:s/number :pos],
  :skill/start-action-sound [:s/sound],
  :skill/effects [:s/map [
-                         [:effects/audiovisual   {:optional true}]
                          [:effects/projectile    {:optional true}]
                          [:effects/spawn         {:optional true}]
                          [:effects/target-entity {:optional true}],
@@ -165,7 +163,6 @@
  :damage/min-max [:s/val-max],
  :effects.target/damage [:s/map [:damage/min-max]],
 
- :effects/audiovisual [:s/one-to-one :properties/audiovisuals]
  :effects/projectile [:s/one-to-one :properties/projectiles],
  :effects/spawn      [:s/one-to-one :properties/creatures],
 
@@ -175,7 +172,6 @@
 
  :effects/target-all [:s/map [:entity-effects]],
 
- :effects.target/audiovisual [:s/one-to-one :properties/audiovisuals]
  :effects.target/convert [:s/some],
  :effects.target/kill [:s/some],
  :effects.target/melee-damage [:s/some],

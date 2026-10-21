@@ -4436,8 +4436,7 @@
   :skill/cooldown 0,
   :skill/cost 0,
   :skill/effects
-  {:effects/audiovisual :audiovisuals/spawn,
-   :effects/spawn :creatures/skeleton-warrior},
+  {:effects/spawn :creatures/skeleton-warrior},
   :skill/start-action-sound "bfxr_minedeath.wav"}
  {:entity/image
   {:image/bounds [0 64 32 32], :image/file "images/skills.png"},
@@ -4450,8 +4449,7 @@
   :skill/effects
   {:effects/target-entity
    {:entity-effects
-    {:effects.target/audiovisual :audiovisuals/convert,
-     :effects.target/convert true},
+    {:effects.target/convert true},
     :maxrange 10}},
   :skill/start-action-sound "bfxr_portaluse.wav"}
  {:entity/image
