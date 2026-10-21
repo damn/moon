@@ -1,35 +1,31 @@
 (ns game
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [clojure.math :as math]
             [clojure.string :as str]
             [effect.applicable :refer [applicable?]]
             [effect.handle :refer [handle-effect]]
+            [effect.useful :refer [useful?]]
             [entity.spawn :refer [spawn-entity!]]
             [game.audio :refer [audiovisual!]]
             [game.colors :refer [colors]]
             [game.controls :refer [controls]]
-            [game.draw :refer [draw-fn-filled-rectangle draw-fn-rectangle]]
-            [game.entity :refer [set-item]]
+            [game.draw :refer [draw-fn-filled-rectangle draw-fn-rectangle draw-fn-text draw-fn-texture-region]]
+            [game.entity :refer [remove-item set-item]]
             [game.fsm :refer [handle-fsm-event!]]
-            [game.listener.create.ui-actors.action-bar :refer [create-action-bar]]
-            [game.listener.create.ui-actors.entity-info :refer [stage-info-window-create]]
-            [game.listener.create.ui-actors.hp-mana-bar :refer [hp-mana-bar-create]]
-            [game.listener.create.ui-actors.inventory-window :refer [handle-clicked-inventory-cell
-                                                                     inventory-window-create]]
-            [game.listener.create.ui-actors.player-message :refer [player-message-actor-create]]
-            [game.listener.create.ui-actors.player-state-draw :refer [player-state-draw-create]]
-            [game.listener.create.ui-actors.windows :refer [windows-create]]
-            [game.listener.render.draw-world.draw-cell-debug :refer [draw-cell-debug]]
-            [game.listener.render.draw-world.draw-entities :refer [draw-entities!]]
-            [game.listener.render.draw-world.draw-tile-grid :refer [draw-tile-grid]]
-            [game.listener.render.draw-world.highlight-mouseover-tile :refer [highlight-mouseover-tile]]
-            [game.listener.render.tick-world.tick-component :refer [tick-component]]
             [game.mouse :refer [mouseover-actor mouseover-actor-info ui-mouse-position world-mouse-position]]
-            [game.spawn :refer [spawn-creature]]
+            [game.spawn :refer [item-place-position spawn-creature]]
+            [game.target-all :refer [affected-targets]]
             [game.tile-color :refer [tile-color-setter*]]
             [game.ui :refer [sync-player-ui! toggle-inventory-visible! ui-remove-item! ui-set-item!]]
+            [grid.find-direction :refer [find-direction]]
+            [info-text :refer [info-text]]
+            [moon.body :as body]
+            [moon.cell :as cell]
+            [moon.circle :as moon-circle]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
+            [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.inventory :as inventory]
             [moon.item :as item]
@@ -37,18 +33,23 @@
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.number :as number]
+            [moon.potential-field :as potential-field]
             [moon.raycaster :as raycaster]
+            [moon.rectangle :as rectangle]
             [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.tiled-map :as moon-tiled-map]
             [moon.tiled-map.draw :as tiled-map.draw]
+            [moon.timer :as timer]
             [moon.v2 :as v2]
+            [moon.val-max :as val-max]
             [moon.world :as world]
             [potential-field.update :as potential-field.update]
             [skill.usable-state :refer [usable-state]]
             [texture.white-pixel :refer [white-pixel-texture]]
             [ui.action-bar :as action-bar]
             [ui.dev-menu :as dev-menu]
+            [world.relocate-eid :refer [relocate-eid!]]
             [world.unregister-eid :refer [unregister-eid!]])
   (:import (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
@@ -57,8 +58,10 @@
            (com.badlogic.gdx.graphics Color Colors Cursor OrthographicCamera Pixmap Texture Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
+           (com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin TooltipManager)
+           (com.badlogic.gdx.scenes.scene2d.ui ButtonGroup HorizontalGroup Image Label Skin Stack Table TextButton TooltipManager Widget Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ClickListener Drawable TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer))
@@ -150,6 +153,829 @@
                                       :components {:entity/fsm {:fsm :fsms/npc
                                                                 :initial-state :npc-sleeping}
                                                    :entity/faction :evil}})))))
+
+
+(defn create-action-bar []
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 2))))]
+    (doto (.add ^Table table ^Actor (doto (HorizontalGroup.)
+                                      (.space (float 2))
+                                      (.pad (float 2))
+                                      (.setName "moon.ui.action-bar.horizontal-group")
+                                      (.setUserObject (doto (ButtonGroup.)
+                                                        (.setMaxCheckCount (int 1))
+                                                        (.setMinCheckCount (int 0))))))
+      (.expand)
+      (.bottom))
+    (.row ^Table table)
+    (doto table
+      (.pack)
+      (.setFillParent true)
+      (.setName "moon.ui.action-bar"))))
+
+(defn- create-info-window
+  [{:keys [title
+           actor-name
+           visible?
+           position
+           set-label-text!
+           skin]}]
+  (let [^Skin skin skin
+        label (Label. "MY LABEL TEXT" skin)
+        window (Window. ^String title skin)
+        c (.add window label)]
+    (.expand c)
+    (.row window)
+    (.pack window)
+    (.setName window actor-name)
+    (.setVisible window visible?)
+    (let [[x y] position]
+      (.setPosition window (float x) (float y)))
+    (.addActor window (proxy [Actor] []
+                         (act [delta]
+                           (let [^Actor this this]
+                             (when (.getStage this)
+                               (.setText label ^String (set-label-text!)))
+                             (.pack window)
+                             (proxy-super act delta)))
+                         (draw [batch parent-alpha])))
+    window))
+
+(defn stage-info-window-create
+  [skin stage mouseover-eid elapsed-time]
+  (create-info-window
+   {:title "Entity Info"
+    :actor-name "moon.ui.windows.entity-info"
+    :visible? false
+    :position [(.getWorldWidth (.getViewport ^Stage stage)) 0]
+    :set-label-text! (fn []
+                       (if-let [eid @mouseover-eid]
+                         (info-text (apply dissoc @eid [:entity/skills
+                                                        :entity/faction
+                                                        :active-skill])
+                                    @elapsed-time)
+                         ""))
+    :skin skin}))
+
+(defn hp-mana-bar-create
+  [default-font stage textures unit-scale player-eid]
+  (let [{:keys [rahmen-file
+                rahmenw
+                rahmenh
+                hpcontent-file
+                manacontent-file
+                y-mana]} {:rahmen-file "images/rahmen.png"
+                          :rahmenw 150
+                          :rahmenh 26
+                          :hpcontent-file "images/hp.png"
+                          :manacontent-file "images/mana.png"
+                          :y-mana 80}
+        [x y-mana] [(/ (.getWorldWidth (.getViewport ^Stage stage)) 2)
+                    y-mana]
+        rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
+        y-hp (+ y-mana rahmenh)
+        draw-hpmana-bar! (fn [ctx batch x y content-file minmaxval name]
+                           (draw-fn-texture-region batch unit-scale rahmen-tex-reg [x y])
+                           (draw-fn-texture-region batch unit-scale
+                                                   (textures/texture-region textures
+                                                                            {:image/file content-file
+                                                                             :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
+                                                   [x y])
+                           (draw-fn-text batch default-font unit-scale {:text (str (number/readable (minmaxval 0))
+                                                         "/"
+                                                         (minmaxval 1)
+                                                         " "
+                                                         name)
+                                              :x (+ x 75)
+                                              :y (+ y 2)
+                                              :up? true}))]
+    (proxy [Actor] []
+      (act [delta]
+        (let [^Actor this this]
+          (proxy-super act delta)))
+      (draw [batch parent-alpha]
+        (when (.getStage ^Actor this)
+          (let [stats (:entity/stats @@player-eid)
+                bar-x (- x (/ rahmenw 2))]
+            (draw-hpmana-bar! nil batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
+            (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
+
+(defn handle-clicked-inventory-cell
+  [world elapsed-time player-eid play-sound! skin stage textures z-orders minimum-size ui-set-item! ui-remove-item! cell world-mouse-position]
+  (case (:state (:entity/fsm @player-eid))
+    :player-idle
+    (when-let [item (get-in (:entity/inventory @player-eid) cell)]
+      (play-sound! "bfxr_takeit.wav")
+      (swap! player-eid remove-item cell)
+      (ui-remove-item! cell)
+      (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item))
+
+    :player-item-on-cursor
+    (let [entity @player-eid
+          inventory (:entity/inventory entity)
+          item-in-cell (get-in inventory cell)
+          item-on-cursor (:entity/item-on-cursor entity)]
+      (cond
+       (and (not item-in-cell)
+            (inventory/valid-slot? cell item-on-cursor))
+       (do (swap! player-eid dissoc :entity/item-on-cursor)
+           (play-sound! "bfxr_itemput.wav")
+           (swap! player-eid set-item cell item-on-cursor)
+           (ui-set-item! cell item-on-cursor)
+           (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size player-eid world-mouse-position :dropped-item))
+
+       (and item-in-cell
+            (inventory/valid-slot? cell item-on-cursor))
+       (do (swap! player-eid dissoc :entity/item-on-cursor)
+           (play-sound! "bfxr_itemput.wav")
+           (swap! player-eid remove-item cell)
+           (ui-remove-item! cell)
+           (swap! player-eid set-item cell item-on-cursor)
+           (ui-set-item! cell item-on-cursor)
+           (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size player-eid world-mouse-position :dropped-item)
+           (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size player-eid world-mouse-position :pickup-item item-in-cell))))
+
+    nil))
+
+(defn- inventory-window-cell [player-eid on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+  (let [cell [slot (or position [0 0])]
+        background-drawable (slot->drawable slot)]
+    {:actor
+     (let [stack (Stack.)]
+       (run! #(.addActor ^Group stack ^Actor %)
+             [(proxy [Widget] []
+                (draw [batch parent-alpha]
+                  (when-let [stage (.getStage ^Actor this)]
+                    (draw-cell-rect! @@player-eid
+                                       (.getX ^Actor this)
+                                       (.getY ^Actor this)
+                                       (let [v2 (.unproject (.getViewport ^Stage stage)
+                                                           (Vector2. (float (.getX ^Input Gdx/input))
+                                                                     (float (.getY ^Input Gdx/input))))
+                                             local (.stageToLocalCoordinates ^Actor this
+                                                                             (Vector2. (.x v2) (.y v2)))
+                                             x (.x ^Vector2 local)
+                                             y (.y ^Vector2 local)]
+                                         (.hit ^Actor this (float x) (float y) true))
+                                       (.getUserObject ^Actor (.getParent ^Actor this))))))
+              (doto (Image. ^Drawable background-drawable)
+                (.setName "image-widget")
+                (.setUserObject {:background-drawable background-drawable
+                                      :cell-size cell-size}))])
+       (doto stack
+         (.addListener (proxy [ClickListener] []
+                         (clicked [event _x _y]
+                           (on-click-cell event cell))))
+         (.setName "inventory-cell")
+         (.setUserObject cell)))}))
+
+(defn- inventory-window-build
+  [{:keys [player-eid
+           on-click-cell
+           draw-cell-rect!
+           skin
+           position
+           slot->texture-region
+           cell-size]}]
+  (let [slot->drawable (fn [slot]
+                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
+                           (.setMinSize cell-size cell-size)
+                           (.tint ^Color (Color. 1 1 1 0.4))))
+        ->cell (partial inventory-window-cell player-eid on-click-cell slot->drawable draw-cell-rect! cell-size)
+        cell-table (Table.)
+        window (Window. "Inventory" ^Skin skin)]
+    (doseq [row (concat [[{:actor nil} {:actor nil}
+                         (->cell :inventory.slot/helm)
+                         (->cell :inventory.slot/necklace)]
+                        [{:actor nil}
+                         (->cell :inventory.slot/weapon)
+                         (->cell :inventory.slot/chest)
+                         (->cell :inventory.slot/cloak)
+                         (->cell :inventory.slot/shield)]
+                        [{:actor nil} {:actor nil}
+                         (->cell :inventory.slot/leg)]
+                        [{:actor nil}
+                         (->cell :inventory.slot/glove)
+                         (->cell :inventory.slot/rings :position [0 0])
+                         (->cell :inventory.slot/rings :position [1 0])
+                         (->cell :inventory.slot/boot)]]
+                       (for [y (range 4)]
+                         (for [x (range 6)]
+                           (->cell :inventory.slot/bag :position [x y]))))]
+      (doseq [cell row]
+        (.add cell-table ^Actor (:actor cell)))
+      (.row cell-table))
+    (.pack cell-table)
+    (.setName cell-table "inventory-cell-table")
+    (let [c (.add window cell-table)]
+      (.pad c (float 4)))
+    (.row window)
+    (.pack window)
+    (.setName window "moon.ui.windows.inventory")
+    (.setVisible window false)
+    (let [[x y] position]
+      (.setPosition window (float x) (float y)))
+    window))
+
+(defn inventory-window-create
+  [on-click-cell draw-cell-rect! skin stage textures player-eid]
+  (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
+                                             :shield 1
+                                             :rings 2
+                                             :necklace 3
+                                             :helm 4
+                                             :cloak 5
+                                             :chest 6
+                                             :leg 7
+                                             :glove 8
+                                             :boot 9
+                                             :bag 10}
+        slot->texture-region (fn [slot]
+                               (let [width 48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 (textures/texture-region textures
+                                                          {:image/file "images/items.png"
+                                                           :image/bounds bounds})))
+        cell-size 48]
+    (inventory-window-build
+     {:player-eid player-eid
+      :on-click-cell on-click-cell
+      :draw-cell-rect! draw-cell-rect!
+      :skin skin
+      :position [(.getWorldWidth (.getViewport ^Stage stage))
+                 (.getWorldHeight (.getViewport ^Stage stage))]
+      :slot->texture-region slot->texture-region
+      :cell-size cell-size})))
+
+(defn player-message-actor-create [default-font unit-scale]
+  (let [message-duration-seconds 0.5]
+    (doto (proxy [Actor] []
+            (act [delta]
+              (let [state (.getUserObject ^Actor this)]
+                (when (:text @state)
+                  (swap! state update :counter + delta)
+                  (when (>= (:counter @state) message-duration-seconds)
+                    (reset! state nil))))
+              (let [^Actor this this]
+                (proxy-super act delta)))
+            (draw [batch parent-alpha]
+              (when-let [stage (.getStage ^Actor this)]
+                (let [state (.getUserObject ^Actor this)
+                      vp-width (.getWorldWidth (.getViewport ^Stage stage))
+                      vp-height (.getWorldHeight (.getViewport ^Stage stage))]
+                  (when-let [text (:text @state)]
+                    (draw-fn-text batch default-font unit-scale {:x (/ vp-width 2)
+                                       :y (+ (/ vp-height 2) 200)
+                                       :text text
+                                       :scale 2.5
+                                       :up? true}))))))
+      (.setName "player-message")
+      (.setUserObject (atom nil)))))
+
+(defn- entity-state-draw-ui-view
+  [[k _v] eid batch unit-scale textures mouseover-actor* ui-mouse-pos]
+  (case k
+    :player-item-on-cursor
+    (when mouseover-actor*
+      (draw-fn-texture-region batch unit-scale
+                              (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
+                              ui-mouse-pos
+                              {:center? true}))
+
+    nil))
+
+(defn player-state-draw-create [unit-scale textures player-eid]
+  (proxy [Actor] []
+    (act [delta]
+      (let [^Actor this this]
+        (proxy-super act delta)))
+    (draw [batch parent-alpha]
+      (let [stage (.getStage ^Actor this)
+            player-eid @player-eid
+            entity @player-eid
+            state-k (:state (:entity/fsm entity))
+            mouse-pos (ui-mouse-position stage)
+            [x y] mouse-pos]
+        (entity-state-draw-ui-view [state-k (state-k entity)]
+                                   player-eid
+                                   batch
+                                   unit-scale
+                                   textures
+                                   (mouseover-actor stage x y)
+                                   mouse-pos)))))
+
+(defn windows-create [actor-fns]
+  (let [group* (Group.)]
+    (run! #(.addActor ^Group group* ^Actor %) (for [f actor-fns] (f)))
+    (doto group*
+      (.setName "moon.ui.windows"))))
+
+(defn draw-cell-debug
+  [ctx shape-drawer ^Viewport world-viewport world
+   show-cell-entities? show-cell-occupied? show-potential-field-colors?
+   factions-iterations]
+  (let [world @world
+        ^OrthographicCamera camera (.getCamera world-viewport)
+        plane-points (mapv (fn [^Vector3 v3]
+                             [(.x v3) (.y v3) (.z v3)])
+                           (.planePoints (.frustum camera)))
+        frustum-points (take 4 plane-points)
+        left-x   (apply min (map first  frustum-points))
+        right-x  (apply max (map first  frustum-points))
+        bottom-y (apply min (map second frustum-points))
+        top-y    (apply max (map second frustum-points))
+        tile-positions (for [x (range (int left-x) (int right-x))
+                             y (range (int bottom-y) (+ 2 (int top-y)))]
+                         [x y])]
+    (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
+      (when (and @show-cell-entities? (seq (:entities cell*)))
+        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-entities colors)))
+      (when (and @show-cell-occupied? (seq (:occupied cell*)))
+        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-occupied colors)))
+      (when-let [faction @show-potential-field-colors?]
+        (let [{:keys [distance]} (faction cell*)]
+          (when distance
+            (let [ratio (/ distance (factions-iterations faction))]
+              (draw-fn-filled-rectangle shape-drawer x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
+
+(defn- draw-fn-line [shape-drawer [sx sy] [ex ey] color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.line ^ShapeDrawer shape-drawer (float sx) (float sy) (float ex) (float ey)))
+
+(defn- draw-fn-grid [shape-drawer leftx bottomy gridw gridh cellw cellh color-float-bits]
+  (let [w (* (float gridw) (float cellw))
+        h (* (float gridh) (float cellh))
+        topy (+ (float bottomy) (float h))
+        rightx (+ (float leftx) (float w))]
+    (doseq [idx (range (inc (float gridw)))
+            :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
+      (draw-fn-line shape-drawer [linex topy] [linex bottomy] color-float-bits))
+    (doseq [idx (range (inc (float gridh)))
+            :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
+      (draw-fn-line shape-drawer [leftx liney] [rightx liney] color-float-bits))))
+
+(defn draw-tile-grid
+  [ctx shape-drawer ^Viewport world-viewport show-tile-grid?]
+  (when @show-tile-grid?
+    (let [^OrthographicCamera camera (.getCamera world-viewport)
+          plane-points (mapv (fn [^Vector3 v3]
+                               [(.x v3) (.y v3) (.z v3)])
+                             (.planePoints (.frustum camera)))
+          frustum-points (take 4 plane-points)
+          left-x   (apply min (map first  frustum-points))
+          bottom-y (apply min (map second frustum-points))]
+      (draw-fn-grid shape-drawer
+                    (int left-x)
+                    (int bottom-y)
+                    (inc (int (.getWorldWidth world-viewport)))
+                    (+ 2 (int (.getWorldHeight world-viewport)))
+                    1
+                    1
+                    (Color/toFloatBits (float 1) (float 1) (float 1) (float 0.8))))))
+
+(defn highlight-mouseover-tile
+  [ctx shape-drawer world-mouse-position world]
+  (let [world @world
+        [x y] (mapv int world-mouse-position)
+        cell (world/cell-at world [x y])]
+    (when (and cell (#{:air :none} (:movement cell)))
+      (draw-fn-rectangle shape-drawer x y 1 1
+                         (case (:movement cell)
+                           :air (:colors/mouseover-tile-air colors)
+                           :none (:colors/mouseover-tile-none colors))))))
+
+(def ^:private active-skill-radius
+  (let [tile-size 48
+        image-width 32]
+    (/ (/ image-width tile-size) 2)))
+
+(defn- draw-fn-circle [shape-drawer [x y] radius color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.circle ^ShapeDrawer shape-drawer x y radius))
+
+(defn- draw-fn-ellipse [shape-drawer [x y] radius-x radius-y color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.ellipse ^ShapeDrawer shape-drawer x y radius-x radius-y))
+
+(defn- draw-fn-filled-circle [shape-drawer [x y] radius color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.filledCircle ^ShapeDrawer shape-drawer (float x) (float y) (float radius)))
+
+(defn- draw-fn-sector [shape-drawer [center-x center-y] radius start-radians radians color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.sector ^ShapeDrawer shape-drawer center-x center-y radius start-radians radians))
+
+(defn- draw-with-line-width! [shape-drawer width draw-body]
+  (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
+    (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* width old-line-width))
+    (draw-body)
+    (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width)))
+
+(defn- effect-render
+  [[k v] effect-ctx shape-drawer active-entities colors raycaster]
+  (case k
+    :effects/target-all
+    (let [source (:effect/source effect-ctx)
+          source* @source]
+      (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
+        (draw-fn-line shape-drawer
+                      (:entity/position source*)
+                      (:entity/position target*)
+                      (:colors/target-all-render colors))))
+
+    :effects/target-entity
+    (when-let [target (:effect/target effect-ctx)]
+      (let [source (:effect/source effect-ctx)
+            body        @source
+            target-body @target
+            maxrange (:maxrange v)]
+        (draw-fn-line shape-drawer
+                      (body/start-point body target-body)
+                      (body/end-point body target-body maxrange)
+                      (if (body/in-range? body target-body maxrange)
+                        (:colors/target-entity-in-range colors)
+                        (:colors/target-entity-not-in-range colors)))))
+
+    nil))
+
+(defn- draw-component
+  [shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
+   textures colors player elapsed-time active-entities raycaster
+   entity k v]
+  (case k
+    :entity/clickable
+    (let [{:keys [text]} v
+          {:keys [entity/position entity/height entity/mouseover?]} entity]
+      (when (and mouseover? text)
+        (let [[x y] position]
+          (draw-fn-text batch default-font unit-scale {:text text
+                             :x x
+                             :y (+ y (/ height 2))
+                             :up? true}))))
+
+    :player-item-on-cursor
+    (let [{:keys [item]} v]
+      (when-not mouseover-actor
+        (draw-fn-texture-region batch unit-scale
+                                (textures/texture-region textures (:entity/image item))
+                                (item-place-position (:entity/position entity)
+                                                     world-mouse-position
+                                                     (- (:entity/click-distance-tiles entity) 0.1))
+                                {:center? true})))
+
+    :entity/animation
+    (let [{:keys [frames cnt frame-duration]} v
+          image (frames (min (int (/ (float cnt) (float frame-duration)))
+                             (dec (count frames))))]
+      (draw-fn-texture-region batch unit-scale
+                              (textures/texture-region textures image)
+                              (:entity/position entity)
+                              {:center? true
+                               :rotation (or (:entity/rotation-angle entity) 0)}))
+
+    :entity/image
+    (draw-fn-texture-region batch unit-scale
+                            (textures/texture-region textures v)
+                            (:entity/position entity)
+                            {:center? true
+                             :rotation (or (:entity/rotation-angle entity) 0)})
+
+    :entity/line-render
+    (let [{:keys [thick? end color]} v
+          position (:entity/position entity)]
+      (if thick?
+        (draw-with-line-width! shape-drawer 4 #(draw-fn-line shape-drawer position end color))
+        (draw-fn-line shape-drawer position end color)))
+
+    :entity/mouseover?
+    (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
+          color (cond (= faction (faction/enemy (:entity/faction player)))
+                      (:colors/enemy-color colors)
+                      (= faction (:entity/faction player))
+                      (:colors/friendly-color colors)
+                      :else
+                      (:colors/neutral-color colors))]
+      (draw-with-line-width! shape-drawer 5
+                             #(draw-fn-ellipse shape-drawer position
+                                                (/ width 2)
+                                                (/ height 2)
+                                                color)))
+
+    :entity/stats
+    (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
+      (when (or (< ratio 1) (:entity/mouseover? entity))
+        (let [{:keys [entity/position entity/width entity/height]} entity
+              [x y] position
+              x (- x (/ width  2))
+              y (+ y (/ height 2))
+              height (* 5 world-unit-scale)
+              border (* 1 world-unit-scale)]
+          (draw-fn-filled-rectangle shape-drawer x y width height (:colors/hp-bar-rect colors))
+          (draw-fn-filled-rectangle shape-drawer
+                                    (+ x border)
+                                    (+ y border)
+                                    (- (* width ratio) (* 2 border))
+                                    (- height (* 2 border))
+                                    ((:colors/hp-bar colors) ratio)))))
+
+    :entity/string-effect
+    (let [{:keys [text]} v
+          [x y] (:entity/position entity)]
+      (draw-fn-text batch default-font unit-scale {:text text
+                         :x x
+                         :y (+ y
+                               (/ (:entity/height entity) 2)
+                               (* 5 world-unit-scale))
+                         :scale 2
+                         :up? true}))
+
+    :entity/temp-modifier
+    (draw-fn-filled-circle shape-drawer (:entity/position entity) 0.5 (:colors/temp-modifier colors))
+
+    :active-skill
+    (let [{:keys [skill effect-ctx counter]} v
+          {:keys [entity/image skill/effects]} skill
+          radius active-skill-radius
+          action-counter-ratio (timer/ratio elapsed-time counter)
+          texture-region (textures/texture-region textures image)
+          [x y] (:entity/position entity)
+          y (+ (float y)
+               (float (/ (:entity/height entity) 2))
+               (float 0.15))
+          center [x (+ y radius)]]
+      (draw-fn-filled-circle shape-drawer center radius (:colors/active-skill-circle colors))
+      (draw-fn-sector shape-drawer
+                      center
+                      radius
+                      (math/to-radians 90)
+                      (math/to-radians (* (float action-counter-ratio) 360))
+                      (:colors/active-skill-sector colors))
+      (draw-fn-texture-region batch unit-scale texture-region [(- (float x) radius) y])
+      (doseq [effect effects]
+        (effect-render effect effect-ctx shape-drawer
+                       active-entities
+                       colors
+                       raycaster)))
+
+    :npc-sleeping
+    (let [{:keys [entity/position entity/height]} entity
+          [x y] position]
+      (draw-fn-text batch default-font unit-scale {:text "zzz"
+                         :x x
+                         :y (+ y (/ height 2))
+                         :up? true}))
+
+    :stunned
+    (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (:colors/stunned colors))))
+
+(def ^:private render-layers
+  [#{:entity/mouseover?
+     :stunned
+     :player-item-on-cursor}
+   #{:entity/clickable
+     :entity/animation
+     :entity/image
+     :entity/line-render}
+   #{:npc-sleeping
+     :entity/temp-modifier
+     :entity/string-effect}
+   #{:entity/stats
+     :active-skill}])
+
+(defn- draw-entity-rectangle!
+  [ctx shape-drawer entity color-float-bits]
+  (let [{:keys [entity/position entity/width entity/height]} entity
+        [x y] [(- (position 0) (/ width 2))
+               (- (position 1) (/ height 2))]]
+    (draw-fn-rectangle shape-drawer x y width height color-float-bits)))
+
+(defn draw-entities!
+  [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
+   player-eid raycaster elapsed-time show-body-bounds? active-entities render-z-order]
+  (let [player-eid @player-eid
+        elapsed-time @elapsed-time
+        show-body-bounds? @show-body-bounds?
+        active-entities @active-entities
+        entities (map deref active-entities)
+        player @player-eid
+        should-draw? (fn [entity z-order]
+                       (or (= z-order :z-order/effect)
+                           (raycaster/line-of-sight? raycaster player entity)))]
+    (doseq [[z-order entities] (sort-by (comp render-z-order key) <
+                                        (group-by :entity/z-order entities))
+            render-layer render-layers
+            entity entities
+            :when (should-draw? entity z-order)]
+      (when show-body-bounds?
+        (draw-entity-rectangle! ctx shape-drawer
+                                entity
+                                (if (:entity/collides? entity)
+                                  (:colors/debug-body-outline-collides colors)
+                                  (:colors/debug-body-outline colors))))
+      (doseq [[k v] entity
+              :when (get render-layer k)]
+        (draw-component shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
+                        textures colors player elapsed-time active-entities raycaster
+                        entity k v)))))
+
+(defn- choose-skill [ray-blocked? entity effect-ctx]
+  (->> entity
+       :entity/skills
+       vals
+       (sort-by :skill/cost)
+       reverse
+       (filter #(and (= :usable (usable-state % entity effect-ctx))
+                     (->> (:skill/effects %)
+                          (filter (fn [e] (applicable? e effect-ctx)))
+                          (some (fn [e] (useful? e effect-ctx ray-blocked?))))))
+       first))
+
+(defn- create-effect-ctx
+  [world ctx eid]
+  (let [world @world
+        entity @eid
+        target (potential-field/nearest-enemy (:world/grid world) entity)
+        target (when (and target
+                          (raycaster/line-of-sight? (:world/raycaster world) entity @target))
+                 target)]
+    {:effect/source eid
+     :effect/target target
+     :effect/target-direction (when target
+                                (body/direction entity
+                                                @target))}))
+
+(defn- update-effect-ctx
+  [raycaster effect-ctx]
+  (let [source (:effect/source effect-ctx)
+        target (:effect/target effect-ctx)]
+    (if (and target
+             (not (:entity/destroyed? @target))
+             (raycaster/line-of-sight? raycaster @source @target))
+      effect-ctx
+      (dissoc effect-ctx :effect/target))))
+
+(defn tick-component
+  [world elapsed-time delta-time play-sound! skin stage textures z-orders
+   minimum-size max-speed
+   ctx world-mouse-position apply-effects! eid [k v]]
+  (let [elapsed-time* @elapsed-time]
+    (case k
+      :entity/animation
+      (let [{:keys [delete-after-stopped?
+                    looping?
+                    cnt
+                    maxcnt]
+             :as animation} v]
+        (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
+                                                 newcnt (+ (float cnt) (float @delta-time))]
+                                             (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
+                                                                         looping? (min maxcnt (- newcnt maxcnt))
+                                                                         :else maxcnt))))
+        (when (and delete-after-stopped?
+                   (and (not looping?) (>= cnt maxcnt)))
+          (swap! eid assoc :entity/destroyed? true))
+        nil)
+
+      :entity/alert-friendlies-after-duration
+      (let [{:keys [counter faction]} v]
+        (when (timer/stopped? elapsed-time* counter)
+          (swap! eid assoc :entity/destroyed? true)
+          (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
+                                             :radius 4}
+                                     [x y] (:position circle)
+                                     g2d (:world/grid @world)
+                                     gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
+                                 (->> circle
+                                      moon-circle/outer-rectangle
+                                      rectangle/touched-tiles
+                                      (keep g2d)
+                                      (map deref)
+                                      (into #{} (mapcat :entities))
+                                      (filter #(Intersector/overlaps ^Circle gdx-circle
+                                                                     ^Rectangle (body/rectangle @%)))
+                                      (filter #(= (:entity/faction @%) faction))))]
+            (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size friendly-eid world-mouse-position :alert)))
+        nil)
+
+      :entity/string-effect
+      (let [{:keys [counter]} v]
+        (when (timer/stopped? elapsed-time* counter)
+          (swap! eid dissoc :entity/string-effect))
+        nil)
+
+      :entity/skills
+      (do (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
+                  :when (and cooling-down?
+                             (timer/stopped? elapsed-time* cooling-down?))]
+            (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
+          nil)
+
+      :entity/temp-modifier
+      (let [{:keys [modifiers counter]} v]
+        (when (timer/stopped? elapsed-time* counter)
+          (swap! eid dissoc :entity/temp-modifier)
+          (swap! eid update :entity/stats stats/remove-mods modifiers))
+        nil)
+
+      :entity/projectile-collision
+      (let [{:keys [entity-effects already-hit-bodies piercing?]} v
+            world* @world
+            entity @eid
+            touched-cells (map deref (keep (:world/grid world*) (body/touched-tiles entity)))
+            hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
+                                            (not= (:entity/faction entity)
+                                                  (:entity/faction @%))
+                                            (:entity/collides? @%)
+                                            (body/overlaps? entity
+                                                            @%))
+                                      (into #{} (mapcat :entities) touched-cells)))
+            destroy? (or (and hit-entity (not piercing?))
+                         (some #(cell/blocked? % (:entity/z-order entity)) touched-cells))]
+        (when hit-entity
+          (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
+                 (conj already-hit-bodies hit-entity)))
+        (when destroy?
+          (swap! eid assoc :entity/destroyed? true))
+        (when hit-entity
+          (apply-effects! {:effect/source eid
+                           :effect/target hit-entity}
+                          entity-effects))
+        nil)
+
+      :active-skill
+      (let [{:keys [skill effect-ctx counter]} v
+            effect-ctx (update-effect-ctx (:world/raycaster @world) effect-ctx)]
+        (cond
+         (not (seq (filter #(applicable? % effect-ctx)
+                           (:skill/effects skill))))
+         (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :action-done)
+
+         (timer/stopped? elapsed-time* counter)
+         (do (apply-effects! effect-ctx (:skill/effects skill))
+             (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :action-done)
+             nil)))
+
+      :entity/delete-after-duration
+      (do (when (timer/stopped? elapsed-time* v)
+            (swap! eid assoc :entity/destroyed? true))
+          nil)
+
+      :stunned
+      (let [{:keys [counter]} v]
+        (when (timer/stopped? elapsed-time* counter)
+          (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :effect-wears-off)))
+
+      :npc-moving
+      (let [{:keys [timer]} v]
+        (when (timer/stopped? elapsed-time* timer)
+          (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :timer-finished)))
+
+      :npc-sleeping
+      (let [entity @eid]
+        (when-let [distance (potential-field/nearest-enemy-distance (:world/grid @world) entity)]
+          (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
+            (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :alert))))
+
+      :npc-idle
+      (let [raycaster (:world/raycaster @world)
+            effect-ctx (create-effect-ctx world ctx eid)]
+        (if-let [skill (choose-skill (partial raycaster/blocked? raycaster) @eid effect-ctx)]
+          (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :start-action [skill effect-ctx])
+          (handle-fsm-event! world elapsed-time play-sound! skin stage textures z-orders minimum-size eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
+                                                             [0 0]))))
+
+      :entity/movement
+      (let [{:keys [direction
+                    speed]
+             :as movement} v]
+        (assert (<= 0 speed max-speed)
+                (pr-str speed))
+        (assert (vector? direction))
+        (assert (or (zero? (v2/length direction))
+                    (number/nearly-equal? 1 (v2/length direction)))
+                (str "cannot understand direction: " (pr-str direction)))
+        (when-not (or (zero? (v2/length direction))
+                      (nil? speed)
+                      (zero? speed))
+          (let [world* @world
+                movement (assoc movement :delta-time @delta-time)
+                body @eid]
+            (when-let [body (if (:entity/collides? body)
+                               (grid/try-move-solid-body (:world/grid world*) body (:entity/id @eid) movement)
+                               (let [{:keys [direction speed delta-time]} movement]
+                                 (update body :entity/position
+                                         #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
+              (swap! eid assoc :entity/position (:entity/position body))
+              (relocate-eid! world* eid)
+              nil))))
+
+      nil)))
 
 (def ^:private controls-info
   (str/join "\n"
