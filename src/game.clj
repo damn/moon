@@ -11,6 +11,7 @@
             [lib.color :as color]
             [lib.content-grid :as content-grid]
             [lib.db :as db]
+            [lib.entity :as entity]
             [lib.faction :as faction]
             [lib.grid :as grid]
             [lib.inventory :as inventory]
@@ -25,6 +26,7 @@
             [lib.textures :as textures]
             [lib.tiled-map :as moon-tiled-map]
             [lib.timer :as timer]
+            [game.stage :as stage]
             [game.stage.inventory :as inventory-window]
             [ui.action-bar :as action-bar]
             [ui.dev-menu :as dev-menu]
@@ -46,196 +48,6 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
-
-; entity ns?
-(defn- add-text-effect [entity elapsed-time text duration]
-  (assoc entity :entity/string-effect
-         (if-let [existing (:entity/string-effect entity)]
-           (-> existing
-               (update :text str "\n" text)
-               (update :counter timer/increment duration))
-           {:text text
-            :counter (timer/create elapsed-time duration)})))
-
-; ?
-(defn- inventory-cell-path [[slot [x y]]]
-  [:entity/inventory slot x y])
-
-; creature/entity ns?
-(defn- set-item [entity cell item]
-  (assert (and (nil? (get-in entity (inventory-cell-path cell)))
-               (inventory/valid-slot? cell item)))
-  (cond-> (assoc-in entity (inventory-cell-path cell) item)
-    (inventory/applies-modifiers? cell)
-    (update :entity/stats stats/add-mods (:stats/modifiers item))))
-
-; entity/creature ns?
-(defn- remove-item [entity cell]
-  (let [item (get-in entity (inventory-cell-path cell))]
-    (assert item)
-    (cond-> (assoc-in entity (inventory-cell-path cell) nil)
-      (inventory/applies-modifiers? cell)
-      (update :entity/stats stats/remove-mods (:stats/modifiers item)))))
-
-; see info-text 
-(def ^:private info-text-config
-  {:k->fn {:creature/level (fn [v _elapsed-time]
-                              (str "Level: " v))
-           :entity/stats (fn [entity-stats _elapsed-time]
-                           (stats/format-text entity-stats))
-           :effects.target/convert (fn [_ _elapsed-time]
-                                    "Converts target to your side.")
-           :effects.target/damage (fn [{[min max] :damage/min-max} _elapsed-time]
-                                    (str min "-" max " damage"))
-           :effects.target/kill (fn [_ _elapsed-time]
-                                  "Kills target")
-           :effects.target/melee-damage (fn [_ _elapsed-time]
-                                          "Damage based on entity strength.")
-           :effects.target/spiderweb (fn [_ _elapsed-time]
-                                       "Spiderweb slows 50% for 5 seconds.")
-           :effects.target/stun (fn [duration _elapsed-time]
-                                  (str "Stuns for " (number/readable duration) " seconds"))
-           :effects/spawn (fn [{:keys [property/pretty-name]} _elapsed-time]
-                            (str "Spawns a " pretty-name))
-           :effects/target-all (fn [_ _elapsed-time]
-                                 "All visible targets")
-           :entity/delete-after-duration (fn [counter elapsed-time]
-                                             (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
-           :entity/faction (fn [faction _elapsed-time]
-                             (str "Faction: " (name faction)))
-           :entity/fsm (fn [fsm _elapsed-time]
-                          (str "State: " (name (:state fsm))))
-           :stats/modifiers (fn [mods _elapsed-time]
-                              (mods/format-text mods))
-           :entity/skills (fn [skills _elapsed-time]
-                            (when (seq skills)
-                              (str "Skills: " (str/join "," (map name (keys skills))))))
-           :entity/species (fn [species _elapsed-time]
-                             (str "Creature - " (str/capitalize (name species))))
-           :entity/temp-modifier (fn [{:keys [counter]} elapsed-time]
-                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
-           :projectile/piercing? (fn [_ _elapsed-time]
-                                   "Piercing")
-           :property/pretty-name (fn [v _elapsed-time]
-                                    v)
-           :skill/cooling-down? (fn [counter elapsed-time]
-                                   (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
-           :skill/action-time (fn [v _elapsed-time]
-                                 (str "Action-Time: " (number/readable v) " seconds"))
-           :skill/action-time-modifier-key (fn [v _elapsed-time]
-                                              (case v
-                                                :stats/cast-speed "Spell"
-                                                :stats/attack-speed "Attack"))
-           :skill/cooldown (fn [v _elapsed-time]
-                             (str "Cooldown: " (number/readable v) " seconds"))
-           :skill/cost (fn [v _elapsed-time]
-                          (str "Cost: " v " Mana"))
-           :maxrange (fn [v _elapsed-time]
-                       (str "Range: " v " Meters."))}
-   :k-order-index (zipmap [:property/pretty-name
-                           :skill/action-time-modifier-key
-                           :skill/action-time
-                           :skill/cooldown
-                           :skill/cost
-                           :skill/effects
-                           :entity/species
-                           :creature/level
-                           :entity/stats
-                           :entity/delete-after-duration
-                           :projectile/piercing?
-                           :entity/projectile-collision
-                           :maxrange
-                           :entity-effects]
-                          (range))
-   :k->colors {:property/pretty-name "PRETTY_NAME"
-               :stats/modifiers "CYAN"
-               :maxrange "LIGHT_GRAY"
-               :creature/level "GRAY"
-               :projectile/piercing? "LIME"
-               :skill/action-time-modifier-key "VIOLET"
-               :skill/action-time "GOLD"
-               :skill/cooldown "SKY"
-               :skill/cost "CYAN"
-               :entity/delete-after-duration "LIGHT_GRAY"
-               :entity/faction "SLATE"
-               :entity/fsm "YELLOW"
-               :entity/species "LIGHT_GRAY"
-               :entity/temp-modifier "LIGHT_GRAY"}})
-
-; with info text
-(defn- remove-newlines [s]
-  (let [new-s (-> s
-                  (str/replace "\n\n" "\n")
-                  (str/replace #"^\n" "")
-                  str/trim-newline)]
-    (if (= (count new-s) (count s))
-      s
-      (remove-newlines new-s))))
-
-; TODO used for item/skill/entity
-; logic should be in inventory window / action-bar and entity info window !
-(defn- info-text
-  [entity elapsed-time]
-  (let [{:keys [k->fn
-                k-order-index
-                k->colors]} info-text-config
-        component-info (fn [[k v]]
-                         (let [s (if-let [info-fn (k->fn k)]
-                                   (str (info-fn v elapsed-time)))]
-                           (if-let [color (k->colors k)]
-                             (str "[" color "]" s "[]")
-                             s)))]
-    (->> entity
-         (sort-by (fn [[k _]] (get k-order-index k Integer/MAX_VALUE)))
-         (keep (fn [{k 0 v 1 :as component}]
-                 (str (try (component-info component)
-                           (catch Throwable _t
-                             (str "*info-error* " k)))
-                      (when (map? v)
-                        (str "\n" (info-text v elapsed-time))))))
-         (str/join "\n")
-         remove-newlines)))
-
-; game.stage (public - skin,textures let bound )
-(defn- ui-set-item! [skin stage textures cell item]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.windows.inventory")
-      (inventory-window/set-item! cell
-                                  {:texture-region (textures/texture-region textures (:entity/image item))
-                                   :tooltip-text (item/info-text item)}
-                                  skin)))
-; game.stage (public - skin,textures let bound )
-(defn- ui-set-skill! [skin stage textures elapsed-time skill]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.action-bar")
-      (action-bar/add-skill! {:skill-id (:property/id skill)
-                              :texture-region (textures/texture-region textures (:entity/image skill))
-                              :tooltip-text (info-text skill elapsed-time)}
-                             skin)))
-
-; game.stage (public - skin,textures let bound )
-(defn- ui-remove-item! [stage cell]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.windows.inventory")
-      (inventory-window/remove-item! cell)))
-
-; game.stage (public - skin,textures let bound )
-(defn- sync-player-ui! [skin stage textures elapsed-time eid]
-  (doseq [skill (vals (:entity/skills @eid))]
-    (ui-set-skill! skin stage textures elapsed-time skill))
-  (doseq [[slot grid] (:entity/inventory @eid)
-          x (range (count grid))
-          y (range (count (grid 0)))
-          :let [position [x y]
-                item (get-in grid position)]
-          :when item]
-    (ui-set-item! skin stage textures [slot position] item)))
-
-; stage ns
-(defn- toggle-inventory-visible! [stage]
-  (let [inventory (-> (.getRoot ^Stage stage)
-                      (.findActor "moon.ui.windows.inventory"))]
-    (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
 
 ; belongs to game - further down?
 (def ^:private controls
@@ -271,25 +83,11 @@
 ; stage fns
 (def ^:private key-just-pressed-actions
   {(:close-windows-key controls) (fn [{:keys [stage]}]
-                                   (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
-                                        (run! #(.setVisible ^Actor % false))))
+                                   (stage/close-windows! @stage))
    (:toggle-inventory controls) (fn [{:keys [stage]}]
-                                  (toggle-inventory-visible! @stage))
+                                  (stage/toggle-inventory-visible! @stage))
    (:toggle-entity-info controls) (fn [{:keys [stage]}]
-                                    (let [entity-info (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows.entity-info")]
-                                      (.setVisible ^Actor entity-info
-                                                   (not (.isVisible ^Actor entity-info)))))})
-
-; stage ns? (clojure.gdx ? ) or inline ?
-(defn mouseover-actor [stage x y]
-  (.hit ^Stage stage (float x) (float y) true))
-
-; pass input?
-(defn ui-mouse-position [stage]
-  (let [v2 (.unproject (.getViewport ^Stage stage)
-                       (Vector2. (float (.getX Gdx/input))
-                                 (float (.getY Gdx/input))))]
-    [(.x v2) (.y v2)]))
+                                    (stage/toggle-entity-info! @stage))})
 
 ; pass input?
 (defn world-mouse-position [viewport]
@@ -615,7 +413,7 @@
         (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
           (assert cell)
           (assert (nil? cell-item))
-          (swap! eid set-item cell item)))
+          (swap! eid entity/set-item cell item)))
       nil)
 
     nil))
@@ -671,30 +469,6 @@
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
-; TODO STAGE function
-(defn- show-modal! [^Skin skin ^Stage stage {:keys [title text button-text on-click]}]
-  (assert (not (.findActor (.getRoot stage) "moon.ui.modal-window")))
-  (let [^String title title
-        ^String text text
-        window (Window. title skin)]
-    (.add window (Label. text skin))
-    (.row window)
-    (.add window (doto (TextButton. ^String button-text skin)
-                   (.addListener (proxy [ChangeListener] []
-                                   (changed [_event _actor]
-                                     (.remove (.findActor (.getRoot stage)
-                                                          "moon.ui.modal-window"))
-                                     (on-click))))))
-    (.row window)
-    (.pack window)
-    (.setModal window true)
-    (.setName window "moon.ui.modal-window")
-    (.setPosition window
-                  (/ (.getWorldWidth (.getViewport stage)) 2)
-                  (float (* (.getWorldHeight (.getViewport stage)) (/ 3 4)))
-                  (float Align/center))
-    (.addActor stage window)))
-
 (defn- entity-state-exit!
   [world play-sound! eid world-mouse-position elapsed-time [state-k _state-v]]
   (case state-k
@@ -715,7 +489,7 @@
         nil)
 
     :npc-sleeping
-    (do (swap! eid add-text-effect elapsed-time "[WHITE]!" 1)
+    (do (swap! eid entity/add-text-effect elapsed-time "[WHITE]!" 1)
         (spawn-entity! @world
                        (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 elapsed-time)))
 
@@ -759,10 +533,10 @@
 
     :player-dead
     (do (play-sound! "bfxr_playerdeath.wav")
-        (show-modal! skin stage {:title "YOU DIED - again!"
-                                 :text "Good luck next time!"
-                                 :button-text "OK"
-                                 :on-click (fn [])})
+        (stage/show-modal! skin stage {:title "YOU DIED - again!"
+                                       :text "Good luck next time!"
+                                       :button-text "OK"
+                                       :on-click (fn [])})
         nil)
 
     :npc-moving
@@ -982,7 +756,7 @@
               (:entity/stats target*)
               (< (rand) (stats/effective-armor-save (:entity/stats source*)
                                                     (:entity/stats target*))))
-         (do (swap! target add-text-effect elapsed-time* "[WHITE]ARMOR" 0.3)
+         (do (swap! target entity/add-text-effect elapsed-time* "[WHITE]ARMOR" 0.3)
              nil)
 
          :else
@@ -998,7 +772,7 @@
                                0)
                dmg-text (str "[RED]" dmg-amount "[]")]
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
-           (swap! target add-text-effect elapsed-time* dmg-text 0.3)
+           (swap! target entity/add-text-effect elapsed-time* dmg-text 0.3)
            (handle-fsm-event! world play-sound! skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
            (play-sound! "bfxr_normalhit.wav")
            (audiovisual! db schemas world (:entity/position target*) :audiovisuals/damage))))
@@ -1110,7 +884,7 @@
                                                          :entity/free-skill-points 3
                                                          :entity/clickable {:type :clickable/player}
                                                          :entity/click-distance-tiles 1.5}}))]
-    (sync-player-ui! skin stage textures* @(:world/elapsed-time @world) eid)))
+    (stage/sync-player-ui! skin stage textures* @(:world/elapsed-time @world) eid)))
 
 (defn bind-player-eid! [world]
   (let [eid (get @(:world/entity-ids @world) 1)]
@@ -1128,68 +902,6 @@
                                                                 :initial-state :npc-sleeping}
                                                    :entity/faction :evil}})))))
 
-
-(defn create-action-bar []
-  (let [table (doto (Table.)
-                (#(.pad (.defaults ^Table %) (float 2))))]
-    (doto (.add ^Table table ^Actor (doto (HorizontalGroup.)
-                                      (.space (float 2))
-                                      (.pad (float 2))
-                                      (.setName "moon.ui.action-bar.horizontal-group")
-                                      (.setUserObject (doto (ButtonGroup.)
-                                                        (.setMaxCheckCount (int 1))
-                                                        (.setMinCheckCount (int 0))))))
-      (.expand)
-      (.bottom))
-    (.row ^Table table)
-    (doto table
-      (.pack)
-      (.setFillParent true)
-      (.setName "moon.ui.action-bar"))))
-
-(defn- create-info-window
-  [{:keys [title
-           actor-name
-           visible?
-           position
-           set-label-text!
-           skin]}]
-  (let [^Skin skin skin
-        label (Label. "MY LABEL TEXT" skin)
-        window (Window. ^String title skin)
-        c (.add window label)]
-    (.expand c)
-    (.row window)
-    (.pack window)
-    (.setName window actor-name)
-    (.setVisible window visible?)
-    (let [[x y] position]
-      (.setPosition window (float x) (float y)))
-    (.addActor window (proxy [Actor] []
-                         (act [delta]
-                           (let [^Actor this this]
-                             (when (.getStage this)
-                               (.setText label ^String (set-label-text!)))
-                             (.pack window)
-                             (proxy-super act delta)))
-                         (draw [batch parent-alpha])))
-    window))
-
-(defn stage-info-window-create
-  [skin stage mouseover-eid world]
-  (create-info-window
-   {:title "Entity Info"
-    :actor-name "moon.ui.windows.entity-info"
-    :visible? false
-    :position [(.getWorldWidth (.getViewport ^Stage stage)) 0]
-    :set-label-text! (fn []
-                       (if-let [eid @mouseover-eid]
-                         (info-text (apply dissoc @eid [:entity/skills
-                                                        :entity/faction
-                                                        :active-skill])
-                                    @(:world/elapsed-time @world))
-                         ""))
-    :skin skin}))
 
 (defn hp-mana-bar-create
   [default-font stage textures unit-scale world]
@@ -1235,13 +947,13 @@
             (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
 (defn handle-clicked-inventory-cell
-  [world player-eid play-sound! skin stage textures ui-set-item! ui-remove-item! cell world-mouse-position]
+  [world player-eid play-sound! skin stage textures set-item! remove-item! cell world-mouse-position]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (inventory/item-at (:entity/inventory @player-eid) cell)]
       (play-sound! "bfxr_takeit.wav")
-      (swap! player-eid remove-item cell)
-      (ui-remove-item! cell)
+      (swap! player-eid entity/remove-item cell)
+      (remove-item! cell)
       (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item))
 
     :player-item-on-cursor
@@ -1254,18 +966,18 @@
             (inventory/valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
            (play-sound! "bfxr_itemput.wav")
-           (swap! player-eid set-item cell item-on-cursor)
-           (ui-set-item! cell item-on-cursor)
+           (swap! player-eid entity/set-item cell item-on-cursor)
+           (set-item! cell item-on-cursor)
            (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :dropped-item))
 
        (and item-in-cell
             (inventory/valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
            (play-sound! "bfxr_itemput.wav")
-           (swap! player-eid remove-item cell)
-           (ui-remove-item! cell)
-           (swap! player-eid set-item cell item-on-cursor)
-           (ui-set-item! cell item-on-cursor)
+           (swap! player-eid entity/remove-item cell)
+           (remove-item! cell)
+           (swap! player-eid entity/set-item cell item-on-cursor)
+           (set-item! cell item-on-cursor)
            (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :dropped-item)
            (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item-in-cell))))
 
@@ -1318,14 +1030,14 @@
             player-eid (:world/player-eid @world)
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            mouse-pos (ui-mouse-position stage)
+            mouse-pos (stage/ui-mouse-position stage)
             [x y] mouse-pos]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
                                    batch
                                    unit-scale
                                    textures
-                                   (mouseover-actor stage x y)
+                                   (stage/mouseover-actor stage x y)
                                    mouse-pos)))))
 
 (defn windows-create [actor-fns]
@@ -1847,7 +1559,7 @@
    unit-scale
    play-sound! default-font shape-drawer skin stage textures* viewport]
   (let [cell-size 48]
-    [(create-action-bar)
+    [(action-bar/create)
      (dev-menu/create
       {:menus (dev-menus show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
        :update-labels (for [item [{:label "elapsed-time"
@@ -1866,7 +1578,7 @@
                                    :update-fn (fn [] @paused?)}
                                   {:label "GUI"
                                    :update-fn (fn []
-                                                (mapv int (ui-mouse-position stage)))}
+                                                (mapv int (stage/ui-mouse-position stage)))}
                                   {:label "World"
                                    :update-fn (fn []
                                                 (mapv int (world-mouse-position viewport)))}
@@ -1879,7 +1591,7 @@
                           item))
        :skin skin})
      (hp-mana-bar-create default-font stage textures* unit-scale world)
-     (windows-create [#(stage-info-window-create skin stage mouseover-eid world)
+     (windows-create [#(stage/info-window-create skin stage mouseover-eid world)
                       #(inventory-window/create
                         (fn [_event cell]
                           (handle-clicked-inventory-cell world
@@ -1888,8 +1600,8 @@
                                                          skin
                                                          stage
                                                          textures*
-                                                         (fn [cell item] (ui-set-item! skin stage textures* cell item))
-                                                         (fn [cell] (ui-remove-item! stage cell))
+                                                         (fn [cell item] (stage/set-item! skin stage textures* cell item))
+                                                         (fn [cell] (stage/remove-item! stage cell))
                                                          cell
                                                          (world-mouse-position viewport)))
                         (fn [player-entity x y mouseover? cell]
@@ -1910,8 +1622,8 @@
 
 (defn update-mouseover-eid! [world mouseover-eid stage viewport render-z-order]
   (let [old-mouseover-eid @mouseover-eid
-        [x y] (ui-mouse-position stage)
-        new-eid (if (mouseover-actor stage x y)
+        [x y] (stage/ui-mouse-position stage)
+        new-eid (if (stage/mouseover-actor stage x y)
                   nil
                   (let [player @(:world/player-eid @world)
                         world* @world
@@ -1940,8 +1652,8 @@
     (.update camera)))
 
 (defn current-mouseover-actor [stage]
-  (let [[x y] (ui-mouse-position stage)]
-    (mouseover-actor stage x y)))
+  (let [[x y] (stage/ui-mouse-position stage)]
+    (stage/mouseover-actor stage x y)))
 
 (defn- cursor-key [interaction-state world]
   (let [eid (:world/player-eid @world)
@@ -2026,7 +1738,7 @@
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
-(defn- interaction-state->txs [[k params] world stage play-sound! skin textures ui-set-item! player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] world stage play-sound! skin textures set-item! player-eid world-mouse-position]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -2036,7 +1748,7 @@
       (if in-click-range?
         (case (:type (:entity/clickable @clicked-eid))
           :clickable/player
-          (do (toggle-inventory-visible! stage)
+          (do (stage/toggle-inventory-visible! stage)
               nil)
 
           :clickable/item
@@ -2056,8 +1768,8 @@
                   (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
                     (assert cell)
                     (assert (nil? cell-item))
-                    (swap! player-eid set-item cell item)
-                    (ui-set-item! cell item))
+                    (swap! player-eid entity/set-item cell item)
+                    (set-item! cell item))
                   nil)
 
               :else
@@ -2094,8 +1806,8 @@
         state-k (:state (:entity/fsm entity))
         left-button-pressed? (button-just-pressed? Input$Buttons/LEFT)
         move-v (movement-vector key-pressed?)
-        [x y] (ui-mouse-position stage)
-        mouseover-actor* (mouseover-actor stage x y)
+        [x y] (stage/ui-mouse-position stage)
+        mouseover-actor* (stage/mouseover-actor stage x y)
         world-mouse-pos (world-mouse-position viewport)]
     (case state-k
       :player-idle
@@ -2108,7 +1820,7 @@
                                   play-sound!
                                   skin
                                   textures
-                                  #(ui-set-item! skin stage textures %1 %2)
+                                  #(stage/set-item! skin stage textures %1 %2)
                                   eid
                                   world-mouse-pos)))
 
@@ -2299,8 +2011,8 @@
                      show-cell-entities? show-cell-occupied? show-potential-field-colors?
                      factions-iterations)
     (draw-entities! nil @shape-drawer @batch @default-font @textures unit-scale world-unit-scale
-                    (let [[x y] (ui-mouse-position @stage)]
-                      (mouseover-actor @stage x y))
+                    (let [[x y] (stage/ui-mouse-position @stage)]
+                      (stage/mouseover-actor @stage x y))
                     (world-mouse-position @viewport)
                     (:world/raycaster @world) world show-body-bounds? active-entities render-z-order)
     (highlight-mouseover-tile nil @shape-drawer (world-mouse-position @viewport) world)
