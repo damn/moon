@@ -46,15 +46,6 @@
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
 
-(def ^:private controls
-  {:zoom-in Input$Keys/MINUS
-   :zoom-out Input$Keys/EQUALS
-   :unpause-once Input$Keys/P
-   :unpause-continously Input$Keys/SPACE
-   :close-windows-key Input$Keys/ESCAPE
-   :toggle-inventory Input$Keys/I
-   :toggle-entity-info Input$Keys/E})
-
 (defn- add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
          (if-let [existing (:entity/string-effect entity)]
@@ -256,6 +247,25 @@
   (let [inventory (-> (.getRoot ^Stage stage)
                       (.findActor "moon.ui.windows.inventory"))]
     (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
+
+(def ^:private controls
+  {:zoom-in Input$Keys/MINUS
+   :zoom-out Input$Keys/EQUALS
+   :unpause-once Input$Keys/P
+   :unpause-continously Input$Keys/SPACE
+   :close-windows-key Input$Keys/ESCAPE
+   :toggle-inventory Input$Keys/I
+   :toggle-entity-info Input$Keys/E})
+
+(def ^:private controls-info
+  (str/join "\n"
+            ["[W][A][S][D] - Move"
+             "[ESCAPE] - Close windows"
+             "[I] - Inventory window"
+             "[E] - Entity Info window"
+             "[-]/[=] - Zoom"
+             "[P]/[SPACE] - Unpause"
+             "Leftmouse click - use skill/drop item on cursor"]))
 
 (def ^:private key-pressed-actions
   {(:zoom-in controls) (fn [{:keys [viewport]}]
@@ -1918,16 +1928,6 @@
               nil))))
 
       nil)))
-
-(def ^:private controls-info
-  (str/join "\n"
-            ["[W][A][S][D] - Move"
-             "[ESCAPE] - Close windows"
-             "[I] - Inventory window"
-             "[E] - Entity Info window"
-             "[-]/[=] - Zoom"
-             "[P]/[SPACE] - Unpause"
-             "Leftmouse click - use skill/drop item on cursor"]))
 
 (def ^:private help-menu-item
   {:label "Help"
