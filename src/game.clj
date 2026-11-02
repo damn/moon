@@ -25,6 +25,7 @@
             [lib.textures :as textures]
             [lib.tiled-map :as moon-tiled-map]
             [lib.timer :as timer]
+            [game.stage.inventory :as inventory-window]
             [ui.action-bar :as action-bar]
             [ui.dev-menu :as dev-menu]
             [lib.v2 :as v2]
@@ -46,6 +47,7 @@
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
 
+; entity ns?
 (defn- add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
          (if-let [existing (:entity/string-effect entity)]
@@ -55,9 +57,11 @@
            {:text text
             :counter (timer/create elapsed-time duration)})))
 
+; ?
 (defn- inventory-cell-path [[slot [x y]]]
   [:entity/inventory slot x y])
 
+; creature/entity ns?
 (defn- set-item [entity cell item]
   (assert (and (nil? (get-in entity (inventory-cell-path cell)))
                (inventory/valid-slot? cell item)))
@@ -65,6 +69,7 @@
     (inventory/applies-modifiers? cell)
     (update :entity/stats stats/add-mods (:stats/modifiers item))))
 
+; entity/creature ns?
 (defn- remove-item [entity cell]
   (let [item (get-in entity (inventory-cell-path cell))]
     (assert item)
@@ -72,6 +77,7 @@
       (inventory/applies-modifiers? cell)
       (update :entity/stats stats/remove-mods (:stats/modifiers item)))))
 
+; see info-text 
 (def ^:private info-text-config
   {:k->fn {:creature/level (fn [v _elapsed-time]
                               (str "Level: " v))
@@ -156,6 +162,7 @@
                :entity/species "LIGHT_GRAY"
                :entity/temp-modifier "LIGHT_GRAY"}})
 
+; with info text
 (defn- remove-newlines [s]
   (let [new-s (-> s
                   (str/replace "\n\n" "\n")
@@ -165,6 +172,8 @@
       s
       (remove-newlines new-s))))
 
+; TODO used for item/skill/entity
+; logic should be in inventory window / action-bar and entity info window !
 (defn- info-text
   [entity elapsed-time]
   (let [{:keys [k->fn
@@ -187,38 +196,15 @@
          (str/join "\n")
          remove-newlines)))
 
-(defn- inventory-window-get-cell [inventory-window cell]
-  (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))
-       (filter #(= (.getUserObject ^Actor %) cell))
-       first))
-
-(defn- inventory-window-remove-item! [inventory-window cell]
-  (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (.findActor ^Group cell-widget "image-widget")]
-    (.setDrawable ^Image image-widget ^Drawable (:background-drawable (.getUserObject ^Actor image-widget)))
-    ; !! TODO FIXME FIXME FIXME !!!
-    ;(.removeListener actor (.getListeners actor))
-    ; ... first find the listener
-    #_(tooltip/remove! cell-widget)
-    nil))
-
-(defn- inventory-window-set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
-  (let [cell-widget (inventory-window-get-cell inventory-window cell)
-        image-widget (.findActor ^Group cell-widget "image-widget")
-        cell-size (:cell-size (.getUserObject ^Actor image-widget))]
-    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                                  (.setMinSize cell-size cell-size)))
-    (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
-    nil))
-
+; game.stage (public - skin,textures let bound )
 (defn- ui-set-item! [skin stage textures cell item]
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.windows.inventory")
-      (inventory-window-set-item! cell
+      (inventory-window/set-item! cell
                                   {:texture-region (textures/texture-region textures (:entity/image item))
                                    :tooltip-text (item/info-text item)}
                                   skin)))
-
+; game.stage (public - skin,textures let bound )
 (defn- ui-set-skill! [skin stage textures elapsed-time skill]
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.action-bar")
@@ -227,11 +213,13 @@
                               :tooltip-text (info-text skill elapsed-time)}
                              skin)))
 
+; game.stage (public - skin,textures let bound )
 (defn- ui-remove-item! [stage cell]
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.windows.inventory")
-      (inventory-window-remove-item! cell)))
+      (inventory-window/remove-item! cell)))
 
+; game.stage (public - skin,textures let bound )
 (defn- sync-player-ui! [skin stage textures elapsed-time eid]
   (doseq [skill (vals (:entity/skills @eid))]
     (ui-set-skill! skin stage textures elapsed-time skill))
@@ -243,11 +231,13 @@
           :when item]
     (ui-set-item! skin stage textures [slot position] item)))
 
+; stage ns
 (defn- toggle-inventory-visible! [stage]
   (let [inventory (-> (.getRoot ^Stage stage)
                       (.findActor "moon.ui.windows.inventory"))]
     (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
 
+; belongs to game - further down?
 (def ^:private controls
   {:zoom-in Input$Keys/MINUS
    :zoom-out Input$Keys/EQUALS
@@ -267,6 +257,7 @@
              "[P]/[SPACE] - Unpause"
              "Leftmouse click - use skill/drop item on cursor"]))
 
+; viewport fns
 (def ^:private key-pressed-actions
   {(:zoom-in controls) (fn [{:keys [viewport]}]
                          (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
@@ -277,6 +268,7 @@
                             (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                             (.update camera)))})
 
+; stage fns
 (def ^:private key-just-pressed-actions
   {(:close-windows-key controls) (fn [{:keys [stage]}]
                                    (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage @stage) "moon.ui.windows"))
@@ -288,15 +280,18 @@
                                       (.setVisible ^Actor entity-info
                                                    (not (.isVisible ^Actor entity-info)))))})
 
+; stage ns? (clojure.gdx ? ) or inline ?
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
 
+; pass input?
 (defn ui-mouse-position [stage]
   (let [v2 (.unproject (.getViewport ^Stage stage)
                        (Vector2. (float (.getX Gdx/input))
                                  (float (.getY Gdx/input))))]
     [(.x v2) (.y v2)]))
 
+; pass input?
 (defn world-mouse-position [viewport]
   (let [v2 (.unproject ^Viewport viewport
                        (Vector2. (float (.getX Gdx/input))
@@ -421,8 +416,6 @@
              (float y)
              (float w)
              (float h)))))
-
-
 
 (defn- item-place-position [player-position world-mouse-position maxrange]
   (mapv + player-position
@@ -678,6 +671,7 @@
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
+; TODO STAGE function
 (defn- show-modal! [^Skin skin ^Stage stage {:keys [title text button-text on-click]}]
   (assert (not (.findActor (.getRoot stage) "moon.ui.modal-window")))
   (let [^String title title
@@ -1276,122 +1270,6 @@
            (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item-in-cell))))
 
     nil))
-
-(defn- inventory-window-cell [world on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
-  (let [cell [slot (or position [0 0])]
-        background-drawable (slot->drawable slot)]
-    {:actor
-     (let [stack (Stack.)]
-       (run! #(.addActor ^Group stack ^Actor %)
-             [(proxy [Widget] []
-                (draw [batch parent-alpha]
-                  (when-let [stage (.getStage ^Actor this)]
-                    (draw-cell-rect! @(:world/player-eid @world)
-                                       (.getX ^Actor this)
-                                       (.getY ^Actor this)
-                                       (let [v2 (.unproject (.getViewport ^Stage stage)
-                                                           (Vector2. (float (.getX Gdx/input))
-                                                                     (float (.getY Gdx/input))))
-                                             local (.stageToLocalCoordinates ^Actor this
-                                                                             (Vector2. (.x v2) (.y v2)))
-                                             x (.x ^Vector2 local)
-                                             y (.y ^Vector2 local)]
-                                         (.hit ^Actor this (float x) (float y) true))
-                                       (.getUserObject ^Actor (.getParent ^Actor this))))))
-              (doto (Image. ^Drawable background-drawable)
-                (.setName "image-widget")
-                (.setUserObject {:background-drawable background-drawable
-                                      :cell-size cell-size}))])
-       (doto stack
-         (.addListener (proxy [ClickListener] []
-                         (clicked [event _x _y]
-                           (on-click-cell event cell))))
-         (.setName "inventory-cell")
-         (.setUserObject cell)))}))
-
-(defn- inventory-window-build
-  [{:keys [world
-           on-click-cell
-           draw-cell-rect!
-           skin
-           position
-           slot->texture-region
-           cell-size]}]
-  (let [slot->drawable (fn [slot]
-                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
-                           (.setMinSize cell-size cell-size)
-                           (.tint ^Color (Color. 1 1 1 0.4))))
-        ->cell (partial inventory-window-cell world on-click-cell slot->drawable draw-cell-rect! cell-size)
-        cell-table (Table.)
-        window (Window. "Inventory" ^Skin skin)]
-    (doseq [row (concat [[{:actor nil} {:actor nil}
-                         (->cell :inventory.slot/helm)
-                         (->cell :inventory.slot/necklace)]
-                        [{:actor nil}
-                         (->cell :inventory.slot/weapon)
-                         (->cell :inventory.slot/chest)
-                         (->cell :inventory.slot/cloak)
-                         (->cell :inventory.slot/shield)]
-                        [{:actor nil} {:actor nil}
-                         (->cell :inventory.slot/leg)]
-                        [{:actor nil}
-                         (->cell :inventory.slot/glove)
-                         (->cell :inventory.slot/rings :position [0 0])
-                         (->cell :inventory.slot/rings :position [1 0])
-                         (->cell :inventory.slot/boot)]]
-                       (for [y (range 4)]
-                         (for [x (range 6)]
-                           (->cell :inventory.slot/bag :position [x y]))))]
-      (doseq [cell row]
-        (.add cell-table ^Actor (:actor cell)))
-      (.row cell-table))
-    (.pack cell-table)
-    (.setName cell-table "inventory-cell-table")
-    (let [c (.add window cell-table)]
-      (.pad c (float 4)))
-    (.row window)
-    (.pack window)
-    (.setName window "moon.ui.windows.inventory")
-    (.setVisible window false)
-    (let [[x y] position]
-      (.setPosition window (float x) (float y)))
-    window))
-
-(defn inventory-window-create
-  [on-click-cell draw-cell-rect! skin stage textures world]
-  (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
-                                             :shield 1
-                                             :rings 2
-                                             :necklace 3
-                                             :helm 4
-                                             :cloak 5
-                                             :chest 6
-                                             :leg 7
-                                             :glove 8
-                                             :boot 9
-                                             :bag 10}
-        slot->texture-region (fn [slot]
-                               (let [width 48
-                                     height 48
-                                     sprite-x 21
-                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
-                                     bounds [(* sprite-x width)
-                                             (* sprite-y height)
-                                             width
-                                             height]]
-                                 (textures/texture-region textures
-                                                          {:image/file "images/items.png"
-                                                           :image/bounds bounds})))
-        cell-size 48]
-    (inventory-window-build
-     {:world world
-      :on-click-cell on-click-cell
-      :draw-cell-rect! draw-cell-rect!
-      :skin skin
-      :position [(.getWorldWidth (.getViewport ^Stage stage))
-                 (.getWorldHeight (.getViewport ^Stage stage))]
-      :slot->texture-region slot->texture-region
-      :cell-size cell-size})))
 
 (defn player-message-actor-create [default-font unit-scale]
   (let [message-duration-seconds 0.5]
@@ -2002,7 +1880,7 @@
        :skin skin})
      (hp-mana-bar-create default-font stage textures* unit-scale world)
      (windows-create [#(stage-info-window-create skin stage mouseover-eid world)
-                      #(inventory-window-create
+                      #(inventory-window/create
                         (fn [_event cell]
                           (handle-clicked-inventory-cell world
                                                          (:world/player-eid @world)
