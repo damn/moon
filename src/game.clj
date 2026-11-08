@@ -11,7 +11,6 @@
             [lib.item :as item]
             [lib.mods :as mods]
             [lib.number :as number]
-            [lib.potential-field :as potential-field]
             [lib.position :as position]
             [lib.raycaster :as raycaster]
             [lib.rectangle :as rectangle]
@@ -42,6 +41,27 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
+
+(defn nearest-entity [cell faction]
+  (-> cell faction :eid))
+
+(defn nearest-entity-distance [cell faction]
+  (-> cell faction :distance))
+
+(defn cached-adjacent-cells [grid cell]
+  (if-let [result (:adjacent-cells @cell)]
+    result
+    (let [result (into [] (keep #(get-in grid %)) (position/get-8-neighbours (:position @cell)))]
+      (swap! cell assoc :adjacent-cells result)
+      result)))
+
+(defn nearest-enemy [grid entity]
+  (nearest-entity @(get-in grid (mapv int (:entity/position entity)))
+                  (faction/enemy (:entity/faction entity))))
+
+(defn nearest-enemy-distance [grid entity]
+  (nearest-entity-distance @(get-in grid (mapv int (:entity/position entity)))
+                           (faction/enemy (:entity/faction entity))))
 
 (defn add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
@@ -180,7 +200,7 @@
 (defn- viable-cell? [grid distance-to own-dist eid cell]
   (when-let [best-cell (get-min-dist-cell
                         distance-to
-                        (filter-viable-cells eid (potential-field/cached-adjacent-cells grid cell)))]
+                        (filter-viable-cells eid (cached-adjacent-cells grid cell)))]
     (when (< (float (distance-to best-cell)) (float own-dist))
       cell)))
 
@@ -188,10 +208,10 @@
   "returns {:target-entity eid} or {:target-cell cell}. Cell can be nil."
   [grid eid own-cell]
   (let [faction (faction/enemy (:entity/faction @eid))
-        distance-to #(potential-field/nearest-entity-distance @% faction)
-        nearest-entity-at #(potential-field/nearest-entity @% faction)
+        distance-to #(nearest-entity-distance @% faction)
+        nearest-entity-at #(nearest-entity @% faction)
         own-dist (distance-to own-cell)
-        adjacent-cells (potential-field/cached-adjacent-cells grid own-cell)]
+        adjacent-cells (cached-adjacent-cells grid own-cell)]
     (if (and own-dist (zero? (float own-dist)))
       {:target-entity (nearest-entity-at own-cell)}
       (if-let [adjacent-cell (first (filter #(and (distance-to %)
@@ -242,11 +262,11 @@
 
 (defn- potential-field-step [grid faction last-marked-cells]
   (let [marked-cells (transient [])
-        distance #(potential-field/nearest-entity-distance % faction)
-        nearest-entity-at #(potential-field/nearest-entity % faction)
+        distance #(nearest-entity-distance % faction)
+        nearest-entity-at #(nearest-entity % faction)
         marked? faction]
     (doseq [cell (sort-by #(distance @%) last-marked-cells)
-            adjacent-cell (potential-field/cached-adjacent-cells grid cell)
+            adjacent-cell (cached-adjacent-cells grid cell)
             :let [cell* @cell
                   adjacent-cell* @adjacent-cell]
             :when (not (or (pf-blocked? adjacent-cell*)
@@ -1796,7 +1816,7 @@
   [world ctx eid]
   (let [world @world
         entity @eid
-        target (potential-field/nearest-enemy (:world/grid world) entity)
+        target (nearest-enemy (:world/grid world) entity)
         target (when (and target
                           (raycaster/line-of-sight? (:world/raycaster world) entity @target))
                  target)]
@@ -1943,7 +1963,7 @@
 
       :npc-sleeping
       (let [entity @eid]
-        (when-let [distance (potential-field/nearest-enemy-distance (:world/grid @world) entity)]
+        (when-let [distance (nearest-enemy-distance (:world/grid @world) entity)]
           (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
             (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :alert))))
 
