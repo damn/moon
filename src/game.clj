@@ -28,6 +28,20 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
+(def ^:dynamic *sounds*)
+
+(defn play-sound! [sound-name]
+  (assert (contains? *sounds* sound-name) (str sound-name))
+  (Sound/.play (get *sounds* sound-name)))
+
+(defn load-sounds! []
+  (set! *sounds* (into {}
+                       (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
+                         [path (.newSound Gdx/audio (.internal Gdx/files path))]))))
+
+(defn dispose-sounds! []
+  (run! Sound/.dispose (vals *sounds*)))
+
 (def minimum-size 0.39)
 (def max-delta 0.04)
 (def z-orders [:z-order/on-ground
@@ -2783,7 +2797,7 @@
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 (defn- entity-state-exit!
-  [world play-sound! eid world-mouse-position elapsed-time [state-k _state-v]]
+  [world eid world-mouse-position elapsed-time [state-k _state-v]]
   (case state-k
     :player-item-on-cursor
     (let [entity @eid
@@ -2813,7 +2827,7 @@
     nil))
 
 (defn- entity-state-enter!
-  [play-sound! skin stage eid elapsed-time [state-k state-v]]
+  [skin stage eid elapsed-time [state-k state-v]]
   (case state-k
     :player-item-on-cursor
     (let [{:keys [item]} state-v]
@@ -2861,7 +2875,7 @@
 
     nil))
 
-(defn- handle-fsm-event! [world play-sound! skin stage textures eid world-mouse-position event & [params]]
+(defn- handle-fsm-event! [world skin stage textures eid world-mouse-position event & [params]]
   (let [elapsed-time* @(:world/elapsed-time @world)
         fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -2876,8 +2890,8 @@
         (swap! eid assoc :entity/fsm new-fsm)
         (swap! eid assoc new-state-k (new-state-obj 1))
         (swap! eid dissoc old-state-k)
-        (entity-state-exit! world play-sound! eid world-mouse-position elapsed-time* old-state-obj)
-        (entity-state-enter! play-sound! skin stage eid elapsed-time* new-state-obj)
+        (entity-state-exit! world eid world-mouse-position elapsed-time* old-state-obj)
+        (entity-state-enter! skin stage eid elapsed-time* new-state-obj)
         nil))))
 
 (defn- effect-applicable?
@@ -2977,7 +2991,7 @@
 (def ^:private spiderweb-duration 5)
 
 (defn- handle-effect!
-  [db world play-sound! skin stage textures
+  [db world skin stage textures
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities raycaster]
   (let [elapsed-time* @(:world/elapsed-time @world)]
@@ -3085,17 +3099,17 @@
                dmg-text (str "[RED]" dmg-amount "[]")]
            (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
-           (handle-fsm-event! world play-sound! skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
+           (handle-fsm-event! world skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
            (play-sound! "bfxr_normalhit.wav")
            (audiovisual! db world (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
-      (handle-fsm-event! world play-sound! skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
+      (handle-fsm-event! world skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
 
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle-effect! db world play-sound! skin stage textures
+      (handle-effect! db world skin stage textures
                       [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
                       effect-ctx
                       world-mouse-position
@@ -3113,7 +3127,7 @@
           nil))
 
       :effects.target/stun
-      (handle-fsm-event! world play-sound! skin stage textures (:effect/target effect-ctx) world-mouse-position :stun v))))
+      (handle-fsm-event! world skin stage textures (:effect/target effect-ctx) world-mouse-position :stun v))))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
@@ -3259,14 +3273,14 @@
             (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
 
 (defn handle-clicked-inventory-cell
-  [world player-eid play-sound! skin stage textures set-item! remove-item! cell world-mouse-position]
+  [world player-eid skin stage textures set-item! remove-item! cell world-mouse-position]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (item-at (:entity/inventory @player-eid) cell)]
       (play-sound! "bfxr_takeit.wav")
       (swap! player-eid remove-item cell)
       (remove-item! cell)
-      (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item))
+      (handle-fsm-event! world skin stage textures player-eid world-mouse-position :pickup-item item))
 
     :player-item-on-cursor
     (let [entity @player-eid
@@ -3280,7 +3294,7 @@
            (play-sound! "bfxr_itemput.wav")
            (swap! player-eid set-item cell item-on-cursor)
            (set-item! cell item-on-cursor)
-           (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :dropped-item))
+           (handle-fsm-event! world skin stage textures player-eid world-mouse-position :dropped-item))
 
        (and item-in-cell
             (valid-slot? cell item-on-cursor))
@@ -3290,8 +3304,8 @@
            (remove-item! cell)
            (swap! player-eid set-item cell item-on-cursor)
            (set-item! cell item-on-cursor)
-           (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :dropped-item)
-           (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item-in-cell))))
+           (handle-fsm-event! world skin stage textures player-eid world-mouse-position :dropped-item)
+           (handle-fsm-event! world skin stage textures player-eid world-mouse-position :pickup-item item-in-cell))))
 
     nil))
 
@@ -3690,7 +3704,7 @@
      :height size}))
 
 (defn tick-component
-  [world delta-time play-sound! skin stage textures
+  [world delta-time skin stage textures
    max-speed
    ctx world-mouse-position apply-effects! eid [k v]]
   (let [elapsed-time* @(:world/elapsed-time @world)]
@@ -3729,7 +3743,7 @@
                                       (filter #(Intersector/overlaps ^Circle gdx-circle
                                                                      ^Rectangle (rectangle @%)))
                                       (filter #(= (:entity/faction @%) faction))))]
-            (handle-fsm-event! world play-sound! skin stage textures friendly-eid world-mouse-position :alert)))
+            (handle-fsm-event! world skin stage textures friendly-eid world-mouse-position :alert)))
         nil)
 
       :entity/string-effect
@@ -3783,11 +3797,11 @@
         (cond
          (not (seq (filter #(effect-applicable? % effect-ctx)
                            (:skill/effects skill))))
-         (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :action-done)
+         (handle-fsm-event! world skin stage textures eid world-mouse-position :action-done)
 
          (timer-stopped? elapsed-time* counter)
          (do (apply-effects! effect-ctx (:skill/effects skill))
-             (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :action-done)
+             (handle-fsm-event! world skin stage textures eid world-mouse-position :action-done)
              nil)))
 
       :entity/delete-after-duration
@@ -3798,25 +3812,25 @@
       :stunned
       (let [{:keys [counter]} v]
         (when (timer-stopped? elapsed-time* counter)
-          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :effect-wears-off)))
+          (handle-fsm-event! world skin stage textures eid world-mouse-position :effect-wears-off)))
 
       :npc-moving
       (let [{:keys [timer]} v]
         (when (timer-stopped? elapsed-time* timer)
-          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :timer-finished)))
+          (handle-fsm-event! world skin stage textures eid world-mouse-position :timer-finished)))
 
       :npc-sleeping
       (let [entity @eid]
         (when-let [distance (nearest-enemy-distance (:world/grid @world) entity)]
           (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
-            (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :alert))))
+            (handle-fsm-event! world skin stage textures eid world-mouse-position :alert))))
 
       :npc-idle
       (let [raycaster (:world/raycaster @world)
             effect-ctx (create-effect-ctx world ctx eid)]
         (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
-          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
-          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
+          (handle-fsm-event! world skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
+          (handle-fsm-event! world skin stage textures eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
                                                              [0 0]))))
 
       :entity/movement
@@ -3896,7 +3910,7 @@
   [world mouseover-eid paused?
    show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
    unit-scale
-   play-sound! default-font shape-drawer skin stage textures* viewport]
+   default-font shape-drawer skin stage textures* viewport]
   (let [cell-size 48]
     [(create-action-bar)
      (create-dev-menu
@@ -3935,7 +3949,6 @@
                         (fn [_event cell]
                           (handle-clicked-inventory-cell world
                                                          (:world/player-eid @world)
-                                                         play-sound!
                                                          skin
                                                          stage
                                                          textures*
@@ -4050,7 +4063,7 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn destroy-entities! [db world play-sound!]
+(defn destroy-entities! [db world]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
     (unregister-eid! @world eid)
     (doseq [[k v] @eid]
@@ -4077,7 +4090,7 @@
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
-(defn- interaction-state->txs [[k params] world stage play-sound! skin textures set-item! player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] world stage skin textures set-item! player-eid world-mouse-position]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -4098,7 +4111,7 @@
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! "bfxr_takeit.wav")
-                  (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item))
+                  (handle-fsm-event! world skin stage textures player-eid world-mouse-position :pickup-item item))
 
               (can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -4121,7 +4134,7 @@
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :start-action [skill effect-ctx]))
+      (handle-fsm-event! world skin stage textures player-eid world-mouse-position :start-action [skill effect-ctx]))
 
     :interaction-state.skill/not-usable
     (let [state params]
@@ -4139,7 +4152,7 @@
 
 (defn handle-player-input!
   [world interaction-state
-   play-sound! skin stage textures viewport key-pressed? button-just-pressed?]
+   skin stage textures viewport key-pressed? button-just-pressed?]
   (let [eid (:world/player-eid @world)
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -4151,12 +4164,11 @@
     (case state-k
       :player-idle
       (if move-v
-        (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-pos :movement-input move-v)
+        (handle-fsm-event! world skin stage textures eid world-mouse-pos :movement-input move-v)
         (when left-button-pressed?
           (interaction-state->txs interaction-state
                                   world
                                   stage
-                                  play-sound!
                                   skin
                                   textures
                                   #(set-item! skin stage textures %1 %2)
@@ -4169,30 +4181,30 @@
                                                :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
                                                           0)})
             nil)
-        (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-pos :no-movement-input))
+        (handle-fsm-event! world skin stage textures eid world-mouse-pos :no-movement-input))
 
       :player-item-on-cursor
       (when (and left-button-pressed?
                  (not mouseover-actor*))
-        (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-pos :drop-item))
+        (handle-fsm-event! world skin stage textures eid world-mouse-pos :drop-item))
 
       nil)))
 
 (defn- tick-entities!
   [db world delta-time active-entities
-   play-sound! skin stage textures max-speed viewport]
+   skin stage textures max-speed viewport]
   (let [active-entities* @active-entities
         raycaster (:world/raycaster @world)
         world-mouse-pos (world-mouse-position viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                (handle-effect! db world play-sound! skin stage textures e effect-ctx world-mouse-pos
+                (handle-effect! db world skin stage textures e effect-ctx world-mouse-pos
                                apply-effects!
                                active-entities*
                                raycaster)))]
       (doseq [eid active-entities*
               component @eid]
-        (tick-component world delta-time play-sound! skin stage textures
+        (tick-component world delta-time skin stage textures
                         max-speed
                         nil world-mouse-pos
                         apply-effects!
@@ -4200,7 +4212,7 @@
 
 (defn tick-game!
   [db world active-entities paused?
-   play-sound! skin stage textures viewport factions-iterations
+   skin stage textures viewport factions-iterations
    max-speed]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
@@ -4213,7 +4225,7 @@
                  @active-entities
                  max-iterations))
       (tick-entities! db world delta-time active-entities
-                      play-sound! skin stage textures max-speed viewport))))
+                      skin stage textures max-speed viewport))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
@@ -4259,8 +4271,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [audio (atom nil)
-        world-unit-scale (float (/ 48))
+  (let [world-unit-scale (float (/ 48))
         max-speed (/ minimum-size max-delta)
         render-z-order (apply hash-map (interleave z-orders (range)))
         factions-iterations {:good 15
@@ -4273,12 +4284,6 @@
                              :size 16
                              :quality-scaling 2
                              :use-integer-positions? false}
-        sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
-        audio (atom audio)
-        play-sound! (fn [sound-name]
-                      (let [sounds @audio]
-                        (assert (contains? sounds sound-name) (str sound-name))
-                        (.play ^Sound (get sounds sound-name))))
         batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
@@ -4308,9 +4313,7 @@
                             :player-item-on-cursor true}]
     (reify ApplicationListener
       (create [_]
-        (reset! audio (into {}
-                            (for [path sound-paths]
-                              [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+        (load-sounds!)
         (reset! batch (SpriteBatch.))
         (reset! unit-scale 1)
         (reset! shape-drawer-texture (white-pixel-texture))
@@ -4338,7 +4341,6 @@
                                                show-body-bounds?
                                                show-potential-field-colors?
                                                unit-scale
-                                               play-sound!
                                                @default-font
                                                @shape-drawer
                                                @skin
@@ -4351,7 +4353,7 @@
         (spawn-map-creatures! db world))
 
       (dispose [_]
-        (run! Sound/.dispose (vals @audio))
+        (dispose-sounds!)
         (Disposable/.dispose @batch)
         (run! Disposable/.dispose (vals @cursors))
         (Disposable/.dispose @default-font)
@@ -4401,7 +4403,7 @@
           (assert (contains? cursors cursor-key))
           (.setCursor Gdx/graphics ^Cursor (get cursors cursor-key))
           (handle-player-input! world interaction-state
-                                play-sound! @skin @stage @textures @viewport
+                                @skin @stage @textures @viewport
                                 #(.isKeyPressed Gdx/input (int %))
                                 #(.isButtonJustPressed Gdx/input (int %))))
         (reset! paused?
@@ -4411,9 +4413,9 @@
                          (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                   (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
         (tick-game! db world active-entities paused?
-                    play-sound! @skin @stage @textures @viewport factions-iterations
+                    @skin @stage @textures @viewport factions-iterations
                     max-speed)
-        (destroy-entities! db world play-sound!)
+        (destroy-entities! db world)
         (doseq [[k f] {(:zoom-in controls) (fn []
                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
@@ -4444,8 +4446,9 @@
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. listener
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Moon")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+  (binding [*sounds* nil]
+    (Lwjgl3Application. listener
+                        (doto (Lwjgl3ApplicationConfiguration.)
+                          (.setTitle "Moon")
+                          (.setWindowedMode 1440 900)
+                          (.setForegroundFPS 60)))))
