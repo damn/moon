@@ -7,9 +7,7 @@
             [clojure.string :as str]
             [malli.core :as m]
             [malli.error :as me]
-            [game :as game]
-            [lib.schema :as schema]
-            [lib.textures :as textures])
+            [game :as game])
   (:import (com.badlogic.gdx ApplicationListener Gdx Input Input$Keys)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
@@ -157,7 +155,7 @@
     (->> (game/all-raw @db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
-                {:texture-region (textures/texture-region textures (or (:entity/image property)
+                {:texture-region (game/get-texture-region textures (or (:entity/image property)
                                                                        (first (:animation/frames (:entity/animation property)))))
                  :on-clicked (fn [actor]
                                (clicked-id-fn actor (:property/id property)))
@@ -190,14 +188,14 @@
                   (* scale (.getRegionHeight ^TextureRegion texture-region))))))
 
 (defn- create-image-widget [textures image]
-  (scaled-image-button (textures/texture-region textures image) 2))
+  (scaled-image-button (game/get-texture-region textures image) 2))
 
 (defn- create-animation-widget [textures animation]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 1))))]
     (doseq [image (:animation/frames animation)]
       (.add table ^Actor (scaled-image-button
-                          (textures/texture-region textures image)
+                          (game/get-texture-region textures image)
                           2)))
     (.row ^Table table)
     (.pack table)
@@ -360,7 +358,7 @@
                                                          (redo-rows id))))))))}])
                   property-id
                   (conj [{:actor (let [property (game/get-raw @db property-id)]
-                                   (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
+                                   (doto (Image. ^TextureRegion (game/get-texture-region textures (or (:entity/image property)
                                                                                                      (first (:animation/frames (:entity/animation property))))))
                                      (.addListener (TextTooltip. ^String (binding [*print-level* 2]
                                                                            (with-out-str
@@ -403,7 +401,7 @@
                                                         (redo-rows (conj property-ids id)))))))))}]
              (for [property-id property-ids]
                (let [property (game/get-raw @db property-id)]
-                 {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
+                 {:actor (doto (Image. ^TextureRegion (game/get-texture-region textures (or (:entity/image property)
                                                                                            (first (:animation/frames (:entity/animation property))))))
                            (.addListener (TextTooltip. ^String (binding [*print-level* 2]
                                                                  (with-out-str
@@ -504,7 +502,7 @@
 (defn- add-component-window [schemas skin rebuild-editor-window! schema map-widget-table build-widget widget-value]
   (let [window (Window. "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
-                                   (map-keys (schema/malli-form schema schemas))))]
+                                   (map-keys (game/malli-form schema schemas))))]
     (.pad (.defaults window) (float 5))
     (.add (.getTitleTable window)
           (doto (TextButton. "X" skin)
@@ -528,7 +526,7 @@
                                          :k k
                                          :skin skin
                                          :rebuild-editor-window! rebuild-editor-window!
-                                         :display-remove-component-button? (optional? (schema/malli-form schema schemas) k)
+                                         :display-remove-component-button? (optional? (game/malli-form schema schemas) k)
                                          :table map-widget-table})
                                        (@rebuild-editor-window!))))))
       (.row window))
@@ -585,9 +583,9 @@
     :k->widget (into {}
                      (for [[k v] m]
                        [k (build-widget (get schemas k) k v)]))
-    :k->optional? #(optional? (schema/malli-form schema schemas) %)
+    :k->optional? #(optional? (game/malli-form schema schemas) %)
     :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
-    :opt? (seq (set/difference (optional-keyset (schema/malli-form schema schemas))
+    :opt? (seq (set/difference (optional-keyset (game/malli-form schema schemas))
                                (set (keys m))))}))
 
 (defn widget-value [[schema-k] widget schemas]
@@ -686,7 +684,7 @@
                           id (:property/id property)]
                       (assert (contains? property :property/id))
                       (assert (contains? db id))
-                      (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+                      (let [schema (m/schema (game/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
                         (when-not (m/validate schema property)
                           (throw (ex-info (str (me/humanize (m/explain schema property)))
                                           {:value property
@@ -766,7 +764,7 @@
 
         (reset! db (game/create-db schemas (-> properties-file slurp edn/read-string)))
 
-        (reset! textures (textures/create Gdx/files {:folder "resources/"
+        (reset! textures (game/create-textures Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
 
         (.setInputProcessor Gdx/input @stage)

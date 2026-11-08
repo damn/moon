@@ -5,22 +5,13 @@
             [clojure.string :as str]
             [clojure.pprint :as pprint]
             [lib.mods :as mods]
-            [lib.number :as number]  
-            [lib.position :as position]
-            [lib.raycaster :as raycaster]
-            [lib.rectangle :as rectangle]
-            [lib.schema :as schema]
-            [lib.shape-drawer :as shape-drawer]
-            [lib.stats :as stats]
-            [lib.textures :as textures]
-            [lib.tiled-map :as tiled-map]
-            [lib.timer :as timer]
-            [lib.v2 :as v2]
+            [lib.stats :as stats] 
             [lib.val-max :as val-max]
             [malli.core :as m]
             [malli.error :as me]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
+  (:import (clojure RayCaster)
+           (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
@@ -36,8 +27,495 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
-           (java.util Random))
+           (java.util Random)
+           (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
+
+(defn spawn-positions [^TiledMap tiled-map]
+  (let [layer-name "creatures"
+        property-key "id"
+        ^TiledMapTileLayer layer (.get (.getLayers tiled-map) layer-name)]
+    (for [x (range (.getWidth layer))
+          y (range (.getHeight layer))
+          :let [position [x y]
+                cell (.getCell layer (int x) (int y))]
+          :when cell
+          :let [value (.get (.getProperties (.getTile cell)) property-key)]
+          :when value]
+      [position value])))
+
+(defn tile-movement-property
+  [^TiledMap tiled-map layer [x y]]
+  (let [position [x y]]
+    (when-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
+      (let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
+                        "movement")]
+        (assert value
+                (str "Value for :movement at position "
+                     position " / mapeditor inverted position: " [(position 0)
+                                                                 (- (dec (.get (.getProperties tiled-map) "height"))
+                                                                    (position 1))]
+                     " and layer " (.getName ^TiledMapTileLayer layer) " is undefined."))
+        value))))
+
+(defn movement-property-layers [^TiledMap tiled-map]
+  (->> (.getLayers tiled-map)
+       reverse
+       (filter #(.get (.getProperties ^TiledMapTileLayer %) "movement-properties"))))
+
+(defn movement-properties [tiled-map position]
+  (for [layer (movement-property-layers tiled-map)]
+    [(.getName ^TiledMapTileLayer layer)
+     (tile-movement-property tiled-map layer position)]))
+
+(defn movement-property [tiled-map position]
+  (or (->> tiled-map
+           movement-property-layers
+           (some #(tile-movement-property tiled-map % position)))
+      "none"))
+
+(defn prepare-creature-tiles [creature-properties image->texture-region]
+  (for [{:keys [entity/animation
+                creature/level
+                property/id]} creature-properties
+        :let [image (first (:animation/frames animation))
+              texture-region (image->texture-region image)]]
+    {:creature/level level
+     :tile/id id
+     :tile/texture-region texture-region}))
+
+(defn add-creatures-layer! [^TiledMap tiled-map spawn-positions]
+  (let [creature-tile (memoize
+                       (fn [{:keys [tile/id
+                                    tile/texture-region]}]
+                         (assert (and id
+                                      texture-region))
+                         (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+                           (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
+                           tile)))
+        props (.getProperties tiled-map)
+        ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
+                                                           (int (.get props "height"))
+                                                           (int (.get props "tilewidth"))
+                                                           (int (.get props "tileheight")))
+                                   (.setName "creatures")
+                                   (.setVisible false))]
+    (doseq [[[x y] tile] (for [[position creature-property] spawn-positions]
+                           [position (creature-tile creature-property)])
+            :when tile]
+      (.setCell layer (int x) (int y)
+                (doto (TiledMapTileLayer$Cell.)
+                  (.setTile ^TiledMapTile tile))))
+    (.add (.getLayers tiled-map) ^MapLayer layer)))
+
+(defn- draw-tile!
+  [x
+   y
+   tile
+   unit-scale
+   color-setter
+   batch-color
+   verts
+   batch
+   num-vertices]
+  (let [region (.getTextureRegion ^TiledMapTile tile)
+        x1 (+ x (* (.getOffsetX ^TiledMapTile tile) unit-scale))
+        y1 (+ y (* (.getOffsetY ^TiledMapTile tile) unit-scale))
+        x2 (+ x1 (* (.getRegionWidth ^TextureRegion region) unit-scale))
+        y2 (+ y1 (* (.getRegionHeight ^TextureRegion region) unit-scale))
+        u1 (.getU ^TextureRegion region)
+        v1 (.getV2 ^TextureRegion region)
+        u2 (.getU2 ^TextureRegion region)
+        v2 (.getV ^TextureRegion region)
+        color11 (float (color-setter batch-color x1 y1))
+        color12 (float (color-setter batch-color x1 y2))
+        color22 (float (color-setter batch-color x2 y2))
+        color21 (float (color-setter batch-color x2 y1))]
+    (aset-float verts Batch/X1 x1)
+    (aset-float verts Batch/Y1 y1)
+    (aset-float verts Batch/C1 color11)
+    (aset-float verts Batch/U1 u1)
+    (aset-float verts Batch/V1 v1)
+    (aset-float verts Batch/X2 x1)
+    (aset-float verts Batch/Y2 y2)
+    (aset-float verts Batch/C2 color12)
+    (aset-float verts Batch/U2 u1)
+    (aset-float verts Batch/V2 v2)
+    (aset-float verts Batch/X3 x2)
+    (aset-float verts Batch/Y3 y2)
+    (aset-float verts Batch/C3 color22)
+    (aset-float verts Batch/U3 u2)
+    (aset-float verts Batch/V3 v2)
+    (aset-float verts Batch/X4 x2)
+    (aset-float verts Batch/Y4 y1)
+    (aset-float verts Batch/C4 color21)
+    (aset-float verts Batch/U4 u2)
+    (aset-float verts Batch/V4 v1)
+    (.draw ^Batch batch
+           ^Texture (.getTexture ^TextureRegion region)
+           ^floats verts
+           (int 0)
+           (int num-vertices))))
+
+(defn- draw-tile-layer!
+  [layer
+   batch
+   unit-scale
+   view-bounds
+   color-setter]
+  (let [num-vertices 20
+        vertices (float-array num-vertices)
+        batch-color (.getColor ^Batch batch)
+        layer-width (.getWidth ^TiledMapTileLayer layer)
+        layer-height (.getHeight ^TiledMapTileLayer layer)
+        layer-tile-width (* (.getTileWidth ^TiledMapTileLayer layer) unit-scale)
+        layer-tile-height (* (.getTileHeight ^TiledMapTileLayer layer) unit-scale)
+        layer-offset-x (* (.getRenderOffsetX ^TiledMapTileLayer layer) unit-scale)
+        layer-offset-y (* (- (.getRenderOffsetY ^TiledMapTileLayer layer)) unit-scale)
+        col1 (max 0
+                  (int (/ (- (:x view-bounds) layer-offset-x)
+                          layer-tile-width)))
+        col2 (min layer-width
+                  (int (/ (+ (:x view-bounds)
+                             (:width view-bounds)
+                             layer-tile-width
+                             (- layer-offset-x))
+                          layer-tile-width)))
+        row1 (max 0
+                  (int (/ (- (:y view-bounds) layer-offset-y)
+                          layer-tile-height)))
+        row2 (min layer-height
+                  (int (/ (+ (:y view-bounds)
+                             (:height view-bounds)
+                             layer-tile-height
+                             (- layer-offset-y))
+                          layer-tile-height)))
+        x-start (+ (* col1 layer-tile-width)
+                   layer-offset-x)
+        verts (aclone vertices)]
+    (loop [row row2
+           y (+ (* row2 layer-tile-height)
+                layer-offset-y)]
+      (when (>= row row1)
+        (loop [col col1
+               x x-start]
+          (when (< col col2)
+            (when-let [cell (.getCell ^TiledMapTileLayer layer (int col) (int row))]
+              (when-let [tile (.getTile ^TiledMapTileLayer$Cell cell)]
+                (draw-tile! x
+                            y
+                            tile
+                            unit-scale
+                            color-setter
+                            batch-color
+                            verts
+                            batch
+                            num-vertices)))
+            (recur (inc col)
+                   (+ x layer-tile-width))))
+        (recur (dec row)
+               (- y layer-tile-height))))))
+
+(defn draw-tiled-map!
+  [^TiledMap tiled-map
+   ^Batch batch
+   world-unit-scale
+   ^OrthographicCamera camera
+   color-setter]
+  (let [width  (* (.viewportWidth camera) (.zoom camera))
+        height (* (.viewportHeight camera) (.zoom camera))
+        up (.up camera)
+        w (+ (* width  (Math/abs (float (.y up))))
+             (* height (Math/abs (float (.x up)))))
+        h (+ (* height (Math/abs (float (.y up))))
+             (* width  (Math/abs (float (.x up)))))
+        pos (.position camera)
+        view-bounds {:x (- (.x pos) (/ w 2))
+                     :y (- (.y pos) (/ h 2))
+                     :width w
+                     :height h}]
+    (doseq [layer (filter #(.isVisible ^TiledMapTileLayer %) (.getLayers tiled-map))]
+      (draw-tile-layer! layer
+                        batch
+                        world-unit-scale
+                        view-bounds
+                        color-setter))))
+
+(defn- recursively-search [^FileHandle handle extensions]
+  (loop [[^FileHandle handle & remaining] (.list handle)
+         result []]
+    (cond (nil? handle)
+          result
+
+          (.isDirectory handle)
+          (recur (concat remaining (.list handle)) result)
+
+          (extensions (.extension handle))
+          (recur remaining (conj result (.path handle)))
+
+          :else
+          (recur remaining result))))
+
+(defn create-textures
+  [^Files files {:keys [folder extensions]}]
+  (into {}
+        (for [path (->> (recursively-search (.internal files folder) extensions)
+                        (map #(str/replace-first % folder "")))]
+          [path (Texture. (.internal files path))])))
+
+(defn get-texture-region
+  [textures {:keys [image/file image/bounds]}]
+  (assert file)
+  (assert (contains? textures file))
+  (let [^Texture texture (get textures file)]
+    (if-let [[x y w h] bounds]
+      (TextureRegion. texture (int x) (int y) (int w) (int h))
+      (TextureRegion. texture))))
+
+(defn timer-create [elapsed-time duration]
+  {:pre [(>= duration 0)]}
+  {:duration duration
+   :stop-time (+ elapsed-time duration)})
+
+(defn timer-stopped? [elapsed-time {:keys [stop-time]}]
+  (>= elapsed-time stop-time))
+
+(defn timer-ratio [elapsed-time {:keys [duration stop-time] :as timer}]
+  {:post [(<= 0 % 1)]}
+  (if (timer-stopped? elapsed-time timer)
+    0
+    ; min 1 because floating point math inaccuracies
+    (min 1 (/ (- stop-time elapsed-time) duration))))
+
+(defn timer-increment [timer duration]
+  (update timer :stop-time + duration))
+
+(defn v2-scale [[x y] scalar]
+  [(* x scalar)
+   (* y scalar)])
+
+(defn v2-dot
+  [[this-x this-y]
+   [x y]]
+  (+ (* this-x x)
+     (* this-y y)))
+
+(defn v2-crs
+  "Calculates the 2D cross product between this and the given vector"
+  [[this-x this-y] [x y]]
+  (- (* this-x y)
+     (* this-y x)))
+
+(defn v2-length [[x y]]
+  (math/sqrt (+ (* x x)
+                (* y y))))
+
+(defn v2-normalise [[x y :as v]]
+  (let [len (v2-length v)]
+    (if (zero? len)
+      v
+      [(/ x len)
+       (/ y len)])))
+
+(defn v2-normal-vectors [[x y]]
+  [[(- (float y))         x]
+   [          y (- (float x))]])
+
+(defn v2-direction [[sx sy] [tx ty]]
+  (v2-normalise [(- (float tx) (float sx))
+                 (- (float ty) (float sy))]))
+
+(defn v2-distance
+  [[x1 y1]
+   [x2 y2]]
+  (let [x-d (- x2 x1)
+        y-d (- y2 y1)]
+    (math/sqrt (+ (* x-d x-d)
+                  (* y-d y-d)))))
+
+(defmacro with-line-width [shape-drawer width & body]
+  `(let [old-line-width# (space.earlygrey.shapedrawer.ShapeDrawer/.getDefaultLineWidth ~shape-drawer)]
+     (space.earlygrey.shapedrawer.ShapeDrawer/.setDefaultLineWidth ~shape-drawer (* ~width old-line-width#))
+     ~@body
+     (space.earlygrey.shapedrawer.ShapeDrawer/.setDefaultLineWidth ~shape-drawer old-line-width#)))
+
+(defn filled-rectangle! [^ShapeDrawer shape-drawer x y w h color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.filledRectangle shape-drawer (float x) (float y) (float w) (float h)))
+
+(defn rectangle! [^ShapeDrawer shape-drawer x y w h color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.rectangle shape-drawer x y w h))
+
+(defn line! [^ShapeDrawer shape-drawer [sx sy] [ex ey] color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.line shape-drawer (float sx) (float sy) (float ex) (float ey)))
+
+(defn circle! [^ShapeDrawer shape-drawer [x y] radius color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.circle shape-drawer x y radius))
+
+(defn ellipse! [^ShapeDrawer shape-drawer [x y] radius-x radius-y color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.ellipse shape-drawer x y radius-x radius-y))
+
+(defn filled-circle! [^ShapeDrawer shape-drawer [x y] radius color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.filledCircle shape-drawer (float x) (float y) (float radius)))
+
+(defn sector! [^ShapeDrawer shape-drawer [center-x center-y] radius start-radians radians color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
+  (.sector shape-drawer center-x center-y radius start-radians radians))
+
+(declare malli-form)
+
+(defn- create-map-schema* [ks k->malli-schema-form]
+  (apply vector :map {:closed true}
+         (for [k ks
+               :let [k? (keyword? k)
+                     schema-props (if k? nil (k 1))
+                     k (if k? k (k 0))]]
+           (do
+            (assert (keyword? k))
+            (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
+            [k schema-props (k->malli-schema-form k)]))))
+
+(defn create-map-schema [schemas ks]
+  (create-map-schema* ks
+                      (fn [k]
+                        (malli-form (get schemas k) schemas))))
+
+(defn malli-form [schema schemas]
+  (case (first schema)
+    :s/animation
+    (create-map-schema schemas
+                       [:animation/frames
+                        :animation/frame-duration
+                        :animation/looping?])
+
+    :s/boolean
+    :boolean
+
+    :s/enum
+    (apply vector :enum (rest schema))
+
+    :s/image
+    (create-map-schema schemas
+                       [:image/file
+                        [:image/bounds {:optional true}]])
+
+    :s/map
+    (create-map-schema schemas (second schema))
+
+    :s/number
+    (case (second schema)
+      :int     int?
+      :nat-int nat-int?
+      :any     number?
+      :pos     pos?
+      :pos-int pos-int?)
+
+    :s/one-to-many
+    [:set [:qualified-keyword {:namespace (keyword (name (second schema)))}]]
+
+    :s/one-to-one
+    [:qualified-keyword {:namespace (keyword (name (second schema)))}]
+
+    :s/qualified-keyword
+    (apply vector :qualified-keyword (rest schema))
+
+    :s/some
+    :some
+
+    :s/sound
+    :string
+
+    :s/string
+    :string
+
+    :s/val-max
+    val-max/schema
+
+    :s/vector
+    (apply vector :vector (rest schema))))
+
+(defn touched-tiles*
+  "x is leftmost point and y bottom most point in the rectangle."
+  [{:keys [x y width height]}]
+  {:pre [x y width height]}
+  (let [x       (float x)
+        y       (float y)
+        width   (float width)
+        height  (float height)
+        l (int x)
+        b (int y)
+        r (int (+ x width))
+        t (int (+ y height))]
+    (set
+     (if (or (> width 1) (> height 1))
+       (for [x (range l (inc r))
+             y (range b (inc t))]
+         [x y])
+       [[l b] [l t] [r b] [r t]]))))
+
+(defn raycaster-blocked?
+  [[bool-arr
+    int-width
+    int-height]
+   [start-x start-y]
+   [target-x target-y]]
+  (RayCaster/rayBlocked (double start-x)
+                        (double start-y)
+                        (double target-x)
+                        (double target-y)
+                        int-width
+                        int-height
+                        bool-arr))
+
+(defn line-of-sight?
+  [raycaster source target]
+  (not (raycaster-blocked? raycaster
+                           (:entity/position source)
+                           (:entity/position target))))
+
+(def ^:private float-rounding-error (double 0.000001))
+
+(defn nearly-equal?
+  ([x y]
+   (nearly-equal? x y float-rounding-error))
+  ([a b epsilon]
+   (<= (Math/abs (- a b))
+       epsilon)))
+
+(defn round-n [^double x n]
+  (let [z (math/pow 10 n)]
+    (float
+     (/
+      (math/round (* x z))
+      z))))
+
+(defn readable [^double x]
+  {:pre [(number? x)]}
+  (if (or
+       (> x 5)
+       (nearly-equal? x (int x) 0.001))
+    (int x)
+    (round-n x 2)))
+
+; not using `for` because creates a lazy seq (slow)
+(let [offsets [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]]]
+  (defn get-8-neighbours [position]
+    (mapv #(mapv + position %) offsets)))
+
+(defn get-4-neighbours [[x y]]
+  [[(inc x) y]
+   [(dec x) y]
+   [x (inc y)]
+   [x (dec y)]])
+
+(defn diagonal? [[x1 y1] [x2 y2]]
+  (and (not= x1 x2)
+       (not= y1 y2)))
 
 (defn- set-label-text-actor [label-widget text-fn]
   (proxy [Actor] []
@@ -185,7 +663,7 @@
       (recur (filter #(and (get-in grid %)
                            (walk-on-position? %))
                      (distinct
-                      (mapcat position/get-8-neighbours
+                      (mapcat get-8-neighbours
                               next-positions)))
              (concat filled next-positions)
              (reduce #(assoc-in %1 %2 nil) grid next-positions))
@@ -203,7 +681,7 @@
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
   (doseq [property properties]
-    (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+    (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
       (when-not (m/validate schema property)
         (throw (ex-info (str (me/humanize (m/explain schema property)))
                         {:value property
@@ -374,9 +852,9 @@
                                              (* sprite-y height)
                                              width
                                              height]]
-                                 (textures/texture-region textures
-                                                          {:image/file "images/items.png"
-                                                           :image/bounds bounds})))
+                                 (get-texture-region textures
+                                                     {:image/file "images/items.png"
+                                                      :image/bounds bounds})))
         cell-size 48]
     (build-inventory-window
      {:world world
@@ -427,7 +905,7 @@
                      :moon.content-grid/content-cell
                      deref
                      :idx)]
-         (cons idx (position/get-8-neighbours idx)))
+         (cons idx (get-8-neighbours idx)))
        (keep #(get-in grid %))
        (mapcat (comp :entities deref))))
 
@@ -499,7 +977,7 @@
         (let [current-order (if (< (.nextFloat ^Random random) turn-ratio)
                               (create-order)
                               current-order)
-              neighbours (position/get-4-neighbours (last posi-seq))
+              neighbours (get-4-neighbours (last posi-seq))
               try-carve-posis (take (get-adj-num-fn (count posi-seq) random)
                                     (map #(get neighbours %) current-order))
               carve-posis (filter #(nil? (get grid %)) try-carve-posis)
@@ -570,7 +1048,7 @@
 
 (defn- transition-idx-value [position position->transition?]
   (->> position
-       position/get-4-neighbours
+       get-4-neighbours
        (map-indexed (fn [idx position]
                       (if (position->transition? position)
                         (transition-idxvalues idx)
@@ -724,7 +1202,7 @@
                                 (filter (fn [position]
                                           (and (= :wall (get-in grid position))
                                                (some #(= :ground (get-in grid %))
-                                                     (position/get-8-neighbours position))))
+                                                     (get-8-neighbours position))))
                                         (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))]
                (assert (or
                         (= #{:wall :ground :transition} (set (apply concat grid)))
@@ -750,7 +1228,7 @@
                                 (filter #(= :transition (get-in grid %)) (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))
         tiled-map (create-tiled-map* schema-tiled-map scaled-grid)
         start-position (mapv * start scale)
-        can-spawn? #(= "all" (tiled-map/movement-property tiled-map %))
+        can-spawn? #(= "all" (movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         spawn-positions (flood-fill scaled-grid start-position can-spawn?)
         creatures (for [position spawn-positions
@@ -758,7 +1236,7 @@
                                    (<= (rand) spawn-rate)
                                    (seq creature-properties))]
                     [position (rand-nth creature-properties)])]
-    (tiled-map/add-creatures-layer! tiled-map creatures)
+    (add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
 
@@ -896,7 +1374,7 @@
                                 (filter (fn [position]
                                           (and (= :wall (get-in grid position))
                                                (some #(= :ground (get-in grid %))
-                                                     (position/get-8-neighbours position))))
+                                                     (get-8-neighbours position))))
                                         (for [x (range (count grid)) y (range (count (grid 0)))] [x y])))]
                (assert (or
                         (= #{:wall :ground :transition} (set (apply concat grid)))
@@ -905,7 +1383,7 @@
                grid)
         position->tile (position-tile-fn grid)
         tiled-map (create-tiled-map grid tile-size create-tile position->tile)
-        can-spawn? #(= "all" (tiled-map/movement-property tiled-map %))
+        can-spawn? #(= "all" (movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
@@ -914,7 +1392,7 @@
                         :when (and (not= position start-position)
                                    (<= (rand) spawn-rate))]
                     [position (rand-nth creatures)])]
-    (tiled-map/add-creatures-layer! tiled-map creatures)
+    (add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
 
@@ -996,13 +1474,13 @@
            :effects.target/spiderweb (fn [_ _elapsed-time]
                                        "Spiderweb slows 50% for 5 seconds.")
            :effects.target/stun (fn [duration _elapsed-time]
-                                  (str "Stuns for " (number/readable duration) " seconds"))
+                                  (str "Stuns for " (readable duration) " seconds"))
            :effects/spawn (fn [{:keys [property/pretty-name]} _elapsed-time]
                             (str "Spawns a " pretty-name))
            :effects/target-all (fn [_ _elapsed-time]
                                  "All visible targets")
            :entity/delete-after-duration (fn [counter elapsed-time]
-                                             (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+                                             (str "Remaining: " (readable (timer-ratio elapsed-time counter)) "/1"))
            :entity/faction (fn [faction _elapsed-time]
                              (str "Faction: " (name faction)))
            :entity/fsm (fn [fsm _elapsed-time]
@@ -1015,21 +1493,21 @@
            :entity/species (fn [species _elapsed-time]
                              (str "Creature - " (str/capitalize (name species))))
            :entity/temp-modifier (fn [{:keys [counter]} elapsed-time]
-                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+                                    (str "Spiderweb - remaining: " (readable (timer-ratio elapsed-time counter)) "/1"))
            :projectile/piercing? (fn [_ _elapsed-time]
                                    "Piercing")
            :property/pretty-name (fn [v _elapsed-time]
                                     v)
            :skill/cooling-down? (fn [counter elapsed-time]
-                                   (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+                                   (str "Cooldown: " (readable (timer-ratio elapsed-time counter)) "/1"))
            :skill/action-time (fn [v _elapsed-time]
-                                 (str "Action-Time: " (number/readable v) " seconds"))
+                                 (str "Action-Time: " (readable v) " seconds"))
            :skill/action-time-modifier-key (fn [v _elapsed-time]
                                               (case v
                                                 :stats/cast-speed "Spell"
                                                 :stats/attack-speed "Attack"))
            :skill/cooldown (fn [v _elapsed-time]
-                             (str "Cooldown: " (number/readable v) " seconds"))
+                             (str "Cooldown: " (readable v) " seconds"))
            :skill/cost (fn [v _elapsed-time]
                           (str "Cost: " v " Mana"))
            :maxrange (fn [v _elapsed-time]
@@ -1125,7 +1603,7 @@
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.windows.inventory")
       (set-item!* cell
-                  {:texture-region (textures/texture-region textures (:entity/image item))
+                  {:texture-region (get-texture-region textures (:entity/image item))
                    :tooltip-text (item-info-text item)}
                   skin)))
 
@@ -1161,7 +1639,7 @@
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.action-bar")
       (add-skill! {:skill-id (:property/id skill)
-                   :texture-region (textures/texture-region textures (:entity/image skill))
+                   :texture-region (get-texture-region textures (:entity/image skill))
                    :tooltip-text (info-text skill elapsed-time)}
                   skin)))
 
@@ -1290,7 +1768,7 @@
 (defn cached-adjacent-cells [grid cell]
   (if-let [result (:adjacent-cells @cell)]
     result
-    (let [result (into [] (keep #(get-in grid %)) (position/get-8-neighbours (:position @cell)))]
+    (let [result (into [] (keep #(get-in grid %)) (get-8-neighbours (:position @cell)))]
       (swap! cell assoc :adjacent-cells result)
       result)))
 
@@ -1307,9 +1785,9 @@
          (if-let [existing (:entity/string-effect entity)]
            (-> existing
                (update :text str "\n" text)
-               (update :counter timer/increment duration))
+               (update :counter timer-increment duration))
            {:text text
-            :counter (timer/create elapsed-time duration)})))
+            :counter (timer-create elapsed-time duration)})))
 
 (defn- inventory-cell-path [[slot [x y]]]
   [:entity/inventory slot x y])
@@ -1359,21 +1837,21 @@
   (some #(not= % eid) occupied))
 
 (defn direction [entity other-entity]
-  (v2/direction (:entity/position entity)
+  (v2-direction (:entity/position entity)
                 (:entity/position other-entity)))
 
 (defn start-point [entity target-entity]
   (mapv + (:entity/position entity)
-        (v2/scale (direction entity target-entity)
+        (v2-scale (direction entity target-entity)
                   (/ (:entity/width entity) 2))))
 
 (defn end-point [entity target-entity maxrange]
   (mapv + (start-point entity target-entity)
-        (v2/scale (direction entity target-entity)
+        (v2-scale (direction entity target-entity)
                   maxrange)))
 
 (defn in-range? [entity target-entity maxrange]
-  (< (- (float (v2/distance (:entity/position entity)
+  (< (- (float (v2-distance (:entity/position entity)
                             (:entity/position target-entity)))
         (float (/ (:entity/width entity)  2))
         (float (/ (:entity/width target-entity) 2)))
@@ -1395,13 +1873,13 @@
   [{:keys [entity/position
            entity/width
            entity/height]}]
-  (rectangle/touched-tiles
+  (touched-tiles*
    {:x (- (position 0) (/ width  2))
     :y (- (position 1) (/ height 2))
     :width  width
     :height height}))
 
-(let [order (position/get-8-neighbours [0 0])
+(let [order (get-8-neighbours [0 0])
       diagonal? (fn [[^int x ^int y]]
                   (and (not (zero? x))
                        (not (zero? y))))]
@@ -1488,7 +1966,7 @@
         {:keys [target-entity target-cell]} (find-next-cell grid eid own-cell)]
     (cond
       target-entity
-      (v2/direction position (:entity/position @target-entity))
+      (v2-direction position (:entity/position @target-entity))
 
       (nil? target-cell)
       nil
@@ -1497,7 +1975,7 @@
       (when-not (and (= target-cell own-cell)
                      (occupied-by-other? @own-cell eid))
         (when-not (inside-cell? grid @eid target-cell)
-          (v2/direction position (:middle @target-cell)))))))
+          (v2-direction position (:middle @target-cell)))))))
 
 (defn- potential-field-step [grid faction last-marked-cells]
   (let [marked-cells (transient [])
@@ -1511,8 +1989,8 @@
             :when (not (or (pf-blocked? adjacent-cell*)
                            (marked? adjacent-cell*)))
             :let [distance-value (+ (float (distance cell*))
-                                    (float (if (position/diagonal? (:position cell*)
-                                                                   (:position adjacent-cell*))
+                                    (float (if (diagonal? (:position cell*)
+                                                          (:position adjacent-cell*))
                                              1.4 ; square root of 2 * 10
                                              1)))]]
       (swap! adjacent-cell assoc faction {:distance distance-value
@@ -1714,7 +2192,7 @@
                 (map->Cell
                  {:position position
                   :middle (mapv (partial + 0.5) position)
-                  :movement (case (tiled-map/movement-property tiled-map position)
+                  :movement (case (movement-property tiled-map position)
                                "none" :none
                                "air" :air
                                "all" :all)
@@ -1924,9 +2402,9 @@
 
 (defn- item-place-position [player-position world-mouse-position maxrange]
   (mapv + player-position
-        (v2/scale (v2/direction player-position world-mouse-position)
+        (v2-scale (v2-direction player-position world-mouse-position)
                   (min maxrange
-                       (v2/distance player-position world-mouse-position)))))
+                       (v2-distance player-position world-mouse-position)))))
 
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
@@ -1950,7 +2428,7 @@
 (defn- spawn-alert [position faction duration elapsed-time]
   (spawn-effect position
                 {:entity/alert-friendlies-after-duration
-                 {:counter (timer/create elapsed-time duration)
+                 {:counter (timer-create elapsed-time duration)
                   :faction faction}}))
 
 (defn- spawn-item [position item]
@@ -1981,8 +2459,8 @@
    :entity/height size
    :entity/z-order :z-order/flying
    :entity/rotation-angle (let [angle (math/to-degrees
-                                       (math/atan2 (v2/crs [0 1] direction)
-                                                   (v2/dot [0 1] direction)))]
+                                       (math/atan2 (v2-crs [0 1] direction)
+                                                   (v2-dot [0 1] direction)))]
                             (if (neg? angle)
                               (+ angle 360)
                               angle))
@@ -2000,21 +2478,21 @@
     (let [[skill effect-ctx] v]
       {:skill skill
        :effect-ctx effect-ctx
-       :counter (timer/create elapsed-time
+       :counter (timer-create elapsed-time
                               (/ (:skill/action-time skill)
                                  (or (stats/get-value (:entity/stats @eid)
                                                       (:skill/action-time-modifier-key skill))
                                      1)))})
 
     :stunned
-    {:counter (timer/create elapsed-time v)}
+    {:counter (timer-create elapsed-time v)}
 
     :player-moving
     {:movement-vector v}
 
     :npc-moving
     {:movement-vector v
-     :timer (timer/create elapsed-time
+     :timer (timer-create elapsed-time
                           (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
                              0.016))}
 
@@ -2134,7 +2612,7 @@
                                       (create-animation v)
 
                                       :entity/delete-after-duration
-                                      (timer/create elapsed-time* v)
+                                      (timer-create elapsed-time* v)
 
                                       :entity/projectile-collision
                                       (assoc v :already-hit-bodies #{})
@@ -2223,7 +2701,7 @@
                  (assert (<= cost mana-val))
                  (assoc-in stats [:stats/mana 0] (- mana-val cost)))))
       (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-             (timer/create elapsed-time (:skill/cooldown skill)))
+             (timer-create elapsed-time (:skill/cooldown skill)))
       (play-sound! (:skill/start-action-sound skill))
       nil)
 
@@ -2323,11 +2801,11 @@
    path-w]
   {:pre [(< path-w 0.98)]}
   (let [path-w (+ path-w 0.02)
-        v (v2/direction [start-x start-y]
+        v (v2-direction [start-x start-y]
                         [target-y target-y])
-        [normal1 normal2] (v2/normal-vectors v)
-        normal1 (v2/scale normal1 (/ path-w 2))
-        normal2 (v2/scale normal2 (/ path-w 2))
+        [normal1 normal2] (v2-normal-vectors v)
+        normal1 (v2-scale normal1 (/ path-w 2))
+        normal2 (v2-scale normal2 (/ path-w 2))
         start1  (mapv + [start-x  start-y]  normal1)
         start2  (mapv + [start-x  start-y]  normal2)
         target1 (mapv + [target-x target-y] normal1)
@@ -2347,7 +2825,7 @@
                   (or
                    (ray-blocked? start1 target1)
                    (ray-blocked? start2 target2))))
-           (< (v2/distance source-p target-p)
+           (< (v2-distance source-p target-p)
               max-range)))
 
     :effects/target-all
@@ -2364,7 +2842,7 @@
   [active-entities raycaster entity]
   (->> active-entities
        (filter #(:entity/species @%))
-       (filter #(raycaster/line-of-sight? raycaster entity @%))
+       (filter #(line-of-sight? raycaster entity @%))
        (remove #(:entity/player? @%))))
 
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
@@ -2384,7 +2862,7 @@
         (spawn-entity! @world
                        (spawn-projectile
                         {:position (mapv + (:entity/position source*)
-                                         (v2/scale direction
+                                         (v2-scale direction
                                                    (+ (/ (:entity/width source*) 2) size 0.1)))
                          :direction direction
                          :faction (:entity/faction source*)}
@@ -2503,7 +2981,7 @@
         ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
         (when-not (:entity/temp-modifier @target)
           (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                     :counter (timer/create elapsed-time* spiderweb-duration)})
+                                                     :counter (timer-create elapsed-time* spiderweb-duration)})
           (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
           nil))
 
@@ -2574,9 +3052,9 @@
 (defn create-level! [level-fn db* textures*]
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
-        (level-fn {:level/creature-properties (tiled-map/prepare-creature-tiles
+        (level-fn {:level/creature-properties (prepare-creature-tiles
                                                (all-raw db* :properties/creatures)
-                                               #(textures/texture-region textures* %))
+                                               #(get-texture-region textures* %))
                    :textures textures*})]
     {:tiled-map level-tiled-map
      :start-position level-start}))
@@ -2601,7 +3079,7 @@
 (defn spawn-map-creatures! [db* schemas world]
   (let [world* @world
         sp (:world/start-position world*)]
-    (doseq [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world*))
+    (doseq [[position creature-id] (spawn-positions (:world/tiled-map world*))
             :when (not= position sp)]
       (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
                                       :creature-property (build db* schemas (keyword creature-id))
@@ -2625,16 +3103,16 @@
                           :y-mana 80}
         [x y-mana] [(/ (.getWorldWidth (.getViewport ^Stage stage)) 2)
                     y-mana]
-        rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
+        rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
         draw-hpmana-bar! (fn [ctx batch x y content-file minmaxval name]
                            (draw-fn-texture-region batch unit-scale rahmen-tex-reg [x y])
                            (draw-fn-texture-region batch unit-scale
-                                                   (textures/texture-region textures
+                                                   (get-texture-region textures
                                                                             {:image/file content-file
                                                                              :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                                                    [x y])
-                           (draw-fn-text batch default-font unit-scale {:text (str (number/readable (minmaxval 0))
+                           (draw-fn-text batch default-font unit-scale {:text (str (readable (minmaxval 0))
                                                          "/"
                                                          (minmaxval 1)
                                                          " "
@@ -2721,7 +3199,7 @@
     :player-item-on-cursor
     (when mouseover-actor*
       (draw-fn-texture-region batch unit-scale
-                              (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
+                              (get-texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-pos
                               {:center? true}))
 
@@ -2772,14 +3250,14 @@
                          [x y])]
     (doseq [[[x y] cell*] (cells-at world tile-positions)]
       (when (and @show-cell-entities? (seq (:entities cell*)))
-        (shape-drawer/filled-rectangle! shape-drawer x y 1 1 (float-bits 1 0 0 0.6)))
+        (filled-rectangle! shape-drawer x y 1 1 (float-bits 1 0 0 0.6)))
       (when (and @show-cell-occupied? (seq (:occupied cell*)))
-        (shape-drawer/filled-rectangle! shape-drawer x y 1 1 (float-bits 0 0 1 0.6)))
+        (filled-rectangle! shape-drawer x y 1 1 (float-bits 0 0 1 0.6)))
       (when-let [faction @show-potential-field-colors?]
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
-              (shape-drawer/filled-rectangle! shape-drawer x y 1 1 (float-bits ratio (- 1 ratio) ratio 0.6)))))))))
+              (filled-rectangle! shape-drawer x y 1 1 (float-bits ratio (- 1 ratio) ratio 0.6)))))))))
 
 (defn- draw-fn-grid [shape-drawer leftx bottomy gridw gridh cellw cellh color-float-bits]
   (let [w (* (float gridw) (float cellw))
@@ -2788,10 +3266,10 @@
         rightx (+ (float leftx) (float w))]
     (doseq [idx (range (inc (float gridw)))
             :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (shape-drawer/line! shape-drawer [linex topy] [linex bottomy] color-float-bits))
+      (line! shape-drawer [linex topy] [linex bottomy] color-float-bits))
     (doseq [idx (range (inc (float gridh)))
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (shape-drawer/line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
+      (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
 (defn draw-tile-grid
   [ctx shape-drawer ^Viewport viewport show-tile-grid?]
@@ -2818,7 +3296,7 @@
         [x y] (mapv int world-mouse-position)
         cell (cell-at world [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
-      (shape-drawer/rectangle! shape-drawer x y 1 1
+      (rectangle! shape-drawer x y 1 1
                          (case (:movement cell)
                            :air (float-bits 1 1 0 0.5)
                            :none (float-bits 1 0 0 0.5))))))
@@ -2835,7 +3313,7 @@
     (let [source (:effect/source effect-ctx)
           source* @source]
       (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
-        (shape-drawer/line! shape-drawer
+        (line! shape-drawer
                       (:entity/position source*)
                       (:entity/position target*)
                       (float-bits 1 0 0 0.5))))
@@ -2846,7 +3324,7 @@
             body        @source
             target-body @target
             maxrange (:maxrange v)]
-        (shape-drawer/line! shape-drawer
+        (line! shape-drawer
                       (start-point body target-body)
                       (end-point body target-body maxrange)
                       (if (in-range? body target-body maxrange)
@@ -2874,7 +3352,7 @@
     (let [{:keys [item]} v]
       (when-not mouseover-actor
         (draw-fn-texture-region batch unit-scale
-                                (textures/texture-region textures (:entity/image item))
+                                (get-texture-region textures (:entity/image item))
                                 (item-place-position (:entity/position entity)
                                                      world-mouse-position
                                                      (- (:entity/click-distance-tiles entity) 0.1))
@@ -2885,14 +3363,14 @@
           image (frames (min (int (/ (float cnt) (float frame-duration)))
                              (dec (count frames))))]
       (draw-fn-texture-region batch unit-scale
-                              (textures/texture-region textures image)
+                              (get-texture-region textures image)
                               (:entity/position entity)
                               {:center? true
                                :rotation (or (:entity/rotation-angle entity) 0)}))
 
     :entity/image
     (draw-fn-texture-region batch unit-scale
-                            (textures/texture-region textures v)
+                            (get-texture-region textures v)
                             (:entity/position entity)
                             {:center? true
                              :rotation (or (:entity/rotation-angle entity) 0)})
@@ -2901,9 +3379,9 @@
     (let [{:keys [thick? end color]} v
           position (:entity/position entity)]
       (if thick?
-        (shape-drawer/with-line-width shape-drawer 4
-          (shape-drawer/line! shape-drawer position end color))
-        (shape-drawer/line! shape-drawer position end color)))
+        (with-line-width shape-drawer 4
+          (line! shape-drawer position end color))
+        (line! shape-drawer position end color)))
 
     :entity/mouseover?
     (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
@@ -2913,8 +3391,8 @@
                       (float-bits 0 1 0 0.4)
                       :else
                       (float-bits 1 1 1 0.4))]
-      (shape-drawer/with-line-width shape-drawer 5
-        (shape-drawer/ellipse! shape-drawer position
+      (with-line-width shape-drawer 5
+        (ellipse! shape-drawer position
                                (/ width 2)
                                (/ height 2)
                                color)))
@@ -2928,8 +3406,8 @@
               y (+ y (/ height 2))
               height (* 5 world-unit-scale)
               border (* 1 world-unit-scale)]
-          (shape-drawer/filled-rectangle! shape-drawer x y width height (float-bits 0 0 0 1))
-          (shape-drawer/filled-rectangle! shape-drawer
+          (filled-rectangle! shape-drawer x y width height (float-bits 0 0 0 1))
+          (filled-rectangle! shape-drawer
                                     (+ x border)
                                     (+ y border)
                                     (- (* width ratio) (* 2 border))
@@ -2952,21 +3430,21 @@
                          :up? true}))
 
     :entity/temp-modifier
-    (shape-drawer/filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4))
+    (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4))
 
     :active-skill
     (let [{:keys [skill effect-ctx counter]} v
           {:keys [entity/image skill/effects]} skill
           radius active-skill-radius
-          action-counter-ratio (timer/ratio elapsed-time counter)
-          texture-region (textures/texture-region textures image)
+          action-counter-ratio (timer-ratio elapsed-time counter)
+          texture-region (get-texture-region textures image)
           [x y] (:entity/position entity)
           y (+ (float y)
                (float (/ (:entity/height entity) 2))
                (float 0.15))
           center [x (+ y radius)]]
-      (shape-drawer/filled-circle! shape-drawer center radius (float-bits 1 1 1 0.125))
-      (shape-drawer/sector! shape-drawer
+      (filled-circle! shape-drawer center radius (float-bits 1 1 1 0.125))
+      (sector! shape-drawer
                       center
                       radius
                       (math/to-radians 90)
@@ -2987,7 +3465,7 @@
                          :up? true}))
 
     :stunned
-    (shape-drawer/circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6))))
+    (circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6))))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -3008,7 +3486,7 @@
   (let [{:keys [entity/position entity/width entity/height]} entity
         [x y] [(- (position 0) (/ width 2))
                (- (position 1) (/ height 2))]]
-    (shape-drawer/rectangle! shape-drawer x y width height color-float-bits)))
+    (rectangle! shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
   [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
@@ -3021,7 +3499,7 @@
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (raycaster/line-of-sight? raycaster player entity)))]
+                           (line-of-sight? raycaster player entity)))]
     (doseq [[z-order entities] (sort-by (comp render-z-order key) <
                                         (group-by :entity/z-order entities))
             render-layer render-layers
@@ -3057,7 +3535,7 @@
         entity @eid
         target (nearest-enemy (:world/grid world) entity)
         target (when (and target
-                          (raycaster/line-of-sight? (:world/raycaster world) entity @target))
+                          (line-of-sight? (:world/raycaster world) entity @target))
                  target)]
     {:effect/source eid
      :effect/target target
@@ -3071,7 +3549,7 @@
         target (:effect/target effect-ctx)]
     (if (and target
              (not (:entity/destroyed? @target))
-             (raycaster/line-of-sight? raycaster @source @target))
+             (line-of-sight? raycaster @source @target))
       effect-ctx
       (dissoc effect-ctx :effect/target))))
 
@@ -3108,7 +3586,7 @@
 
       :entity/alert-friendlies-after-duration
       (let [{:keys [counter faction]} v]
-        (when (timer/stopped? elapsed-time* counter)
+        (when (timer-stopped? elapsed-time* counter)
           (swap! eid assoc :entity/destroyed? true)
           (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
                                              :radius 4}
@@ -3117,7 +3595,7 @@
                                      gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
                                  (->> circle
                                       outer-rectangle
-                                      rectangle/touched-tiles
+                                      touched-tiles*
                                       (keep #(get-in g2d %))
                                       (map deref)
                                       (into #{} (mapcat :entities))
@@ -3129,20 +3607,20 @@
 
       :entity/string-effect
       (let [{:keys [counter]} v]
-        (when (timer/stopped? elapsed-time* counter)
+        (when (timer-stopped? elapsed-time* counter)
           (swap! eid dissoc :entity/string-effect))
         nil)
 
       :entity/skills
       (do (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
                   :when (and cooling-down?
-                             (timer/stopped? elapsed-time* cooling-down?))]
+                             (timer-stopped? elapsed-time* cooling-down?))]
             (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
           nil)
 
       :entity/temp-modifier
       (let [{:keys [modifiers counter]} v]
-        (when (timer/stopped? elapsed-time* counter)
+        (when (timer-stopped? elapsed-time* counter)
           (swap! eid dissoc :entity/temp-modifier)
           (swap! eid update :entity/stats stats/remove-mods modifiers))
         nil)
@@ -3180,24 +3658,24 @@
                            (:skill/effects skill))))
          (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :action-done)
 
-         (timer/stopped? elapsed-time* counter)
+         (timer-stopped? elapsed-time* counter)
          (do (apply-effects! effect-ctx (:skill/effects skill))
              (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :action-done)
              nil)))
 
       :entity/delete-after-duration
-      (do (when (timer/stopped? elapsed-time* v)
+      (do (when (timer-stopped? elapsed-time* v)
             (swap! eid assoc :entity/destroyed? true))
           nil)
 
       :stunned
       (let [{:keys [counter]} v]
-        (when (timer/stopped? elapsed-time* counter)
+        (when (timer-stopped? elapsed-time* counter)
           (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :effect-wears-off)))
 
       :npc-moving
       (let [{:keys [timer]} v]
-        (when (timer/stopped? elapsed-time* timer)
+        (when (timer-stopped? elapsed-time* timer)
           (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :timer-finished)))
 
       :npc-sleeping
@@ -3209,7 +3687,7 @@
       :npc-idle
       (let [raycaster (:world/raycaster @world)
             effect-ctx (create-effect-ctx world ctx eid)]
-        (if-let [skill (choose-skill (partial raycaster/blocked? raycaster) @eid effect-ctx)]
+        (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
           (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
           (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
                                                              [0 0]))))
@@ -3221,10 +3699,10 @@
         (assert (<= 0 speed max-speed)
                 (pr-str speed))
         (assert (vector? direction))
-        (assert (or (zero? (v2/length direction))
-                    (number/nearly-equal? 1 (v2/length direction)))
+        (assert (or (zero? (v2-length direction))
+                    (nearly-equal? 1 (v2-length direction)))
                 (str "cannot understand direction: " (pr-str direction)))
-        (when-not (or (zero? (v2/length direction))
+        (when-not (or (zero? (v2-length direction))
                       (nil? speed)
                       (zero? speed))
           (let [world* @world
@@ -3298,7 +3776,7 @@
       {:menus (dev-menus show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
        :update-labels (for [item [{:label "elapsed-time"
                                    :update-fn (fn []
-                                                (str (number/readable @(:world/elapsed-time @world)) " seconds"))
+                                                (str (readable @(:world/elapsed-time @world)) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
                                    :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
@@ -3339,14 +3817,14 @@
                                                          cell
                                                          (world-mouse-position viewport)))
                         (fn [player-entity x y mouseover? cell]
-                          (shape-drawer/rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
+                          (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
                                   color (if (valid-slot? cell item)
                                           (float-bits 0 0.6 0 0.8)
                                           (float-bits 0.6 0 0 0.8))]
-                              (shape-drawer/filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+                              (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                         skin
                         stage
                         textures*
@@ -3366,7 +3844,7 @@
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
-                         (filter #(raycaster/line-of-sight? (:world/raycaster world*) player @%))
+                         (filter #(line-of-sight? (:world/raycaster world*) player @%))
                          first)))]
     (when old-mouseover-eid
       (swap! old-mouseover-eid dissoc :entity/mouseover?))
@@ -3463,8 +3941,8 @@
         u (when (key-pressed? Input$Keys/W) [0  1])
         d (when (key-pressed? Input$Keys/S) [0 -1])]
     (when (or r l u d)
-      (let [v (v2/normalise (reduce #(mapv + %1 %2) [0 0] (remove nil? [r l u d])))]
-        (when (pos? (v2/length v))
+      (let [v (v2-normalise (reduce #(mapv + %1 %2) [0 0] (remove nil? [r l u d])))]
+        (when (pos? (v2-length v))
           v)))))
 
 (defn- show-message! [stage message]
@@ -3622,9 +4100,7 @@
   (reset! batch (SpriteBatch.))
   (reset! unit-scale 1)
   (reset! shape-drawer-texture (white-pixel-texture))
-  (reset! shape-drawer (shape-drawer/create @batch
-                                            (TextureRegion. ^Texture @shape-drawer-texture
-                                                           (int 1) (int 0) (int 1) (int 1))))
+  (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
   (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
   (let [s (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
     (.setInputProcessor Gdx/input ^InputProcessor s)
@@ -3632,7 +4108,7 @@
   (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
   (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
   (reset! cursors (create-cursors! Gdx/files))
-  (reset! textures (textures/create Gdx/files {:folder "resources/"
+  (reset! textures (create-textures Gdx/files {:folder "resources/"
                                                :extensions #{"png" "bmp"}}))
   (reset! viewport (create-viewport! world-unit-scale))
   (reset! default-font (create-default-font! Gdx/files default-font-params))
@@ -3692,7 +4168,7 @@
            (:entity/clickable @mouseover-eid))
       [:interaction-state/clickable-mouseover-eid
        {:clicked-eid mouseover-eid
-        :in-click-range? (< (v2/distance (:entity/position @player-eid)
+        :in-click-range? (< (v2-distance (:entity/position @player-eid)
                                          (:entity/position @mouseover-eid))
                             (:entity/click-distance-tiles @player-eid))}]
 
@@ -3708,7 +4184,7 @@
               effect-ctx {:effect/source player-eid
                           :effect/target mouseover-eid
                           :effect/target-position target-position
-                          :effect/target-direction (v2/direction (:entity/position @player-eid)
+                          :effect/target-direction (v2-direction (:entity/position @player-eid)
                                                                 target-position)}
               state (usable-state skill entity effect-ctx)]
           (if (= state :usable)
@@ -3730,12 +4206,12 @@
   (set-camera-to-player! world @viewport)
   (.setProjectionMatrix ^Batch @batch (.combined (.getCamera ^Viewport @viewport)))
   (.begin ^Batch @batch)
-  (tiled-map/draw! (:world/tiled-map @world)
+  (draw-tiled-map! (:world/tiled-map @world)
                    @batch
                    world-unit-scale
                    (.getCamera ^Viewport @viewport)
                    (tile-color-setter*
-                     {:ray-blocked? (partial raycaster/blocked? (:world/raycaster @world))
+                     {:ray-blocked? (partial raycaster-blocked? (:world/raycaster @world))
                       :explored-tile-corners (:world/explored-tile-corners @world)
                       :light-position (let [pos (.position (.getCamera ^Viewport @viewport))]
                                         [(.x pos) (.y pos) (.z pos)])
@@ -3744,7 +4220,7 @@
                       :visible-tile-color (float-bits 1 1 1 1)
                       :invisible-tile-color (float-bits 0 0 0 1)}))
   (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-  (shape-drawer/with-line-width @shape-drawer world-unit-scale
+  (with-line-width @shape-drawer world-unit-scale
     (reset! unit-scale world-unit-scale)
     (draw-tile-grid nil @shape-drawer @viewport show-tile-grid?)
     (draw-cell-debug nil @shape-drawer @viewport world

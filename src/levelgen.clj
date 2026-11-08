@@ -1,9 +1,7 @@
 (ns levelgen
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game :as game]
-            [lib.textures :as textures]
-            [lib.tiled-map :as moon-tiled-map])
+            [game :as game])
   (:import (com.badlogic.gdx ApplicationListener Files Gdx Input Input$Keys InputProcessor)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color OrthographicCamera)
@@ -18,9 +16,9 @@
 (defn- generate-level
   [db textures ^OrthographicCamera camera level-fn]
   (let [level (level-fn {:level/creature-properties
-                         (moon-tiled-map/prepare-creature-tiles
+                         (game/prepare-creature-tiles
                           (game/all-raw db :properties/creatures)
-                          #(textures/texture-region textures %))
+                          #(game/get-texture-region textures %))
                          :textures textures})
         ^TiledMap tiled-map (:tiled-map level)
         props (.getProperties tiled-map)
@@ -91,8 +89,8 @@
         (reset! camera (.getCamera ^Viewport @viewport))
         (reset! db (game/create-db (-> "schema.edn" io/resource slurp edn/read-string)
                                    (-> "properties.edn" io/resource slurp edn/read-string)))
-        (reset! textures (textures/create Gdx/files {:folder "resources/"
-                                                     :extensions #{"png" "bmp"}}))
+        (reset! textures (game/create-textures Gdx/files {:folder "resources/"
+                                                          :extensions #{"png" "bmp"}}))
         (reset! tiled-map (generate-level @db @textures @camera game/create-uf-caves)))
 
       (dispose [_]
@@ -108,7 +106,7 @@
           (ScreenUtils/clear 0 0 0 0)
           (.setProjectionMatrix batch* (.combined world-camera))
           (.begin batch*)
-          (moon-tiled-map/draw! @tiled-map
+          (game/draw-tiled-map! @tiled-map
                                 batch*
                                 world-unit-scale
                                 world-camera
