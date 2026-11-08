@@ -34,6 +34,7 @@
                :z-order/ground
                :z-order/flying
                :z-order/effect])
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
@@ -538,16 +539,15 @@
             (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
             [k schema-props (k->malli-schema-form k)]))))
 
-(defn create-map-schema [schemas ks]
+(defn create-map-schema [ks]
   (create-map-schema* ks
                       (fn [k]
-                        (malli-form (get schemas k) schemas))))
+                        (malli-form (get schemas k)))))
 
-(defn malli-form [schema schemas]
+(defn malli-form [schema]
   (case (first schema)
     :s/animation
-    (create-map-schema schemas
-                       [:animation/frames
+    (create-map-schema [:animation/frames
                         :animation/frame-duration
                         :animation/looping?])
 
@@ -558,12 +558,11 @@
     (apply vector :enum (rest schema))
 
     :s/image
-    (create-map-schema schemas
-                       [:image/file
+    (create-map-schema [:image/file
                         [:image/bounds {:optional true}]])
 
     :s/map
-    (create-map-schema schemas (second schema))
+    (create-map-schema (second schema))
 
     :s/number
     (case (second schema)
@@ -835,11 +834,11 @@
                         %)
                      (vals m)))))
 
-(defn create-db [schemas properties]
+(defn create-db [properties]
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
   (doseq [property properties]
-    (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+    (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property))))))]
       (when-not (m/validate schema property)
         (throw (ex-info (str (me/humanize (m/explain schema property)))
                         {:value property
@@ -870,39 +869,33 @@
 
 (declare build-values)
 
-(defn- create-value [[k] v schemas db]
+(defn- create-value [[k] v db]
   (case k
     :s/map
-    (build-values schemas v db)
+    (build-values v db)
 
     :s/one-to-many
     (set (map (fn [property-id]
-                (build-values schemas
-                              (get-raw db property-id)
-                              db))
+                (build-values (get-raw db property-id) db))
               v))
 
     :s/one-to-one
-    (build-values schemas
-                  (get-raw db v)
-                  db)
+    (build-values (get-raw db v) db)
 
     v))
 
-(defn build-values [schemas property db]
+(defn build-values [property db]
   (reduce (fn [m k]
             (assoc m k
-                   (try (create-value (get schemas k) (k m) schemas db)
+                   (try (create-value (get schemas k) (k m) db)
                         (catch Throwable t
                           (throw (ex-info " " {:k k
                                                :v (k m)} t))))))
           property
           (keys property)))
 
-(defn build [db schemas property-id]
-  (build-values schemas
-                (get-raw db property-id)
-                db))
+(defn build [db property-id]
+  (build-values (get-raw db property-id) db))
 
 (defn create-vampire-level [_]
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
@@ -2781,9 +2774,9 @@
       (after-create-component elapsed-time* eid component))
     eid))
 
-(defn- audiovisual! [db schemas world position audiovisual]
+(defn- audiovisual! [db world position audiovisual]
   (let [{:keys [entity/animation]} (if (keyword? audiovisual)
-                                     (build db schemas audiovisual)
+                                     (build db audiovisual)
                                      audiovisual)]
     (spawn-entity! @world
                    (spawn-effect position
@@ -2984,7 +2977,7 @@
 (def ^:private spiderweb-duration 5)
 
 (defn- handle-effect!
-  [db schemas world play-sound! skin stage textures
+  [db world play-sound! skin stage textures
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities raycaster]
   (let [elapsed-time* @(:world/elapsed-time @world)]
@@ -3007,7 +3000,7 @@
       (let [source (:effect/source effect-ctx)
             position (:effect/target-position effect-ctx)]
         (play-sound! "bfxr_curse.wav")
-        (audiovisual! db schemas world position :audiovisuals/spawn)
+        (audiovisual! db world position :audiovisuals/spawn)
         (spawn-entity! @world
                        (spawn-creature {:position position
                                         :creature-property v
@@ -3046,7 +3039,7 @@
                                :thick? true}))
               (apply-effects! effect-ctx entity-effects))
           (do (play-sound! "bfxr_fisthit.wav")
-              (audiovisual! db schemas world
+              (audiovisual! db world
                             (end-point body target-body maxrange)
                             :audiovisuals/hit-ground))))
 
@@ -3054,7 +3047,7 @@
       (let [source (:effect/source effect-ctx)
             target (:effect/target effect-ctx)]
         (play-sound! "bfxr_burrow.wav")
-        (audiovisual! db schemas world (:entity/position @target) :audiovisuals/convert)
+        (audiovisual! db world (:entity/position @target) :audiovisuals/convert)
         (swap! target assoc :entity/faction (:entity/faction @source))
         nil)
 
@@ -3094,7 +3087,7 @@
            (swap! target add-text-effect elapsed-time* dmg-text 0.3)
            (handle-fsm-event! world play-sound! skin stage textures target world-mouse-position (if (zero? new-hp-val) :kill :alert))
            (play-sound! "bfxr_normalhit.wav")
-           (audiovisual! db schemas world (:entity/position target*) :audiovisuals/damage))))
+           (audiovisual! db world (:entity/position target*) :audiovisuals/damage))))
 
       :effects.target/kill
       (handle-fsm-event! world play-sound! skin stage textures (:effect/target effect-ctx) world-mouse-position :kill)
@@ -3102,7 +3095,7 @@
       :effects.target/melee-damage
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
-      (handle-effect! db schemas world play-sound! skin stage textures
+      (handle-effect! db world play-sound! skin stage textures
                       [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
                       effect-ctx
                       world-mouse-position
@@ -3193,9 +3186,9 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
-(defn spawn-player! [db* schemas world skin stage textures*]
+(defn spawn-player! [db* world skin stage textures*]
   (let [eid (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) (:world/start-position @world))
-                                            :creature-property (build db* schemas :creatures/vampire)
+                                            :creature-property (build db* :creatures/vampire)
                                             :components {:entity/fsm {:fsm :fsms/player
                                                                       :initial-state :player-idle}
                                                          :entity/faction :good
@@ -3210,13 +3203,13 @@
     (assert (:entity/player? @eid))
     (swap! world assoc :world/player-eid eid)))
 
-(defn spawn-map-creatures! [db* schemas world]
+(defn spawn-map-creatures! [db* world]
   (let [world* @world
         sp (:world/start-position world*)]
     (doseq [[position creature-id] (spawn-positions (:world/tiled-map world*))
             :when (not= position sp)]
       (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
-                                      :creature-property (build db* schemas (keyword creature-id))
+                                      :creature-property (build db* (keyword creature-id))
                                       :components {:entity/fsm {:fsm :fsms/npc
                                                                 :initial-state :npc-sleeping}
                                                    :entity/faction :evil}})))))
@@ -4057,7 +4050,7 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn destroy-entities! [db schemas world play-sound!]
+(defn destroy-entities! [db world play-sound!]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
     (unregister-eid! @world eid)
     (doseq [[k v] @eid]
@@ -4066,7 +4059,7 @@
         (do (case v
               :audiovisuals/creature-die (play-sound! "bfxr_defaultmonsterdeath.wav")
               :audiovisuals/hit-wall (play-sound! "bfxr_projectile_wallhit.wav"))
-            (audiovisual! db schemas world (:entity/position @eid) v))
+            (audiovisual! db world (:entity/position @eid) v))
         nil))))
 
 (defn- movement-vector [key-pressed?]
@@ -4186,14 +4179,14 @@
       nil)))
 
 (defn- tick-entities!
-  [db schemas world delta-time active-entities
+  [db world delta-time active-entities
    play-sound! skin stage textures max-speed viewport]
   (let [active-entities* @active-entities
         raycaster (:world/raycaster @world)
         world-mouse-pos (world-mouse-position viewport)]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                (handle-effect! db schemas world play-sound! skin stage textures e effect-ctx world-mouse-pos
+                (handle-effect! db world play-sound! skin stage textures e effect-ctx world-mouse-pos
                                apply-effects!
                                active-entities*
                                raycaster)))]
@@ -4206,7 +4199,7 @@
                         eid component)))))
 
 (defn tick-game!
-  [db schemas world active-entities paused?
+  [db world active-entities paused?
    play-sound! skin stage textures viewport factions-iterations
    max-speed]
   (when-not @paused?
@@ -4219,7 +4212,7 @@
                  faction
                  @active-entities
                  max-iterations))
-      (tick-entities! db schemas world delta-time active-entities
+      (tick-entities! db world delta-time active-entities
                       play-sound! skin stage textures max-speed viewport))))
 
 (defn selected-skill [action-bar]
@@ -4266,8 +4259,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        audio (atom nil)
+  (let [audio (atom nil)
         world-unit-scale (float (/ 48))
         max-speed (/ minimum-size max-delta)
         render-z-order (apply hash-map (interleave z-orders (range)))
@@ -4354,9 +4346,9 @@
                                                @textures
                                                @viewport)]
           (.addActor ^Stage @stage actor))
-        (spawn-player! db schemas world @skin @stage @textures)
+        (spawn-player! db world @skin @stage @textures)
         (bind-player-eid! world)
-        (spawn-map-creatures! db schemas world))
+        (spawn-map-creatures! db world))
 
       (dispose [_]
         (run! Sound/.dispose (vals @audio))
@@ -4418,10 +4410,10 @@
                          (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
                          (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                   (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-        (tick-game! db schemas world active-entities paused?
+        (tick-game! db world active-entities paused?
                     play-sound! @skin @stage @textures @viewport factions-iterations
                     max-speed)
-        (destroy-entities! db schemas world play-sound!)
+        (destroy-entities! db world play-sound!)
         (doseq [[k f] {(:zoom-in controls) (fn []
                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
