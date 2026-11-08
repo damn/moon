@@ -3202,10 +3202,12 @@
     (assert (:entity/player? @eid))
     (set! *player-eid* eid)))
 
+(def ^:dynamic *tiled-map*)
+
 (defn spawn-map-creatures! [db* world]
   (let [world* @world
         sp (:world/start-position world*)]
-    (doseq [[position creature-id] (spawn-positions (:world/tiled-map world*))
+    (doseq [[position creature-id] (spawn-positions *tiled-map*)
             :when (not= position sp)]
       (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
                                       :creature-property (build db* (keyword creature-id))
@@ -4345,12 +4347,12 @@
 (defn load-world! []
   (let [{:keys [^TiledMap tiled-map 
                 start-position]} (create-level! db *textures*)]
+    (set! *tiled-map* tiled-map)
     (reset! world (let [props (.getProperties tiled-map)
                         width (.get props "width")
                         height (.get props "height")
                         grid (create-grid tiled-map)]
-                    {:world/tiled-map tiled-map
-                     :world/start-position start-position
+                    {:world/start-position start-position
                      :world/potential-field-cache (atom nil)
                      :world/id-counter (atom 0)
                      :world/entity-ids (atom {})
@@ -4397,9 +4399,6 @@
 (defn dispose-textures! []
   (run! Disposable/.dispose (vals *textures*)))
 
-(defn dispose-world! []
-  (Disposable/.dispose (:world/tiled-map @world)))
-
 (defn update-mouseover-eid!* []
   (update-mouseover-eid! world mouseover-eid @stage *viewport*))
 
@@ -4416,7 +4415,7 @@
   (.begin ^Batch *batch*))
 
 (defn draw-tiled-map!* []
-  (draw-tiled-map! (:world/tiled-map @world)
+  (draw-tiled-map! *tiled-map*
                    *batch*
                    (.getCamera ^Viewport *viewport*)
                    (tile-color-setter*
@@ -4545,7 +4544,7 @@
       (dispose-shape-drawer-texture!)
       (dispose-skin!)
       (dispose-textures!)
-      (dispose-world!))
+      (Disposable/.dispose *tiled-map*))
 
     (render [_]
       (clear-screen!)
@@ -4585,7 +4584,8 @@
             *shape-drawer* nil
             *shape-drawer-texture* nil
             *player-eid* nil
-            *elapsed-time* (atom nil)]
+            *elapsed-time* (atom nil)
+            *tiled-map* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
