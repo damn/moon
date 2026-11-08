@@ -2275,15 +2275,16 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
+(def ^:dynamic *id-counter*)
+
 ; TODO drop world param -> drop world itself
 (defn register-eid!
-  [{:keys [world/id-counter
-           world/entity-ids
+  [{:keys [world/entity-ids
            world/content-grid
            world/grid]}
    eid]
   (assert (and (not (contains? @eid :entity/id))))
-  (let [id (swap! id-counter inc)]
+  (let [id (swap! *id-counter* inc)]
     (assert (number? id))
     (swap! eid assoc :entity/id id)
     (swap! entity-ids assoc id eid))
@@ -4353,12 +4354,12 @@
     (set! *tiled-map* tiled-map)
     (set! *start-position* start-position)
     (set! *potential-field-cache* (atom nil))
+    (set! *id-counter* (atom 0))
     (reset! world (let [props (.getProperties tiled-map)
                         width (.get props "width")
                         height (.get props "height")
                         grid (create-grid tiled-map)]
-                    {:world/id-counter (atom 0)
-                     :world/entity-ids (atom {})
+                    {:world/entity-ids (atom {})
                      :world/grid grid
                      :world/content-grid (create-content-grid width height 16)
                      :world/explored-tile-corners (atom
