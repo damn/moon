@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [lib.content-grid :as content-grid] 
             [lib.db :as db]  
             [lib.g2d :as g2d]
             [lib.item :as item]
@@ -41,6 +40,49 @@
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (java.util Random))
   (:gen-class))
+
+(defn create-content-grid [width height cell-size]
+  (let [w (inc (int (/ width cell-size)))
+        h (inc (int (/ height cell-size)))
+        xyfn (fn [idx]
+               (atom {:idx idx
+                      :entities #{}}))]
+    {:grid (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                               (range h)))
+                 (range w))
+     :cell-w cell-size
+     :cell-h cell-size}))
+
+(defn update-entity!
+  [{:keys [grid
+           cell-w
+           cell-h]}
+   eid]
+  (let [{:keys [entity/position]
+         content-cell :moon.content-grid/content-cell} @eid
+        [x y] position
+        new-cell (get-in grid [(int (/ x cell-w))
+                               (int (/ y cell-h))])]
+    (when-not (= content-cell new-cell)
+      (swap! new-cell update :entities conj eid)
+      (swap! eid assoc :moon.content-grid/content-cell new-cell)
+      (when content-cell
+        (swap! content-cell update :entities disj eid)))))
+
+(defn remove-entity! [_ eid]
+  (-> @eid
+      :moon.content-grid/content-cell
+      (swap! update :entities disj eid)))
+
+(defn active-entities
+  [{:keys [grid]} center-entity]
+  (->> (let [idx (-> center-entity
+                     :moon.content-grid/content-cell
+                     deref
+                     :idx)]
+         (cons idx (position/get-8-neighbours idx)))
+       (keep #(get-in grid %))
+       (mapcat (comp :entities deref))))
 
 (defn- sshuffle
   "Return a random permutation of coll"
@@ -1197,7 +1239,7 @@
     (swap! entity-ids assoc id eid))
 
   (assert (:entity/position @eid))
-  (content-grid/update-entity! content-grid eid)
+  (update-entity! content-grid eid)
 
   (assert (:entity/position @eid))
   (when (:entity/collides? @eid)
@@ -1211,7 +1253,7 @@
   [{:keys [world/content-grid
            world/grid]}
    eid]
-  (content-grid/update-entity! content-grid eid)
+  (update-entity! content-grid eid)
   (remove-from-touched-cells! grid eid)
   (set-touched-cells! grid eid)
   (when (:entity/collides? @eid)
@@ -1226,7 +1268,7 @@
    eid]
   (let [id (:entity/id @eid)]
     (swap! entity-ids dissoc id)
-    (content-grid/remove-entity! content-grid eid)
+    (remove-entity! content-grid eid)
     (remove-from-touched-cells! grid eid)
     (when (:entity/collides? @eid)
       (remove-from-occupied-cells! grid eid)))
@@ -1283,7 +1325,7 @@
      :world/id-counter (atom 0)
      :world/entity-ids (atom {})
      :world/grid grid
-     :world/content-grid (content-grid/create width height 16)
+     :world/content-grid (create-content-grid width height 16)
      :world/explored-tile-corners (atom
                                    (mapv (fn [x] (mapv (fn [y] false)
                                                        (range height)))
@@ -2894,7 +2936,7 @@
     (reset! mouseover-eid new-eid)))
 
 (defn update-active-entities! [world active-entities]
-  (reset! active-entities (content-grid/active-entities (:world/content-grid @world) @(:world/player-eid @world))))
+  (reset! active-entities (active-entities (:world/content-grid @world) @(:world/player-eid @world))))
 
 (defn set-camera-to-player! [world viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
