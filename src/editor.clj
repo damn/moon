@@ -671,15 +671,21 @@
     (reify ApplicationListener
       (create [_]
         (reset! batch (SpriteBatch.))
+
         (reset! skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
         (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
+
         (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
+
         (reset! audio (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+
         (reset! db (db/create schemas (-> properties-file slurp edn/read-string)))
+
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
+
         (.setInputProcessor Gdx/input @stage)
         (.addActor ^Stage @stage
                    (main-window {:db db

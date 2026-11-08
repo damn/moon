@@ -4,7 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [level.uf-caves :as uf-caves]
-            [lib.animation :as animation] ; 1x
             [lib.body :as body] ; 1x
             [lib.cell :as cell] ; lib.grid
             [lib.circle :as circle] ; 1x
@@ -48,6 +47,19 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
+
+(defn create-animation
+  [{:keys [animation/frames
+           animation/frame-duration
+           animation/looping?
+           delete-after-stopped?]}]
+  (assert (not (and looping? delete-after-stopped?)))
+  {:frames (vec frames)
+   :frame-duration frame-duration
+   :looping? looping?
+   :cnt 0
+   :maxcnt (* (count frames) (float frame-duration))
+   :delete-after-stopped? delete-after-stopped?})
 
 (defn register-eid!
   [{:keys [world/id-counter
@@ -533,7 +545,7 @@
         entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
-                                      (animation/create v)
+                                      (create-animation v)
 
                                       :entity/delete-after-duration
                                       (timer/create elapsed-time* v)
