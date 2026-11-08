@@ -28,6 +28,8 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
+(def minimum-size 0.39)
+
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
 
@@ -2363,7 +2365,7 @@
     [arr width height]))
 
 (defn create-world
-  [^TiledMap tiled-map {:keys [z-orders minimum-size start-position]}]
+  [^TiledMap tiled-map {:keys [z-orders start-position]}]
   (let [props (.getProperties tiled-map)
         width (.get props "width")
         height (.get props "height")
@@ -2382,8 +2384,7 @@
                                          (range width)))
      :world/raycaster (create-raycaster grid)
      :world/elapsed-time (atom 0)
-     :world/z-orders z-orders
-     :world/minimum-size minimum-size}))
+     :world/z-orders z-orders}))
 
 ; belongs to game - further down?
 (def ^:private controls
@@ -2734,7 +2735,7 @@
     nil))
 
 (defn- spawn-entity! [world entity]
-  (let [{:world/keys [elapsed-time z-orders minimum-size]} world
+  (let [{:world/keys [elapsed-time z-orders]} world
         elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (case k
@@ -4261,8 +4262,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [minimum-size 0.39
-        max-delta 0.04
+  (let [max-delta 0.04
         z-orders [:z-order/on-ground
                   :z-order/ground
                   :z-order/flying
@@ -4338,7 +4338,6 @@
         (let [{level-tiled-map :tiled-map
                level-start :start-position} (create-level! level-fn db @textures)]
           (reset! world (create-world level-tiled-map {:z-orders z-orders
-                                                       :minimum-size minimum-size
                                                        :start-position level-start})))
         (doseq [^Actor actor (create-ui-actors world
                                                mouseover-eid
