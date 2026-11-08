@@ -2277,17 +2277,18 @@
 
 (def ^:dynamic *id-counter*)
 
+(def ^:dynamic *entity-ids*)
+
 ; TODO drop world param -> drop world itself
 (defn register-eid!
-  [{:keys [world/entity-ids
-           world/content-grid
+  [{:keys [world/content-grid
            world/grid]}
    eid]
   (assert (and (not (contains? @eid :entity/id))))
   (let [id (swap! *id-counter* inc)]
     (assert (number? id))
     (swap! eid assoc :entity/id id)
-    (swap! entity-ids assoc id eid))
+    (swap! *entity-ids* assoc id eid))
 
   (assert (:entity/position @eid))
   (update-entity! content-grid eid)
@@ -2313,12 +2314,11 @@
   nil)
 
 (defn unregister-eid!
-  [{:keys [world/entity-ids
-           world/content-grid
+  [{:keys [world/content-grid
            world/grid]}
    eid]
   (let [id (:entity/id @eid)]
-    (swap! entity-ids dissoc id)
+    (swap! *entity-ids* dissoc id)
     (remove-entity! content-grid eid)
     (remove-from-touched-cells! grid eid)
     (when (:entity/collides? @eid)
@@ -3201,7 +3201,7 @@
     (sync-player-ui! skin stage textures* eid)))
 
 (defn bind-player-eid! [world]
-  (let [eid (get @(:world/entity-ids @world) 1)]
+  (let [eid (get @*entity-ids* 1)]
     (assert (:entity/player? @eid))
     (set! *player-eid* eid)))
 
@@ -4054,7 +4054,7 @@
       (cursor-fn eid))))
 
 (defn destroy-entities! [db world]
-  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
+  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @*entity-ids*))]
     (unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
@@ -4355,12 +4355,12 @@
     (set! *start-position* start-position)
     (set! *potential-field-cache* (atom nil))
     (set! *id-counter* (atom 0))
+    (set! *entity-ids* (atom {}))
     (reset! world (let [props (.getProperties tiled-map)
                         width (.get props "width")
                         height (.get props "height")
                         grid (create-grid tiled-map)]
-                    {:world/entity-ids (atom {})
-                     :world/grid grid
+                    {:world/grid grid
                      :world/content-grid (create-content-grid width height 16)
                      :world/explored-tile-corners (atom
                                                     (mapv (fn [x] (mapv (fn [y] false)
@@ -4591,7 +4591,9 @@
             *elapsed-time* (atom nil)
             *tiled-map* nil
             *start-position* nil
-            *potential-field-cache* nil]
+            *potential-field-cache* nil
+            *id-counter* nil
+            *entity-ids* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
