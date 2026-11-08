@@ -7,7 +7,7 @@
             [clojure.string :as str]
             [malli.core :as m]
             [malli.error :as me]
-            [lib.db :as db]
+            [game :as game]
             [malli.map-schema :as map-schema]
             [lib.schema :as schema]
             [lib.textures :as textures])
@@ -71,7 +71,7 @@
                 extra-info-text
                 columns
                 image-scale]} (get property-type->overview-table-props property-type)]
-    (->> (db/all-raw @db property-type)
+    (->> (game/all-raw @db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
                 {:texture-region (textures/texture-region textures (or (:entity/image property)
@@ -276,7 +276,7 @@
                                                          (.remove ^Actor (.firstAscendant ^Actor actor Window))
                                                          (redo-rows id))))))))}])
                   property-id
-                  (conj [{:actor (let [property (db/get-raw @db property-id)]
+                  (conj [{:actor (let [property (game/get-raw @db property-id)]
                                    (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
                                                                                                      (first (:animation/frames (:entity/animation property))))))
                                      (.addListener (TextTooltip. ^String (binding [*print-level* 2]
@@ -319,7 +319,7 @@
                                                         (.remove ^Actor (.firstAscendant ^Actor actor Window))
                                                         (redo-rows (conj property-ids id)))))))))}]
              (for [property-id property-ids]
-               (let [property (db/get-raw @db property-id)]
+               (let [property (game/get-raw @db property-id)]
                  {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (or (:entity/image property)
                                                                                            (first (:animation/frames (:entity/animation property))))))
                            (.addListener (TextTooltip. ^String (binding [*print-level* 2]
@@ -595,7 +595,7 @@
                     (fn [db]
                       (assert (contains? db property-id))
                       (let [new-db (dissoc db property-id)]
-                        (db/save! new-db properties-file)
+                        (game/save! new-db properties-file)
                         new-db)))
         on-save (with-window-close db
                   (fn [db]
@@ -609,7 +609,7 @@
                                           {:value property
                                            :schema (m/form schema)}))))
                       (let [new-db (assoc db id property)]
-                        (db/save! new-db properties-file)
+                        (game/save! new-db properties-file)
                         new-db))))
         ^Table table (property-editor-table skin widget on-save on-delete)
         window (Window. "[SKY]Property[]" skin)]
@@ -649,7 +649,7 @@
                                                    property-type
                                                    (fn [_actor id]
                                                      (.addActor ^Stage stage
-                                                                (property-editor-window ctx (db/get-raw @db id)))))))))))
+                                                                (property-editor-window ctx (game/get-raw @db id)))))))))))
       (.row window))
     (.pack window)
     window))
@@ -681,7 +681,7 @@
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
 
-        (reset! db (db/create schemas (-> properties-file slurp edn/read-string)))
+        (reset! db (game/create-db schemas (-> properties-file slurp edn/read-string)))
 
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))

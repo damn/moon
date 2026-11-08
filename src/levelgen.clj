@@ -1,7 +1,6 @@
 (ns levelgen
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [lib.db :as db]
             [game :as game]
             [lib.textures :as textures]
             [lib.tiled-map :as moon-tiled-map])
@@ -20,7 +19,7 @@
   [db textures ^OrthographicCamera camera level-fn]
   (let [level (level-fn {:level/creature-properties
                          (moon-tiled-map/prepare-creature-tiles
-                          (db/all-raw db :properties/creatures)
+                          (game/all-raw db :properties/creatures)
                           #(textures/texture-region textures %))
                          :textures textures})
         ^TiledMap tiled-map (:tiled-map level)
@@ -90,8 +89,8 @@
                                                             world-width
                                                             world-height))))
         (reset! camera (.getCamera ^Viewport @viewport))
-        (reset! db (db/create (-> "schema.edn" io/resource slurp edn/read-string)
-                              (-> "properties.edn" io/resource slurp edn/read-string)))
+        (reset! db (game/create-db (-> "schema.edn" io/resource slurp edn/read-string)
+                                   (-> "properties.edn" io/resource slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
         (reset! tiled-map (generate-level @db @textures @camera game/create-uf-caves)))

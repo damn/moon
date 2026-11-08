@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [lib.db :as db]  
+            [clojure.pprint :as pprint]
             [lib.g2d :as g2d]
             [lib.item :as item]
             [lib.mods :as mods]
@@ -11,11 +11,14 @@
             [lib.position :as position]
             [lib.raycaster :as raycaster]
             [lib.rectangle :as rectangle]
+            [lib.schema :as schema]
             [lib.shape-drawer :as shape-drawer]
             [lib.stats :as stats]
             [lib.textures :as textures]
             [lib.tiled-map :as tiled-map]
             [lib.timer :as timer]
+            [malli.core :as m]
+            [malli.error :as me]
             [ui.action-bar :as action-bar]
             [ui.dev-menu :as dev-menu]
             [lib.v2 :as v2]
@@ -39,6 +42,83 @@
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (java.util Random))
   (:gen-class))
+
+(defn- recur-sort [m]
+  (into (sorted-map)
+        (zipmap (keys m)
+                (map #(if (map? %)
+                        (recur-sort %)
+                        %)
+                     (vals m)))))
+
+(defn create-db [schemas properties]
+  (assert (or (empty? properties)
+              (apply distinct? (map :property/id properties))))
+  (doseq [property properties]
+    (let [schema (m/schema (schema/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+      (when-not (m/validate schema property)
+        (throw (ex-info (str (me/humanize (m/explain schema property)))
+                        {:value property
+                         :schema (m/form schema)})))))
+  (zipmap (map :property/id properties) properties))
+
+(defn save! [db file]
+  (let [data (->> (vals db)
+                  (sort-by #(keyword "properties" (namespace (:property/id %))))
+                  (map recur-sort)
+                  doall)]
+    (.start
+     (Thread.
+      (fn []
+        (binding [*print-level* nil]
+          (->> data
+               pprint/pprint
+               with-out-str
+               (spit file))))))))
+
+(defn get-raw [db property-id]
+  (assert (contains? db property-id))
+  (get db property-id))
+
+(defn all-raw [db property-type]
+  (->> (vals db)
+       (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
+
+(declare build-values)
+
+(defn- create-value [[k] v schemas db]
+  (case k
+    :s/map
+    (build-values schemas v db)
+
+    :s/one-to-many
+    (set (map (fn [property-id]
+                (build-values schemas
+                              (get-raw db property-id)
+                              db))
+              v))
+
+    :s/one-to-one
+    (build-values schemas
+                  (get-raw db v)
+                  db)
+
+    v))
+
+(defn build-values [schemas property db]
+  (reduce (fn [m k]
+            (assoc m k
+                   (try (create-value (get schemas k) (k m) schemas db)
+                        (catch Throwable t
+                          (throw (ex-info " " {:k k
+                                               :v (k m)} t))))))
+          property
+          (keys property)))
+
+(defn build [db schemas property-id]
+  (build-values schemas
+                (get-raw db property-id)
+                db))
 
 (defn create-vampire-level [_]
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
@@ -1892,7 +1972,7 @@
 
 (defn- audiovisual! [db schemas world position audiovisual]
   (let [{:keys [entity/animation]} (if (keyword? audiovisual)
-                                     (db/build db schemas audiovisual)
+                                     (build db schemas audiovisual)
                                      audiovisual)]
     (spawn-entity! @world
                    (spawn-effect position
@@ -2297,7 +2377,7 @@
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
         (level-fn {:level/creature-properties (tiled-map/prepare-creature-tiles
-                                               (db/all-raw db* :properties/creatures)
+                                               (all-raw db* :properties/creatures)
                                                #(textures/texture-region textures* %))
                    :textures textures*})]
     {:tiled-map level-tiled-map
@@ -2305,7 +2385,7 @@
 
 (defn spawn-player! [db* schemas world skin stage textures*]
   (let [eid (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) (:world/start-position @world))
-                                            :creature-property (db/build db* schemas :creatures/vampire)
+                                            :creature-property (build db* schemas :creatures/vampire)
                                             :components {:entity/fsm {:fsm :fsms/player
                                                                       :initial-state :player-idle}
                                                          :entity/faction :good
@@ -2326,7 +2406,7 @@
     (doseq [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world*))
             :when (not= position sp)]
       (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
-                                      :creature-property (db/build db* schemas (keyword creature-id))
+                                      :creature-property (build db* schemas (keyword creature-id))
                                       :components {:entity/fsm {:fsm :fsms/npc
                                                                 :initial-state :npc-sleeping}
                                                    :entity/faction :evil}})))))
@@ -3530,7 +3610,7 @@
              :skin (atom nil)
              :stage (atom nil)
              :schemas schemas
-             :db (db/create schemas (-> "properties.edn" io/resource slurp edn/read-string))
+             :db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string))
              :world (atom nil)
              :active-entities (atom nil)
              :mouseover-eid (atom nil)
