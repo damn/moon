@@ -32,7 +32,6 @@
             [ui.dev-menu :as dev-menu]
             [lib.v2 :as v2]
             [lib.val-max :as val-max]
-            [lib.world :as world]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
@@ -41,6 +40,7 @@
            (com.badlogic.gdx.graphics Color Colors Cursor OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
+           (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3)
            (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image Label Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
@@ -48,6 +48,115 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
+
+(defn register-eid!
+  [{:keys [world/id-counter
+           world/entity-ids
+           world/content-grid
+           world/grid]}
+   eid]
+  (assert (and (not (contains? @eid :entity/id))))
+  (let [id (swap! id-counter inc)]
+    (assert (number? id))
+    (swap! eid assoc :entity/id id)
+    (swap! entity-ids assoc id eid))
+
+  (assert (:entity/position @eid))
+  (content-grid/update-entity! content-grid eid)
+
+  (assert (:entity/position @eid))
+  (when (:entity/collides? @eid)
+    (assert (grid/valid-position? grid @eid (:entity/id @eid))))
+  (grid/set-touched-cells! grid eid)
+  (when (:entity/collides? @eid)
+    (grid/set-occupied-cells! grid eid))
+  nil)
+
+(defn relocate-eid!
+  [{:keys [world/content-grid
+           world/grid]}
+   eid]
+  (content-grid/update-entity! content-grid eid)
+  (grid/remove-from-touched-cells! grid eid)
+  (grid/set-touched-cells! grid eid)
+  (when (:entity/collides? @eid)
+    (grid/remove-from-occupied-cells! grid eid)
+    (grid/set-occupied-cells! grid eid))
+  nil)
+
+(defn unregister-eid!
+  [{:keys [world/entity-ids
+           world/content-grid
+           world/grid]}
+   eid]
+  (let [id (:entity/id @eid)]
+    (swap! entity-ids dissoc id)
+    (content-grid/remove-entity! content-grid eid)
+    (grid/remove-from-touched-cells! grid eid)
+    (when (:entity/collides? @eid)
+      (grid/remove-from-occupied-cells! grid eid)))
+  nil)
+
+(defn cell-at [world [x y]]
+  (when-let [cell-atom (get-in (:world/grid world) [x y])]
+    @cell-atom))
+
+(defn cells-at [world tile-positions]
+  (for [[x y] tile-positions
+        :let [cell (cell-at world [x y])]
+        :when cell]
+    [[x y] cell]))
+
+(defn- create-grid [^TiledMap tiled-map]
+  (let [props (.getProperties tiled-map)
+        w (.get props "width")
+        h (.get props "height")
+        xyfn (fn [position]
+               (atom
+                (cell/map->R
+                 {:position position
+                  :middle (mapv (partial + 0.5) position)
+                  :movement (case (tiled-map/movement-property tiled-map position)
+                               "none" :none
+                               "air" :air
+                               "all" :all)
+                  :entities #{}
+                  :occupied #{}})))]
+    (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                        (range h)))
+          (range w))))
+
+(defn- create-raycaster [grid]
+  (let [width (count grid)
+        height (count (grid 0))
+        arr (make-array Boolean/TYPE width height)]
+    (doseq [cell (map deref (apply concat grid))]
+      (let [[x y] (:position cell)]
+        (aset arr x y (boolean (cell/blocks-vision? cell)))))
+    [arr width height]))
+
+(defn create-world
+  [^TiledMap tiled-map {:keys [z-orders minimum-size start-position]}]
+  (let [props (.getProperties tiled-map)
+        width (.get props "width")
+        height (.get props "height")
+        grid (create-grid tiled-map)]
+    {:world/tiled-map tiled-map
+     :world/start-position start-position
+     :world/player-eid nil
+     :world/potential-field-cache (atom nil)
+     :world/id-counter (atom 0)
+     :world/entity-ids (atom {})
+     :world/grid grid
+     :world/content-grid (content-grid/create width height 16)
+     :world/explored-tile-corners (atom
+                                   (mapv (fn [x] (mapv (fn [y] false)
+                                                       (range height)))
+                                         (range width)))
+     :world/raycaster (create-raycaster grid)
+     :world/elapsed-time (atom 0)
+     :world/z-orders z-orders
+     :world/minimum-size minimum-size}))
 
 ; belongs to game - further down?
 (def ^:private controls
@@ -456,7 +565,7 @@
                         :entity/height (float height)
                         :entity/rotation-angle (or rotation-angle 0)))
         eid (atom entity)]
-    (world/register-eid! world eid)
+    (register-eid! world eid)
     (doseq [component @eid]
       (after-create-component elapsed-time* eid component))
     eid))
@@ -1063,7 +1172,7 @@
         tile-positions (for [x (range (int left-x) (int right-x))
                              y (range (int bottom-y) (+ 2 (int top-y)))]
                          [x y])]
-    (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
+    (doseq [[[x y] cell*] (cells-at world tile-positions)]
       (when (and @show-cell-entities? (seq (:entities cell*)))
         (shape-drawer/filled-rectangle! shape-drawer x y 1 1 (color/float-bits 1 0 0 0.6)))
       (when (and @show-cell-occupied? (seq (:occupied cell*)))
@@ -1109,7 +1218,7 @@
   [ctx shape-drawer world-mouse-position world]
   (let [world @world
         [x y] (mapv int world-mouse-position)
-        cell (world/cell-at world [x y])]
+        cell (cell-at world [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
       (shape-drawer/rectangle! shape-drawer x y 1 1
                          (case (:movement cell)
@@ -1520,7 +1629,7 @@
                                  (update body :entity/position
                                          #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
               (swap! eid assoc :entity/position (:entity/position body))
-              (world/relocate-eid! world* eid)
+              (relocate-eid! world* eid)
               nil))))
 
       nil)))
@@ -1713,7 +1822,7 @@
 
 (defn destroy-entities! [db schemas world play-sound!]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @(:world/entity-ids @world)))]
-    (world/unregister-eid! @world eid)
+    (unregister-eid! @world eid)
     (doseq [[k v] @eid]
       (case k
         :entity/destroy-audiovisual
@@ -1904,7 +2013,7 @@
   (reset! default-font (create-default-font! Gdx/files default-font-params))
   (let [{level-tiled-map :tiled-map
          level-start :start-position} (create-level! level-fn db @textures)]
-    (reset! world (world/create level-tiled-map {:z-orders z-orders
+    (reset! world (create-world level-tiled-map {:z-orders z-orders
                                                  :minimum-size minimum-size
                                                  :start-position level-start})))
   (doseq [^Actor actor (create-ui-actors world
