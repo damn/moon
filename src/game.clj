@@ -4346,6 +4346,8 @@
   (set! *textures* (create-textures Gdx/files {:folder "resources/"
                                                :extensions #{"png" "bmp"}})))
 
+(def ^:dynamic *explored-tile-corners*)
+
 (defn load-world! []
   (let [{:keys [^TiledMap tiled-map 
                 start-position]} (create-level! db *textures*)]
@@ -4360,11 +4362,11 @@
                         grid (create-grid tiled-map)]
                     (set! *grid* grid) 
                     (set! *content-grid* (create-content-grid width height 16))
-                    {
-                     :world/explored-tile-corners (atom
+                    (set! *explored-tile-corners* (atom
                                                     (mapv (fn [x] (mapv (fn [y] false)
                                                                         (range height)))
-                                                          (range width)))
+                                                          (range width))))
+                    {
                      :world/raycaster (create-raycaster grid)}))
     (reset! *elapsed-time* 0)))
 
@@ -4417,13 +4419,14 @@
 (defn batch-begin! []
   (.begin ^Batch *batch*))
 
+
 (defn draw-tiled-map!* []
   (draw-tiled-map! *tiled-map*
                    *batch*
                    (.getCamera ^Viewport *viewport*)
                    (tile-color-setter*
                      {:ray-blocked? (partial raycaster-blocked? (:world/raycaster @world))
-                      :explored-tile-corners (:world/explored-tile-corners @world)
+                      :explored-tile-corners *explored-tile-corners*
                       :light-position (let [pos (.position (.getCamera ^Viewport *viewport*))]
                                         [(.x pos) (.y pos) (.z pos)])
                       :see-all-tiles? false
@@ -4594,7 +4597,8 @@
             *id-counter* nil
             *entity-ids* nil
             *grid* nil
-            *content-grid* nil]
+            *content-grid* nil
+            *explored-tile-corners* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
