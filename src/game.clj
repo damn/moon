@@ -4270,10 +4270,7 @@
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         audio (atom nil)
         world-unit-scale (float (/ 48))
-        minimum-size minimum-size
-        max-delta max-delta
         max-speed (/ minimum-size max-delta)
-        z-orders z-orders
         render-z-order (apply hash-map (interleave z-orders (range)))
         factions-iterations {:good 15
                              :evil 5}
@@ -4286,7 +4283,7 @@
                              :quality-scaling 2
                              :use-integer-positions? false}
         sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
-        audio (atom audio )
+        audio (atom audio)
         play-sound! (fn [sound-name]
                       (let [sounds @audio]
                         (assert (contains? sounds sound-name) (str sound-name))
@@ -4300,7 +4297,6 @@
         textures (atom nil)
         skin (atom nil)
         stage (atom nil)
-        schemas schemas
         db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string))
         world (atom nil)
         active-entities (atom nil)
