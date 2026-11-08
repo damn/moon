@@ -4,7 +4,7 @@
             [lib.db :as db]
             [level.modules :as modules]
             [level.tmx :as tmx]
-            [level.uf-caves :as uf-caves]
+            [game :as game]
             [lib.textures :as textures]
             [lib.tiled-map :as moon-tiled-map])
   (:import (com.badlogic.gdx ApplicationListener Files Gdx Input Input$Keys InputProcessor)
@@ -64,7 +64,7 @@
         textures (atom nil)
         tiled-map (atom nil)
         buttons (for [[label level-fn] [["Vampire" tmx/vampire]
-                                        ["UF Caves" uf-caves/create]
+                                        ["UF Caves" game/create-uf-caves]
                                         ["Modules" modules/create]]]
                   [(str "Generate " label)
                    (fn []
@@ -96,7 +96,7 @@
                               (-> "properties.edn" io/resource slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
-        (reset! tiled-map (generate-level @db @textures @camera uf-caves/create)))
+        (reset! tiled-map (generate-level @db @textures @camera game/create-uf-caves)))
 
       (dispose [_]
         (Disposable/.dispose @batch)
