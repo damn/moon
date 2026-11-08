@@ -74,7 +74,7 @@
       :moon.content-grid/content-cell
       (swap! update :entities disj eid)))
 
-(defn active-entities
+(defn active-entities*
   [{:keys [grid]} center-entity]
   (->> (let [idx (-> center-entity
                      :moon.content-grid/content-cell
@@ -2936,7 +2936,7 @@
     (reset! mouseover-eid new-eid)))
 
 (defn update-active-entities! [world active-entities]
-  (reset! active-entities (active-entities (:world/content-grid @world) @(:world/player-eid @world))))
+  (reset! active-entities (active-entities* (:world/content-grid @world) @(:world/player-eid @world))))
 
 (defn set-camera-to-player! [world viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
