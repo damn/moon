@@ -3147,15 +3147,13 @@
           true)
     s))
 
-(defn create-cursors! [files]
-  (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
-    (update-vals data
-                 (fn [[path-segment [hotspot-x hotspot-y]]]
-                   (let [path (format path-format path-segment)
-                         pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
-                         cursor (.newCursor Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
-                     (Disposable/.dispose pixmap*)
-                     cursor)))))
+(defn create-cursors! []
+  (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
+               (fn [[path [hotspot-x hotspot-y]]]
+                 (let [pixmap (Pixmap. (.internal Gdx/files path))
+                       cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
+                   (.dispose pixmap)
+                   cursor))))
 
 (defn create-viewport! []
   (let [world-width (* 1440 world-unit-scale)
@@ -4282,10 +4280,14 @@
 (def ^:dynamic *cursors*)
 
 (defn load-cursors! []
-  (set! *cursors* (create-cursors! Gdx/files)))
+  (set! *cursors* (create-cursors!)))
 
 (defn dispose-cursors! []
   (run! Disposable/.dispose (vals *cursors*)))
+
+(defn set-cursor! [cursor-key]
+  (assert (contains? *cursors* cursor-key))
+  (.setCursor Gdx/graphics ^Cursor (get *cursors* cursor-key)))
 
 (def ^:dynamic *default-font*)
 
@@ -4458,12 +4460,13 @@
   (.end ^Batch *batch*))
 
 (defn cursor-interaction! []
-  (let [interaction-state (create-interaction-state world mouseover-eid @stage *viewport*)
-        cursor-key (cursor-key interaction-state world)]
-    (assert (contains? *cursors* cursor-key))
-    (.setCursor Gdx/graphics ^Cursor (get *cursors* cursor-key))
+  (let [interaction-state (create-interaction-state world mouseover-eid @stage *viewport*)]
+    (set-cursor! (cursor-key interaction-state world))
     (handle-player-input! world interaction-state
-                          @skin @stage *textures* *viewport*
+                          @skin 
+                          @stage 
+                          *textures* 
+                          *viewport*
                           #(.isKeyPressed Gdx/input (int %))
                           #(.isButtonJustPressed Gdx/input (int %)))))
 
