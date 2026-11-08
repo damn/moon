@@ -4,8 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [clojure.pprint :as pprint]
-            [lib.mods :as mods]
-            [lib.val-max :as val-max :refer [apply-min apply-max]]
             [malli.core :as m]
             [malli.error :as me]
             [reduce-fsm :as fsm])
@@ -30,6 +28,97 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
+(defn- add-ops [ops other-ops]
+  (merge-with + ops other-ops))
+
+(defn mods-add [mods other-mods]
+  (merge-with add-ops mods other-mods))
+
+(defn- remove-ops [ops other-ops]
+  (merge-with - ops other-ops))
+
+(defn mods-remove [mods other-mods]
+  (merge-with remove-ops mods other-mods))
+
+(defn- sort-ops [ops]
+  (sort-by (fn [[k]]
+             (case k
+               :op/inc 0
+               :op/mult 1))
+           ops))
+
+(defn- apply-ops [ops base-value]
+  (reduce (fn [base-value [k value]]
+            (case k
+              :op/inc  (+ base-value value)
+              :op/mult (* base-value (inc (/ value 100)))))
+          base-value
+          (sort-ops ops)))
+
+(defn mods-get-value [base-value modifiers modifier-k]
+  {:pre [(= "modifier" (namespace modifier-k))]}
+  (apply-ops (modifier-k modifiers)
+             base-value))
+
+(defn mods-format-text
+  [mods]
+  (when (seq mods)
+    (str/join "\n"
+              (keep (fn [[k modifier-ops]]
+                      (str/join "\n"
+                                (keep (fn [[op-k v]]
+                                        (when-not (zero? v)
+                                          (str (case (math/signum v)
+                                                 0.0 ""
+                                                 1.0 "+"
+                                                 -1.0 "")
+                                               (case op-k
+                                                 :op/inc  (str v)
+                                                 :op/mult (str v "%"))
+                                               " "
+                                               (str/capitalize (name k)))))
+                                      (sort-ops modifier-ops))))
+                    mods))))
+
+(def val-max-schema
+  (m/schema
+   [:and
+    [:vector {:min 2 :max 2} [:int {:min 0}]]
+    [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
+                      (when (< mx v)
+                        (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
+     (fn [[^int a ^int b]] (<= a b))]]))
+
+(defn- valid-val-max? [val-max]
+  (m/validate val-max-schema val-max))
+
+(defn to-pos-int [val-max]
+  (mapv #(-> % int (max 0)) val-max))
+
+(defn val-max-ratio
+  "If mx and v is 0, returns 0, otherwise (/ v mx)"
+  [[^int v ^int mx]]
+  {:pre [(valid-val-max? [v mx])]}
+  (if (and (zero? v) (zero? mx))
+    0
+    (/ v mx)))
+
+(defn apply-min [val-max modifiers modifier-k]
+  (assert (valid-val-max? val-max) val-max)
+  (let [val-max (update val-max 0 mods-get-value modifiers modifier-k)
+        [v mx] (to-pos-int val-max)
+        result [v (max v mx)]]
+    (assert (valid-val-max? result) result)
+    result))
+
+(defn apply-max [val-max modifiers modifier-k]
+  (assert (valid-val-max? val-max) val-max)
+  (let [val-max (update val-max 1 mods-get-value modifiers modifier-k)
+        [v mx] (to-pos-int val-max)
+        result [(min v mx) mx]]
+    (assert (valid-val-max? result) result)
+    result))
+
 (defn get-hitpoints
   [{:keys [stats/hp
            stats/modifiers]}]
@@ -43,15 +132,15 @@
 (defn get-value
   [stats stat-k]
   (when-let [base-value (stat-k stats)]
-    (mods/get-value base-value
+    (mods-get-value base-value
                  (:stats/modifiers stats)
                  (keyword "modifier" (name stat-k)))))
 
 (defn add-mods [stats mods]
-  (update stats :stats/modifiers mods/add mods))
+  (update stats :stats/modifiers mods-add mods))
 
 (defn remove-mods [stats mods]
-  (update stats :stats/modifiers mods/remove mods))
+  (update stats :stats/modifiers mods-remove mods))
 
 (defn calc-damage
   ([source target damage]
@@ -496,7 +585,7 @@
     :string
 
     :s/val-max
-    val-max/schema
+    val-max-schema
 
     :s/vector
     (apply vector :vector (rest schema))))
@@ -1548,7 +1637,7 @@
            :entity/fsm (fn [fsm _elapsed-time]
                           (str "State: " (name (:state fsm))))
            :stats/modifiers (fn [mods _elapsed-time]
-                              (mods/format-text mods))
+                              (mods-format-text mods))
            :entity/skills (fn [skills _elapsed-time]
                             (when (seq skills)
                               (str "Skills: " (str/join "," (map name (keys skills))))))
@@ -1659,7 +1748,7 @@
                      (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
                      ; seq because they can be empty map ?
                      (when (seq (:stats/modifiers item))
-                       (str "[CYAN]" (mods/format-text (:stats/modifiers item)) "[]"))])))
+                       (str "[CYAN]" (mods-format-text (:stats/modifiers item)) "[]"))])))
 
 (defn set-item! [skin stage textures cell item]
   (-> (.getRoot ^Stage stage)
@@ -1859,14 +1948,14 @@
                (valid-slot? cell item)))
   (cond-> (assoc-in entity (inventory-cell-path cell) item)
     (applies-modifiers? cell)
-    (update :entity/stats stats/add-mods (:stats/modifiers item))))
+    (update :entity/stats add-mods (:stats/modifiers item))))
 
 (defn remove-item [entity cell]
   (let [item (get-in entity (inventory-cell-path cell))]
     (assert item)
     (cond-> (assoc-in entity (inventory-cell-path cell) nil)
       (applies-modifiers? cell)
-      (update :entity/stats stats/remove-mods (:stats/modifiers item)))))
+      (update :entity/stats remove-mods (:stats/modifiers item)))))
 
 (defn float-bits [r g b a]
   (Color/toFloatBits (float r) (float g) (float b) (float a)))
@@ -2542,7 +2631,7 @@
        :effect-ctx effect-ctx
        :counter (timer-create elapsed-time
                               (/ (:skill/action-time skill)
-                                 (or (stats/get-value (:entity/stats @eid)
+                                 (or (get-value (:entity/stats @eid)
                                                       (:skill/action-time-modifier-key skill))
                                      1)))})
 
@@ -2555,7 +2644,7 @@
     :npc-moving
     {:movement-vector v
      :timer (timer-create elapsed-time
-                          (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
+                          (* (get-value (:entity/stats @eid) :stats/reaction-time)
                              0.016))}
 
     :player-item-on-cursor
@@ -2759,7 +2848,7 @@
           cost (:skill/cost skill)]
       (swap! eid update :entity/stats
              (fn [stats]
-               (let [mana-val ((stats/get-mana stats) 0)]
+               (let [mana-val ((get-mana stats) 0)]
                  (assert (<= cost mana-val))
                  (assoc-in stats [:stats/mana 0] (- mana-val cost)))))
       (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
@@ -2774,7 +2863,7 @@
     :player-moving
     (let [{:keys [movement-vector]} state-v]
       (swap! eid assoc :entity/movement {:direction movement-vector
-                                         :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
                                                     0)})
       nil)
 
@@ -2789,7 +2878,7 @@
     :npc-moving
     (let [{:keys [movement-vector]} state-v]
       (swap! eid assoc :entity/movement {:direction movement-vector
-                                         :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
                                                     0)})
       nil)
 
@@ -2847,7 +2936,7 @@
          (:entity/fsm @(:effect/target effect-ctx)))
 
     :effects.target/melee-damage
-    (effect-applicable? [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
+    (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
                          effect-ctx)
 
     :effects.target/spiderweb
@@ -2990,7 +3079,7 @@
             target (:effect/target effect-ctx)
             source* @source
             target* @target
-            hp (stats/get-hitpoints (:entity/stats target*))]
+            hp (get-hitpoints (:entity/stats target*))]
         (cond
          (zero? (hp 0))
          nil
@@ -3001,14 +3090,13 @@
 
          (and (:entity/stats source*)
               (:entity/stats target*)
-              (< (rand) (stats/effective-armor-save (:entity/stats source*)
-                                                    (:entity/stats target*))))
+              (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
          (do (swap! target add-text-effect elapsed-time* "[WHITE]ARMOR" 0.3)
              nil)
 
          :else
          (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
-                         (:damage/min-max (stats/calc-damage (:entity/stats source*)
+                         (:damage/min-max (calc-damage (:entity/stats source*)
                                                              (:entity/stats target*)
                                                              v))
                          (:damage/min-max v))
@@ -3031,7 +3119,7 @@
       ; TODO AT EFFECT CREATION MAKE
       ; same @ applicable
       (handle-effect! db schemas world play-sound! skin stage textures
-                      [:effects.target/damage (stats/melee-damage @(:effect/source effect-ctx))]
+                      [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
                       effect-ctx
                       world-mouse-position
                       apply-effects!
@@ -3044,7 +3132,7 @@
         (when-not (:entity/temp-modifier @target)
           (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
                                                      :counter (timer-create elapsed-time* spiderweb-duration)})
-          (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
+          (swap! target update :entity/stats add-mods spiderweb-modifiers)
           nil))
 
       :effects.target/stun
@@ -3058,7 +3146,7 @@
    cooling-down?
    :cooldown
 
-   (> (:skill/cost skill) ((stats/get-mana (:entity/stats entity)) 0))
+   (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
    :not-enough-mana
 
    (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
@@ -3172,7 +3260,7 @@
                            (draw-fn-texture-region batch unit-scale
                                                    (get-texture-region textures
                                                                             {:image/file content-file
-                                                                             :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
+                                                                             :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
                                                    [x y])
                            (draw-fn-text batch default-font unit-scale {:text (str (readable (minmaxval 0))
                                                          "/"
@@ -3190,8 +3278,8 @@
         (when (.getStage ^Actor this)
           (let [stats (:entity/stats @(:world/player-eid @world))
                 bar-x (- x (/ rahmenw 2))]
-            (draw-hpmana-bar! nil batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
-            (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
+            (draw-hpmana-bar! nil batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
+            (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
 
 (defn handle-clicked-inventory-cell
   [world player-eid play-sound! skin stage textures set-item! remove-item! cell world-mouse-position]
@@ -3460,7 +3548,7 @@
                                color)))
 
     :entity/stats
-    (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
+    (let [ratio (val-max-ratio (get-hitpoints (:entity/stats entity)))]
       (when (or (< ratio 1) (:entity/mouseover? entity))
         (let [{:keys [entity/position entity/width entity/height]} entity
               [x y] position
@@ -3684,7 +3772,7 @@
       (let [{:keys [modifiers counter]} v]
         (when (timer-stopped? elapsed-time* counter)
           (swap! eid dissoc :entity/temp-modifier)
-          (swap! eid update :entity/stats stats/remove-mods modifiers))
+          (swap! eid update :entity/stats remove-mods modifiers))
         nil)
 
       :entity/projectile-collision
@@ -3743,7 +3831,7 @@
       :npc-sleeping
       (let [entity @eid]
         (when-let [distance (nearest-enemy-distance (:world/grid @world) entity)]
-          (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
+          (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
             (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-position :alert))))
 
       :npc-idle
@@ -4101,7 +4189,7 @@
       :player-moving
       (if move-v
         (do (swap! eid assoc :entity/movement {:direction move-v
-                                               :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                               :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
                                                           0)})
             nil)
         (handle-fsm-event! world play-sound! skin stage textures eid world-mouse-pos :no-movement-input))
