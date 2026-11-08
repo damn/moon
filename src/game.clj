@@ -4,7 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [level.uf-caves :as uf-caves]
-            [lib.body :as body] ; 1x
             [lib.cell :as cell] 
             [lib.circle :as circle] ; 1x
             [lib.color :as color] ; 1x
@@ -47,6 +46,49 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
+
+(defn direction [entity other-entity]
+  (v2/direction (:entity/position entity)
+                (:entity/position other-entity)))
+
+(defn start-point [entity target-entity]
+  (mapv + (:entity/position entity)
+        (v2/scale (direction entity target-entity)
+                  (/ (:entity/width entity) 2))))
+
+(defn end-point [entity target-entity maxrange]
+  (mapv + (start-point entity target-entity)
+        (v2/scale (direction entity target-entity)
+                  maxrange)))
+
+(defn in-range? [entity target-entity maxrange]
+  (< (- (float (v2/distance (:entity/position entity)
+                            (:entity/position target-entity)))
+        (float (/ (:entity/width entity)  2))
+        (float (/ (:entity/width target-entity) 2)))
+     (float maxrange)))
+
+(defn rectangle
+  [{:keys [entity/position
+           entity/width
+           entity/height]}]
+  (let [[x y] [(- (position 0) (/ width  2))
+               (- (position 1) (/ height 2))]]
+    (Rectangle. (float x) (float y) (float width) (float height))))
+
+(defn overlaps? [entity other-entity]
+  (.overlaps ^Rectangle (rectangle entity)
+             ^Rectangle (rectangle other-entity)))
+
+(defn touched-tiles
+  [{:keys [entity/position
+           entity/width
+           entity/height]}]
+  (rectangle/touched-tiles
+   {:x (- (position 0) (/ width  2))
+    :y (- (position 1) (/ height 2))
+    :width  width
+    :height height}))
 
 (let [order (position/get-8-neighbours [0 0])
       diagonal? (fn [[^int x ^int y]]
@@ -125,7 +167,7 @@
                            own-cell)))}))))
 
 (defn- inside-cell? [grid entity cell]
-  (let [cells (keep #(get-in grid %) (body/touched-tiles entity))]
+  (let [cells (keep #(get-in grid %) (touched-tiles entity))]
     (and (= 1 (count cells))
          (= cell (first cells)))))
 
@@ -218,14 +260,14 @@
 
 (defn valid-position? [grid {:keys [entity/z-order] :as body} entity-id]
   (assert (:entity/collides? body))
-  (let [cells* (map deref (keep #(get-in grid %) (body/touched-tiles body)))]
+  (let [cells* (map deref (keep #(get-in grid %) (touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> (into #{} (mapcat :entities) cells*)
               (not-any? (fn [other-entity]
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)
                                  (:entity/collides? other-entity)
-                                 (body/overlaps? other-entity
+                                 (overlaps? other-entity
                                                  body)))))))))
 
 (defn try-move [grid body entity-id movement]
@@ -248,7 +290,7 @@
                 entity/height]
          :as body}]
   (if (or (> (float width) 1) (> (float height) 1))
-    (keep #(get-in grid %) (body/touched-tiles body))
+    (keep #(get-in grid %) (touched-tiles body))
     [(get-in grid (mapv int position))]))
 
 (defn set-occupied-cells! [grid eid]
@@ -259,7 +301,7 @@
     (swap! eid assoc :entity/occupied-cells cells)))
 
 (defn set-touched-cells! [grid eid]
-  (let [cells (keep #(get-in grid %) (body/touched-tiles @eid))]
+  (let [cells (keep #(get-in grid %) (touched-tiles @eid))]
     (assert (not-any? nil? cells))
     (swap! eid assoc :entity/touched-cells cells)
     (doseq [cell cells]
@@ -278,7 +320,7 @@
 
 (defn point->entities [grid pos]
   (when-let [cell (get-in grid (mapv int pos))]
-    (filter #(.contains ^Rectangle (body/rectangle @%) (float (first pos)) (float (second pos)))
+    (filter #(.contains ^Rectangle (rectangle @%) (float (first pos)) (float (second pos)))
             (:entities @cell))))
 
 (defn create-animation
@@ -312,7 +354,7 @@
   (assert (:entity/position @eid))
   (when (:entity/collides? @eid)
     (assert (valid-position? grid @eid (:entity/id @eid))))
-  (get-touched-cells! grid eid)
+  (set-touched-cells! grid eid)
   (when (:entity/collides? @eid)
     (set-occupied-cells! grid eid))
   nil)
@@ -1001,7 +1043,7 @@
     false
 
     :effects/target-entity
-    (body/in-range? @(:effect/source effect-ctx)
+    (in-range? @(:effect/source effect-ctx)
                     @(:effect/target effect-ctx)
                     (:maxrange v))
 
@@ -1070,10 +1112,10 @@
             body        @source
             target-body @target
             {:keys [maxrange entity-effects]} v]
-        (if (body/in-range? body target-body maxrange)
+        (if (in-range? body target-body maxrange)
           (do (spawn-entity! @world
                              (spawn-line
-                              {:start (body/start-point body target-body)
+                              {:start (start-point body target-body)
                                :end (:entity/position target-body)
                                :duration 0.05
                                :color (color/float-bits 1 0 0 0.75)
@@ -1081,7 +1123,7 @@
               (apply-effects! effect-ctx entity-effects))
           (do (play-sound! "bfxr_fisthit.wav")
               (audiovisual! db schemas world
-                            (body/end-point body target-body maxrange)
+                            (end-point body target-body maxrange)
                             :audiovisuals/hit-ground))))
 
       :effects.target/convert
@@ -1494,9 +1536,9 @@
             target-body @target
             maxrange (:maxrange v)]
         (shape-drawer/line! shape-drawer
-                      (body/start-point body target-body)
-                      (body/end-point body target-body maxrange)
-                      (if (body/in-range? body target-body maxrange)
+                      (start-point body target-body)
+                      (end-point body target-body maxrange)
+                      (if (in-range? body target-body maxrange)
                         (color/float-bits 1 0 0 0.5)
                         (color/float-bits 1 1 0 0.5)))))
 
@@ -1709,7 +1751,7 @@
     {:effect/source eid
      :effect/target target
      :effect/target-direction (when target
-                                (body/direction entity
+                                (direction entity
                                                 @target))}))
 
 (defn- update-effect-ctx
@@ -1760,7 +1802,7 @@
                                       (map deref)
                                       (into #{} (mapcat :entities))
                                       (filter #(Intersector/overlaps ^Circle gdx-circle
-                                                                     ^Rectangle (body/rectangle @%)))
+                                                                     ^Rectangle (rectangle @%)))
                                       (filter #(= (:entity/faction @%) faction))))]
             (handle-fsm-event! world play-sound! skin stage textures friendly-eid world-mouse-position :alert)))
         nil)
@@ -1789,12 +1831,12 @@
       (let [{:keys [entity-effects already-hit-bodies piercing?]} v
             world* @world
             entity @eid
-            touched-cells (map deref (keep #(get-in (:world/grid world*) %) (body/touched-tiles entity)))
+            touched-cells (map deref (keep #(get-in (:world/grid world*) %) (touched-tiles entity)))
             hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                             (not= (:entity/faction entity)
                                                   (:entity/faction @%))
                                             (:entity/collides? @%)
-                                            (body/overlaps? entity
+                                            (overlaps? entity
                                                             @%))
                                       (into #{} (mapcat :entities) touched-cells)))
             destroy? (or (and hit-entity (not piercing?))
