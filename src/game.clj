@@ -3,13 +3,11 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [level.uf-caves :as uf-caves] ; used at levelgen too
-            [lib.content-grid :as content-grid] ; drop it -> check distance through all entities ?
-            [lib.db :as db]  ; used at editor/levelgen
-            [lib.faction :as faction]  ; 1x
-            [lib.inventory :as inventory]  ; 1x
-            [lib.item :as item] ; lib.inventory
-            [lib.mods :as mods] ; o.o
+            [level.uf-caves :as uf-caves] 
+            [lib.content-grid :as content-grid] 
+            [lib.db :as db]  
+            [lib.item :as item]
+            [lib.mods :as mods]
             [lib.number :as number]  
             [lib.position :as position]
             [lib.raycaster :as raycaster]
@@ -48,6 +46,56 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
+
+(def slots
+  #{:inventory.slot/bag
+    :inventory.slot/weapon
+    :inventory.slot/shield
+    :inventory.slot/helm
+    :inventory.slot/chest
+    :inventory.slot/leg
+    :inventory.slot/glove
+    :inventory.slot/boot
+    :inventory.slot/cloak
+    :inventory.slot/necklace
+    :inventory.slot/rings})
+
+(defn- known-slot? [slot]
+  (slots slot))
+
+(defn- cells-and-items [inventory slot]
+  (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
+  (let [grid (slot inventory)]
+    (for [x (range (count grid))
+          y (range (count (grid 0)))
+          :let [position [x y]]]
+      [[slot position] (get-in grid position)])))
+
+(defn- free-cell [inventory slot]
+  (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
+  (first (filter (fn [[_cell cell-item]]
+                   (nil? cell-item))
+                 (cells-and-items inventory slot))))
+
+(defn can-pickup-item? [inventory item]
+  (assert (item/valid? item))
+  (or (free-cell inventory (:item/slot item))
+      (free-cell inventory :inventory.slot/bag)))
+
+(defn item-at [inventory [slot position]]
+  (get-in (slot inventory) position))
+
+(defn valid-slot? [[slot _] item]
+  (or (= :inventory.slot/bag slot)
+      (= (:item/slot item) slot)))
+
+(defn applies-modifiers? [[slot _]]
+  (not= :inventory.slot/bag slot))
+
+(defn enemy [faction]
+  (case faction
+    :evil :good
+    :good :evil))
 
 (def ^:private info-text-config
   {:k->fn {:creature/level (fn [v _elapsed-time]
@@ -303,11 +351,11 @@
 
 (defn nearest-enemy [grid entity]
   (nearest-entity @(get-in grid (mapv int (:entity/position entity)))
-                  (faction/enemy (:entity/faction entity))))
+                  (enemy (:entity/faction entity))))
 
 (defn nearest-enemy-distance [grid entity]
   (nearest-entity-distance @(get-in grid (mapv int (:entity/position entity)))
-                           (faction/enemy (:entity/faction entity))))
+                           (enemy (:entity/faction entity))))
 
 (defn add-text-effect [entity elapsed-time text duration]
   (assoc entity :entity/string-effect
@@ -323,16 +371,16 @@
 
 (defn set-item [entity cell item]
   (assert (and (nil? (get-in entity (inventory-cell-path cell)))
-               (inventory/valid-slot? cell item)))
+               (valid-slot? cell item)))
   (cond-> (assoc-in entity (inventory-cell-path cell) item)
-    (inventory/applies-modifiers? cell)
+    (applies-modifiers? cell)
     (update :entity/stats stats/add-mods (:stats/modifiers item))))
 
 (defn remove-item [entity cell]
   (let [item (get-in entity (inventory-cell-path cell))]
     (assert item)
     (cond-> (assoc-in entity (inventory-cell-path cell) nil)
-      (inventory/applies-modifiers? cell)
+      (applies-modifiers? cell)
       (update :entity/stats stats/remove-mods (:stats/modifiers item)))))
 
 (defn float-bits [r g b a]
@@ -453,7 +501,7 @@
 (defn- find-next-cell
   "returns {:target-entity eid} or {:target-cell cell}. Cell can be nil."
   [grid eid own-cell]
-  (let [faction (faction/enemy (:entity/faction @eid))
+  (let [faction (enemy (:entity/faction @eid))
         distance-to #(nearest-entity-distance @% faction)
         nearest-entity-at #(nearest-entity @% faction)
         own-dist (distance-to own-cell)
@@ -1124,7 +1172,7 @@
                                                  (into {})))
       (doseq [item v]
         (assert (item/valid? item))
-        (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
+        (let [[cell cell-item] (can-pickup-item? (:entity/inventory @eid) item)]
           (assert cell)
           (assert (nil? cell-item))
           (swap! eid set-item cell item)))
@@ -1303,7 +1351,7 @@
           target (:effect/target effect-ctx)]
       (and target
            (= (:entity/faction @target)
-              (faction/enemy (:entity/faction @source)))))
+              (enemy (:entity/faction @source)))))
 
     :effects.target/damage
     (and (:effect/target effect-ctx)
@@ -1664,7 +1712,7 @@
   [world player-eid play-sound! skin stage textures set-item! remove-item! cell world-mouse-position]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
-    (when-let [item (inventory/item-at (:entity/inventory @player-eid) cell)]
+    (when-let [item (item-at (:entity/inventory @player-eid) cell)]
       (play-sound! "bfxr_takeit.wav")
       (swap! player-eid remove-item cell)
       (remove-item! cell)
@@ -1673,11 +1721,11 @@
     :player-item-on-cursor
     (let [entity @player-eid
           inventory (:entity/inventory entity)
-          item-in-cell (inventory/item-at inventory cell)
+          item-in-cell (item-at inventory cell)
           item-on-cursor (:entity/item-on-cursor entity)]
       (cond
        (and (not item-in-cell)
-            (inventory/valid-slot? cell item-on-cursor))
+            (valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
            (play-sound! "bfxr_itemput.wav")
            (swap! player-eid set-item cell item-on-cursor)
@@ -1685,7 +1733,7 @@
            (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :dropped-item))
 
        (and item-in-cell
-            (inventory/valid-slot? cell item-on-cursor))
+            (valid-slot? cell item-on-cursor))
        (do (swap! player-eid dissoc :entity/item-on-cursor)
            (play-sound! "bfxr_itemput.wav")
            (swap! player-eid remove-item cell)
@@ -1914,7 +1962,7 @@
 
     :entity/mouseover?
     (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
-          color (cond (= faction (faction/enemy (:entity/faction player)))
+          color (cond (= faction (enemy (:entity/faction player)))
                       (float-bits 1 0 0 0.4)
                       (= faction (:entity/faction player))
                       (float-bits 0 1 0 0.4)
@@ -2332,7 +2380,7 @@
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
-                                  color (if (inventory/valid-slot? cell item)
+                                  color (if (valid-slot? cell item)
                                           (float-bits 0 0.6 0 0.8)
                                           (float-bits 0.6 0 0 0.8))]
                               (shape-drawer/filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
@@ -2395,7 +2443,7 @@
                                            (let [[actor-type params] params
                                                  inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
                                                                                 (let [inventory-slot params]
-                                                                                  (inventory/item-at (:entity/inventory @eid) inventory-slot)))]
+                                                                                  (item-at (:entity/inventory @eid) inventory-slot)))]
                                              (cond
                                                inventory-cell-with-item?
                                                :cursors/hand-before-grab
@@ -2484,11 +2532,11 @@
                   (play-sound! "bfxr_takeit.wav")
                   (handle-fsm-event! world play-sound! skin stage textures player-eid world-mouse-position :pickup-item item))
 
-              (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+              (can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! "bfxr_pickup.wav")
                   (assert (item/valid? item))
-                  (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
+                  (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
                     (assert cell)
                     (assert (nil? cell-item))
                     (swap! player-eid set-item cell item)
