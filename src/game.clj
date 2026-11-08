@@ -4,7 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [level.uf-caves :as uf-caves]
-            [lib.circle :as circle] ; 1x
             [lib.color :as color] ; 1x
             [lib.content-grid :as content-grid] ; 1x
             [lib.db :as db] ; levelgen, editor
@@ -1790,6 +1789,15 @@
       effect-ctx
       (dissoc effect-ctx :effect/target))))
 
+(defn outer-rectangle
+  [{[x y] :position :keys [radius]}]
+  (let [radius (float radius)
+        size (* radius 2)]
+    {:x (- (float x) radius)
+     :y (- (float y) radius)
+     :width  size
+     :height size}))
+
 (defn tick-component
   [world delta-time play-sound! skin stage textures
    max-speed
@@ -1822,7 +1830,7 @@
                                      g2d (:world/grid @world)
                                      gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
                                  (->> circle
-                                      circle/outer-rectangle
+                                      outer-rectangle
                                       rectangle/touched-tiles
                                       (keep #(get-in g2d %))
                                       (map deref)
