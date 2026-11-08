@@ -94,7 +94,7 @@
     :all false))
 
 (defn pf-blocked? [cell]
-  (blocked? cell :z-order/ground))
+  (cell-blocked? cell :z-order/ground))
 
 (defn occupied-by-other? [{:keys [occupied]} eid]
   (some #(not= % eid) occupied))
