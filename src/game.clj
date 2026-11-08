@@ -2275,6 +2275,7 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
+; TODO drop world param -> drop world itself
 (defn register-eid!
   [{:keys [world/id-counter
            world/entity-ids
@@ -2360,26 +2361,6 @@
       (let [[x y] (:position cell)]
         (aset arr x y (boolean (blocks-vision? cell)))))
     [arr width height]))
-
-(defn create-world
-  [^TiledMap tiled-map {:keys [start-position]}]
-  (let [props (.getProperties tiled-map)
-        width (.get props "width")
-        height (.get props "height")
-        grid (create-grid tiled-map)]
-    {:world/tiled-map tiled-map
-     :world/start-position start-position
-     :world/potential-field-cache (atom nil)
-     :world/id-counter (atom 0)
-     :world/entity-ids (atom {})
-     :world/grid grid
-     :world/content-grid (create-content-grid width height 16)
-     :world/explored-tile-corners (atom
-                                   (mapv (fn [x] (mapv (fn [y] false)
-                                                       (range height)))
-                                         (range width)))
-     :world/raycaster (create-raycaster grid)
-     }))
 
 ; belongs to game - further down?
 (def ^:private controls
@@ -2733,6 +2714,7 @@
                :z-order/flying
                :z-order/effect])
 
+; TODO make without world param.
 (defn- spawn-entity! [world entity]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
@@ -2797,6 +2779,7 @@
       (when item
         (swap! eid dissoc :entity/item-on-cursor)
         (play-sound! "bfxr_itemputground.wav")
+        ; 3. -> its spawn-entity!
         (spawn-entity! @world
                        (spawn-item (item-place-position (:entity/position entity)
                                                         world-mouse-position
@@ -2882,6 +2865,7 @@
         (swap! eid assoc :entity/fsm new-fsm)
         (swap! eid assoc new-state-k (new-state-obj 1))
         (swap! eid dissoc old-state-k)
+        ; 2. too many input from 1. -> world again
         (entity-state-exit! world eid world-mouse-position old-state-obj)
         (entity-state-enter! skin stage eid new-state-obj)
         nil))))
@@ -4153,6 +4137,9 @@
         (show-message! stage "No selected skill")
         nil)))
 
+; 1. 
+; too many input - see world first
+; -> handle-fsm-event!
 (defn handle-player-input!
   [world interaction-state
    skin stage textures viewport key-pressed? button-just-pressed?]
@@ -4356,9 +4343,24 @@
                                                :extensions #{"png" "bmp"}})))
 
 (defn load-world! []
-  (let [{level-tiled-map :tiled-map
-         level-start :start-position} (create-level! db *textures*)]
-    (reset! world (create-world level-tiled-map {:start-position level-start}))
+  (let [{:keys [^TiledMap tiled-map 
+                start-position]} (create-level! db *textures*)]
+    (reset! world (let [props (.getProperties tiled-map)
+                        width (.get props "width")
+                        height (.get props "height")
+                        grid (create-grid tiled-map)]
+                    {:world/tiled-map tiled-map
+                     :world/start-position start-position
+                     :world/potential-field-cache (atom nil)
+                     :world/id-counter (atom 0)
+                     :world/entity-ids (atom {})
+                     :world/grid grid
+                     :world/content-grid (create-content-grid width height 16)
+                     :world/explored-tile-corners (atom
+                                                    (mapv (fn [x] (mapv (fn [y] false)
+                                                                        (range height)))
+                                                          (range width)))
+                     :world/raycaster (create-raycaster grid)}))
     (reset! *elapsed-time* 0)))
 
 (defn add-stage-actors! []
