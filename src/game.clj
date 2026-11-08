@@ -28,6 +28,9 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
+(defn clear-screen! []
+  (ScreenUtils/clear 0 0 0 0))
+
 (defn create-vampire-level [_]
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
    :start-position [32 71]})
@@ -3264,7 +3267,7 @@
                     y-mana]
         rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
-        draw-hpmana-bar! (fn [ctx batch x y content-file minmaxval name]
+        draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
                            (draw-fn-texture-region batch unit-scale rahmen-tex-reg [x y])
                            (draw-fn-texture-region batch unit-scale
                                                    (get-texture-region textures
@@ -3287,8 +3290,8 @@
         (when (.getStage ^Actor this)
           (let [stats (:entity/stats @(:world/player-eid @world))
                 bar-x (- x (/ rahmenw 2))]
-            (draw-hpmana-bar! nil batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
-            (draw-hpmana-bar! nil batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
+            (draw-hpmana-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
+            (draw-hpmana-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
 
 (defn handle-clicked-inventory-cell
   [world player-eid skin stage textures set-item! remove-item! cell world-mouse-position]
@@ -3390,9 +3393,13 @@
     (doto group*
       (.setName "moon.ui.windows"))))
 
+(def show-potential-field-colors? (atom nil))
+(def show-cell-entities? (atom false))
+(def show-cell-occupied? (atom false))
+(def show-body-bounds? (atom false))
+
 (defn draw-cell-debug
-  [ctx shape-drawer ^Viewport viewport world
-   show-cell-entities? show-cell-occupied? show-potential-field-colors? ]
+  [shape-drawer ^Viewport viewport world]
   (let [world @world
         ^OrthographicCamera camera (.getCamera viewport)
         plane-points (mapv (fn [^Vector3 v3]
@@ -3429,8 +3436,10 @@
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
       (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
+(def show-tile-grid? (atom false))
+
 (defn draw-tile-grid
-  [ctx shape-drawer ^Viewport viewport show-tile-grid?]
+  [shape-drawer ^Viewport viewport]
   (when @show-tile-grid?
     (let [^OrthographicCamera camera (.getCamera viewport)
           plane-points (mapv (fn [^Vector3 v3]
@@ -3449,7 +3458,7 @@
                     (float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
-  [ctx shape-drawer world-mouse-position world]
+  [shape-drawer world-mouse-position world]
   (let [world @world
         [x y] (mapv int world-mouse-position)
         cell (cell-at world [x y])]
@@ -3640,18 +3649,17 @@
      :active-skill}])
 
 (defn- draw-entity-rectangle!
-  [ctx shape-drawer entity color-float-bits]
+  [shape-drawer entity color-float-bits]
   (let [{:keys [entity/position entity/width entity/height]} entity
         [x y] [(- (position 0) (/ width 2))
                (- (position 1) (/ height 2))]]
     (rectangle! shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [ctx shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
-   raycaster world show-body-bounds? active-entities]
+  [shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
+   raycaster world active-entities]
   (let [player-eid (:world/player-eid @world)
         elapsed-time @(:world/elapsed-time @world)
-        show-body-bounds? @show-body-bounds?
         active-entities @active-entities
         entities (map deref active-entities)
         player @player-eid
@@ -3663,8 +3671,8 @@
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]
-      (when show-body-bounds?
-        (draw-entity-rectangle! ctx shape-drawer
+      (when @show-body-bounds?
+        (draw-entity-rectangle! shape-drawer
                                 entity
                                 (if (:entity/collides? entity)
                                   (float-bits 1 1 1 1)
@@ -3688,7 +3696,7 @@
        first))
 
 (defn- create-effect-ctx
-  [world ctx eid]
+  [world eid]
   (let [world @world
         entity @eid
         target (nearest-enemy (:world/grid world) entity)
@@ -3722,7 +3730,7 @@
 
 (defn tick-component
   [world delta-time skin stage textures
-   ctx world-mouse-position apply-effects! eid [k v]]
+   world-mouse-position apply-effects! eid [k v]]
   (let [elapsed-time* @(:world/elapsed-time @world)]
     (case k
       :entity/animation
@@ -3843,7 +3851,7 @@
 
       :npc-idle
       (let [raycaster (:world/raycaster @world)
-            effect-ctx (create-effect-ctx world ctx eid)]
+            effect-ctx (create-effect-ctx world eid)]
         (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
           (handle-fsm-event! world skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
           (handle-fsm-event! world skin stage textures eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
@@ -3881,7 +3889,7 @@
    :items [{:label controls-info}]})
 
 (defn- debug-flags-menu-item
-  [show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?]
+  []
   {:label "Debug"
    :items [{:label "Toggle show-tile-grid?"
             :on-click #(swap! show-tile-grid? not)}
@@ -3897,12 +3905,6 @@
             :on-click #(reset! show-potential-field-colors? :good)}
            {:label "Potential field colors: :evil"
             :on-click #(reset! show-potential-field-colors? :evil)}]})
-
-(defn- dev-menus
-  [show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?]
-  [(debug-flags-menu-item show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
-   help-menu-item
-   ])
 
 (defn create-action-bar []
   (let [table (doto (Table.)
@@ -3923,16 +3925,17 @@
       (.setName "moon.ui.action-bar"))))
 
 (defn create-ui-actors
-  [world mouseover-eid paused?
-   show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
-   unit-scale
-   default-font shape-drawer skin stage textures* viewport]
+  [world mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures* viewport]
   (let [cell-size 48]
     [(create-action-bar)
      (create-dev-menu
-      {:menus (dev-menus show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
+       {:menus [(debug-flags-menu-item)
+                help-menu-item]
        :update-labels (for [item [{:label "elapsed-time"
-                                   :update-fn (fn []
+                                   :update-fn (fn [] 
+                                                ; TODO those are functions named if world/etc. is as normal vars
+                                                ; => function engine base ?
+                                                ; what is 'world' protocol?
                                                 (str (readable @(:world/elapsed-time @world)) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
@@ -4221,7 +4224,7 @@
       (doseq [eid active-entities*
               component @eid]
         (tick-component world delta-time skin stage textures
-                        nil world-mouse-pos
+                        world-mouse-pos
                         apply-effects!
                         eid component)))))
 
@@ -4316,11 +4319,6 @@
 (def active-entities (atom nil))
 (def mouseover-eid (atom nil))
 (def paused? (atom false))
-(def show-potential-field-colors? (atom nil))
-(def show-cell-entities? (atom false))
-(def show-cell-occupied? (atom false))
-(def show-body-bounds? (atom false))
-(def show-tile-grid? (atom false))
 (def unit-scale (atom 1))
 (def pausing? true)
 (def state->pause-game? {:active-skill false
@@ -4329,6 +4327,11 @@
                          :player-idle true
                          :player-dead true
                          :player-item-on-cursor true})
+
+(defn set-input-processor! []
+  (.setInputProcessor Gdx/input ^InputProcessor @stage)) ; type hints on vars ?
+; dont pass data just call functions with context?
+
 (def listener
   (reify ApplicationListener
     (create [_]
@@ -4336,32 +4339,45 @@
       (load-sounds!)
       (load-sprite-batch!)
       (load-font!)
-      (reset! unit-scale 1)
+
+      (reset! unit-scale 1) ; initial binding value ?
+
+      ; create-shape-drawer-texture!
       (set! *shape-drawer-texture* (white-pixel-texture))
+
+      ; create-shape-drawer!
       (set! *shape-drawer* (ShapeDrawer. *batch* (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
+
+      ; create-skin!
       (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
-      (let [s (Stage. (FitViewport. (float 1440) (float 900)) *batch*)]
-        (.setInputProcessor Gdx/input ^InputProcessor s)
-        (reset! stage s))
+
+      (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) *batch*))
+      ; with addActors ?
+
+      (set-input-processor!)
+
+      ; configure-tooltips!
       (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
+
+      ; put-colors!
       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
 
+      ; create-textures!
       (set! *textures* (create-textures Gdx/files {:folder "resources/"
                                                    :extensions #{"png" "bmp"}}))
-      (create-viewport*)
 
+      (create-viewport*)
 
       (let [{level-tiled-map :tiled-map
              level-start :start-position} (create-level! db *textures*)]
         (reset! world (create-world level-tiled-map {:start-position level-start})))
+      ; create-world! (world also *dyanimic* -> and elapsed time etc. maybe separate ?
+
+      ; to stage ?
+      ; needs world viewport font etc. first ... hmmm
       (doseq [^Actor actor (create-ui-actors world
                                              mouseover-eid
                                              paused?
-                                             show-tile-grid?
-                                             show-cell-entities?
-                                             show-cell-occupied?
-                                             show-body-bounds?
-                                             show-potential-field-colors?
                                              unit-scale
                                              *default-font*
                                              *shape-drawer*
@@ -4370,27 +4386,45 @@
                                              *textures*
                                              *viewport*)]
         (.addActor ^Stage @stage actor))
+
       (spawn-player! db world @skin @stage *textures*)
+
       (bind-player-eid! world)
-      (spawn-map-creatures! db world))
+
+      (spawn-map-creatures! db world)
+      )
 
     (dispose [_]
       (dispose-sounds!)
+
       (Disposable/.dispose *batch*)
+
       (dispose-cursors!)
+
       (dispose-font!)
+
       (Disposable/.dispose *shape-drawer-texture*)
+
       (Disposable/.dispose @skin)
+
       (run! Disposable/.dispose (vals *textures*))
-      (Disposable/.dispose (:world/tiled-map @world)))
+
+      (Disposable/.dispose (:world/tiled-map @world))
+      )
 
     (render [_]
-      (ScreenUtils/clear 0 0 0 0)
+      (clear-screen!)
+
       (update-mouseover-eid! world mouseover-eid @stage *viewport*)
+
       (update-active-entities! world active-entities)
+
       (set-camera-to-player! world *viewport*)
+
       (.setProjectionMatrix ^Batch *batch* (.combined (.getCamera ^Viewport *viewport*)))
+
       (.begin ^Batch *batch*)
+
       (draw-tiled-map! (:world/tiled-map @world)
                        *batch*
                        (.getCamera ^Viewport *viewport*)
@@ -4403,20 +4437,31 @@
                           :explored-tile-color (float-bits 0.5 0.5 0.5 1)
                           :visible-tile-color (float-bits 1 1 1 1)
                           :invisible-tile-color (float-bits 0 0 0 1)}))
+
       (.setColor ^Batch *batch* (float 1) (float 1) (float 1) (float 1))
+
       (with-line-width *shape-drawer* world-unit-scale
         (reset! unit-scale world-unit-scale)
-        (draw-tile-grid nil *shape-drawer* *viewport* show-tile-grid?)
-        (draw-cell-debug nil *shape-drawer* *viewport* world
-                         show-cell-entities? show-cell-occupied? show-potential-field-colors?)
-        (draw-entities! nil *shape-drawer* *batch* *default-font* *textures* unit-scale 
+        (draw-tile-grid *shape-drawer* *viewport*)
+        (draw-cell-debug *shape-drawer* *viewport* world)
+        (draw-entities! *shape-drawer* 
+                        *batch* 
+                        *default-font* 
+                        *textures* 
+                        unit-scale 
                         (let [[x y] (ui-mouse-position @stage)]
                           (mouseover-actor @stage x y))
                         (world-mouse-position *viewport*)
-                        (:world/raycaster @world) world show-body-bounds? active-entities)
-        (highlight-mouseover-tile nil *shape-drawer* (world-mouse-position *viewport*) world)
+                        (:world/raycaster @world)
+                        world 
+                        active-entities)
+        (highlight-mouseover-tile *shape-drawer* 
+                                  (world-mouse-position *viewport*)
+                                  world)
         (reset! unit-scale 1))
+
       (.end ^Batch *batch*)
+
       (let [interaction-state (create-interaction-state world mouseover-eid @stage *viewport*)
             cursor-key (cursor-key interaction-state world)]
         (assert (contains? *cursors* cursor-key))
@@ -4425,15 +4470,18 @@
                               @skin @stage *textures* *viewport*
                               #(.isKeyPressed Gdx/input (int %))
                               #(.isButtonJustPressed Gdx/input (int %))))
+
       (reset! paused?
               (or #_error
                   (and pausing?
                        (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
                        (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                 (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-      (tick-game! db world active-entities paused?
-                  @skin @stage *textures* *viewport*)
+
+      (tick-game! db world active-entities paused?  @skin @stage *textures* *viewport*)
+
       (destroy-entities! db world)
+
       (doseq [[k f] {(:zoom-in controls) (fn []
                                            (let [^OrthographicCamera camera (.getCamera ^Viewport *viewport*)]
                                              (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
@@ -4444,6 +4492,7 @@
                                               (.update camera)))}]
         (when (.isKeyPressed Gdx/input (int k))
           (f)))
+
       (doseq [[k f] {(:close-windows-key controls) (fn []
                                                      (close-windows! @stage))
                      (:toggle-inventory controls) (fn []
@@ -4452,12 +4501,17 @@
                                                       (toggle-entity-info! @stage))}]
         (when (.isKeyJustPressed Gdx/input (int k))
           (f)))
+
       (.act ^Stage @stage)
-      (.draw ^Stage @stage))
+
+      (.draw ^Stage @stage)
+      )
 
     (resize [_ width height]
       (.update (.getViewport ^Stage @stage) width height true)
-      (.update ^Viewport *viewport* width height false))
+
+      (.update ^Viewport *viewport* width height false)
+      )
 
     (pause [_])
     (resume [_])))
