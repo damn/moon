@@ -29,6 +29,7 @@
   (:gen-class))
 
 (def minimum-size 0.39)
+(def max-delta 0.04)
 
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
@@ -4204,7 +4205,7 @@
 (defn tick-game!
   [db schemas world active-entities paused?
    play-sound! skin stage textures viewport factions-iterations
-   max-delta max-speed]
+   max-speed]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
           world* @world]
@@ -4262,8 +4263,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [max-delta 0.04
-        z-orders [:z-order/on-ground
+  (let [z-orders [:z-order/on-ground
                   :z-order/ground
                   :z-order/flying
                   :z-order/effect]
@@ -4422,7 +4422,7 @@
                                   (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
         (tick-game! db schemas world active-entities paused?
                     play-sound! @skin @stage @textures @viewport factions-iterations
-                    max-delta max-speed)
+                    max-speed)
         (destroy-entities! db schemas world play-sound!)
         (doseq [[k f] {(:zoom-in controls) (fn []
                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
