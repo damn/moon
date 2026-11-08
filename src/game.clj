@@ -15,12 +15,10 @@
             [lib.textures :as textures]
             [lib.tiled-map :as tiled-map]
             [lib.timer :as timer]
-            [malli.core :as m]
-            [malli.error :as me]
-            [ui.action-bar :as action-bar]
-            [ui.dev-menu :as dev-menu]
             [lib.v2 :as v2]
             [lib.val-max :as val-max]
+            [malli.core :as m]
+            [malli.error :as me]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
            (com.badlogic.gdx.audio Sound)
@@ -33,13 +31,93 @@
            (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
            (com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3)
-           (com.badlogic.gdx.scenes.scene2d Actor Group Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image Label Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
+           (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label Skin Stack Table TextButton TextTooltip TooltipManager Widget Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
            (java.util Random))
   (:gen-class))
+
+(defn- set-label-text-actor [label-widget text-fn]
+  (proxy [Actor] []
+    (act [delta]
+      (when (.getStage ^Actor this)
+        (.setText ^Label label-widget ^String (text-fn)))
+      (let [^Actor this this]
+        (proxy-super act delta)))
+    (draw [batch parent-alpha])))
+
+(defn- add-upd-label!
+  ([skin table text-fn icon]
+   (let [label (Label. "" ^Skin skin)
+         sub-table (Table.)]
+     (doseq [cell [{:actor (Image. ^Texture icon)}
+                   {:actor label}]]
+       (.add ^Table sub-table ^Actor (:actor cell)))
+     (.row ^Table sub-table)
+     (.pack sub-table)
+     (.addActor ^Group table (set-label-text-actor label text-fn))
+     (doto (.add ^Table table ^Actor sub-table)
+       (.right)
+       (.expandX))))
+  ([skin table text-fn]
+   (let [label (Label. "" ^Skin skin)]
+     (.addActor ^Group table (set-label-text-actor label text-fn))
+     (doto (.add ^Table table ^Actor label)
+       (.right)
+       (.expandX)))))
+
+(defn- main-table [^Skin skin menus update-labels]
+  (let [table (Table.)]
+    (doseq [cell (for [{:keys [label items]} menus]
+                   {:actor
+                    (doto (TextButton. ^String label skin)
+                      (.addListener (proxy [ChangeListener] []
+                                      (changed [event actor]
+                                        (let [^Stage stage (.getStage ^Event event)]
+                                          (.addActor stage
+                                                     (let [window (Window. ^String label skin)]
+                                                       (doseq [{:keys [label on-click]} items]
+                                                         (.add window (doto (TextButton. ^String label skin)
+                                                                        (.addListener (proxy [ChangeListener] []
+                                                                                        (changed [_event _actor]
+                                                                                          (on-click)))))))
+                                                       (.row window)
+                                                       (.pack window)
+                                                       (.add (.getTitleTable window)
+                                                             (doto (TextButton. "X" skin)
+                                                               (.addListener (proxy [ChangeListener] []
+                                                                               (changed [_event _actor]
+                                                                                 (.remove window))))))
+                                                       window)))))))})]
+      (.add table ^Actor (:actor cell)))
+    (.row table)
+    (.pack table)
+    (doseq [{:keys [label update-fn icon]} update-labels]
+      (let [update-fn #(str label ": " (update-fn))]
+        (if icon
+          (add-upd-label! skin table update-fn icon)
+          (add-upd-label! skin table update-fn))))
+    table))
+
+(defn create-dev-menu
+  [{:keys [menus update-labels skin]}]
+  (let [table (Table.)]
+    (doto (.add table ^Actor (main-table skin menus update-labels))
+      (.expandX)
+      (.fillX)
+      (.colspan (int 1)))
+    (.row table)
+    (doto (.add table ^Actor (doto (Label. "" ^Skin skin)
+                               (.setTouchable Touchable/disabled)))
+      (.expand)
+      (.fillX)
+      (.fillY))
+    (.row table)
+    (doto table
+      (.pack)
+      (.setFillParent true))))
 
 (defn- nad-corner? [grid [fromx fromy] [tox toy]]
   (and
@@ -1034,7 +1112,7 @@
     nil))
 
 (defn item-info-text [item]
-  (assert (valid? item))
+  (assert (valid-item? item))
   (str/join "\n"
             (remove nil?
                     [(str "[PRETTY_NAME]" (:property/pretty-name item) "[]")
@@ -1048,16 +1126,44 @@
       (.findActor "moon.ui.windows.inventory")
       (set-item!* cell
                   {:texture-region (textures/texture-region textures (:entity/image item))
-                   :tooltip-text (item/info-text item)}
+                   :tooltip-text (item-info-text item)}
                   skin)))
+
+(defn add-skill!
+  [action-bar
+   {:keys [skill-id
+           texture-region
+           tooltip-text]}
+   skin]
+  (let [scale 2
+        horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (.getUserObject ^Actor horizontal-group)
+        button (doto (ImageButton.
+                      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                        (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                                     (* scale (.getRegionHeight ^TextureRegion texture-region)))))
+                 (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
+                 (.setUserObject skill-id))]
+    (.addActor ^Group horizontal-group ^Actor button)
+    (.add ^ButtonGroup button-group ^Button button)
+    nil))
+
+#_(defn remove-skill!
+  [action-bar skill-id]
+  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (.getUserObject ^Actor horizontal-group)
+        button (get horizontal-group skill-id)]
+    (.remove ^Actor button)
+    (.remove ^ButtonGroup button-group ^Button button)
+    nil))
 
 (defn set-skill! [skin stage textures elapsed-time skill]
   (-> (.getRoot ^Stage stage)
       (.findActor "moon.ui.action-bar")
-      (action-bar/add-skill! {:skill-id (:property/id skill)
-                              :texture-region (textures/texture-region textures (:entity/image skill))
-                              :tooltip-text (info-text skill elapsed-time)}
-                             skin)))
+      (add-skill! {:skill-id (:property/id skill)
+                   :texture-region (textures/texture-region textures (:entity/image skill))
+                   :tooltip-text (info-text skill elapsed-time)}
+                  skin)))
 
 (defn remove-item!* [inventory-window cell]
   (let [cell-widget (inv-get-cell inventory-window cell)
@@ -2010,7 +2116,7 @@
                                                                     (range width))]))
                                                  (into {})))
       (doseq [item v]
-        (assert (item/valid? item))
+        (assert (valid-item? item))
         (let [[cell cell-item] (can-pickup-item? (:entity/inventory @eid) item)]
           (assert cell)
           (assert (nil? cell-item))
@@ -3163,14 +3269,32 @@
    help-menu-item
    ])
 
+(defn create-action-bar []
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 2))))]
+    (doto (.add ^Table table ^Actor (doto (HorizontalGroup.)
+                                      (.space (float 2))
+                                      (.pad (float 2))
+                                      (.setName "moon.ui.action-bar.horizontal-group")
+                                      (.setUserObject (doto (ButtonGroup.)
+                                                        (.setMaxCheckCount (int 1))
+                                                        (.setMinCheckCount (int 0))))))
+      (.expand)
+      (.bottom))
+    (.row ^Table table)
+    (doto table
+      (.pack)
+      (.setFillParent true)
+      (.setName "moon.ui.action-bar"))))
+
 (defn create-ui-actors
   [world mouseover-eid paused?
    show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?
    unit-scale
    play-sound! default-font shape-drawer skin stage textures* viewport]
   (let [cell-size 48]
-    [(action-bar/create)
-     (dev-menu/create
+    [(create-action-bar)
+     (create-dev-menu
       {:menus (dev-menus show-tile-grid? show-cell-entities? show-cell-occupied? show-body-bounds? show-potential-field-colors?)
        :update-labels (for [item [{:label "elapsed-time"
                                    :update-fn (fn []
@@ -3374,7 +3498,7 @@
               (can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! "bfxr_pickup.wav")
-                  (assert (item/valid? item))
+                  (assert (valid-item? item))
                   (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
                     (assert cell)
                     (assert (nil? cell-item))
@@ -3549,6 +3673,12 @@
   (run! Disposable/.dispose (vals @textures))
   (Disposable/.dispose (:world/tiled-map @world)))
 
+(defn selected-skill [action-bar]
+  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (.getUserObject ^Actor horizontal-group)]
+    (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
+      (.getUserObject ^Actor skill-button))))
+
 (defn- create-interaction-state [world mouseover-eid stage viewport]
   (let [player-eid (:world/player-eid @world)
         mouseover-eid @mouseover-eid
@@ -3569,7 +3699,7 @@
       :else
       (if-let [skill-id (-> (.getRoot ^Stage stage)
                             (.findActor "moon.ui.action-bar")
-                            action-bar/selected-skill)]
+                            selected-skill)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
               target-position (or (and mouseover-eid
