@@ -30,6 +30,10 @@
 
 (def minimum-size 0.39)
 (def max-delta 0.04)
+(def z-orders [:z-order/on-ground
+               :z-order/ground
+               :z-order/flying
+               :z-order/effect])
 
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
@@ -2366,7 +2370,7 @@
     [arr width height]))
 
 (defn create-world
-  [^TiledMap tiled-map {:keys [z-orders start-position]}]
+  [^TiledMap tiled-map {:keys [start-position]}]
   (let [props (.getProperties tiled-map)
         width (.get props "width")
         height (.get props "height")
@@ -2384,8 +2388,7 @@
                                                        (range height)))
                                          (range width)))
      :world/raycaster (create-raycaster grid)
-     :world/elapsed-time (atom 0)
-     :world/z-orders z-orders}))
+     :world/elapsed-time (atom 0)}))
 
 ; belongs to game - further down?
 (def ^:private controls
@@ -2736,7 +2739,7 @@
     nil))
 
 (defn- spawn-entity! [world entity]
-  (let [{:world/keys [elapsed-time z-orders]} world
+  (let [{:world/keys [elapsed-time]} world
         elapsed-time* @elapsed-time
         entity (reduce (fn [m [k v]]
                          (assoc m k (case k
@@ -4263,11 +4266,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [z-orders [:z-order/on-ground
-                  :z-order/ground
-                  :z-order/flying
-                  :z-order/effect]
-        schemas (-> "schema.edn" io/resource slurp edn/read-string)
+  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
         audio (atom nil)
         world-unit-scale (float (/ 48))
         max-speed (/ minimum-size max-delta)
@@ -4337,8 +4336,7 @@
         (reset! default-font (create-default-font! Gdx/files default-font-params))
         (let [{level-tiled-map :tiled-map
                level-start :start-position} (create-level! level-fn db @textures)]
-          (reset! world (create-world level-tiled-map {:z-orders z-orders
-                                                       :start-position level-start})))
+          (reset! world (create-world level-tiled-map {:start-position level-start})))
         (doseq [^Actor actor (create-ui-actors world
                                                mouseover-eid
                                                paused?
