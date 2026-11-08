@@ -2378,10 +2378,10 @@
              "[P]/[SPACE] - Unpause"
              "Leftmouse click - use skill/drop item on cursor"]))
 
-(def ^:dynamic *viewport*)
+(def ^:dynamic ^Viewport *viewport*)
 
 (defn world-mouse-position []
-  (let [v2 (.unproject ^Viewport *viewport*
+  (let [v2 (.unproject *viewport*
                        (Vector2. (float (.getX Gdx/input))
                                  (float (.getY Gdx/input))))]
     [(.x v2) (.y v2)]))
@@ -3909,7 +3909,7 @@
                                                 (mapv int (world-mouse-position)))}
                                   {:label "Zoom"
                                    :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (.getCamera ^Viewport *viewport*)))
+                                                (.zoom ^OrthographicCamera (.getCamera *viewport*)))
                                    :icon "images/zoom.png"}]]
                         (if (:icon item)
                           (update item :icon #(get textures* %))
@@ -3964,7 +3964,7 @@
   (reset! active-entities (active-entities* *content-grid* @*player-eid*)))
 
 (defn set-camera-to-player! []
-  (let [^OrthographicCamera camera (.getCamera ^Viewport *viewport*)
+  (let [camera (.getCamera *viewport*)
         pos (.position camera)
         [x y] (:entity/position @*player-eid*)]
     (set! (.x pos) x)
@@ -4254,8 +4254,6 @@
 (defn dispose-font! []
   (Disposable/.dispose *default-font*))
 
-(def ^:dynamic *viewport*)
-
 (defn create-viewport* []
   (set! *viewport* (create-viewport!)))
 
@@ -4382,7 +4380,7 @@
   (set-camera-to-player!))
 
 (defn set-projection-matrix! []
-  (.setProjectionMatrix ^Batch *batch* (.combined (.getCamera ^Viewport *viewport*))))
+  (.setProjectionMatrix ^Batch *batch* (.combined (.getCamera *viewport*))))
 
 (defn batch-begin! []
   (.begin ^Batch *batch*))
@@ -4390,11 +4388,11 @@
 (defn draw-tiled-map!* []
   (draw-tiled-map! *tiled-map*
                    *batch*
-                   (.getCamera ^Viewport *viewport*)
+                   (.getCamera *viewport*)
                    (tile-color-setter*
                      {:ray-blocked? (partial raycaster-blocked? *raycaster*)
                       :explored-tile-corners *explored-tile-corners*
-                      :light-position (let [pos (.position (.getCamera ^Viewport *viewport*))]
+                      :light-position (let [pos (.position (.getCamera *viewport*))]
                                         [(.x pos) (.y pos) (.z pos)])
                       :see-all-tiles? false
                       :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4449,11 +4447,11 @@
 
 (defn key-pressed-checks! []
   (doseq [[k f] {(:zoom-in controls) (fn []
-                                       (let [^OrthographicCamera camera (.getCamera ^Viewport *viewport*)]
+                                       (let [^OrthographicCamera camera (.getCamera *viewport*)]
                                          (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
                                          (.update camera)))
                  (:zoom-out controls) (fn []
-                                        (let [^OrthographicCamera camera (.getCamera ^Viewport *viewport*)]
+                                        (let [^OrthographicCamera camera (.getCamera *viewport*)]
                                           (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                           (.update camera)))}]
     (when (.isKeyPressed Gdx/input (int k))
@@ -4479,7 +4477,7 @@
   (.update (.getViewport ^Stage @stage) width height true))
 
 (defn resize-viewport! [width height]
-  (.update ^Viewport *viewport* width height false))
+  (.update *viewport* width height false))
 
 (def listener
   (reify ApplicationListener
