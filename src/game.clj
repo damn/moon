@@ -3185,8 +3185,10 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
+(def ^:dynamic *start-position*)
+
 (defn spawn-player! [db* world skin stage textures*]
-  (let [eid (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) (:world/start-position @world))
+  (let [eid (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) *start-position*)
                                             :creature-property (build db* :creatures/vampire)
                                             :components {:entity/fsm {:fsm :fsms/player
                                                                       :initial-state :player-idle}
@@ -3205,15 +3207,13 @@
 (def ^:dynamic *tiled-map*)
 
 (defn spawn-map-creatures! [db* world]
-  (let [world* @world
-        sp (:world/start-position world*)]
-    (doseq [[position creature-id] (spawn-positions *tiled-map*)
-            :when (not= position sp)]
-      (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
-                                      :creature-property (build db* (keyword creature-id))
-                                      :components {:entity/fsm {:fsm :fsms/npc
-                                                                :initial-state :npc-sleeping}
-                                                   :entity/faction :evil}})))))
+  (doseq [[position creature-id] (spawn-positions *tiled-map*)
+          :when (not= position *start-position*)]
+    (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
+                                           :creature-property (build db* (keyword creature-id))
+                                           :components {:entity/fsm {:fsm :fsms/npc
+                                                                     :initial-state :npc-sleeping}
+                                                        :entity/faction :evil}}))))
 
 
 (defn hp-mana-bar-create
@@ -4348,12 +4348,12 @@
   (let [{:keys [^TiledMap tiled-map 
                 start-position]} (create-level! db *textures*)]
     (set! *tiled-map* tiled-map)
+    (set! *start-position* start-position)
     (reset! world (let [props (.getProperties tiled-map)
                         width (.get props "width")
                         height (.get props "height")
                         grid (create-grid tiled-map)]
-                    {:world/start-position start-position
-                     :world/potential-field-cache (atom nil)
+                    {:world/potential-field-cache (atom nil)
                      :world/id-counter (atom 0)
                      :world/entity-ids (atom {})
                      :world/grid grid
@@ -4585,7 +4585,8 @@
             *shape-drawer-texture* nil
             *player-eid* nil
             *elapsed-time* (atom nil)
-            *tiled-map* nil]
+            *tiled-map* nil
+            *start-position* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
