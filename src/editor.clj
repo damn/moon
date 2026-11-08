@@ -655,8 +655,7 @@
     window))
 
 (defn listener []
-  (let [sound-paths (-> "sounds.edn" io/resource slurp edn/read-string)
-        schemas (-> "schema.edn" io/resource slurp edn/read-string)
+  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
         properties-file (io/resource "properties.edn")
         audio (atom nil)
         batch (atom nil)
@@ -676,7 +675,7 @@
         (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
         (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
         (reset! audio (into {}
-                            (for [path sound-paths]
+                            (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
         (reset! db (db/create schemas (-> properties-file slurp edn/read-string)))
         (reset! textures (textures/create Gdx/files {:folder "resources/"
