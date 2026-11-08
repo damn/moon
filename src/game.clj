@@ -5,8 +5,7 @@
             [clojure.string :as str]
             [clojure.pprint :as pprint]
             [lib.mods :as mods]
-            [lib.stats :as stats] 
-            [lib.val-max :as val-max]
+            [lib.val-max :as val-max :refer [apply-min apply-max]]
             [malli.core :as m]
             [malli.error :as me]
             [reduce-fsm :as fsm])
@@ -30,6 +29,69 @@
            (java.util Random)
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
+
+(defn get-hitpoints
+  [{:keys [stats/hp
+           stats/modifiers]}]
+  (apply-max hp modifiers :modifier/hp-max))
+
+(defn get-mana
+  [{:keys [stats/mana
+           stats/modifiers]}]
+  (apply-max mana modifiers :modifier/mana-max))
+
+(defn get-value
+  [stats stat-k]
+  (when-let [base-value (stat-k stats)]
+    (mods/get-value base-value
+                 (:stats/modifiers stats)
+                 (keyword "modifier" (name stat-k)))))
+
+(defn add-mods [stats mods]
+  (update stats :stats/modifiers mods/add mods))
+
+(defn remove-mods [stats mods]
+  (update stats :stats/modifiers mods/remove mods))
+
+(defn calc-damage
+  ([source target damage]
+   (update (calc-damage source damage)
+           :damage/min-max
+           apply-max
+           (:stats/modifiers target)
+           :modifier/damage-receive-max))
+  ([source damage]
+   (update damage
+           :damage/min-max
+           #(-> %
+                (apply-min (:stats/modifiers source) :modifier/damage-deal-min)
+                (apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))
+
+(defn effective-armor-save [source-stats target-stats]
+  (max (- (or (get-value source-stats :stats/armor-save) 0)
+          (or (get-value target-stats :stats/armor-pierce) 0))
+       0))
+
+(defn melee-damage [{:keys [entity/stats]}]
+  (let [strength (or (get-value stats :stats/strength) 0)]
+    {:damage/min-max [strength strength]}))
+
+(defn stats-format-text
+  [stats]
+  (str/join "\n" (concat
+                   ["*STATS*"
+                    (str "Mana: " (get-mana stats))
+                    (str "Hitpoints: " (get-hitpoints stats))]
+                   (for [stat-k [:stats/movement-speed
+                                 :stats/aggro-range
+                                 :stats/reaction-time
+                                 :stats/strength
+                                 :stats/cast-speed
+                                 :stats/attack-speed
+                                 :stats/armor-save
+                                 :stats/armor-pierce]]
+                     (str (str/capitalize (name stat-k)) ": "
+                          (get-value stats stat-k))))))
 
 (defn spawn-positions [^TiledMap tiled-map]
   (let [layer-name "creatures"
@@ -1462,7 +1524,7 @@
   {:k->fn {:creature/level (fn [v _elapsed-time]
                               (str "Level: " v))
            :entity/stats (fn [entity-stats _elapsed-time]
-                           (stats/format-text entity-stats))
+                           (stats-format-text entity-stats))
            :effects.target/convert (fn [_ _elapsed-time]
                                     "Converts target to your side.")
            :effects.target/damage (fn [{[min max] :damage/min-max} _elapsed-time]
