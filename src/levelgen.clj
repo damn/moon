@@ -2,7 +2,6 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [lib.db :as db]
-            [level.tmx :as tmx]
             [game :as game]
             [lib.textures :as textures]
             [lib.tiled-map :as moon-tiled-map])
@@ -62,7 +61,7 @@
         db (atom nil)
         textures (atom nil)
         tiled-map (atom nil)
-        buttons (for [[label level-fn] [["Vampire" tmx/vampire]
+        buttons (for [[label level-fn] [["Vampire" game/create-vampire-level]
                                         ["UF Caves" game/create-uf-caves]
                                         ["Modules" game/create-modules-level]]]
                   [(str "Generate " label)

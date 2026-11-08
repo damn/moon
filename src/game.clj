@@ -40,6 +40,10 @@
            (java.util Random))
   (:gen-class))
 
+(defn create-vampire-level [_]
+  {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
+   :start-position [32 71]})
+
 (defn- inv-window-cell [world on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
@@ -3503,8 +3507,9 @@
              :factions-iterations {:good 15
                                    :evil 5}
              :level-fn 
+             create-vampire-level
              ;create-uf-caves
-             create-modules-level
+             ;create-modules-level
              :default-font-params {:path "fonts/films.EXL_____.ttf"
                                    :size 16
                                    :quality-scaling 2
