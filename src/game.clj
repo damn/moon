@@ -28,22 +28,6 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
-(defn create-vampire-level [_]
-  {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
-   :start-position [32 71]})
-
-(defn- add-ops [ops other-ops]
-  (merge-with + ops other-ops))
-
-(defn mods-add [mods other-mods]
-  (merge-with add-ops mods other-mods))
-
-(defn- remove-ops [ops other-ops]
-  (merge-with - ops other-ops))
-
-(defn mods-remove [mods other-mods]
-  (merge-with remove-ops mods other-mods))
-
 (defn- sort-ops [ops]
   (sort-by (fn [[k]]
              (case k
@@ -140,8 +124,20 @@
                  (:stats/modifiers stats)
                  (keyword "modifier" (name stat-k)))))
 
+(defn- add-ops [ops other-ops]
+  (merge-with + ops other-ops))
+
+(defn mods-add [mods other-mods]
+  (merge-with add-ops mods other-mods))
+
 (defn add-mods [stats mods]
   (update stats :stats/modifiers mods-add mods))
+
+(defn- remove-ops [ops other-ops]
+  (merge-with - ops other-ops))
+
+(defn mods-remove [mods other-mods]
+  (merge-with remove-ops mods other-mods))
 
 (defn remove-mods [stats mods]
   (update stats :stats/modifiers mods-remove mods))
@@ -3152,6 +3148,10 @@
     (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
     (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
     font))
+
+(defn create-vampire-level [_]
+  {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
+   :start-position [32 71]})
 
 (def level-fn 
   create-vampire-level
