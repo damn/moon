@@ -127,7 +127,11 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-(defn- overview-table-rows* [skin image-scale rows]
+(def skin (atom nil))
+(def stage (atom nil))
+(def textures (atom nil))
+
+(defn- overview-table-rows* [image-scale rows]
   (for [row rows]
     (for [{:keys [texture-region
                   on-clicked
@@ -142,12 +146,14 @@
                          (.addListener (proxy [ChangeListener] []
                                          (changed [event actor]
                                            (on-clicked actor))))
-                         (.addListener (TextTooltip. ^String tooltip skin)))
-                       (doto (Label. ^String extra-info-text skin)
+                         (.addListener (TextTooltip. ^String tooltip @skin)))
+                       (doto (Label. ^String extra-info-text @skin)
                          (.setTouchable Touchable/disabled))])
                 stack)})))
 
-(defn- property-overview-rows [db textures skin property-type clicked-id-fn]
+(def db (atom nil))
+
+(defn- property-overview-rows [property-type clicked-id-fn]
   (let [{:keys [sort-by-fn
                 extra-info-text
                 columns
@@ -155,7 +161,7 @@
     (->> (game/all-raw @db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
-                {:texture-region (game/get-texture-region textures (or (:entity/image property)
+                {:texture-region (game/get-texture-region @textures (or (:entity/image property)
                                                                        (first (:animation/frames (:entity/animation property)))))
                  :on-clicked (fn [actor]
                                (clicked-id-fn actor (:property/id property)))
@@ -164,17 +170,17 @@
                               (pprint property)))
                  :extra-info-text (extra-info-text property)}))
          (partition-all columns)
-         (overview-table-rows* skin image-scale))))
+         (overview-table-rows* image-scale))))
 
-(defn property-overview-window [db textures skin property-type clicked-id-fn]
-  (let [window (Window. "Edit" skin)]
-    (doseq [row (property-overview-rows db textures skin property-type clicked-id-fn)]
+(defn property-overview-window [property-type clicked-id-fn]
+  (let [window (Window. "Edit" @skin)]
+    (doseq [row (property-overview-rows property-type clicked-id-fn)]
       (doseq [cell row]
         (.add window ^Actor (:actor cell)))
       (.row window))
     (.pack window)
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" skin)
+          (doto (TextButton. "X" @skin)
             (.addListener (proxy [ChangeListener] []
                             (changed [_event _actor]
                               (.remove window))))))
@@ -187,15 +193,15 @@
      (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
                   (* scale (.getRegionHeight ^TextureRegion texture-region))))))
 
-(defn- create-image-widget [textures image]
-  (scaled-image-button (game/get-texture-region textures image) 2))
+(defn- create-image-widget [image]
+  (scaled-image-button (game/get-texture-region @textures image) 2))
 
-(defn- create-animation-widget [textures animation]
+(defn- create-animation-widget [animation]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 1))))]
     (doseq [image (:animation/frames animation)]
       (.add table ^Actor (scaled-image-button
-                          (game/get-texture-region textures image)
+                          (game/get-texture-region @textures image)
                           2)))
     (.row ^Table table)
     (.pack table)
@@ -204,8 +210,8 @@
 (defn- boolean-widget-value [widget]
   (.isChecked ^CheckBox widget))
 
-(defn- create-boolean-widget [skin checked?]
-  (doto (CheckBox. "" skin)
+(defn- create-boolean-widget [checked?]
+  (doto (CheckBox. "" @skin)
     (.setChecked checked?)))
 
 (defn- default-widget-value [widget]
@@ -216,53 +222,60 @@
     (str (subs s 0 limit) "...")
     s))
 
-(defn- create-default-widget [skin v]
+(defn- create-default-widget [v]
   (Label. ^String (truncate (binding [*print-level* nil]
                               (pr-str v))
                             60)
-          skin))
+          @skin))
 
 (defn- enum-widget-value [widget]
   (edn/read-string (.getSelected ^SelectBox widget)))
 
-(defn- create-enum-widget [skin schema v]
-  (doto ^SelectBox (SelectBox. skin)
+(defn- create-enum-widget [schema v]
+  (doto ^SelectBox (SelectBox. @skin)
     (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
     (.setSelected (pr-str v))))
 
 (defn- number-widget-value [widget]
   (edn/read-string (.getText ^TextField widget)))
 
-(defn- create-number-widget [skin schema v]
-  (doto (TextField. ^String (pr-str v) skin)
-    (.addListener (TextTooltip. ^String (str schema) skin))))
+(defn- create-number-widget [schema v]
+  (doto (TextField. ^String (pr-str v) @skin)
+    (.addListener (TextTooltip. ^String (str schema) @skin))))
 
 (defn- string-widget-value [widget]
   (.getText ^TextField widget))
 
-(defn- create-string-widget [skin schema v]
-  (doto (TextField. ^String (str v) skin)
-    (.addListener (TextTooltip. ^String (str schema) skin))))
+(defn- create-string-widget [schema v]
+  (doto (TextField. ^String (str v) @skin)
+    (.addListener (TextTooltip. ^String (str schema) @skin))))
 
 (defn- val-max-widget-value [widget]
   (edn/read-string (.getText ^TextField widget)))
 
-(defn- create-val-max-widget [skin schema v]
-  (doto (TextField. ^String (pr-str v) skin)
-    (.addListener (TextTooltip. ^String (str schema) skin))))
+(defn- create-val-max-widget [schema v]
+  (doto (TextField. ^String (pr-str v) @skin)
+    (.addListener (TextTooltip. ^String (str schema) @skin))))
 
-(defn- play-sound-button [play-sound! skin sound-name]
-  (doto (TextButton. "play!" skin)
+(def audio (atom nil))
+
+(defn play-sound! [sound-name]
+  (let [sounds @audio]
+    (assert (contains? sounds sound-name) (str sound-name))
+    (.play ^Sound (get sounds sound-name))))
+
+(defn- play-sound-button [sound-name]
+  (doto (TextButton. "play!" @skin)
     (.addListener (proxy [ChangeListener] []
                     (changed [event _actor]
                       (play-sound! sound-name))))))
 
-(defn- sound-columns [play-sound! skin table sound-name open-select-sounds-handler]
-  [{:actor (doto (TextButton. sound-name skin)
+(defn- sound-columns [table sound-name open-select-sounds-handler]
+  [{:actor (doto (TextButton. sound-name @skin)
              (.addListener (proxy [ChangeListener] []
                              (changed [event _actor]
                                (open-select-sounds-handler table)))))}
-   {:actor (play-sound-button play-sound! skin sound-name)}])
+   {:actor (play-sound-button sound-name)}])
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor]
@@ -275,8 +288,8 @@
     (let [[k _] (.getUserObject ^Actor table)]
       (.setUserObject ^Actor table [k sound-name]))))
 
-(defn- choose-sound-button [skin table sound-name ->sound-columns]
-  (doto (TextButton. sound-name skin)
+(defn- choose-sound-button [table sound-name ->sound-columns]
+  (doto (TextButton. sound-name @skin)
     (.addListener (proxy [ChangeListener] []
                     (changed [event actor]
                       ((rebuild-sound-widget! table sound-name ->sound-columns) actor))))))
@@ -291,42 +304,42 @@
     (.pack table)
     table))
 
-(defn- choose-sound-window [play-sound! skin sound-names stage table ->sound-columns]
+(defn- choose-sound-window [sound-names table ->sound-columns]
   (let [^Table list-table (list-sounds-table
                            5
                            (for [sound-name sound-names]
-                             [(choose-sound-button skin table sound-name ->sound-columns)
-                              (play-sound-button play-sound! skin sound-name)]))
-        window (Window. "Choose" skin)
-        c (.add window (ScrollPane. list-table skin))]
+                             [(choose-sound-button table sound-name ->sound-columns)
+                              (play-sound-button sound-name)]))
+        window (Window. "Choose" @skin)
+        c (.add window (ScrollPane. list-table @skin))]
     (.width c (float (+ (.getWidth list-table) 50)))
-    (.height c (float (min (- (.getWorldHeight (.getViewport ^Stage stage)) 50)
+    (.height c (float (min (- (.getWorldHeight (.getViewport ^Stage @stage)) 50)
                             (.getHeight list-table))))
     (.row window)
     (.pack window)
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" skin)
+          (doto (TextButton. "X" @skin)
             (.addListener (proxy [ChangeListener] []
                             (changed [_event _actor]
                               (.remove window))))))
     (.setModal window true)
     window))
 
-(defn- open-select-sounds-handler [play-sound! skin sound-names stage table ->sound-columns]
+(defn- open-select-sounds-handler [sound-names table ->sound-columns]
   (fn []
-    (.addActor ^Stage stage (choose-sound-window play-sound! skin sound-names stage table ->sound-columns))))
+    (.addActor ^Stage @stage (choose-sound-window sound-names table ->sound-columns))))
 
-(defn- create-sound-widget [play-sound! skin sound-names stage sound-name]
+(defn- create-sound-widget [sound-names sound-name]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
     (letfn [(sound-columns-fn [table sound-name]
-              (sound-columns play-sound! skin table sound-name open-select-fn))
+              (sound-columns table sound-name open-select-fn))
             (open-select-fn [table]
-              (open-select-sounds-handler play-sound! skin sound-names stage table sound-columns-fn))]
+              (open-select-sounds-handler sound-names table sound-columns-fn))]
       (doseq [cell (if sound-name
                      (sound-columns-fn table sound-name)
                      [{:actor
-                       (doto (TextButton. "No sound" skin)
+                       (doto (TextButton. "No sound" @skin)
                          (.addListener (proxy [ChangeListener] []
                                          (changed [event _actor]
                                            ((open-select-fn table))))))}])]
@@ -339,32 +352,31 @@
        (keep (fn [^Actor a] (.getUserObject a)))
        first))
 
-(defn- add-one-to-one-rows [db textures skin stage table property-type property-id]
+(defn- add-one-to-one-rows [table property-type property-id]
   (let [redo-rows (fn [id]
                     (.clearChildren ^Group table)
-                    (add-one-to-one-rows db textures skin stage table property-type id)
+                    (add-one-to-one-rows table property-type id)
                     (.pack ^Layout (.firstAscendant ^Actor table Window)))]
     (doseq [row (cond-> []
                   (not property-id)
-                  (conj [{:actor (doto (TextButton. "+" skin)
+                  (conj [{:actor (doto (TextButton. "+" @skin)
                                    (.addListener (proxy [ChangeListener] []
                                                    (changed [event _actor]
-                                                     (.addActor ^Stage stage
+                                                     (.addActor ^Stage @stage
                                                       (property-overview-window
-                                                       db textures skin
                                                        property-type
                                                        (fn [actor id]
                                                          (.remove ^Actor (.firstAscendant ^Actor actor Window))
                                                          (redo-rows id))))))))}])
                   property-id
                   (conj [{:actor (let [property (game/get-raw @db property-id)]
-                                   (doto (Image. ^TextureRegion (game/get-texture-region textures (or (:entity/image property)
+                                   (doto (Image. ^TextureRegion (game/get-texture-region @textures (or (:entity/image property)
                                                                                                      (first (:animation/frames (:entity/animation property))))))
                                      (.addListener (TextTooltip. ^String (binding [*print-level* 2]
                                                                            (with-out-str
-                                                                             (pprint property))) skin))
+                                                                             (pprint property))) @skin))
                                      (.setUserObject property-id)))}]
-                        [{:actor (doto (TextButton. "-" skin)
+                        [{:actor (doto (TextButton. "-" @skin)
                                    (.addListener (proxy [ChangeListener] []
                                                    (changed [event _actor]
                                                      (redo-rows nil)))))}]))]
@@ -372,10 +384,10 @@
         (.add ^Table table ^Actor (:actor cell)))
       (.row ^Table table))))
 
-(defn- create-one-to-one-widget [db textures skin stage [_ property-type] property-id]
+(defn- create-one-to-one-widget [[_ property-type] property-id]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
-    (add-one-to-one-rows db textures skin stage table property-type property-id)
+    (add-one-to-one-rows table property-type property-id)
     table))
 
 (defn- one-to-many-widget-value [widget]
@@ -383,32 +395,31 @@
        (keep (fn [^Actor a] (.getUserObject a)))
        set))
 
-(defn- add-one-to-many-rows [db textures skin stage table property-type property-ids]
+(defn- add-one-to-many-rows [table property-type property-ids]
   (let [redo-rows (fn [property-ids]
                     (.clearChildren ^Group table)
-                    (add-one-to-many-rows db textures skin stage table property-type property-ids)
+                    (add-one-to-many-rows table property-type property-ids)
                     (.pack ^Layout (.firstAscendant ^Actor table Window)))]
     (doseq [row
-            [[{:actor (doto (TextButton. "+" skin)
+            [[{:actor (doto (TextButton. "+" @skin)
                         (.addListener (proxy [ChangeListener] []
                                         (changed [event _actor]
-                                          (.addActor ^Stage stage
+                                          (.addActor ^Stage @stage
                                                      (property-overview-window
-                                                      db textures skin
                                                       property-type
                                                       (fn [actor id]
                                                         (.remove ^Actor (.firstAscendant ^Actor actor Window))
                                                         (redo-rows (conj property-ids id)))))))))}]
              (for [property-id property-ids]
                (let [property (game/get-raw @db property-id)]
-                 {:actor (doto (Image. ^TextureRegion (game/get-texture-region textures (or (:entity/image property)
+                 {:actor (doto (Image. ^TextureRegion (game/get-texture-region @textures (or (:entity/image property)
                                                                                            (first (:animation/frames (:entity/animation property))))))
                            (.addListener (TextTooltip. ^String (binding [*print-level* 2]
                                                                  (with-out-str
-                                                                   (pprint property))) skin))
+                                                                   (pprint property))) @skin))
                            (.setUserObject property-id))}))
              (for [id property-ids]
-               {:actor (doto (TextButton. "-" skin)
+               {:actor (doto (TextButton. "-" @skin)
                          (.addListener (proxy [ChangeListener] []
                                          (changed [event _actor]
                                            (redo-rows (disj property-ids id))))))})]]
@@ -416,10 +427,10 @@
         (.add ^Table table ^Actor (:actor cell)))
       (.row ^Table table))))
 
-(defn- create-one-to-many-widget [db textures skin stage [_ property-type] property-ids]
+(defn- create-one-to-many-widget [[_ property-type] property-ids]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
-    (add-one-to-many-rows db textures skin stage table property-type property-ids)
+    (add-one-to-many-rows table property-type property-ids)
     table))
 
 (declare create-widget widget-value)
@@ -453,25 +464,33 @@
               :let [[k _] (.getUserObject ^Actor widget)]]
           [k (widget-value (get game/schemas k) widget)])))
 
+(declare property-editor-window)
+
+(defn- rebuild-editor-window! []
+  (let [window (-> (.getRoot ^Stage @stage)
+                   (.findActor "moon.ui.clojure.editor-window"))
+        map-widget-table (.findActor ^Group window "moon.db.schema.map.ui.widget")
+        property (map-widget-value map-widget-table)]
+    (.remove window)
+    (.addActor ^Stage @stage (property-editor-window property))))
+
 (defn- component-row-table
   [{:keys [display-remove-component-button?
            k
-           skin
-           rebuild-editor-window!
            table]}]
   (let [row-table (doto (Table.)
                     (#(.pad (.defaults ^Table %) (float 2))))]
     (doto (.add row-table ^Actor (when display-remove-component-button?
-                                   (doto (TextButton. "-" skin)
+                                   (doto (TextButton. "-" @skin)
                                      (.addListener (proxy [ChangeListener] []
                                                      (changed [event _actor]
                                                        (.remove ^Actor (first (filter (fn [actor]
                                                                                         (and (.getUserObject ^Actor actor)
                                                                                              (= k ((.getUserObject ^Actor actor) 0))))
                                                                                       (.getChildren ^Group table))))
-                                                       (@rebuild-editor-window!)))))))
+                                                       (rebuild-editor-window!)))))))
       (.left))
-    (.add row-table ^Actor (Label. ^String (k-label-text k) skin))
+    (.add row-table ^Actor (Label. ^String (k-label-text k) @skin))
     (.row ^Table row-table)
     (.pack row-table)
     row-table))
@@ -499,19 +518,19 @@
       (.expandX)))
   (.row ^Table table))
 
-(defn- add-component-window [skin rebuild-editor-window! schema map-widget-table build-widget widget-value]
-  (let [window (Window. "Choose" skin)
+(defn- add-component-window [schema map-widget-table build-widget widget-value]
+  (let [window (Window. "Choose" @skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (game/malli-form schema))))]
     (.pad (.defaults window) (float 5))
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" skin)
+          (doto (TextButton. "X" @skin)
             (.addListener (proxy [ChangeListener] []
                             (changed [_event _actor]
                               (.remove window))))))
     (.setModal window true)
     (doseq [k remaining-ks]
-      (.add window (doto (TextButton. (name k) skin)
+      (.add window (doto (TextButton. (name k) @skin)
                      (.addListener (proxy [ChangeListener] []
                                      (changed [event _actor]
                                        (.remove window)
@@ -524,11 +543,9 @@
                                                                           (#{:s/map} (schema 0)) {}
                                                                           :else nil)))
                                          :k k
-                                         :skin skin
-                                         :rebuild-editor-window! rebuild-editor-window!
                                          :display-remove-component-button? (optional? (game/malli-form schema) k)
                                          :table map-widget-table})
-                                       (@rebuild-editor-window!))))))
+                                       (rebuild-editor-window!))))))
       (.row window))
     (.pack window)
     window))
@@ -539,9 +556,6 @@
            k->optional?
            ks-sorted
            opt?
-           skin
-           stage
-           rebuild-editor-window!
            build-widget
            widget-value]}]
   (let [table (doto (Table.)
@@ -549,12 +563,11 @@
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3]
     (when opt?
-      (doto (.add table ^Actor (doto (TextButton. "Add component" skin)
+      (doto (.add table ^Actor (doto (TextButton. "Add component" @skin)
                                  (.addListener (proxy [ChangeListener] []
                                                  (changed [event actor]
-                                                   (.addActor ^Stage stage
-                                                              (add-component-window skin rebuild-editor-window!
-                                                                                    schema table build-widget widget-value)))))))
+                                                   (.addActor ^Stage @stage
+                                                              (add-component-window schema table build-widget widget-value)))))))
         (.colspan (int colspan)))
       (.row table)
       (add-horiz-sep! table colspan))
@@ -564,20 +577,15 @@
       (add-component-row! table
                           {:editor-widget (k->widget k)
                            :k k
-                           :skin skin
-                           :rebuild-editor-window! rebuild-editor-window!
                            :display-remove-component-button? (k->optional? k)
                            :table table}))
     table))
 
-(defn- create-map-widget [skin stage rebuild-editor-window! schema m build-widget widget-value]
+(defn- create-map-widget [schema m build-widget widget-value]
   (map-widget-table-create
    {:schema schema
     :build-widget build-widget
     :widget-value widget-value
-    :skin skin
-    :stage stage
-    :rebuild-editor-window! rebuild-editor-window!
     :k->widget (into {}
                      (for [[k v] m]
                        [k (build-widget (get game/schemas k) k v)]))
@@ -598,31 +606,30 @@
     :s/val-max (val-max-widget-value widget)
     (default-widget-value widget)))
 
-(defn- build-widget [ctx schema k v]
-  (let [widget (create-widget ctx schema v)]
+(defn- build-widget [schema k v]
+  (let [widget (create-widget schema v)]
     (.setUserObject ^Actor widget [k v])
     widget))
 
 (defn create-widget
-  [{:keys [db play-sound! rebuild-editor-window! skin sound-names stage textures] :as ctx}
-   [schema-k :as schema] v]
+  [[schema-k :as schema] v]
   (case schema-k
-    :s/animation (create-animation-widget textures v)
-    :s/boolean (create-boolean-widget skin v)
-    :s/enum (create-enum-widget skin schema v)
-    :s/image (create-image-widget textures v)
-    :s/map (create-map-widget skin stage rebuild-editor-window! schema v
-                              (fn [schema k v] (build-widget ctx schema k v))
+    :s/animation (create-animation-widget v)
+    :s/boolean (create-boolean-widget v)
+    :s/enum (create-enum-widget schema v)
+    :s/image (create-image-widget v)
+    :s/map (create-map-widget schema v
+                              (fn [schema k v] (build-widget schema k v))
                               widget-value)
-    :s/number (create-number-widget skin schema v)
-    :s/one-to-many (create-one-to-many-widget db textures skin stage schema v)
-    :s/one-to-one (create-one-to-one-widget db textures skin stage schema v)
-    :s/sound (create-sound-widget play-sound! skin sound-names stage v)
-    :s/string (create-string-widget skin schema v)
-    :s/val-max (create-val-max-widget skin schema v)
-    (create-default-widget skin v)))
+    :s/number (create-number-widget schema v)
+    :s/one-to-many (create-one-to-many-widget schema v)
+    :s/one-to-one (create-one-to-one-widget schema v)
+    :s/sound (create-sound-widget (keys @audio) v)
+    :s/string (create-string-widget schema v)
+    :s/val-max (create-val-max-widget schema v)
+    (create-default-widget v)))
 
-(defn- with-window-close [db f]
+(defn- with-window-close [f]
   (fn [actor]
     (try
      (swap! db f)
@@ -631,18 +638,18 @@
        (binding [*print-level* 3]
          (pretty-repl/pretty-pst t 24))))))
 
-(defn- property-editor-table [skin widget on-save on-delete]
+(defn- property-editor-table [widget on-save on-delete]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
     (doto (.add table ^Actor widget)
       (.colspan (int 2)))
     (.row table)
-    (doto (.add table ^Actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" skin)
+    (doto (.add table ^Actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" @skin)
                                (.addListener (proxy [ChangeListener] []
                                                (changed [event actor]
                                                  (on-save actor))))))
       (.center))
-    (doto (.add table ^Actor (doto (TextButton. "Delete" skin)
+    (doto (.add table ^Actor (doto (TextButton. "Delete" @skin)
                                (.addListener (proxy [ChangeListener] []
                                                (changed [event actor]
                                                  (on-delete actor))))))
@@ -651,32 +658,21 @@
     (.pack table)
     table))
 
-(declare property-editor-window)
+(def properties-file (io/resource "properties.edn"))
 
-(defn- rebuild-editor-window! [ctx]
-  (let [{:keys [stage]} ctx
-        window (-> (.getRoot ^Stage stage)
-                   (.findActor "moon.ui.clojure.editor-window"))
-        map-widget-table (.findActor ^Group window "moon.db.schema.map.ui.widget")
-        property (map-widget-value map-widget-table)]
-    (.remove window)
-    (.addActor ^Stage stage (property-editor-window ctx property))))
-
-(defn property-editor-window [ctx property]
-  (reset! (:rebuild-editor-window! ctx) #(rebuild-editor-window! ctx))
-  (let [{:keys [db properties-file skin stage]} ctx
-        schema (get game/schemas (keyword "properties" (namespace (:property/id property))))
-        widget (create-widget ctx schema property)
-        scroll-pane-height (.getWorldHeight (.getViewport ^Stage stage))
+(defn property-editor-window [property]
+  (let [schema (get game/schemas (keyword "properties" (namespace (:property/id property))))
+        widget (create-widget schema property)
+        scroll-pane-height (.getWorldHeight (.getViewport ^Stage @stage))
         get-widget-value #(widget-value schema widget)
         property-id (:property/id property)
-        on-delete (with-window-close db
+        on-delete (with-window-close 
                     (fn [db]
                       (assert (contains? db property-id))
                       (let [new-db (dissoc db property-id)]
                         (game/save! new-db properties-file)
                         new-db)))
-        on-save (with-window-close db
+        on-save (with-window-close 
                   (fn [db]
                     (let [property (get-widget-value)
                           id (:property/id property)]
@@ -690,17 +686,17 @@
                       (let [new-db (assoc db id property)]
                         (game/save! new-db properties-file)
                         new-db))))
-        ^Table table (property-editor-table skin widget on-save on-delete)
-        window (Window. "[SKY]Property[]" skin)]
+        ^Table table (property-editor-table widget on-save on-delete)
+        window (Window. "[SKY]Property[]" @skin)]
     (.pad (.defaults window) (float 5))
-    (let [c (.add window (ScrollPane. table skin))]
+    (let [c (.add window (ScrollPane. table @skin))]
       (.width c (float (+ (.getWidth table) 50)))
       (.height c (float (min (- scroll-pane-height 50)
                              (.getHeight table)))))
     (.row window)
     (.pack window)
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" skin)
+          (doto (TextButton. "X" @skin)
             (.addListener (proxy [ChangeListener] []
                             (changed [_event _actor]
                               (.remove window))))))
@@ -715,83 +711,63 @@
     (.setName window "moon.ui.clojure.editor-window")
     window))
 
-(defn main-window [ctx]
-  (let [{:keys [db skin stage textures]} ctx
-        window (Window. "Edit" skin)]
+(defn main-window []
+  (let [window (Window. "Edit" @skin)]
     (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys game/schemas)))]
-      (.add window (doto (TextButton. (str/capitalize (name property-type)) skin)
+      (.add window (doto (TextButton. (str/capitalize (name property-type)) @skin)
                      (.addListener (proxy [ChangeListener] []
                                      (changed [event _actor]
-                                       (.addActor ^Stage stage
+                                       (.addActor ^Stage @stage
                                                   (property-overview-window
-                                                   db textures skin
                                                    property-type
                                                    (fn [_actor id]
-                                                     (.addActor ^Stage stage
-                                                                (property-editor-window ctx (game/get-raw @db id)))))))))))
+                                                     (.addActor ^Stage @stage
+                                                                (property-editor-window (game/get-raw @db id)))))))))))
       (.row window))
     (.pack window)
     window))
 
+(def batch (atom nil))
+
 (defn listener []
-  (let [properties-file (io/resource "properties.edn")
-        audio (atom nil)
-        batch (atom nil)
-        db (atom nil)
-        rebuild-editor-window! (atom nil)
-        skin (atom nil)
-        stage (atom nil)
-        textures (atom nil)
-        play-sound! (fn [sound-name]
-                      (let [sounds @audio]
-                        (assert (contains? sounds sound-name) (str sound-name))
-                        (.play ^Sound (get sounds sound-name))))]
-    (reify ApplicationListener
-      (create [_]
-        (reset! batch (SpriteBatch.))
+  (reify ApplicationListener
+    (create [_]
+      (reset! batch (SpriteBatch.))
 
-        (reset! skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
-        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
+      (reset! skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
+      (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
 
-        (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
+      (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
 
-        (reset! audio (into {}
-                            (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
-                              [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+      (reset! audio (into {}
+                          (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
+                            [path (.newSound Gdx/audio (.internal Gdx/files path))])))
 
-        (reset! db (game/create-db (-> properties-file slurp edn/read-string)))
+      (reset! db (game/create-db (-> properties-file slurp edn/read-string)))
 
-        (reset! textures (game/create-textures {:folder "resources/"
-                                                :extensions #{"png" "bmp"}}))
+      (reset! textures (game/create-textures {:folder "resources/"
+                                              :extensions #{"png" "bmp"}}))
 
-        (.setInputProcessor Gdx/input @stage)
-        (.addActor ^Stage @stage
-                   (main-window {:db db
-                                 :play-sound! play-sound!
-                                 :properties-file properties-file
-                                 :rebuild-editor-window! rebuild-editor-window!
-                                 :skin @skin
-                                 :sound-names (keys @audio)
-                                 :stage @stage
-                                 :textures @textures})))
+      (.setInputProcessor Gdx/input @stage)
+      (.addActor ^Stage @stage (main-window)))
 
-      (dispose [_]
-        (run! Sound/.dispose (vals @audio))
-        (Disposable/.dispose @batch)
-        (Disposable/.dispose @skin)
-        (run! Disposable/.dispose (vals @textures)))
+    (dispose [_]
+      (run! Sound/.dispose (vals @audio))
+      (Disposable/.dispose @batch)
+      (Disposable/.dispose @skin)
+      (run! Disposable/.dispose (vals @textures)))
 
-      (render [_]
-        (ScreenUtils/clear 0 0 0 0)
-        (.act ^Stage @stage)
-        (.draw ^Stage @stage))
+    (render [_]
+      (ScreenUtils/clear 0 0 0 0)
+      (.act ^Stage @stage)
+      (.draw ^Stage @stage))
 
-      (resize [_ width height]
-        (.update (.getViewport ^Stage @stage) width height true))
+    (resize [_ width height]
+      (.update (.getViewport ^Stage @stage) width height true))
 
-      (pause [_])
+    (pause [_])
 
-      (resume [_]))))
+    (resume [_])))
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
