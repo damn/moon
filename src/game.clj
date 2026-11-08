@@ -2281,11 +2281,11 @@
 
 (def ^:dynamic *grid*)
 
+(def ^:dynamic *content-grid*)
+
 ; TODO drop world param -> drop world itself
 (defn register-eid!
-  [{:keys [world/content-grid
-           ]}
-   eid]
+  [_world eid]
   (assert (and (not (contains? @eid :entity/id))))
   (let [id (swap! *id-counter* inc)]
     (assert (number? id))
@@ -2293,7 +2293,7 @@
     (swap! *entity-ids* assoc id eid))
 
   (assert (:entity/position @eid))
-  (update-entity! content-grid eid)
+  (update-entity! *content-grid* eid)
 
   (assert (:entity/position @eid))
   (when (:entity/collides? @eid)
@@ -2304,10 +2304,8 @@
   nil)
 
 (defn relocate-eid!
-  [{:keys [world/content-grid
-           ]}
-   eid]
-  (update-entity! content-grid eid)
+  [_world eid]
+  (update-entity! *content-grid* eid)
   (remove-from-touched-cells! *grid* eid)
   (set-touched-cells! *grid* eid)
   (when (:entity/collides? @eid)
@@ -2316,12 +2314,10 @@
   nil)
 
 (defn unregister-eid!
-  [{:keys [world/content-grid
-           ]}
-   eid]
+  [_world eid]
   (let [id (:entity/id @eid)]
     (swap! *entity-ids* dissoc id)
-    (remove-entity! content-grid eid)
+    (remove-entity! *content-grid* eid)
     (remove-from-touched-cells! *grid* eid)
     (when (:entity/collides? @eid)
       (remove-from-occupied-cells! *grid* eid)))
@@ -3984,8 +3980,8 @@
       (swap! new-eid assoc :entity/mouseover? true))
     (reset! mouseover-eid new-eid)))
 
-(defn update-active-entities! [world active-entities]
-  (reset! active-entities (active-entities* (:world/content-grid @world) @*player-eid*)))
+(defn update-active-entities! [_world active-entities]
+  (reset! active-entities (active-entities* *content-grid* @*player-eid*)))
 
 (defn set-camera-to-player! [world viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
@@ -4363,7 +4359,8 @@
                         height (.get props "height")
                         grid (create-grid tiled-map)]
                     (set! *grid* grid) 
-                    {:world/content-grid (create-content-grid width height 16)
+                    (set! *content-grid* (create-content-grid width height 16))
+                    {
                      :world/explored-tile-corners (atom
                                                     (mapv (fn [x] (mapv (fn [y] false)
                                                                         (range height)))
@@ -4596,7 +4593,8 @@
             *potential-field-cache* nil
             *id-counter* nil
             *entity-ids* nil
-            *grid* nil]
+            *grid* nil
+            *content-grid* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
