@@ -35,8 +35,6 @@
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
    :start-position [32 71]})
 
-(def factions-iterations {:good 15 :evil 5})
-
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
 
@@ -3385,6 +3383,8 @@
 (def show-cell-occupied? (atom false))
 (def show-body-bounds? (atom false))
 
+(def factions-iterations {:good 15 :evil 5})
+
 (defn draw-cell-debug
   [shape-drawer ^Viewport viewport world]
   (let [world @world
@@ -4337,6 +4337,55 @@
 (defn dispose-sounds! []
   (run! Sound/.dispose (vals *sounds*)))
 
+(defn create-shape-drawer-texture! []
+  (set! *shape-drawer-texture* (white-pixel-texture)))
+
+(defn create-shape-drawer! []
+  (set! *shape-drawer* (ShapeDrawer. *batch* (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1))))
+
+(defn create-skin!* []
+  (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json"))))
+
+(defn create-stage! []
+  (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) *batch*)))
+
+(defn configure-tooltips! [] 
+  (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0))
+
+(defn put-colors! []
+  (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1)))
+
+(defn load-textures! []
+  (set! *textures* (create-textures Gdx/files {:folder "resources/"
+                                               :extensions #{"png" "bmp"}})))
+
+(defn load-world! []
+  (let [{level-tiled-map :tiled-map
+         level-start :start-position} (create-level! db *textures*)]
+    (reset! world (create-world level-tiled-map {:start-position level-start}))))
+
+(defn add-stage-actors! []
+  (doseq [^Actor actor (create-ui-actors world
+                                         mouseover-eid
+                                         paused?
+                                         unit-scale
+                                         *default-font*
+                                         *shape-drawer*
+                                         @skin
+                                         @stage
+                                         *textures*
+                                         *viewport*)]
+    (.addActor ^Stage @stage actor)))
+
+(defn spawn-player!* []
+  (spawn-player! db world @skin @stage *textures*))
+
+(defn bind-player-eid!* []
+  (bind-player-eid! world))
+
+(defn spawn-map-creatures!* []
+  (spawn-map-creatures! db world))
+
 (def listener
   (reify ApplicationListener
     (create [_]
@@ -4344,76 +4393,29 @@
       (load-sounds!)
       (load-sprite-batch!)
       (load-font!)
-
-      (reset! unit-scale 1) ; initial binding value ?
-
-      ; create-shape-drawer-texture!
-      (set! *shape-drawer-texture* (white-pixel-texture))
-
-      ; create-shape-drawer!
-      (set! *shape-drawer* (ShapeDrawer. *batch* (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
-
-      ; create-skin!
-      (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
-
-      (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) *batch*))
-      ; with addActors ?
-
+      (create-shape-drawer-texture!)
+      (create-shape-drawer!)
+      (create-skin!*)
+      (create-stage!)
       (set-input-processor!)
-
-      ; configure-tooltips!
-      (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
-
-      ; put-colors!
-      (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-
-      ; create-textures!
-      (set! *textures* (create-textures Gdx/files {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}}))
-
+      (configure-tooltips!)
+      (put-colors!)
+      (load-textures!)
       (create-viewport*)
-
-      (let [{level-tiled-map :tiled-map
-             level-start :start-position} (create-level! db *textures*)]
-        (reset! world (create-world level-tiled-map {:start-position level-start})))
-      ; create-world! (world also *dyanimic* -> and elapsed time etc. maybe separate ?
-
-      ; to stage ?
-      ; needs world viewport font etc. first ... hmmm
-      (doseq [^Actor actor (create-ui-actors world
-                                             mouseover-eid
-                                             paused?
-                                             unit-scale
-                                             *default-font*
-                                             *shape-drawer*
-                                             @skin
-                                             @stage
-                                             *textures*
-                                             *viewport*)]
-        (.addActor ^Stage @stage actor))
-
-      (spawn-player! db world @skin @stage *textures*)
-
-      (bind-player-eid! world)
-
-      (spawn-map-creatures! db world)
-      )
+      (load-world!)
+      (add-stage-actors!)
+      (spawn-player!*)
+      (bind-player-eid!*)
+      (spawn-map-creatures!*))
 
     (dispose [_]
       (dispose-sounds!)
-
       (Disposable/.dispose *batch*)
-
       (dispose-cursors!)
-
       (dispose-font!)
-
       (Disposable/.dispose *shape-drawer-texture*)
-
       (Disposable/.dispose @skin)
-
       (run! Disposable/.dispose (vals *textures*))
-
       (Disposable/.dispose (:world/tiled-map @world))
       )
 
