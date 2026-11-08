@@ -1,15 +1,12 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ; libGDX + ShapeDrawer (Clojure FFI facades live under src/)
                  [com.badlogicgames.gdx/gdx "1.14.2"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3 "1.14.2"]
                  [com.badlogicgames.gdx/gdx-platform "1.14.2" :classifier "natives-desktop"]
                  [com.badlogicgames.gdx/gdx-freetype "1.14.2"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.2" :classifier "natives-desktop"]
                  [space.earlygrey/shapedrawer "2.6.0"]
-
-                 ;
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [metosin/malli "0.13.0"]
@@ -21,7 +18,7 @@
                  ]
   :java-source-paths ["java"]
   :source-paths ["src"]
-  :resource-paths ["resources/" "wav/" "edn/"]
+  :resource-paths ["resources/"]
   :aliases {
             "game"     ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
             "levelgen" ["run" "-m" "loop" "((requiring-resolve 'levelgen/-main))"]
