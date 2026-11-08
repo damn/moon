@@ -28,6 +28,12 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
+(def level-fn 
+  create-vampire-level
+  ;create-uf-caves
+  ;create-modules-level
+  )
+
 (def ^:dynamic *sounds*)
 
 (defn play-sound! [sound-name]
@@ -50,6 +56,9 @@
                :z-order/effect])
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 (def world-unit-scale (float (/ 48)))
+(def max-speed (/ minimum-size max-delta))
+(def render-z-order (apply hash-map (interleave z-orders (range))))
+(def factions-iterations {:good 15 :evil 5})
 
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
@@ -3170,11 +3179,17 @@
                   (doto (OrthographicCamera.)
                     (.setToOrtho false world-width world-height)))))
 
-(defn create-default-font! [files {:keys [path
-                                          size
-                                          quality-scaling
-                                          use-integer-positions?]}]
-  (let [generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
+(def default-font-params {:path "fonts/films.EXL_____.ttf"
+                          :size 16
+                          :quality-scaling 2
+                          :use-integer-positions? false})
+
+(defn create-default-font! [files]
+  (let [{:keys [path
+                size
+                quality-scaling
+                use-integer-positions?]} default-font-params
+        generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
                     (set! (.minFilter p) Texture$TextureFilter/Linear)
@@ -3189,7 +3204,7 @@
     (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
     font))
 
-(defn create-level! [level-fn db* textures*]
+(defn create-level! [db* textures*]
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
         (level-fn {:level/creature-properties (prepare-creature-tiles
@@ -3373,8 +3388,7 @@
 
 (defn draw-cell-debug
   [ctx shape-drawer ^Viewport viewport world
-   show-cell-entities? show-cell-occupied? show-potential-field-colors?
-   factions-iterations]
+   show-cell-entities? show-cell-occupied? show-potential-field-colors? ]
   (let [world @world
         ^OrthographicCamera camera (.getCamera viewport)
         plane-points (mapv (fn [^Vector3 v3]
@@ -3630,7 +3644,7 @@
 
 (defn draw-entities!
   [ctx shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
-   raycaster world show-body-bounds? active-entities render-z-order]
+   raycaster world show-body-bounds? active-entities]
   (let [player-eid (:world/player-eid @world)
         elapsed-time @(:world/elapsed-time @world)
         show-body-bounds? @show-body-bounds?
@@ -3704,7 +3718,6 @@
 
 (defn tick-component
   [world delta-time skin stage textures
-   max-speed
    ctx world-mouse-position apply-effects! eid [k v]]
   (let [elapsed-time* @(:world/elapsed-time @world)]
     (case k
@@ -3971,7 +3984,7 @@
      (player-state-draw-create unit-scale textures* world)
      (player-message-actor-create default-font unit-scale)]))
 
-(defn update-mouseover-eid! [world mouseover-eid stage viewport render-z-order]
+(defn update-mouseover-eid! [world mouseover-eid stage viewport]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
@@ -4191,7 +4204,7 @@
 
 (defn- tick-entities!
   [db world delta-time active-entities
-   skin stage textures max-speed viewport]
+   skin stage textures viewport]
   (let [active-entities* @active-entities
         raycaster (:world/raycaster @world)
         world-mouse-pos (world-mouse-position viewport)]
@@ -4204,15 +4217,13 @@
       (doseq [eid active-entities*
               component @eid]
         (tick-component world delta-time skin stage textures
-                        max-speed
                         nil world-mouse-pos
                         apply-effects!
                         eid component)))))
 
 (defn tick-game!
   [db world active-entities paused?
-   skin stage textures viewport factions-iterations
-   max-speed]
+   skin stage textures viewport]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
           world* @world]
@@ -4224,7 +4235,7 @@
                  @active-entities
                  max-iterations))
       (tick-entities! db world delta-time active-entities
-                      skin stage textures max-speed viewport))))
+                      skin stage textures viewport))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
@@ -4270,19 +4281,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [max-speed (/ minimum-size max-delta)
-        render-z-order (apply hash-map (interleave z-orders (range)))
-        factions-iterations {:good 15
-                             :evil 5}
-        level-fn 
-        create-vampire-level
-        ;create-uf-caves
-        ;create-modules-level
-        default-font-params {:path "fonts/films.EXL_____.ttf"
-                             :size 16
-                             :quality-scaling 2
-                             :use-integer-positions? false}
-        batch (atom nil)
+  (let [batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
         viewport (atom nil)
@@ -4326,9 +4325,9 @@
         (reset! textures (create-textures Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
         (reset! viewport (create-viewport!))
-        (reset! default-font (create-default-font! Gdx/files default-font-params))
+        (reset! default-font (create-default-font! Gdx/files))
         (let [{level-tiled-map :tiled-map
-               level-start :start-position} (create-level! level-fn db @textures)]
+               level-start :start-position} (create-level! db @textures)]
           (reset! world (create-world level-tiled-map {:start-position level-start})))
         (doseq [^Actor actor (create-ui-actors world
                                                mouseover-eid
@@ -4362,7 +4361,7 @@
 
       (render [_]
         (ScreenUtils/clear 0 0 0 0)
-        (update-mouseover-eid! world mouseover-eid @stage @viewport render-z-order)
+        (update-mouseover-eid! world mouseover-eid @stage @viewport)
         (update-active-entities! world active-entities)
         (set-camera-to-player! world @viewport)
         (.setProjectionMatrix ^Batch @batch (.combined (.getCamera ^Viewport @viewport)))
@@ -4384,13 +4383,12 @@
           (reset! unit-scale world-unit-scale)
           (draw-tile-grid nil @shape-drawer @viewport show-tile-grid?)
           (draw-cell-debug nil @shape-drawer @viewport world
-                           show-cell-entities? show-cell-occupied? show-potential-field-colors?
-                           factions-iterations)
+                           show-cell-entities? show-cell-occupied? show-potential-field-colors?)
           (draw-entities! nil @shape-drawer @batch @default-font @textures unit-scale 
                           (let [[x y] (ui-mouse-position @stage)]
                             (mouseover-actor @stage x y))
                           (world-mouse-position @viewport)
-                          (:world/raycaster @world) world show-body-bounds? active-entities render-z-order)
+                          (:world/raycaster @world) world show-body-bounds? active-entities)
           (highlight-mouseover-tile nil @shape-drawer (world-mouse-position @viewport) world)
           (reset! unit-scale 1))
         (.end ^Batch @batch)
@@ -4410,8 +4408,7 @@
                          (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                   (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
         (tick-game! db world active-entities paused?
-                    @skin @stage @textures @viewport factions-iterations
-                    max-speed)
+                    @skin @stage @textures @viewport)
         (destroy-entities! db world)
         (doseq [[k f] {(:zoom-in controls) (fn []
                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
