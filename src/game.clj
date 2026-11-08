@@ -4,7 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [clojure.pprint :as pprint]
-            [lib.item :as item]
             [lib.mods :as mods]
             [lib.number :as number]  
             [lib.position :as position]
@@ -871,8 +870,20 @@
                    (nil? cell-item))
                  (cells-and-items inventory slot))))
 
+(defn valid-item? [item]
+  (let [keyset (set (keys item))]
+    (or (= #{:property/id
+             :property/pretty-name
+             :entity/image
+             :item/slot
+             :stats/modifiers} keyset)
+        (= #{:property/id
+             :property/pretty-name
+             :entity/image
+             :item/slot} keyset))))
+
 (defn can-pickup-item? [inventory item]
-  (assert (item/valid? item))
+  (assert (valid-item? item))
   (or (free-cell inventory (:item/slot item))
       (free-cell inventory :inventory.slot/bag)))
 
@@ -1021,6 +1032,16 @@
                                                   (.setMinSize cell-size cell-size)))
     (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
     nil))
+
+(defn item-info-text [item]
+  (assert (valid? item))
+  (str/join "\n"
+            (remove nil?
+                    [(str "[PRETTY_NAME]" (:property/pretty-name item) "[]")
+                     (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
+                     ; seq because they can be empty map ?
+                     (when (seq (:stats/modifiers item))
+                       (str "[CYAN]" (mods/format-text (:stats/modifiers item)) "[]"))])))
 
 (defn set-item! [skin stage textures cell item]
   (-> (.getRoot ^Stage stage)
