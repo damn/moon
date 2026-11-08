@@ -4288,7 +4288,7 @@
         textures (atom nil)
         skin (atom nil)
         stage (atom nil)
-        db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string))
+        db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
         world (atom nil)
         active-entities (atom nil)
         mouseover-eid (atom nil)
