@@ -4201,6 +4201,9 @@
                         apply-effects!
                         eid component)))))
 
+
+(def ^:dynamic *potential-field-cache*)
+
 (defn tick-game!
   [db world active-entities paused?
    skin stage textures viewport]
@@ -4210,7 +4213,7 @@
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! (:world/grid world*)
-                 (:world/potential-field-cache world*)
+                 *potential-field-cache*
                  faction
                  @active-entities
                  max-iterations))
@@ -4349,12 +4352,12 @@
                 start-position]} (create-level! db *textures*)]
     (set! *tiled-map* tiled-map)
     (set! *start-position* start-position)
+    (set! *potential-field-cache* (atom nil))
     (reset! world (let [props (.getProperties tiled-map)
                         width (.get props "width")
                         height (.get props "height")
                         grid (create-grid tiled-map)]
-                    {:world/potential-field-cache (atom nil)
-                     :world/id-counter (atom 0)
+                    {:world/id-counter (atom 0)
                      :world/entity-ids (atom {})
                      :world/grid grid
                      :world/content-grid (create-content-grid width height 16)
@@ -4586,7 +4589,8 @@
             *player-eid* nil
             *elapsed-time* (atom nil)
             *tiled-map* nil
-            *start-position* nil]
+            *start-position* nil
+            *potential-field-cache* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
