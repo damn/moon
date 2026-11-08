@@ -4,7 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [level.uf-caves :as uf-caves]
-            [lib.cell :as cell] 
             [lib.circle :as circle] ; 1x
             [lib.color :as color] ; 1x
             [lib.content-grid :as content-grid] ; 1x
@@ -46,6 +45,33 @@
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport))
   (:gen-class))
+
+(defrecord Cell 
+  [position
+   middle
+   adjacent-cells
+   movement
+   entities
+   occupied
+   good
+   evil])
+
+(defn blocks-vision? [{:keys [movement]}]
+  (= movement :none))
+
+(defn cell-blocked? [{:keys [movement]} z-order]
+  (case movement
+    :none true
+    :air (case z-order
+           :z-order/flying false
+           :z-order/ground true)
+    :all false))
+
+(defn pf-blocked? [cell]
+  (blocked? cell :z-order/ground))
+
+(defn occupied-by-other? [{:keys [occupied]} eid]
+  (some #(not= % eid) occupied))
 
 (defn direction [entity other-entity]
   (v2/direction (:entity/position entity)
@@ -115,8 +141,8 @@
 
 (defn- filter-viable-cells [eid adjacent-cells]
   (remove-not-allowed-diagonals
-   (mapv #(when-not (or (cell/pf-blocked? @%)
-                        (cell/occupied-by-other? @% eid))
+   (mapv #(when-not (or (pf-blocked? @%)
+                        (occupied-by-other? @% eid))
             %)
          adjacent-cells)))
 
@@ -184,7 +210,7 @@
 
       :else
       (when-not (and (= target-cell own-cell)
-                     (cell/occupied-by-other? @own-cell eid))
+                     (occupied-by-other? @own-cell eid))
         (when-not (inside-cell? grid @eid target-cell)
           (v2/direction position (:middle @target-cell)))))))
 
@@ -197,7 +223,7 @@
             adjacent-cell (potential-field/cached-adjacent-cells grid cell)
             :let [cell* @cell
                   adjacent-cell* @adjacent-cell]
-            :when (not (or (cell/pf-blocked? adjacent-cell*)
+            :when (not (or (pf-blocked? adjacent-cell*)
                            (marked? adjacent-cell*)))
             :let [distance-value (+ (float (distance cell*))
                                     (float (if (position/diagonal? (:position cell*)
@@ -261,7 +287,7 @@
 (defn valid-position? [grid {:keys [entity/z-order] :as body} entity-id]
   (assert (:entity/collides? body))
   (let [cells* (map deref (keep #(get-in grid %) (touched-tiles body)))]
-    (and (not-any? #(cell/blocked? % z-order) cells*)
+    (and (not-any? #(cell-blocked? % z-order) cells*)
          (->> (into #{} (mapcat :entities) cells*)
               (not-any? (fn [other-entity]
                           (let [other-entity @other-entity]
@@ -400,7 +426,7 @@
         h (.get props "height")
         xyfn (fn [position]
                (atom
-                (cell/map->R
+                (map->Cell
                  {:position position
                   :middle (mapv (partial + 0.5) position)
                   :movement (case (tiled-map/movement-property tiled-map position)
@@ -419,7 +445,7 @@
         arr (make-array Boolean/TYPE width height)]
     (doseq [cell (map deref (apply concat grid))]
       (let [[x y] (:position cell)]
-        (aset arr x y (boolean (cell/blocks-vision? cell)))))
+        (aset arr x y (boolean (blocks-vision? cell)))))
     [arr width height]))
 
 (defn create-world
@@ -1840,7 +1866,7 @@
                                                             @%))
                                       (into #{} (mapcat :entities) touched-cells)))
             destroy? (or (and hit-entity (not piercing?))
-                         (some #(cell/blocked? % (:entity/z-order entity)) touched-cells))]
+                         (some #(cell-blocked? % (:entity/z-order entity)) touched-cells))]
         (when hit-entity
           (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
                  (conj already-hit-bodies hit-entity)))
