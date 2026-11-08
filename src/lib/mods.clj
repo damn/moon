@@ -6,8 +6,14 @@
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
 
+(defn add [mods other-mods]
+  (merge-with add-ops mods other-mods))
+
 (defn- remove-ops [ops other-ops]
   (merge-with - ops other-ops))
+
+(defn remove [mods other-mods]
+  (merge-with remove-ops mods other-mods))
 
 (defn- sort-ops [ops]
   (sort-by (fn [[k]]
@@ -23,12 +29,6 @@
               :op/mult (* base-value (inc (/ value 100)))))
           base-value
           (sort-ops ops)))
-
-(defn add [mods other-mods]
-  (merge-with add-ops mods other-mods))
-
-(defn remove [mods other-mods]
-  (merge-with remove-ops mods other-mods))
 
 (defn get-value [base-value modifiers modifier-k]
   {:pre [(= "modifier" (namespace modifier-k))]}

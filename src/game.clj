@@ -4,17 +4,17 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [level.uf-caves :as uf-caves]
-            [lib.animation :as animation]
-            [lib.body :as body]
-            [lib.cell :as cell]
-            [lib.circle :as circle]
-            [lib.color :as color]
-            [lib.content-grid :as content-grid]
-            [lib.db :as db]
-            [lib.entity :as entity]
-            [lib.faction :as faction]
-            [lib.grid :as grid]
-            [lib.inventory :as inventory]
+            [lib.animation :as animation] ; 1x
+            [lib.body :as body] ; 1x
+            [lib.cell :as cell] ; lib.grid
+            [lib.circle :as circle] ; 1x
+            [lib.color :as color] ; 1x
+            [lib.content-grid :as content-grid] ; 1x
+            [lib.db :as db] ; levelgen, editor
+            [lib.entity :as entity] ; 1x
+            [lib.faction :as faction] ; potential-field,grid
+            [lib.grid :as grid] ; 1x
+            [lib.inventory :as inventory] ; lib.entity
             [lib.item :as item]
             [lib.mods :as mods]
             [lib.number :as number]
