@@ -447,11 +447,11 @@
 (defn- k-label-text [k]
   (name k))
 
-(defn map-widget-value [table schemas]
+(defn map-widget-value [table]
   (into {}
         (for [widget (filter (comp vector? (fn [^Actor a] (.getUserObject a))) (.getChildren ^Group table))
               :let [[k _] (.getUserObject ^Actor widget)]]
-          [k (widget-value (get schemas k) widget schemas)])))
+          [k (widget-value (get game/schemas k) widget)])))
 
 (defn- component-row-table
   [{:keys [display-remove-component-button?
@@ -499,10 +499,10 @@
       (.expandX)))
   (.row ^Table table))
 
-(defn- add-component-window [schemas skin rebuild-editor-window! schema map-widget-table build-widget widget-value]
+(defn- add-component-window [skin rebuild-editor-window! schema map-widget-table build-widget widget-value]
   (let [window (Window. "Choose" skin)
-        remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
-                                   (map-keys (game/malli-form schema schemas))))]
+        remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
+                                   (map-keys (game/malli-form schema))))]
     (.pad (.defaults window) (float 5))
     (.add (.getTitleTable window)
           (doto (TextButton. "X" skin)
@@ -517,16 +517,16 @@
                                        (.remove window)
                                        (add-component-row!
                                         map-widget-table
-                                        {:editor-widget (build-widget (get schemas k)
+                                        {:editor-widget (build-widget (get game/schemas k)
                                                                       k
-                                                                      (let [schema (get schemas k)]
+                                                                      (let [schema (get game/schemas k)]
                                                                         (cond
                                                                           (#{:s/map} (schema 0)) {}
                                                                           :else nil)))
                                          :k k
                                          :skin skin
                                          :rebuild-editor-window! rebuild-editor-window!
-                                         :display-remove-component-button? (optional? (game/malli-form schema schemas) k)
+                                         :display-remove-component-button? (optional? (game/malli-form schema) k)
                                          :table map-widget-table})
                                        (@rebuild-editor-window!))))))
       (.row window))
@@ -539,7 +539,6 @@
            k->optional?
            ks-sorted
            opt?
-           schemas
            skin
            stage
            rebuild-editor-window!
@@ -554,7 +553,7 @@
                                  (.addListener (proxy [ChangeListener] []
                                                  (changed [event actor]
                                                    (.addActor ^Stage stage
-                                                              (add-component-window schemas skin rebuild-editor-window!
+                                                              (add-component-window skin rebuild-editor-window!
                                                                                     schema table build-widget widget-value)))))))
         (.colspan (int colspan)))
       (.row table)
@@ -571,28 +570,27 @@
                            :table table}))
     table))
 
-(defn- create-map-widget [schemas skin stage rebuild-editor-window! schema m build-widget widget-value]
+(defn- create-map-widget [skin stage rebuild-editor-window! schema m build-widget widget-value]
   (map-widget-table-create
    {:schema schema
     :build-widget build-widget
     :widget-value widget-value
-    :schemas schemas
     :skin skin
     :stage stage
     :rebuild-editor-window! rebuild-editor-window!
     :k->widget (into {}
                      (for [[k v] m]
-                       [k (build-widget (get schemas k) k v)]))
-    :k->optional? #(optional? (game/malli-form schema schemas) %)
+                       [k (build-widget (get game/schemas k) k v)]))
+    :k->optional? #(optional? (game/malli-form schema) %)
     :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
-    :opt? (seq (set/difference (optional-keyset (game/malli-form schema schemas))
+    :opt? (seq (set/difference (optional-keyset (game/malli-form schema))
                                (set (keys m))))}))
 
-(defn widget-value [[schema-k] widget schemas]
+(defn widget-value [[schema-k] widget]
   (case schema-k
     :s/boolean (boolean-widget-value widget)
     :s/enum (enum-widget-value widget)
-    :s/map (map-widget-value widget schemas)
+    :s/map (map-widget-value widget)
     :s/number (number-widget-value widget)
     :s/one-to-many (one-to-many-widget-value widget)
     :s/one-to-one (one-to-one-widget-value widget)
@@ -606,14 +604,14 @@
     widget))
 
 (defn create-widget
-  [{:keys [db play-sound! rebuild-editor-window! schemas skin sound-names stage textures] :as ctx}
+  [{:keys [db play-sound! rebuild-editor-window! skin sound-names stage textures] :as ctx}
    [schema-k :as schema] v]
   (case schema-k
     :s/animation (create-animation-widget textures v)
     :s/boolean (create-boolean-widget skin v)
     :s/enum (create-enum-widget skin schema v)
     :s/image (create-image-widget textures v)
-    :s/map (create-map-widget schemas skin stage rebuild-editor-window! schema v
+    :s/map (create-map-widget skin stage rebuild-editor-window! schema v
                               (fn [schema k v] (build-widget ctx schema k v))
                               widget-value)
     :s/number (create-number-widget skin schema v)
@@ -656,21 +654,21 @@
 (declare property-editor-window)
 
 (defn- rebuild-editor-window! [ctx]
-  (let [{:keys [schemas stage]} ctx
+  (let [{:keys [stage]} ctx
         window (-> (.getRoot ^Stage stage)
                    (.findActor "moon.ui.clojure.editor-window"))
         map-widget-table (.findActor ^Group window "moon.db.schema.map.ui.widget")
-        property (map-widget-value map-widget-table schemas)]
+        property (map-widget-value map-widget-table)]
     (.remove window)
     (.addActor ^Stage stage (property-editor-window ctx property))))
 
 (defn property-editor-window [ctx property]
   (reset! (:rebuild-editor-window! ctx) #(rebuild-editor-window! ctx))
-  (let [{:keys [db properties-file schemas skin stage]} ctx
-        schema (get schemas (keyword "properties" (namespace (:property/id property))))
+  (let [{:keys [db properties-file skin stage]} ctx
+        schema (get game/schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget ctx schema property)
         scroll-pane-height (.getWorldHeight (.getViewport ^Stage stage))
-        get-widget-value #(widget-value schema widget schemas)
+        get-widget-value #(widget-value schema widget)
         property-id (:property/id property)
         on-delete (with-window-close db
                     (fn [db]
@@ -684,7 +682,7 @@
                           id (:property/id property)]
                       (assert (contains? property :property/id))
                       (assert (contains? db id))
-                      (let [schema (m/schema (game/malli-form (get schemas (keyword "properties" (namespace (:property/id property)))) schemas))]
+                      (let [schema (m/schema (game/malli-form (get game/schemas (keyword "properties" (namespace (:property/id property))))))]
                         (when-not (m/validate schema property)
                           (throw (ex-info (str (me/humanize (m/explain schema property)))
                                           {:value property
@@ -718,9 +716,9 @@
     window))
 
 (defn main-window [ctx]
-  (let [{:keys [db schemas skin stage textures]} ctx
+  (let [{:keys [db skin stage textures]} ctx
         window (Window. "Edit" skin)]
-    (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys schemas)))]
+    (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys game/schemas)))]
       (.add window (doto (TextButton. (str/capitalize (name property-type)) skin)
                      (.addListener (proxy [ChangeListener] []
                                      (changed [event _actor]
@@ -736,8 +734,7 @@
     window))
 
 (defn listener []
-  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        properties-file (io/resource "properties.edn")
+  (let [properties-file (io/resource "properties.edn")
         audio (atom nil)
         batch (atom nil)
         db (atom nil)
@@ -762,10 +759,10 @@
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
 
-        (reset! db (game/create-db schemas (-> properties-file slurp edn/read-string)))
+        (reset! db (game/create-db (-> properties-file slurp edn/read-string)))
 
-        (reset! textures (game/create-textures Gdx/files {:folder "resources/"
-                                                     :extensions #{"png" "bmp"}}))
+        (reset! textures (game/create-textures {:folder "resources/"
+                                                :extensions #{"png" "bmp"}}))
 
         (.setInputProcessor Gdx/input @stage)
         (.addActor ^Stage @stage
@@ -773,7 +770,6 @@
                                  :play-sound! play-sound!
                                  :properties-file properties-file
                                  :rebuild-editor-window! rebuild-editor-window!
-                                 :schemas schemas
                                  :skin @skin
                                  :sound-names (keys @audio)
                                  :stage @stage

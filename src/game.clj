@@ -416,7 +416,7 @@
 (defn create-textures
   [{:keys [folder extensions]}]
   (into {}
-        (for [path (->> (recursively-search (.internal files folder) extensions)
+        (for [path (->> (recursively-search (internal folder) extensions)
                         (map #(str/replace-first % folder "")))]
           [path (Texture. (internal path))])))
 
@@ -4263,28 +4263,39 @@
 (def ^:dynamic *explored-tile-corners*)
 
 (defn create-sound! [path]
-  (.newSound Gdx/audio (internal path))
+  (.newSound Gdx/audio (internal path)))
 
 (def listener
   (reify ApplicationListener
     (create [_]
       (set! *cursors* (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
                                    create-cursor!))
+
       (set! *sounds* (into {}
                            (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                              [path (create-sound! path)])))
+
       (set! *batch* (SpriteBatch.))
+
       (set! *default-font* (create-default-font!))
       (set! *shape-drawer-texture* (white-pixel-texture))
+
       (set! *shape-drawer* (ShapeDrawer. *batch* (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
+
       (reset! skin (create-skin! (internal "skin/uiskin.json")))
+
       (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) *batch*))
+
       (.setInputProcessor Gdx/input @stage)
+
       (set! (.initialTime (TooltipManager/getInstance)) 0)
+
       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+
       (set! *textures* (create-textures {:folder "resources/"
                                          :extensions #{"png" "bmp"}}))
       (set! *viewport* (create-viewport!))
+
       ; just assoc to tiled-map the tiled-map/start-position ?
       (let [{:keys [^TiledMap tiled-map 
                     start-position]} (create-level! db *textures*)]
@@ -4305,6 +4316,7 @@
                                                 (range width))))
           (set! *raycaster* (create-raycaster grid)))
         (reset! *elapsed-time* 0))
+
       (doseq [^Actor actor (create-ui-actors mouseover-eid
                                              paused?
                                              unit-scale
@@ -4314,6 +4326,7 @@
                                              @stage
                                              *textures*)]
         (.addActor ^Stage @stage actor))
+
       (spawn-player! db @skin @stage *textures*)
       (bind-player-eid!)
       (spawn-map-creatures! db))

@@ -88,8 +88,8 @@
         (reset! camera (.getCamera ^Viewport @viewport))
         (reset! db (game/create-db (-> "schema.edn" io/resource slurp edn/read-string)
                                    (-> "properties.edn" io/resource slurp edn/read-string)))
-        (reset! textures (game/create-textures Gdx/files {:folder "resources/"
-                                                          :extensions #{"png" "bmp"}}))
+        (reset! textures (game/create-textures {:folder "resources/"
+                                                :extensions #{"png" "bmp"}}))
         (reset! tiled-map (generate-level @db @textures @camera game/create-uf-caves)))
 
       (dispose [_]
