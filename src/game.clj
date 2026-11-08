@@ -24,7 +24,7 @@
             [lib.shape-drawer :as shape-drawer]
             [lib.stats :as stats]
             [lib.textures :as textures]
-            [lib.tiled-map :as moon-tiled-map]
+            [lib.tiled-map :as tiled-map]
             [lib.timer :as timer]
             [game.stage :as stage]
             [game.stage.inventory :as inventory-window]
@@ -976,7 +976,7 @@
 (defn create-level! [level-fn db* textures*]
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
-        (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
+        (level-fn {:level/creature-properties (tiled-map/prepare-creature-tiles
                                                (db/all-raw db* :properties/creatures)
                                                #(textures/texture-region textures* %))
                    :textures textures*})]
@@ -1003,7 +1003,7 @@
 (defn spawn-map-creatures! [db* schemas world]
   (let [world* @world
         sp (:world/start-position world*)]
-    (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:world/tiled-map world*))
+    (doseq [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world*))
             :when (not= position sp)]
       (spawn-entity! @world (spawn-creature {:position (mapv (partial + 0.5) position)
                                       :creature-property (db/build db* schemas (keyword creature-id))
@@ -2099,19 +2099,19 @@
   (set-camera-to-player! world @viewport)
   (.setProjectionMatrix ^Batch @batch (.combined (.getCamera ^Viewport @viewport)))
   (.begin ^Batch @batch)
-  (moon-tiled-map/draw! (:world/tiled-map @world)
-                        @batch
-                        world-unit-scale
-                        (.getCamera ^Viewport @viewport)
-                        (tile-color-setter*
-                         {:ray-blocked? (partial raycaster/blocked? (:world/raycaster @world))
-                          :explored-tile-corners (:world/explored-tile-corners @world)
-                          :light-position (let [pos (.position (.getCamera ^Viewport @viewport))]
-                                            [(.x pos) (.y pos) (.z pos)])
-                          :see-all-tiles? false
-                          :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
-                          :visible-tile-color (color/float-bits 1 1 1 1)
-                          :invisible-tile-color (color/float-bits 0 0 0 1)}))
+  (tiled-map/draw! (:world/tiled-map @world)
+                   @batch
+                   world-unit-scale
+                   (.getCamera ^Viewport @viewport)
+                   (tile-color-setter*
+                     {:ray-blocked? (partial raycaster/blocked? (:world/raycaster @world))
+                      :explored-tile-corners (:world/explored-tile-corners @world)
+                      :light-position (let [pos (.position (.getCamera ^Viewport @viewport))]
+                                        [(.x pos) (.y pos) (.z pos)])
+                      :see-all-tiles? false
+                      :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
+                      :visible-tile-color (color/float-bits 1 1 1 1)
+                      :invisible-tile-color (color/float-bits 0 0 0 1)}))
   (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
   (shape-drawer/with-line-width @shape-drawer world-unit-scale
     (reset! unit-scale world-unit-scale)
