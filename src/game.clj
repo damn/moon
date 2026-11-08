@@ -28,6 +28,10 @@
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
+(defn create-vampire-level [_]
+  {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
+   :start-position [32 71]})
+
 (def level-fn 
   create-vampire-level
   ;create-uf-caves
@@ -343,7 +347,6 @@
 (defn- draw-tile-layer!
   [layer
    batch
-   unit-scale
    view-bounds
    color-setter]
   (let [num-vertices 20
@@ -351,10 +354,10 @@
         batch-color (.getColor ^Batch batch)
         layer-width (.getWidth ^TiledMapTileLayer layer)
         layer-height (.getHeight ^TiledMapTileLayer layer)
-        layer-tile-width (* (.getTileWidth ^TiledMapTileLayer layer) unit-scale)
-        layer-tile-height (* (.getTileHeight ^TiledMapTileLayer layer) unit-scale)
-        layer-offset-x (* (.getRenderOffsetX ^TiledMapTileLayer layer) unit-scale)
-        layer-offset-y (* (- (.getRenderOffsetY ^TiledMapTileLayer layer)) unit-scale)
+        layer-tile-width (* (.getTileWidth ^TiledMapTileLayer layer) world-unit-scale)
+        layer-tile-height (* (.getTileHeight ^TiledMapTileLayer layer) world-unit-scale)
+        layer-offset-x (* (.getRenderOffsetX ^TiledMapTileLayer layer) world-unit-scale)
+        layer-offset-y (* (- (.getRenderOffsetY ^TiledMapTileLayer layer)) world-unit-scale)
         col1 (max 0
                   (int (/ (- (:x view-bounds) layer-offset-x)
                           layer-tile-width)))
@@ -388,7 +391,7 @@
                 (draw-tile! x
                             y
                             tile
-                            unit-scale
+                            world-unit-scale
                             color-setter
                             batch-color
                             verts
@@ -918,10 +921,6 @@
 
 (defn build [db property-id]
   (build-values (get-raw db property-id) db))
-
-(defn create-vampire-level [_]
-  {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
-   :start-position [32 71]})
 
 (defn- inv-window-cell [world on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
