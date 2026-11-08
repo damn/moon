@@ -901,8 +901,7 @@
 ; stop passing around the n data
 (def ^:dynamic *player-eid*)
 
-; TODO world not necessary anymore now.
-(defn- inv-window-cell [world on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+(defn- inv-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
@@ -935,8 +934,7 @@
          (.setUserObject cell)))}))
 
 (defn- build-inventory-window
-  [{:keys [world
-           on-click-cell
+  [{:keys [on-click-cell
            draw-cell-rect!
            skin
            position
@@ -946,7 +944,7 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint ^Color (Color. 1 1 1 0.4))))
-        ->cell (partial inv-window-cell world on-click-cell slot->drawable draw-cell-rect! cell-size)
+        ->cell (partial inv-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (Table.)
         window (Window. "Inventory" ^Skin skin)]
     (doseq [row (concat [[{:actor nil} {:actor nil}
@@ -983,7 +981,7 @@
     window))
 
 (defn create-inventory-window
-  [on-click-cell draw-cell-rect! skin stage textures world]
+  [on-click-cell draw-cell-rect! skin stage textures]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
                                              :shield 1
                                              :rings 2
@@ -1009,8 +1007,7 @@
                                                       :image/bounds bounds})))
         cell-size 48]
     (build-inventory-window
-     {:world world
-      :on-click-cell on-click-cell
+     {:on-click-cell on-click-cell
       :draw-cell-rect! draw-cell-rect!
       :skin skin
       :position [(.getWorldWidth (.getViewport ^Stage stage))
@@ -1895,8 +1892,10 @@
                          (draw [batch parent-alpha])))
     window))
 
+(def ^:dynamic *elapsed-time*)
+
 (defn info-window-create
-  [skin stage mouseover-eid world]
+  [skin stage mouseover-eid]
   (create-info-window
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
@@ -1907,7 +1906,7 @@
                          (info-text (apply dissoc @eid [:entity/skills
                                                         :entity/faction
                                                         :active-skill])
-                                    @(:world/elapsed-time @world))
+                                    @*elapsed-time*)
                          ""))
     :skin skin}))
 
@@ -2381,7 +2380,7 @@
                                                        (range height)))
                                          (range width)))
      :world/raycaster (create-raycaster grid)
-     :world/elapsed-time (atom 0)}))
+     }))
 
 ; belongs to game - further down?
 (def ^:private controls
@@ -2738,8 +2737,7 @@
                :z-order/effect])
 
 (defn- spawn-entity! [world entity]
-  (let [{:world/keys [elapsed-time]} world
-        elapsed-time* @elapsed-time
+  (let [elapsed-time* @*elapsed-time*
         entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
@@ -2875,7 +2873,7 @@
 
 ; TODO do not pass all context stuff all the time
 (defn- handle-fsm-event! [world skin stage textures eid world-mouse-position event & [params]]
-  (let [elapsed-time* @(:world/elapsed-time @world)
+  (let [elapsed-time* @*elapsed-time*
         fsm (:entity/fsm @eid)
         _ (assert fsm)
         old-state-k (:state fsm)
@@ -2993,7 +2991,7 @@
   [db world skin stage textures
    [k v] effect-ctx world-mouse-position apply-effects!
    active-entities raycaster]
-  (let [elapsed-time* @(:world/elapsed-time @world)]
+  (let [elapsed-time* @*elapsed-time*]
     (case k
       :effects/projectile
       (let [source (:effect/source effect-ctx)
@@ -3219,7 +3217,7 @@
                                                          :entity/free-skill-points 3
                                                          :entity/clickable {:type :clickable/player}
                                                          :entity/click-distance-tiles 1.5}}))]
-    (sync-player-ui! skin stage textures* @(:world/elapsed-time @world) eid)))
+    (sync-player-ui! skin stage textures* @*elapsed-time* eid)))
 
 (defn bind-player-eid! [world]
   (let [eid (get @(:world/entity-ids @world) 1)]
@@ -3651,7 +3649,7 @@
   [shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
    raycaster world active-entities]
   (let [player-eid *player-eid* 
-        elapsed-time @(:world/elapsed-time @world)
+        elapsed-time @*elapsed-time*
         active-entities @active-entities
         entities (map deref active-entities)
         player @player-eid
@@ -3726,7 +3724,7 @@
 (defn tick-component
   [world delta-time skin stage textures
    world-mouse-position apply-effects! eid [k v]]
-  (let [elapsed-time* @(:world/elapsed-time @world)]
+  (let [elapsed-time* @*elapsed-time*]
     (case k
       :entity/animation
       (let [{:keys [delete-after-stopped?
@@ -3931,7 +3929,7 @@
                                                 ; TODO those are functions named if world/etc. is as normal vars
                                                 ; => function engine base ?
                                                 ; what is 'world' protocol?
-                                                (str (readable @(:world/elapsed-time @world)) " seconds"))
+                                                (str (readable @*elapsed-time*) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
                                    :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
@@ -3958,7 +3956,7 @@
                           item))
        :skin skin})
      (hp-mana-bar-create default-font stage textures* unit-scale world)
-     (windows-create [#(info-window-create skin stage mouseover-eid world)
+     (windows-create [#(info-window-create skin stage mouseover-eid)
                       #(create-inventory-window
                         (fn [_event cell]
                           (handle-clicked-inventory-cell world
@@ -3981,8 +3979,7 @@
                               (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                         skin
                         stage
-                        textures*
-                        world)])
+                        textures*)])
      (player-state-draw-create unit-scale textures* world)
      (player-message-actor-create default-font unit-scale)]))
 
@@ -4229,7 +4226,7 @@
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
           world* @world]
-      (swap! (:world/elapsed-time world*) + delta-time)
+      (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! (:world/grid world*)
                  (:world/potential-field-cache world*)
@@ -4369,7 +4366,8 @@
 (defn load-world! []
   (let [{level-tiled-map :tiled-map
          level-start :start-position} (create-level! db *textures*)]
-    (reset! world (create-world level-tiled-map {:start-position level-start}))))
+    (reset! world (create-world level-tiled-map {:start-position level-start}))
+    (reset! *elapsed-time* 0)))
 
 (defn add-stage-actors! []
   (doseq [^Actor actor (create-ui-actors world
@@ -4592,7 +4590,8 @@
             *viewport* nil
             *shape-drawer* nil
             *shape-drawer-texture* nil
-            *player-eid* nil]
+            *player-eid* nil
+            *elapsed-time* (atom nil)]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
