@@ -410,12 +410,15 @@
           :else
           (recur remaining result))))
 
+(defn internal ^FileHandle [path]
+  (.internal Gdx/files path))
+
 (defn create-textures
-  [^Files files {:keys [folder extensions]}]
+  [{:keys [folder extensions]}]
   (into {}
         (for [path (->> (recursively-search (.internal files folder) extensions)
                         (map #(str/replace-first % folder "")))]
-          [path (Texture. (.internal files path))])))
+          [path (Texture. (internal path))])))
 
 (defn get-texture-region
   [textures {:keys [image/file image/bounds]}]
@@ -3111,13 +3114,11 @@
           true)
     s))
 
-(defn create-cursors! []
-  (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
-               (fn [[path [hotspot-x hotspot-y]]]
-                 (let [pixmap (Pixmap. (.internal Gdx/files path))
-                       cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
-                   (.dispose pixmap)
-                   cursor))))
+(defn create-cursor! [[path [hotspot-x hotspot-y]]]
+  (let [pixmap (Pixmap. (internal path))
+        cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
+    (.dispose pixmap)
+    cursor))
 
 (defn create-viewport! []
   (let [world-width (* 1440 world-unit-scale)
@@ -3132,12 +3133,12 @@
                           :quality-scaling 2
                           :use-integer-positions? false})
 
-(defn create-default-font! [files]
+(defn create-default-font! []
   (let [{:keys [path
                 size
                 quality-scaling
                 use-integer-positions?]} default-font-params
-        generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
+        generator (FreeTypeFontGenerator. ^FileHandle (internal path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
                     (set! (.minFilter p) Texture$TextureFilter/Linear)
@@ -4261,24 +4262,28 @@
 
 (def ^:dynamic *explored-tile-corners*)
 
+(defn create-sound! [path]
+  (.newSound Gdx/audio (internal path))
+
 (def listener
   (reify ApplicationListener
     (create [_]
-      (set! *cursors* (create-cursors!))
+      (set! *cursors* (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
+                                   create-cursor!))
       (set! *sounds* (into {}
                            (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
-                             [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+                             [path (create-sound! path)])))
       (set! *batch* (SpriteBatch.))
-      (set! *default-font* (create-default-font! Gdx/files))
+      (set! *default-font* (create-default-font!))
       (set! *shape-drawer-texture* (white-pixel-texture))
       (set! *shape-drawer* (ShapeDrawer. *batch* (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
-      (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
+      (reset! skin (create-skin! (internal "skin/uiskin.json")))
       (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) *batch*))
-      (.setInputProcessor Gdx/input ^InputProcessor @stage)
-      (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
+      (.setInputProcessor Gdx/input @stage)
+      (set! (.initialTime (TooltipManager/getInstance)) 0)
       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-      (set! *textures* (create-textures Gdx/files {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}}))
+      (set! *textures* (create-textures {:folder "resources/"
+                                         :extensions #{"png" "bmp"}}))
       (set! *viewport* (create-viewport!))
       ; just assoc to tiled-map the tiled-map/start-position ?
       (let [{:keys [^TiledMap tiled-map 
