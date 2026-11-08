@@ -2279,10 +2279,12 @@
 
 (def ^:dynamic *entity-ids*)
 
+(def ^:dynamic *grid*)
+
 ; TODO drop world param -> drop world itself
 (defn register-eid!
   [{:keys [world/content-grid
-           world/grid]}
+           ]}
    eid]
   (assert (and (not (contains? @eid :entity/id))))
   (let [id (swap! *id-counter* inc)]
@@ -2295,38 +2297,38 @@
 
   (assert (:entity/position @eid))
   (when (:entity/collides? @eid)
-    (assert (valid-position? grid @eid (:entity/id @eid))))
-  (set-touched-cells! grid eid)
+    (assert (valid-position? *grid* @eid (:entity/id @eid))))
+  (set-touched-cells! *grid* eid)
   (when (:entity/collides? @eid)
-    (set-occupied-cells! grid eid))
+    (set-occupied-cells! *grid* eid))
   nil)
 
 (defn relocate-eid!
   [{:keys [world/content-grid
-           world/grid]}
+           ]}
    eid]
   (update-entity! content-grid eid)
-  (remove-from-touched-cells! grid eid)
-  (set-touched-cells! grid eid)
+  (remove-from-touched-cells! *grid* eid)
+  (set-touched-cells! *grid* eid)
   (when (:entity/collides? @eid)
-    (remove-from-occupied-cells! grid eid)
-    (set-occupied-cells! grid eid))
+    (remove-from-occupied-cells! *grid* eid)
+    (set-occupied-cells! *grid* eid))
   nil)
 
 (defn unregister-eid!
   [{:keys [world/content-grid
-           world/grid]}
+           ]}
    eid]
   (let [id (:entity/id @eid)]
     (swap! *entity-ids* dissoc id)
     (remove-entity! content-grid eid)
-    (remove-from-touched-cells! grid eid)
+    (remove-from-touched-cells! *grid* eid)
     (when (:entity/collides? @eid)
-      (remove-from-occupied-cells! grid eid)))
+      (remove-from-occupied-cells! *grid* eid)))
   nil)
 
-(defn cell-at [world [x y]]
-  (when-let [cell-atom (get-in (:world/grid world) [x y])]
+(defn cell-at [_world [x y]]
+  (when-let [cell-atom (get-in *grid* [x y])]
     @cell-atom))
 
 (defn cells-at [world tile-positions]
@@ -3672,7 +3674,7 @@
   [world eid]
   (let [world @world
         entity @eid
-        target (nearest-enemy (:world/grid world) entity)
+        target (nearest-enemy *grid* entity)
         target (when (and target
                           (line-of-sight? (:world/raycaster world) entity @target))
                  target)]
@@ -3731,7 +3733,7 @@
         (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
                                            :radius 4}
                                    [x y] (:position circle)
-                                   g2d (:world/grid @world)
+                                   g2d *grid*
                                    gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
                                (->> circle
                                     outer-rectangle
@@ -3769,7 +3771,7 @@
     (let [{:keys [entity-effects already-hit-bodies piercing?]} v
           world* @world
           entity @eid
-          touched-cells (map deref (keep #(get-in (:world/grid world*) %) (touched-tiles entity)))
+          touched-cells (map deref (keep #(get-in *grid* %) (touched-tiles entity)))
           hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                           (not= (:entity/faction entity)
                                                 (:entity/faction @%))
@@ -3820,7 +3822,7 @@
 
     :npc-sleeping
     (let [entity @eid]
-      (when-let [distance (nearest-enemy-distance (:world/grid @world) entity)]
+      (when-let [distance (nearest-enemy-distance *grid* entity)]
         (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
           (handle-fsm-event! world skin stage textures eid world-mouse-position :alert))))
 
@@ -3829,7 +3831,7 @@
           effect-ctx (create-effect-ctx world eid)]
       (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
         (handle-fsm-event! world skin stage textures eid world-mouse-position :start-action [skill effect-ctx])
-        (handle-fsm-event! world skin stage textures eid world-mouse-position :movement-direction (or (find-direction (:world/grid @world) eid)
+        (handle-fsm-event! world skin stage textures eid world-mouse-position :movement-direction (or (find-direction *grid* eid)
                                                                                                       [0 0]))))
 
     :entity/movement
@@ -3849,7 +3851,7 @@
               movement (assoc movement :delta-time delta-time)
               body @eid]
           (when-let [body (if (:entity/collides? body)
-                            (try-move-solid-body (:world/grid world*) body (:entity/id @eid) movement)
+                            (try-move-solid-body *grid* body (:entity/id @eid) movement)
                             (let [{:keys [direction speed delta-time]} movement]
                               (update body :entity/position
                                       #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
@@ -3970,7 +3972,7 @@
                   (let [player @*player-eid*
                         world* @world
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (point->entities (:world/grid world*) (world-mouse-position viewport)))]
+                                     (point->entities *grid* (world-mouse-position viewport)))]
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
@@ -4213,7 +4215,7 @@
           world* @world]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
-        (update! (:world/grid world*)
+        (update! *grid*
                  *potential-field-cache*
                  faction
                  @active-entities
@@ -4360,8 +4362,8 @@
                         width (.get props "width")
                         height (.get props "height")
                         grid (create-grid tiled-map)]
-                    {:world/grid grid
-                     :world/content-grid (create-content-grid width height 16)
+                    (set! *grid* grid) 
+                    {:world/content-grid (create-content-grid width height 16)
                      :world/explored-tile-corners (atom
                                                     (mapv (fn [x] (mapv (fn [y] false)
                                                                         (range height)))
@@ -4593,7 +4595,8 @@
             *start-position* nil
             *potential-field-cache* nil
             *id-counter* nil
-            *entity-ids* nil]
+            *entity-ids* nil
+            *grid* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
