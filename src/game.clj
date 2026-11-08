@@ -897,6 +897,11 @@
 (defn build [db property-id]
   (build-values (get-raw db property-id) db))
 
+; TODO : get rid of 'world'
+; stop passing around the n data
+(def ^:dynamic *player-eid*)
+
+; TODO world not necessary anymore now.
 (defn- inv-window-cell [world on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
@@ -906,7 +911,7 @@
              [(proxy [Widget] []
                 (draw [batch parent-alpha]
                   (when-let [stage (.getStage ^Actor this)]
-                    (draw-cell-rect! @(:world/player-eid @world)
+                    (draw-cell-rect! @*player-eid*
                                      (.getX ^Actor this)
                                      (.getY ^Actor this)
                                      (let [v2 (.unproject (.getViewport ^Stage stage)
@@ -2366,7 +2371,6 @@
         grid (create-grid tiled-map)]
     {:world/tiled-map tiled-map
      :world/start-position start-position
-     :world/player-eid nil
      :world/potential-field-cache (atom nil)
      :world/id-counter (atom 0)
      :world/entity-ids (atom {})
@@ -2869,6 +2873,7 @@
 
     nil))
 
+; TODO do not pass all context stuff all the time
 (defn- handle-fsm-event! [world skin stage textures eid world-mouse-position event & [params]]
   (let [elapsed-time* @(:world/elapsed-time @world)
         fsm (:entity/fsm @eid)
@@ -3219,7 +3224,7 @@
 (defn bind-player-eid! [world]
   (let [eid (get @(:world/entity-ids @world) 1)]
     (assert (:entity/player? @eid))
-    (swap! world assoc :world/player-eid eid)))
+    (set! *player-eid* eid)))
 
 (defn spawn-map-creatures! [db* world]
   (let [world* @world
@@ -3271,7 +3276,7 @@
           (proxy-super act delta)))
       (draw [batch parent-alpha]
         (when (.getStage ^Actor this)
-          (let [stats (:entity/stats @(:world/player-eid @world))
+          (let [stats (:entity/stats @*player-eid*)
                 bar-x (- x (/ rahmenw 2))]
             (draw-hpmana-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
             (draw-hpmana-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
@@ -3357,7 +3362,7 @@
         (proxy-super act delta)))
     (draw [batch parent-alpha]
       (let [stage (.getStage ^Actor this)
-            player-eid (:world/player-eid @world)
+            player-eid *player-eid* 
             entity @player-eid
             state-k (:state (:entity/fsm entity))
             mouse-pos (ui-mouse-position stage)
@@ -3645,7 +3650,7 @@
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
    raycaster world active-entities]
-  (let [player-eid (:world/player-eid @world)
+  (let [player-eid *player-eid* 
         elapsed-time @(:world/elapsed-time @world)
         active-entities @active-entities
         entities (map deref active-entities)
@@ -3957,7 +3962,7 @@
                       #(create-inventory-window
                         (fn [_event cell]
                           (handle-clicked-inventory-cell world
-                                                         (:world/player-eid @world)
+                                                         *player-eid* 
                                                          skin
                                                          stage
                                                          textures*
@@ -3986,7 +3991,7 @@
         [x y] (ui-mouse-position stage)
         new-eid (if (mouseover-actor stage x y)
                   nil
-                  (let [player @(:world/player-eid @world)
+                  (let [player @*player-eid*
                         world* @world
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
                                      (point->entities (:world/grid world*) (world-mouse-position viewport)))]
@@ -4002,12 +4007,12 @@
     (reset! mouseover-eid new-eid)))
 
 (defn update-active-entities! [world active-entities]
-  (reset! active-entities (active-entities* (:world/content-grid @world) @(:world/player-eid @world))))
+  (reset! active-entities (active-entities* (:world/content-grid @world) @*player-eid*)))
 
 (defn set-camera-to-player! [world viewport]
   (let [^OrthographicCamera camera (.getCamera ^Viewport viewport)
         pos (.position camera)
-        [x y] (:entity/position @(:world/player-eid @world))]
+        [x y] (:entity/position @*player-eid*)]
     (set! (.x pos) x)
     (set! (.y pos) y)
     (.update camera)))
@@ -4017,7 +4022,7 @@
     (mouseover-actor stage x y)))
 
 (defn- cursor-key [interaction-state world]
-  (let [eid (:world/player-eid @world)
+  (let [eid *player-eid*
         entity @eid
         state-k (:state (:entity/fsm entity))
         cursor-fn (get {:player-item-on-cursor :cursors/hand-grab
@@ -4162,7 +4167,7 @@
 (defn handle-player-input!
   [world interaction-state
    skin stage textures viewport key-pressed? button-just-pressed?]
-  (let [eid (:world/player-eid @world)
+  (let [eid *player-eid*
         entity @eid
         state-k (:state (:entity/fsm entity))
         left-button-pressed? (button-just-pressed? Input$Buttons/LEFT)
@@ -4241,7 +4246,7 @@
       (.getUserObject ^Actor skill-button))))
 
 (defn- create-interaction-state [world mouseover-eid stage viewport]
-  (let [player-eid (:world/player-eid @world)
+  (let [player-eid *player-eid*
         mouseover-eid @mouseover-eid
         mouseover-actor (current-mouseover-actor stage)
         world-mouse-position (world-mouse-position viewport)]
@@ -4283,11 +4288,11 @@
   (set! *cursors* (create-cursors!)))
 
 (defn dispose-cursors! []
-  (run! Disposable/.dispose (vals *cursors*)))
+  (run! Disposable/.dispose (vals *cursors*))) ; actually Cursor/.dispose
 
 (defn set-cursor! [cursor-key]
-  (assert (contains? *cursors* cursor-key))
-  (.setCursor Gdx/graphics ^Cursor (get *cursors* cursor-key)))
+  (assert (contains? *cursors* cursor-key)) ; == safe-get (same like db)
+  (.setCursor Gdx/graphics ^Cursor (get *cursors* cursor-key))); Cursor type hint / class import not necessary
 
 (def ^:dynamic *default-font*)
 
@@ -4462,7 +4467,9 @@
 (defn cursor-interaction! []
   (let [interaction-state (create-interaction-state world mouseover-eid @stage *viewport*)]
     (set-cursor! (cursor-key interaction-state world))
-    (handle-player-input! world interaction-state
+    ; TODO do not pass all this.
+    (handle-player-input! world 
+                          interaction-state
                           @skin 
                           @stage 
                           *textures* 
@@ -4474,7 +4481,7 @@
   (reset! paused?
           (or #_error
               (and pausing?
-                   (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
+                   (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                    (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                             (.isKeyPressed Gdx/input (int (:unpause-continously controls)))))))))
 
@@ -4584,7 +4591,8 @@
             *textures* nil
             *viewport* nil
             *shape-drawer* nil
-            *shape-drawer-texture* nil]
+            *shape-drawer-texture* nil
+            *player-eid* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
