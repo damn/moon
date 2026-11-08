@@ -47,9 +47,8 @@
                       (on-click!))))))
 
 (defn listener []
-  (let [world-unit-scale (float (/ 48))
-        world-width (* 1440 world-unit-scale)
-        world-height (* 900 world-unit-scale)
+  (let [world-width (* 1440 game/world-unit-scale)
+        world-height (* 900 game/world-unit-scale)
         batch (atom nil)
         skin (atom nil)
         ui-stage (atom nil)
@@ -108,7 +107,6 @@
           (.begin batch*)
           (game/draw-tiled-map! @tiled-map
                                 batch*
-                                world-unit-scale
                                 world-camera
                                 (constantly (.toFloatBits Color/WHITE)))
           (.end batch*)

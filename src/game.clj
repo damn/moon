@@ -49,6 +49,7 @@
                :z-order/flying
                :z-order/effect])
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
+(def world-unit-scale (float (/ 48)))
 
 (defn- add-ops [ops other-ops]
   (merge-with + ops other-ops))
@@ -392,7 +393,6 @@
 (defn draw-tiled-map!
   [^TiledMap tiled-map
    ^Batch batch
-   world-unit-scale
    ^OrthographicCamera camera
    color-setter]
   (let [width  (* (.viewportWidth camera) (.zoom camera))
@@ -410,7 +410,6 @@
     (doseq [layer (filter #(.isVisible ^TiledMapTileLayer %) (.getLayers tiled-map))]
       (draw-tile-layer! layer
                         batch
-                        world-unit-scale
                         view-bounds
                         color-setter))))
 
@@ -3163,7 +3162,7 @@
                      (Disposable/.dispose pixmap*)
                      cursor)))))
 
-(defn create-viewport! [world-unit-scale]
+(defn create-viewport! []
   (let [world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)]
     (FitViewport. (float world-width)
@@ -3475,7 +3474,7 @@
     nil))
 
 (defn- draw-component
-  [shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
+  [shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
    textures player elapsed-time active-entities raycaster
    entity k v]
   (case k
@@ -3630,7 +3629,7 @@
     (rectangle! shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [ctx shape-drawer batch default-font textures unit-scale world-unit-scale mouseover-actor world-mouse-position
+  [ctx shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
    raycaster world show-body-bounds? active-entities render-z-order]
   (let [player-eid (:world/player-eid @world)
         elapsed-time @(:world/elapsed-time @world)
@@ -3654,7 +3653,7 @@
                                   (float-bits 0.5 0.5 0.5 1))))
       (doseq [[k v] entity
               :when (get render-layer k)]
-        (draw-component shape-drawer batch default-font unit-scale world-unit-scale mouseover-actor world-mouse-position
+        (draw-component shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
                         textures player elapsed-time active-entities raycaster
                         entity k v)))))
 
@@ -4271,8 +4270,7 @@
         [:interaction-state/no-skill-selected]))))
 
 (def listener
-  (let [world-unit-scale (float (/ 48))
-        max-speed (/ minimum-size max-delta)
+  (let [max-speed (/ minimum-size max-delta)
         render-z-order (apply hash-map (interleave z-orders (range)))
         factions-iterations {:good 15
                              :evil 5}
@@ -4327,7 +4325,7 @@
         (reset! cursors (create-cursors! Gdx/files))
         (reset! textures (create-textures Gdx/files {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}))
-        (reset! viewport (create-viewport! world-unit-scale))
+        (reset! viewport (create-viewport!))
         (reset! default-font (create-default-font! Gdx/files default-font-params))
         (let [{level-tiled-map :tiled-map
                level-start :start-position} (create-level! level-fn db @textures)]
@@ -4371,7 +4369,6 @@
         (.begin ^Batch @batch)
         (draw-tiled-map! (:world/tiled-map @world)
                          @batch
-                         world-unit-scale
                          (.getCamera ^Viewport @viewport)
                          (tile-color-setter*
                            {:ray-blocked? (partial raycaster-blocked? (:world/raycaster @world))
@@ -4389,7 +4386,7 @@
           (draw-cell-debug nil @shape-drawer @viewport world
                            show-cell-entities? show-cell-occupied? show-potential-field-colors?
                            factions-iterations)
-          (draw-entities! nil @shape-drawer @batch @default-font @textures unit-scale world-unit-scale
+          (draw-entities! nil @shape-drawer @batch @default-font @textures unit-scale 
                           (let [[x y] (ui-mouse-position @stage)]
                             (mouseover-actor @stage x y))
                           (world-mouse-position @viewport)
