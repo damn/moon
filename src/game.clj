@@ -2475,7 +2475,7 @@
     (.dispose pixmap)
     texture))
 
-(defn- draw-fn-text [batch default-font unit-scale {:keys [font scale x y text up?]}]
+(defn- draw-text! [batch default-font unit-scale {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
         scale (or scale 1)
         font-data (.getData ^BitmapFont font)
@@ -2500,7 +2500,7 @@
            wrap?)
     (.setScale ^BitmapFont$BitmapFontData font-data old-scale)))
 
-(defn- draw-fn-texture-region [batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
+(defn- draw-texture-region! [batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
   (let [[w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
                                 (.getRegionHeight ^TextureRegion texture-region)]]
                   (if (= @unit-scale 1)
@@ -3248,13 +3248,13 @@
         rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
         draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
-                           (draw-fn-texture-region batch unit-scale rahmen-tex-reg [x y])
-                           (draw-fn-texture-region batch unit-scale
+                           (draw-texture-region! batch unit-scale rahmen-tex-reg [x y])
+                           (draw-texture-region! batch unit-scale
                                                    (get-texture-region textures
                                                                             {:image/file content-file
                                                                              :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
                                                    [x y])
-                           (draw-fn-text batch default-font unit-scale {:text (str (readable (minmaxval 0))
+                           (draw-text! batch default-font unit-scale {:text (str (readable (minmaxval 0))
                                                          "/"
                                                          (minmaxval 1)
                                                          " "
@@ -3327,7 +3327,7 @@
                       vp-width (.getWorldWidth (.getViewport ^Stage stage))
                       vp-height (.getWorldHeight (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
-                    (draw-fn-text batch default-font unit-scale {:x (/ vp-width 2)
+                    (draw-text! batch default-font unit-scale {:x (/ vp-width 2)
                                        :y (+ (/ vp-height 2) 200)
                                        :text text
                                        :scale 2.5
@@ -3340,7 +3340,7 @@
   (case k
     :player-item-on-cursor
     (when mouseover-actor*
-      (draw-fn-texture-region batch unit-scale
+      (draw-texture-region! batch unit-scale
                               (get-texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-pos
                               {:center? true}))
@@ -3492,7 +3492,7 @@
           {:keys [entity/position entity/height entity/mouseover?]} entity]
       (when (and mouseover? text)
         (let [[x y] position]
-          (draw-fn-text batch default-font unit-scale {:text text
+          (draw-text! batch default-font unit-scale {:text text
                              :x x
                              :y (+ y (/ height 2))
                              :up? true}))))
@@ -3500,7 +3500,7 @@
     :player-item-on-cursor
     (let [{:keys [item]} v]
       (when-not mouseover-actor
-        (draw-fn-texture-region batch unit-scale
+        (draw-texture-region! batch unit-scale
                                 (get-texture-region textures (:entity/image item))
                                 (item-place-position (:entity/position entity)
                                                      world-mouse-position
@@ -3511,14 +3511,14 @@
     (let [{:keys [frames cnt frame-duration]} v
           image (frames (min (int (/ (float cnt) (float frame-duration)))
                              (dec (count frames))))]
-      (draw-fn-texture-region batch unit-scale
+      (draw-texture-region! batch unit-scale
                               (get-texture-region textures image)
                               (:entity/position entity)
                               {:center? true
                                :rotation (or (:entity/rotation-angle entity) 0)}))
 
     :entity/image
-    (draw-fn-texture-region batch unit-scale
+    (draw-texture-region! batch unit-scale
                             (get-texture-region textures v)
                             (:entity/position entity)
                             {:center? true
@@ -3570,7 +3570,7 @@
     :entity/string-effect
     (let [{:keys [text]} v
           [x y] (:entity/position entity)]
-      (draw-fn-text batch default-font unit-scale {:text text
+      (draw-text! batch default-font unit-scale {:text text
                          :x x
                          :y (+ y
                                (/ (:entity/height entity) 2)
@@ -3599,7 +3599,7 @@
                       (math/to-radians 90)
                       (math/to-radians (* (float action-counter-ratio) 360))
                       (float-bits 1 1 1 0.5))
-      (draw-fn-texture-region batch unit-scale texture-region [(- (float x) radius) y])
+      (draw-texture-region! batch unit-scale texture-region [(- (float x) radius) y])
       (doseq [effect effects]
         (effect-render effect effect-ctx shape-drawer
                        active-entities
@@ -3608,10 +3608,13 @@
     :npc-sleeping
     (let [{:keys [entity/position entity/height]} entity
           [x y] position]
-      (draw-fn-text batch default-font unit-scale {:text "zzz"
-                         :x x
-                         :y (+ y (/ height 2))
-                         :up? true}))
+      (draw-text! batch 
+                  default-font 
+                  unit-scale 
+                  {:text "zzz"
+                   :x x
+                   :y (+ y (/ height 2))
+                   :up? true}))
 
     :stunned
     (circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6))))
