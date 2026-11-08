@@ -38,6 +38,11 @@
   ;create-modules-level
   )
 
+(def ^:dynamic *batch*)
+
+(defn load-sprite-batch! []
+  (set! *batch* (SpriteBatch.)))
+
 (def ^:dynamic *sounds*)
 
 (defn play-sound! [sound-name]
@@ -4279,167 +4284,194 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
+(def ^:dynamic *cursors*)
+
+(defn load-cursors! []
+  (set! *cursors* (create-cursors! Gdx/files)))
+
+(defn dispose-cursors! []
+  (run! Disposable/.dispose (vals *cursors*)))
+
+(def ^:dynamic *default-font*)
+
+(defn load-font! []
+  (set! *default-font* (create-default-font! Gdx/files)))
+
+(defn dispose-font! []
+  (Disposable/.dispose *default-font*))
+
+(def ^:dynamic *viewport*)
+
+(defn create-viewport* []
+  (set! *viewport* (create-viewport!)))
+
+(def ^:dynamic *shape-drawer*)
+(def ^:dynamic *shape-drawer-texture*)
+(def ^:dynamic *textures*)
+
+(def skin (atom nil))
+(def stage (atom nil))
+(def db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
+(def world (atom nil))
+(def active-entities (atom nil))
+(def mouseover-eid (atom nil))
+(def paused? (atom false))
+(def show-potential-field-colors? (atom nil))
+(def show-cell-entities? (atom false))
+(def show-cell-occupied? (atom false))
+(def show-body-bounds? (atom false))
+(def show-tile-grid? (atom false))
+(def unit-scale (atom 1))
+(def pausing? true)
+(def state->pause-game? {:active-skill false
+                         :stunned false
+                         :player-moving false
+                         :player-idle true
+                         :player-dead true
+                         :player-item-on-cursor true})
 (def listener
-  (let [batch (atom nil)
-        cursors (atom nil)
-        default-font (atom nil)
-        viewport (atom nil)
-        shape-drawer (atom nil)
-        shape-drawer-texture (atom nil)
-        textures (atom nil)
-        skin (atom nil)
-        stage (atom nil)
-        db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
-        world (atom nil)
-        active-entities (atom nil)
-        mouseover-eid (atom nil)
-        paused? (atom false)
-        show-potential-field-colors? (atom nil)
-        show-cell-entities? (atom false)
-        show-cell-occupied? (atom false)
-        show-body-bounds? (atom false)
-        show-tile-grid? (atom false)
-        unit-scale (atom 1)
-        pausing? true
-        state->pause-game? {:active-skill false
-                            :stunned false
-                            :player-moving false
-                            :player-idle true
-                            :player-dead true
-                            :player-item-on-cursor true}]
-    (reify ApplicationListener
-      (create [_]
-        (load-sounds!)
-        (reset! batch (SpriteBatch.))
-        (reset! unit-scale 1)
-        (reset! shape-drawer-texture (white-pixel-texture))
-        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
-        (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
-        (let [s (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
-          (.setInputProcessor Gdx/input ^InputProcessor s)
-          (reset! stage s))
-        (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
-        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-        (reset! cursors (create-cursors! Gdx/files))
-        (reset! textures (create-textures Gdx/files {:folder "resources/"
-                                                     :extensions #{"png" "bmp"}}))
-        (reset! viewport (create-viewport!))
-        (reset! default-font (create-default-font! Gdx/files))
-        (let [{level-tiled-map :tiled-map
-               level-start :start-position} (create-level! db @textures)]
-          (reset! world (create-world level-tiled-map {:start-position level-start})))
-        (doseq [^Actor actor (create-ui-actors world
-                                               mouseover-eid
-                                               paused?
-                                               show-tile-grid?
-                                               show-cell-entities?
-                                               show-cell-occupied?
-                                               show-body-bounds?
-                                               show-potential-field-colors?
-                                               unit-scale
-                                               @default-font
-                                               @shape-drawer
-                                               @skin
-                                               @stage
-                                               @textures
-                                               @viewport)]
-          (.addActor ^Stage @stage actor))
-        (spawn-player! db world @skin @stage @textures)
-        (bind-player-eid! world)
-        (spawn-map-creatures! db world))
+  (reify ApplicationListener
+    (create [_]
+      (load-cursors!)
+      (load-sounds!)
+      (load-sprite-batch!)
+      (load-font!)
+      (reset! unit-scale 1)
+      (set! *shape-drawer-texture* (white-pixel-texture))
+      (set! *shape-drawer* (ShapeDrawer. *batch* (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
+      (reset! skin (create-skin! (.internal Gdx/files "skin/uiskin.json")))
+      (let [s (Stage. (FitViewport. (float 1440) (float 900)) *batch*)]
+        (.setInputProcessor Gdx/input ^InputProcessor s)
+        (reset! stage s))
+      (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
+      (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
 
-      (dispose [_]
-        (dispose-sounds!)
-        (Disposable/.dispose @batch)
-        (run! Disposable/.dispose (vals @cursors))
-        (Disposable/.dispose @default-font)
-        (Disposable/.dispose @shape-drawer-texture)
-        (Disposable/.dispose @skin)
-        (run! Disposable/.dispose (vals @textures))
-        (Disposable/.dispose (:world/tiled-map @world)))
+      (set! *textures* (create-textures Gdx/files {:folder "resources/"
+                                                   :extensions #{"png" "bmp"}}))
+      (create-viewport*)
 
-      (render [_]
-        (ScreenUtils/clear 0 0 0 0)
-        (update-mouseover-eid! world mouseover-eid @stage @viewport)
-        (update-active-entities! world active-entities)
-        (set-camera-to-player! world @viewport)
-        (.setProjectionMatrix ^Batch @batch (.combined (.getCamera ^Viewport @viewport)))
-        (.begin ^Batch @batch)
-        (draw-tiled-map! (:world/tiled-map @world)
-                         @batch
-                         (.getCamera ^Viewport @viewport)
-                         (tile-color-setter*
-                           {:ray-blocked? (partial raycaster-blocked? (:world/raycaster @world))
-                            :explored-tile-corners (:world/explored-tile-corners @world)
-                            :light-position (let [pos (.position (.getCamera ^Viewport @viewport))]
-                                              [(.x pos) (.y pos) (.z pos)])
-                            :see-all-tiles? false
-                            :explored-tile-color (float-bits 0.5 0.5 0.5 1)
-                            :visible-tile-color (float-bits 1 1 1 1)
-                            :invisible-tile-color (float-bits 0 0 0 1)}))
-        (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-        (with-line-width @shape-drawer world-unit-scale
-          (reset! unit-scale world-unit-scale)
-          (draw-tile-grid nil @shape-drawer @viewport show-tile-grid?)
-          (draw-cell-debug nil @shape-drawer @viewport world
-                           show-cell-entities? show-cell-occupied? show-potential-field-colors?)
-          (draw-entities! nil @shape-drawer @batch @default-font @textures unit-scale 
-                          (let [[x y] (ui-mouse-position @stage)]
-                            (mouseover-actor @stage x y))
-                          (world-mouse-position @viewport)
-                          (:world/raycaster @world) world show-body-bounds? active-entities)
-          (highlight-mouseover-tile nil @shape-drawer (world-mouse-position @viewport) world)
-          (reset! unit-scale 1))
-        (.end ^Batch @batch)
-        (let [interaction-state (create-interaction-state world mouseover-eid @stage @viewport)
-              cursor-key (cursor-key interaction-state world)
-              cursors @cursors]
-          (assert (contains? cursors cursor-key))
-          (.setCursor Gdx/graphics ^Cursor (get cursors cursor-key))
-          (handle-player-input! world interaction-state
-                                @skin @stage @textures @viewport
-                                #(.isKeyPressed Gdx/input (int %))
-                                #(.isButtonJustPressed Gdx/input (int %))))
-        (reset! paused?
-                (or #_error
-                    (and pausing?
-                         (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
-                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
-                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-        (tick-game! db world active-entities paused?
-                    @skin @stage @textures @viewport)
-        (destroy-entities! db world)
-        (doseq [[k f] {(:zoom-in controls) (fn []
-                                             (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
-                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-                                               (.update camera)))
-                       (:zoom-out controls) (fn []
-                                              (let [^OrthographicCamera camera (.getCamera ^Viewport @viewport)]
-                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-                                                (.update camera)))}]
-          (when (.isKeyPressed Gdx/input (int k))
-            (f)))
-        (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                       (close-windows! @stage))
-                       (:toggle-inventory controls) (fn []
-                                                      (toggle-inventory-visible! @stage))
-                       (:toggle-entity-info controls) (fn []
-                                                        (toggle-entity-info! @stage))}]
-          (when (.isKeyJustPressed Gdx/input (int k))
-            (f)))
-        (.act ^Stage @stage)
-        (.draw ^Stage @stage))
 
-      (resize [_ width height]
-        (.update (.getViewport ^Stage @stage) width height true)
-        (.update ^Viewport @viewport width height false))
+      (let [{level-tiled-map :tiled-map
+             level-start :start-position} (create-level! db *textures*)]
+        (reset! world (create-world level-tiled-map {:start-position level-start})))
+      (doseq [^Actor actor (create-ui-actors world
+                                             mouseover-eid
+                                             paused?
+                                             show-tile-grid?
+                                             show-cell-entities?
+                                             show-cell-occupied?
+                                             show-body-bounds?
+                                             show-potential-field-colors?
+                                             unit-scale
+                                             *default-font*
+                                             *shape-drawer*
+                                             @skin
+                                             @stage
+                                             *textures*
+                                             *viewport*)]
+        (.addActor ^Stage @stage actor))
+      (spawn-player! db world @skin @stage *textures*)
+      (bind-player-eid! world)
+      (spawn-map-creatures! db world))
 
-      (pause [_])
-      (resume [_]))))
+    (dispose [_]
+      (dispose-sounds!)
+      (Disposable/.dispose *batch*)
+      (dispose-cursors!)
+      (dispose-font!)
+      (Disposable/.dispose *shape-drawer-texture*)
+      (Disposable/.dispose @skin)
+      (run! Disposable/.dispose (vals *textures*))
+      (Disposable/.dispose (:world/tiled-map @world)))
+
+    (render [_]
+      (ScreenUtils/clear 0 0 0 0)
+      (update-mouseover-eid! world mouseover-eid @stage *viewport*)
+      (update-active-entities! world active-entities)
+      (set-camera-to-player! world *viewport*)
+      (.setProjectionMatrix ^Batch *batch* (.combined (.getCamera ^Viewport *viewport*)))
+      (.begin ^Batch *batch*)
+      (draw-tiled-map! (:world/tiled-map @world)
+                       *batch*
+                       (.getCamera ^Viewport *viewport*)
+                       (tile-color-setter*
+                         {:ray-blocked? (partial raycaster-blocked? (:world/raycaster @world))
+                          :explored-tile-corners (:world/explored-tile-corners @world)
+                          :light-position (let [pos (.position (.getCamera ^Viewport *viewport*))]
+                                            [(.x pos) (.y pos) (.z pos)])
+                          :see-all-tiles? false
+                          :explored-tile-color (float-bits 0.5 0.5 0.5 1)
+                          :visible-tile-color (float-bits 1 1 1 1)
+                          :invisible-tile-color (float-bits 0 0 0 1)}))
+      (.setColor ^Batch *batch* (float 1) (float 1) (float 1) (float 1))
+      (with-line-width *shape-drawer* world-unit-scale
+        (reset! unit-scale world-unit-scale)
+        (draw-tile-grid nil *shape-drawer* *viewport* show-tile-grid?)
+        (draw-cell-debug nil *shape-drawer* *viewport* world
+                         show-cell-entities? show-cell-occupied? show-potential-field-colors?)
+        (draw-entities! nil *shape-drawer* *batch* *default-font* *textures* unit-scale 
+                        (let [[x y] (ui-mouse-position @stage)]
+                          (mouseover-actor @stage x y))
+                        (world-mouse-position *viewport*)
+                        (:world/raycaster @world) world show-body-bounds? active-entities)
+        (highlight-mouseover-tile nil *shape-drawer* (world-mouse-position *viewport*) world)
+        (reset! unit-scale 1))
+      (.end ^Batch *batch*)
+      (let [interaction-state (create-interaction-state world mouseover-eid @stage *viewport*)
+            cursor-key (cursor-key interaction-state world)]
+        (assert (contains? *cursors* cursor-key))
+        (.setCursor Gdx/graphics ^Cursor (get *cursors* cursor-key))
+        (handle-player-input! world interaction-state
+                              @skin @stage *textures* *viewport*
+                              #(.isKeyPressed Gdx/input (int %))
+                              #(.isButtonJustPressed Gdx/input (int %))))
+      (reset! paused?
+              (or #_error
+                  (and pausing?
+                       (state->pause-game? (:state (:entity/fsm @(:world/player-eid @world))))
+                       (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
+                                (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
+      (tick-game! db world active-entities paused?
+                  @skin @stage *textures* *viewport*)
+      (destroy-entities! db world)
+      (doseq [[k f] {(:zoom-in controls) (fn []
+                                           (let [^OrthographicCamera camera (.getCamera ^Viewport *viewport*)]
+                                             (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
+                                             (.update camera)))
+                     (:zoom-out controls) (fn []
+                                            (let [^OrthographicCamera camera (.getCamera ^Viewport *viewport*)]
+                                              (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
+                                              (.update camera)))}]
+        (when (.isKeyPressed Gdx/input (int k))
+          (f)))
+      (doseq [[k f] {(:close-windows-key controls) (fn []
+                                                     (close-windows! @stage))
+                     (:toggle-inventory controls) (fn []
+                                                    (toggle-inventory-visible! @stage))
+                     (:toggle-entity-info controls) (fn []
+                                                      (toggle-entity-info! @stage))}]
+        (when (.isKeyJustPressed Gdx/input (int k))
+          (f)))
+      (.act ^Stage @stage)
+      (.draw ^Stage @stage))
+
+    (resize [_ width height]
+      (.update (.getViewport ^Stage @stage) width height true)
+      (.update ^Viewport *viewport* width height false))
+
+    (pause [_])
+    (resume [_])))
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (binding [*sounds* nil]
+  (binding [*batch* nil
+            *sounds* nil
+            *cursors* nil
+            *default-font* nil
+            *textures* nil
+            *viewport* nil
+            *shape-drawer* nil
+            *shape-drawer-texture* nil]
     (Lwjgl3Application. listener
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle "Moon")
