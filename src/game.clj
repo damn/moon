@@ -35,41 +35,6 @@
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
    :start-position [32 71]})
 
-(def level-fn 
-  create-vampire-level
-  ;create-uf-caves
-  ;create-modules-level
-  )
-
-(def ^:dynamic *batch*)
-
-(defn load-sprite-batch! []
-  (set! *batch* (SpriteBatch.)))
-
-(def ^:dynamic *sounds*)
-
-(defn play-sound! [sound-name]
-  (assert (contains? *sounds* sound-name) (str sound-name))
-  (Sound/.play (get *sounds* sound-name)))
-
-(defn load-sounds! []
-  (set! *sounds* (into {}
-                       (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
-                         [path (.newSound Gdx/audio (.internal Gdx/files path))]))))
-
-(defn dispose-sounds! []
-  (run! Sound/.dispose (vals *sounds*)))
-
-(def minimum-size 0.39)
-(def max-delta 0.04)
-(def z-orders [:z-order/on-ground
-               :z-order/ground
-               :z-order/flying
-               :z-order/effect])
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-(def world-unit-scale (float (/ 48)))
-(def max-speed (/ minimum-size max-delta))
-(def render-z-order (apply hash-map (interleave z-orders (range))))
 (def factions-iterations {:good 15 :evil 5})
 
 (defn- add-ops [ops other-ops]
@@ -352,6 +317,8 @@
            (int 0)
            (int num-vertices))))
 
+(def world-unit-scale (float (/ 48)))
+
 (defn- draw-tile-layer!
   [layer
    batch
@@ -571,6 +538,8 @@
             (assert (keyword? k))
             (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
             [k schema-props (k->malli-schema-form k)]))))
+
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 
 (defn create-map-schema [ks]
   (create-map-schema* ks
@@ -2760,6 +2729,12 @@
 
     nil))
 
+(def minimum-size 0.39)
+(def z-orders [:z-order/on-ground
+               :z-order/ground
+               :z-order/flying
+               :z-order/effect])
+
 (defn- spawn-entity! [world entity]
   (let [{:world/keys [elapsed-time]} world
         elapsed-time* @elapsed-time
@@ -2810,6 +2785,12 @@
     (spawn-entity! @world
                    (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
+
+(def ^:dynamic *sounds*)
+
+(defn play-sound! [sound-name]
+  (assert (contains? *sounds* sound-name) (str sound-name))
+  (Sound/.play (get *sounds* sound-name)))
 
 (defn- entity-state-exit!
   [world eid world-mouse-position elapsed-time [state-k _state-v]]
@@ -3210,6 +3191,12 @@
     (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
     (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
     font))
+
+(def level-fn 
+  create-vampire-level
+  ;create-uf-caves
+  ;create-modules-level
+  )
 
 (defn create-level! [db* textures*]
   (let [{level-tiled-map :tiled-map
@@ -3655,6 +3642,8 @@
                (- (position 1) (/ height 2))]]
     (rectangle! shape-drawer x y width height color-float-bits)))
 
+(def render-z-order (apply hash-map (interleave z-orders (range))))
+
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor world-mouse-position
    raycaster world active-entities]
@@ -3727,6 +3716,9 @@
      :y (- (float y) radius)
      :width  size
      :height size}))
+
+(def max-delta 0.04)
+(def max-speed (/ minimum-size max-delta))
 
 (defn tick-component
   [world delta-time skin stage textures
@@ -4331,6 +4323,19 @@
 (defn set-input-processor! []
   (.setInputProcessor Gdx/input ^InputProcessor @stage)) ; type hints on vars ?
 ; dont pass data just call functions with context?
+
+(def ^:dynamic *batch*)
+
+(defn load-sprite-batch! []
+  (set! *batch* (SpriteBatch.)))
+
+(defn load-sounds! []
+  (set! *sounds* (into {}
+                       (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
+                         [path (.newSound Gdx/audio (.internal Gdx/files path))]))))
+
+(defn dispose-sounds! []
+  (run! Sound/.dispose (vals *sounds*)))
 
 (def listener
   (reify ApplicationListener
