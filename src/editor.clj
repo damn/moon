@@ -152,25 +152,25 @@
                     on-clicked
                     tooltip
                     extra-info-text]} row]
-        {:actor (let [stack (Stack.)]
-                  (run! #(.addActor ^Group stack %)
-                        [(doto (ImageButton.
-                                 (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                   (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
-                                                (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
-                           (.addListener (proxy [ChangeListener] []
-                                           (changed [event actor]
-                                             (on-clicked actor))))
-                           (.addListener (TextTooltip. ^String tooltip @skin)))
-                         (doto (Label. ^String extra-info-text @skin)
-                           (.setTouchable Touchable/disabled))])
-                  stack)}))))
+        (let [stack (Stack.)]
+          (run! #(.addActor ^Group stack %)
+                [(doto (ImageButton.
+                         (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                           (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
+                                        (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
+                   (.addListener (proxy [ChangeListener] []
+                                   (changed [event actor]
+                                     (on-clicked actor))))
+                   (.addListener (TextTooltip. ^String tooltip @skin)))
+                 (doto (Label. ^String extra-info-text @skin)
+                   (.setTouchable Touchable/disabled))])
+          stack)))))
 
 (defn property-overview-window [property-type clicked-id-fn]
   (let [window (Window. "Edit" @skin)]
     (doseq [row (property-overview-rows property-type clicked-id-fn)]
-      (doseq [cell row]
-        (.add window ^Actor (:actor cell)))
+      (doseq [actor row]
+        (.add window ^Actor actor))
       (.row window))
     (.pack window)
     (.add (.getTitleTable window)
