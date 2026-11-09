@@ -128,8 +128,6 @@
                              :extra-info-text (constantly "")}})
 
 (def skin (atom nil))
-(def stage (atom nil))
-(def textures (atom nil))
 
 (defn- overview-table-rows* [image-scale rows]
   (for [row rows]
@@ -152,6 +150,7 @@
                 stack)})))
 
 (def db (atom nil))
+(def textures (atom nil))
 
 (defn- property-overview-rows [property-type clicked-id-fn]
   (let [{:keys [sort-by-fn
@@ -303,6 +302,8 @@
       (.row table))
     (.pack table)
     table))
+
+(def stage (atom nil))
 
 (defn- choose-sound-window [sound-names table ->sound-columns]
   (let [^Table list-table (list-sounds-table
