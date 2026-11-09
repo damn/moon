@@ -128,27 +128,6 @@
                              :extra-info-text (constantly "")}})
 
 (def skin (atom nil))
-
-(defn- overview-table-rows* [image-scale rows]
-  (for [row rows]
-    (for [{:keys [texture-region
-                  on-clicked
-                  tooltip
-                  extra-info-text]} row]
-      {:actor (let [stack (Stack.)]
-                (run! #(.addActor ^Group stack %)
-                      [(doto (ImageButton.
-                              (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
-                                             (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
-                         (.addListener (proxy [ChangeListener] []
-                                         (changed [event actor]
-                                           (on-clicked actor))))
-                         (.addListener (TextTooltip. ^String tooltip @skin)))
-                       (doto (Label. ^String extra-info-text @skin)
-                         (.setTouchable Touchable/disabled))])
-                stack)})))
-
 (def db (atom nil))
 (def textures (atom nil))
 
@@ -157,19 +136,35 @@
                 extra-info-text
                 columns
                 image-scale]} (get property-type->overview-table-props property-type)]
-    (->> (game/all-raw @db property-type)
-         (sort-by sort-by-fn)
-         (map (fn [property]
-                {:texture-region (game/get-texture-region @textures (or (:entity/image property)
-                                                                       (first (:animation/frames (:entity/animation property)))))
-                 :on-clicked (fn [actor]
-                               (clicked-id-fn actor (:property/id property)))
-                 :tooltip (binding [*print-level* 2]
-                            (with-out-str
-                              (pprint property)))
-                 :extra-info-text (extra-info-text property)}))
-         (partition-all columns)
-         (overview-table-rows* image-scale))))
+    (for [row (->> (game/all-raw @db property-type)
+                   (sort-by sort-by-fn)
+                   (map (fn [property]
+                          {:texture-region (game/get-texture-region @textures (or (:entity/image property)
+                                                                                  (first (:animation/frames (:entity/animation property)))))
+                           :on-clicked (fn [actor]
+                                         (clicked-id-fn actor (:property/id property)))
+                           :tooltip (binding [*print-level* 2]
+                                      (with-out-str
+                                        (pprint property)))
+                           :extra-info-text (extra-info-text property)}))
+                   (partition-all columns))]
+      (for [{:keys [texture-region
+                    on-clicked
+                    tooltip
+                    extra-info-text]} row]
+        {:actor (let [stack (Stack.)]
+                  (run! #(.addActor ^Group stack %)
+                        [(doto (ImageButton.
+                                 (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                                   (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
+                                                (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
+                           (.addListener (proxy [ChangeListener] []
+                                           (changed [event actor]
+                                             (on-clicked actor))))
+                           (.addListener (TextTooltip. ^String tooltip @skin)))
+                         (doto (Label. ^String extra-info-text @skin)
+                           (.setTouchable Touchable/disabled))])
+                  stack)}))))
 
 (defn property-overview-window [property-type clicked-id-fn]
   (let [window (Window. "Edit" @skin)]
