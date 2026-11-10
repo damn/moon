@@ -4518,9 +4518,6 @@
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application 
                                            Lwjgl3ApplicationConfiguration))
 
-(defn lwjgl3-application! [listener config]
-  (Lwjgl3Application. listener config))
-
 (defn use-glfw-async! []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync))
 
@@ -4529,6 +4526,9 @@
     (.setTitle title)
     (.setWindowedMode width height)
     (.setForegroundFPS fps)))
+
+(defn lwjgl3-application! [listener config]
+  (Lwjgl3Application. listener (build-config config)))
 
 (gen-class)
 
@@ -4558,11 +4558,10 @@
             *raycaster* nil
             ]
     (lwjgl3-application! listener
-                         (build-config 
-                           {:title "Moon", 
-                            :width 1440, 
-                            :height 900, 
-                            :fps 60}))))
+                         {:title "Moon", 
+                          :width 1440, 
+                          :height 900, 
+                          :fps 60})))
                           
 
 (defn- generate-level
@@ -4700,11 +4699,10 @@
 (defn levelgen! []
   (use-glfw-async!)
   (lwjgl3-application! (levelgen-listener)
-                       (build-config 
-                         {:title "Levelgen", 
-                          :width 1440, 
-                          :height 900, 
-                          :fps 60})))
+                       {:title "Levelgen", 
+                        :width 1440, 
+                        :height 900, 
+                        :fps 60}))
 
 (defn map-form-k->properties
   "Given a map schema gives a map of key to key properties (like :optional)."
@@ -5520,8 +5518,7 @@
                            (pause [_])
 
                            (resume [_])))
-                       (build-config 
-                         {:title "Editor", 
-                          :width 1440, 
-                          :height 900, 
-                          :fps 60})))
+                       {:title "Editor", 
+                        :width 1440, 
+                        :height 900, 
+                        :fps 60}))
