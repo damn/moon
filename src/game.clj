@@ -4411,11 +4411,6 @@
         [:interaction-state/no-skill-selected]))))
 
 
-(def ^:dynamic *cursors*)
-
-(defn set-cursor! [cursor-key]
-  (.setCursor Gdx/graphics (safe-get *cursors* cursor-key)))
-
 (def ^:dynamic *default-font*)
 (def ^:dynamic *shape-drawer*)
 (def ^:dynamic *shape-drawer-texture*)
@@ -4447,11 +4442,12 @@
         '(com.badlogic.gdx.utils Disposable ScreenUtils))
 
 (defn game-listener []
-  (let [batch (atom nil)]
+  (let [batch (atom nil)
+        cursors (atom nil)]
     {
      :create!
      (fn []
-       (set! *cursors* (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
+       (reset! cursors (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
                                     create-cursor!))
        (set! *sounds* (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
@@ -4505,7 +4501,7 @@
      (fn []
        (run! Sound/.dispose (vals *sounds*))
        (Disposable/.dispose @batch)
-       (run! Disposable/.dispose (vals *cursors*))
+       (run! Disposable/.dispose (vals @cursors))
        (Disposable/.dispose *default-font*)
        (Disposable/.dispose *shape-drawer-texture*)
        (Disposable/.dispose @skin)
@@ -4551,7 +4547,7 @@
          (reset! unit-scale 1))
        (.end ^Batch @batch)
        (let [interaction-state (create-interaction-state mouseover-eid @stage)]
-         (set-cursor! (cursor-key interaction-state))
+         (.setCursor Gdx/graphics (safe-get @cursors (cursor-key interaction-state)))
          (handle-player-input! interaction-state
                                @skin 
                                @stage 
@@ -5586,7 +5582,6 @@
 ; describe what should happen (fsm event, swap!, etc.)
 (defn game! []
   (binding [*sounds* nil
-            *cursors* nil
             *default-font* nil
             *textures* nil
             *viewport* nil
