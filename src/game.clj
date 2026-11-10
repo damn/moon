@@ -4413,7 +4413,6 @@
 
 (def ^:dynamic *shape-drawer*)
 (def ^:dynamic *shape-drawer-texture*)
-(def ^:dynamic *textures*)
 
 (def skin (atom nil))
 (def stage (atom nil))
@@ -4443,7 +4442,8 @@
 (defn game-listener []
   (let [batch (atom nil)
         cursors (atom nil)
-        default-font (atom nil)]
+        default-font (atom nil)
+        textures (atom nil)]
     {
      :create!
      (fn []
@@ -4461,12 +4461,12 @@
        (.setInputProcessor Gdx/input @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-       (set! *textures* (create-textures Gdx/files
+       (reset! textures (create-textures Gdx/files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
        (set! *viewport* (create-viewport! world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
-                     start-position]} (create-level! db *textures*)]
+                     start-position]} (create-level! db @textures)]
          (set! *tiled-map* tiled-map)
          (set! *start-position* start-position)
          (set! *potential-field-cache* (atom nil))
@@ -4491,9 +4491,9 @@
                                               *shape-drawer*
                                               @skin
                                               @stage
-                                              *textures*)]
+                                              @textures)]
          (.addActor ^Stage @stage actor))
-       (spawn-player! db @skin @stage *textures*)
+       (spawn-player! db @skin @stage @textures)
        (bind-player-eid!)
        (spawn-map-creatures! db))
 
@@ -4505,7 +4505,7 @@
        (Disposable/.dispose @default-font)
        (Disposable/.dispose *shape-drawer-texture*)
        (Disposable/.dispose @skin)
-       (run! Disposable/.dispose (vals *textures*))
+       (run! Disposable/.dispose (vals @textures))
        (Disposable/.dispose *tiled-map*))
 
      :render!
@@ -4537,7 +4537,7 @@
          (draw-entities! *shape-drawer* 
                          @batch 
                          @default-font 
-                         *textures* 
+                         @textures 
                          unit-scale 
                          (let [[x y] (ui-mouse-position @stage Gdx/input)]
                            (mouseover-actor @stage x y))
@@ -4551,7 +4551,7 @@
          (handle-player-input! interaction-state
                                @skin 
                                @stage 
-                               *textures* 
+                               @textures 
                                #(.isKeyPressed Gdx/input (int %))
                                #(.isButtonJustPressed Gdx/input (int %))))
        (reset! paused?
@@ -4560,7 +4560,7 @@
                         (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! db active-entities paused?  @skin @stage *textures*)
+       (tick-game! db active-entities paused?  @skin @stage @textures)
        (destroy-entities! db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
@@ -5582,7 +5582,6 @@
 ; describe what should happen (fsm event, swap!, etc.)
 (defn game! []
   (binding [*sounds* nil
-            *textures* nil
             *viewport* nil
             *shape-drawer* nil
             *shape-drawer-texture* nil
