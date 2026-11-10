@@ -3348,10 +3348,8 @@
     (assert (:entity/player? @eid))
     (set! *player-eid* eid)))
 
-(def ^:dynamic *tiled-map*)
-
-(defn spawn-map-creatures! [db*]
-  (doseq [[position creature-id] (spawn-positions *tiled-map*)
+(defn spawn-map-creatures! [db* tiled-map]
+  (doseq [[position creature-id] (spawn-positions tiled-map)
           :when (not= position *start-position*)]
     (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) position)
                                            :creature-property (build db* (keyword creature-id))
@@ -4440,7 +4438,8 @@
         textures (atom nil)
         shape-drawer (atom nil)
         shape-drawer-texture (atom nil)
-        explored-tile-corners (atom nil)]
+        explored-tile-corners (atom nil)
+        tiled-map* (atom nil)]
     {
      :create!
      (fn []
@@ -4464,7 +4463,7 @@
        (set! *viewport* (create-viewport! world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures)]
-         (set! *tiled-map* tiled-map)
+         (reset! tiled-map* tiled-map)
          (set! *start-position* start-position)
          (set! *potential-field-cache* (atom nil))
          (set! *id-counter* (atom 0))
@@ -4491,7 +4490,7 @@
          (.addActor ^Stage @stage actor))
        (spawn-player! db @skin @stage @textures)
        (bind-player-eid!)
-       (spawn-map-creatures! db))
+       (spawn-map-creatures! db @tiled-map*))
 
      :dispose!
      (fn []
@@ -4502,7 +4501,7 @@
        (Disposable/.dispose @shape-drawer-texture)
        (Disposable/.dispose @skin)
        (run! Disposable/.dispose (vals @textures))
-       (Disposable/.dispose *tiled-map*))
+       (Disposable/.dispose @tiled-map*))
 
      :render!
      (fn []
@@ -4512,7 +4511,7 @@
        (set-camera-to-player!)
        (.setProjectionMatrix ^Batch @batch (.combined (.getCamera *viewport*)))
        (.begin ^Batch @batch)
-       (draw-tiled-map! *tiled-map*
+       (draw-tiled-map! @tiled-map*
                         @batch
                         (.getCamera *viewport*)
                         (tile-color-setter*
@@ -5581,7 +5580,6 @@
             *viewport* nil
             *player-eid* nil
             *elapsed-time* (atom nil)
-            *tiled-map* nil
             *start-position* nil
             *potential-field-cache* nil
             *id-counter* nil
