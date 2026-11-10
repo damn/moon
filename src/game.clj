@@ -2885,52 +2885,45 @@
     nil))
 
 (defn- entity-state-enter!
-  [eid [state-k state-v] {:keys [game/play-sound!
-                                 game/show-modal!]}]
+  [eid [state-k state-v]]
   (case state-k
     :player-item-on-cursor
     (let [{:keys [item]} state-v]
-      (swap! eid assoc :entity/item-on-cursor item)
-      nil)
+      [[:tx/swap eid assoc :entity/item-on-cursor item]])
 
     :active-skill
     (let [{:keys [skill]} state-v
           cost (:skill/cost skill)]
-      (swap! eid update :entity/stats
-             (fn [stats]
-               (let [mana-val ((get-mana stats) 0)]
-                 (assert (<= cost mana-val))
-                 (assoc-in stats [:stats/mana 0] (- mana-val cost)))))
-      (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-             (timer-create (:skill/cooldown skill)))
-      (play-sound! (:skill/start-action-sound skill))
-      nil)
+      [[:tx/swap eid update :entity/stats (fn [stats]
+                                            (let [mana-val ((get-mana stats) 0)]
+                                              (assert (<= cost mana-val))
+                                              (assoc-in stats [:stats/mana 0] (- mana-val cost))))]
+       [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (timer-create (:skill/cooldown skill))]
+       [:tx/sound (:skill/start-action-sound skill)]])
 
     :npc-dead
-    (do (swap! eid assoc :entity/destroyed? true)
-        nil)
+    [[:tx/swap eid assoc :entity/destroyed? true]]
 
     :player-moving
     (let [{:keys [movement-vector]} state-v]
-      (swap! eid assoc :entity/movement {:direction movement-vector
-                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                    0)})
-      nil)
+      [[:tx/swap eid assoc :entity/movement {:direction movement-vector
+                                             :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
+                                                        0)}]])
 
     :player-dead
-    (do (play-sound! "bfxr_playerdeath.wav")
-        (show-modal! {:title "YOU DIED - again!"
-                      :text "Good luck next time!"
-                      :button-text "OK"
-                      :on-click (fn [])})
-        nil)
+    [
+     [:tx/sound "bfxr_playerdeath.wav"]
+     [:tx/modal {:title "YOU DIED - again!"
+                 :text "Good luck next time!"
+                 :button-text "OK"
+                 :on-click (fn [])}]
+     ]
 
     :npc-moving
     (let [{:keys [movement-vector]} state-v]
-      (swap! eid assoc :entity/movement {:direction movement-vector
-                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                    0)})
-      nil)
+      [[:tx/swap eid assoc :entity/movement {:direction movement-vector
+                                             :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
+                                                        0)}]])
 
     nil))
 
@@ -2942,29 +2935,24 @@
   (assert (contains? *sounds* sound-name) (str sound-name))
   (Sound/.play (get *sounds* sound-name)))
 
-(def k->txs
-  {
-   :tx/swap 
-   (fn [eid f & params]
-     (apply swap! eid f params))
-   :tx/sound 
-   (fn [sound-name]
-     (play-sound! sound-name))
-   :tx/spawn-entity 
-   (fn [entity-decl]
-     (spawn-entity! entity-decl))
-   })
-
-(defn handle-txs! [txs]
-  (doseq [[k & params] txs]
-    (apply (safe-get k->txs k) params)))
-
 (defn- handle-fsm-event! [skin stage eid event & [params]]
-  (let [game {
-              :game/play-sound! play-sound!
-              :game/show-modal! (fn [opts]
-                                  (show-modal! skin stage opts))
-              }
+  (let [k->txs {
+                :tx/swap 
+                (fn [eid f & params]
+                  (apply swap! eid f params))
+                :tx/sound 
+                (fn [sound-name]
+                  (play-sound! sound-name))
+                :tx/spawn-entity 
+                (fn [entity-decl]
+                  (spawn-entity! entity-decl))
+                :tx/modal
+                (fn [opts]
+                  (show-modal! skin stage opts))
+                }
+        handle-txs! (fn [txs]
+                      (doseq [[k & params] txs]
+                        (apply (safe-get k->txs k) params)))
         fsm (:entity/fsm @eid)
         _ (assert fsm)
         old-state-k (:state fsm)
@@ -2979,7 +2967,7 @@
         (swap! eid assoc new-state-k (new-state-obj 1))
         (swap! eid dissoc old-state-k)
         (handle-txs! (entity-state-exit! eid old-state-obj))
-        (entity-state-enter! eid new-state-obj game)
+        (handle-txs! (entity-state-enter! eid new-state-obj))
         nil))))
 
 (defn- effect-applicable?
@@ -5554,8 +5542,6 @@
       (.setTitle title)
       (.setWindowedMode width height)
       (.setForegroundFPS fps))))
-
-
 
 (defn levelgen! []
   (lwjgl3-application! (levelgen-listener)
