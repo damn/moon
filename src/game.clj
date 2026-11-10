@@ -4411,7 +4411,6 @@
         [:interaction-state/no-skill-selected]))))
 
 
-(def ^:dynamic *default-font*)
 (def ^:dynamic *shape-drawer*)
 (def ^:dynamic *shape-drawer-texture*)
 (def ^:dynamic *textures*)
@@ -4443,7 +4442,8 @@
 
 (defn game-listener []
   (let [batch (atom nil)
-        cursors (atom nil)]
+        cursors (atom nil)
+        default-font (atom nil)]
     {
      :create!
      (fn []
@@ -4453,7 +4453,7 @@
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (create-sound! path)])))
        (reset! batch (SpriteBatch.))
-       (set! *default-font* (create-default-font!))
+       (reset! default-font (create-default-font!))
        (set! *shape-drawer-texture* (white-pixel-texture))
        (set! *shape-drawer* (ShapeDrawer. @batch (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
        (reset! skin (create-skin! (internal Gdx/files "skin/uiskin.json")))
@@ -4487,7 +4487,7 @@
        (doseq [^Actor actor (create-ui-actors mouseover-eid
                                               paused?
                                               unit-scale
-                                              *default-font*
+                                              @default-font
                                               *shape-drawer*
                                               @skin
                                               @stage
@@ -4502,7 +4502,7 @@
        (run! Sound/.dispose (vals *sounds*))
        (Disposable/.dispose @batch)
        (run! Disposable/.dispose (vals @cursors))
-       (Disposable/.dispose *default-font*)
+       (Disposable/.dispose @default-font)
        (Disposable/.dispose *shape-drawer-texture*)
        (Disposable/.dispose @skin)
        (run! Disposable/.dispose (vals *textures*))
@@ -4536,7 +4536,7 @@
          (draw-cell-debug *shape-drawer*)
          (draw-entities! *shape-drawer* 
                          @batch 
-                         *default-font* 
+                         @default-font 
                          *textures* 
                          unit-scale 
                          (let [[x y] (ui-mouse-position @stage Gdx/input)]
@@ -5582,7 +5582,6 @@
 ; describe what should happen (fsm event, swap!, etc.)
 (defn game! []
   (binding [*sounds* nil
-            *default-font* nil
             *textures* nil
             *viewport* nil
             *shape-drawer* nil
