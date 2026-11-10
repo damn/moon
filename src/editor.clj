@@ -134,6 +134,28 @@
                    (.setTouchable Touchable/disabled))])
           stack)))))
 
+
+(defn property-overview-window [property-type clicked-id-fn {:keys [editor/new-window] :as editor}]
+  (let [window (new-window "Edit")]
+    (doseq [row (property-overview-rows property-type clicked-id-fn editor)]
+      (doseq [actor row]
+        (.add window ^Actor actor))
+      (.row window))
+    (.pack window)
+    (.add (.getTitleTable window)
+          (doto (TextButton. "X" @skin)
+            (.addListener (proxy [ChangeListener] []
+                            (changed [_event _actor]
+                              (.remove window))))))
+    (.setModal window true)
+    window))
+
+(defn- scaled-image-button [texture-region scale]
+  (ImageButton.
+   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+     (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                  (* scale (.getRegionHeight ^TextureRegion texture-region))))))
+
 (def db (atom nil))
 (def textures (atom nil))
 (def skin (atom nil))
@@ -162,43 +184,26 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-(defn property-overview-window [property-type clicked-id-fn]
-  (let [window (Window. "Edit" @skin)]
-    (doseq [row (property-overview-rows property-type 
-                                        clicked-id-fn 
-                                        {
-                                         :editor/all-raw 
-                                         (fn [property-type]
-                                           (game/all-raw @db property-type))
-                                         :editor/get-texture-region 
-                                         (fn [image]
-                                           (game/get-texture-region @textures image))
-                                         :editor/property-type->overview-table-props
-                                         property-type->overview-table-props
-                                         :editor/text-tooltip
-                                         (fn [text]
-                                           (TextTooltip. ^String text @skin))
-                                         :editor/new-label
-                                         (fn [text]
-                                           (Label. ^String text @skin))
-                                         })]
-      (doseq [actor row]
-        (.add window ^Actor actor))
-      (.row window))
-    (.pack window)
-    (.add (.getTitleTable window)
-          (doto (TextButton. "X" @skin)
-            (.addListener (proxy [ChangeListener] []
-                            (changed [_event _actor]
-                              (.remove window))))))
-    (.setModal window true)
-    window))
-
-(defn- scaled-image-button [texture-region scale]
-  (ImageButton.
-   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-     (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                  (* scale (.getRegionHeight ^TextureRegion texture-region))))))
+(def editor 
+  {
+   :editor/all-raw 
+   (fn [property-type]
+     (game/all-raw @db property-type))
+   :editor/get-texture-region 
+   (fn [image]
+     (game/get-texture-region @textures image))
+   :editor/property-type->overview-table-props
+   property-type->overview-table-props
+   :editor/text-tooltip
+   (fn [text]
+     (TextTooltip. ^String text @skin))
+   :editor/new-label
+   (fn [text]
+     (Label. ^String text @skin))
+   :editor/new-window
+   (fn [title]
+     (Window. title @skin))
+   })
 
 (defn- create-image-widget [image]
   (scaled-image-button (game/get-texture-region @textures image) 2))
@@ -376,7 +381,8 @@
                                                        property-type
                                                        (fn [actor id]
                                                          (.remove ^Actor (.firstAscendant ^Actor actor Window))
-                                                         (redo-rows id))))))))}])
+                                                         (redo-rows id))
+                                                       editor))))))}])
                   property-id
                   (conj [{:actor (let [property (game/get-raw @db property-id)]
                                    (doto (Image. ^TextureRegion (game/get-texture-region @textures (or (:entity/image property)
@@ -418,7 +424,8 @@
                                                       property-type
                                                       (fn [actor id]
                                                         (.remove ^Actor (.firstAscendant ^Actor actor Window))
-                                                        (redo-rows (conj property-ids id)))))))))}]
+                                                        (redo-rows (conj property-ids id)))
+                                                      editor))))))}]
              (for [property-id property-ids]
                (let [property (game/get-raw @db property-id)]
                  {:actor (doto (Image. ^TextureRegion (game/get-texture-region @textures (or (:entity/image property)
@@ -731,7 +738,8 @@
                                                    property-type
                                                    (fn [_actor id]
                                                      (.addActor ^Stage @stage
-                                                                (property-editor-window (game/get-raw @db id)))))))))))
+                                                                (property-editor-window (game/get-raw @db id))))
+                                                   editor)))))))
       (.row window))
     (.pack window)
     window))
