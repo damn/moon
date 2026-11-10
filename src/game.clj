@@ -1,29 +1,4 @@
-(ns game
-  (:import (com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3)
-           (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Button 
-                                               ButtonGroup 
-                                               CheckBox 
-                                               HorizontalGroup 
-                                               Image 
-                                               ImageButton 
-                                               Label 
-                                               ScrollPane
-                                               SelectBox
-                                               Skin 
-                                               Stack 
-                                               Table 
-                                               TextButton 
-                                               TextField
-                                               TextTooltip 
-                                               TooltipManager 
-                                               Widget 
-                                               Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
-           (com.badlogic.gdx.utils Align Disposable ScreenUtils)
-           (com.badlogic.gdx.utils.viewport FitViewport Viewport)
-           (java.util Random))
-  (:gen-class))
+(ns game)
 
 (defn- sort-ops [ops]
   (sort-by (fn [[k]]
@@ -699,6 +674,25 @@
   (and (not= x1 x2)
        (not= y1 y2)))
 
+(import '(com.badlogic.gdx.scenes.scene2d.ui Button 
+                                             CheckBox 
+                                             HorizontalGroup 
+                                             Image 
+                                             ImageButton 
+                                             Label 
+                                             ScrollPane
+                                             SelectBox
+                                             Skin 
+                                             Stack 
+                                             Table 
+                                             TextButton 
+                                             TextField
+                                             TextTooltip 
+                                             Widget 
+                                             Window))
+
+(import '(com.badlogic.gdx.scenes.scene2d Actor))
+
 (defn- set-label-text-actor [label-widget text-fn]
   (proxy [Actor] []
     (act [delta]
@@ -707,6 +701,8 @@
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha])))
+
+(import '(com.badlogic.gdx.scenes.scene2d Group))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
@@ -727,6 +723,10 @@
      (doto (.add ^Table table ^Actor label)
        (.right)
        (.expandX)))))
+
+(import '(com.badlogic.gdx.scenes.scene2d Event
+                                          Stage))
+(import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener))
 
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (Table.)]
@@ -760,6 +760,8 @@
           (add-upd-label! skin table update-fn icon)
           (add-upd-label! skin table update-fn))))
     table))
+
+(import '(com.badlogic.gdx.scenes.scene2d Touchable))
 
 (defn create-dev-menu
   [{:keys [menus update-labels skin]}]
@@ -928,6 +930,10 @@
 
 (def ^:dynamic *player-eid*)
 
+(import '(com.badlogic.gdx.math Vector2))
+(import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
+                                                Drawable))
+
 (defn- inv-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
@@ -961,6 +967,7 @@
          (.setUserObject cell)))}))
 
 (import '(com.badlogic.gdx.graphics Color))
+(import '(com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable))
 
 (defn- build-inventory-window
   [{:keys [on-click-cell
@@ -1120,6 +1127,8 @@
                          (range h)))
            (range w))
      convert]))
+
+(import '(java.util Random))
 
 ;  Cave Algorithmus.
 ;  http://properundead.com/2009/03/cave-generator.html
@@ -1785,6 +1794,8 @@
                    :tooltip-text (item-info-text item)}
                   skin)))
 
+(import '(com.badlogic.gdx.scenes.scene2d.ui ButtonGroup))
+
 (defn add-skill!
   [action-bar
    {:keys [skill-id
@@ -1869,6 +1880,8 @@
                        (Vector2. (float (.getX Gdx/input))
                                  (float (.getY Gdx/input))))]
     [(.x v2) (.y v2)]))
+
+(import '(com.badlogic.gdx.utils Align))
 
 (defn show-modal! [^Skin skin ^Stage stage {:keys [title text button-text on-click]}]
   (assert (not (.findActor (.getRoot stage) "moon.ui.modal-window")))
@@ -2033,6 +2046,8 @@
         (float (/ (:entity/width entity)  2))
         (float (/ (:entity/width target-entity) 2)))
      (float maxrange)))
+
+(import '(com.badlogic.gdx.math Circle Rectangle Intersector))
 
 (defn rectangle
   [{:keys [entity/position
@@ -2408,6 +2423,8 @@
              "[-]/[=] - Zoom"
              "[P]/[SPACE] - Unpause"
              "Leftmouse click - use skill/drop item on cursor"]))
+
+(import '(com.badlogic.gdx.utils.viewport Viewport))
 
 (def ^:dynamic ^Viewport *viewport*)
 
@@ -3159,6 +3176,8 @@
     (.dispose pixmap)
     cursor))
 
+(import '(com.badlogic.gdx.utils.viewport FitViewport))
+
 (defn create-viewport! [world-unit-scale]
   (let [world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)]
@@ -3180,19 +3199,18 @@
                 size
                 quality-scaling
                 use-integer-positions?]} default-font-params
-        generator (FreeTypeFontGenerator. ^FileHandle (internal path))
+        generator (FreeTypeFontGenerator. (internal path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
                     (set! (.minFilter p) Texture$TextureFilter/Linear)
                     (set! (.magFilter p) Texture$TextureFilter/Linear)
                     p)
-        font (.generateFont ^FreeTypeFontGenerator generator
-                            ^FreeTypeFontGenerator$FreeTypeFontParameter parameter)
-        font-data (.getData ^BitmapFont font)]
-    (Disposable/.dispose generator)
-    (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
-    (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
-    (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
+        font (.generateFont generator parameter)
+        font-data (.getData font)]
+    (.dispose generator)
+    (.setScale font-data (/ quality-scaling))
+    (set! (.markupEnabled font-data) true)
+    (.setUseIntegerPositions font use-integer-positions?)
     font))
 
 (defn create-vampire-level [_]
@@ -3395,6 +3413,8 @@
 (def show-body-bounds? (atom false))
 
 (def factions-iterations {:good 15 :evil 5})
+
+(import '(com.badlogic.gdx.math Vector3))
 
 (defn draw-cell-debug
   [shape-drawer]
@@ -4317,7 +4337,9 @@
 
 (import '(com.badlogic.gdx ApplicationListener)
         '(com.badlogic.gdx.graphics Colors)
-        '(com.badlogic.gdx.graphics.g2d SpriteBatch))
+        '(com.badlogic.gdx.graphics.g2d SpriteBatch)
+        '(com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
+        '(com.badlogic.gdx.utils Disposable ScreenUtils))
 
 (def listener
   (reify ApplicationListener
@@ -4479,6 +4501,8 @@
 
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application 
                                            Lwjgl3ApplicationConfiguration))
+
+(gen-class)
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
@@ -4902,6 +4926,8 @@
 
 (defn get-user-object [^Actor actor]
   (.getUserObject actor))
+
+(import '(com.badlogic.gdx.scenes.scene2d.utils Layout))
 
 (defn pack! [^Layout layout]
   (.pack layout))
