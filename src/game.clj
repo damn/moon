@@ -4306,21 +4306,34 @@
       nil)))
 
 (defn- tick-entities!
-  [db delta-time active-entities
-   skin stage textures]
+  [db 
+   delta-time 
+   active-entities
+   skin 
+   stage 
+   textures]
   (let [active-entities* @active-entities
         raycaster *raycaster*]
     (letfn [(apply-effects! [effect-ctx effects]
               (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                (handle-effect! db skin stage textures e effect-ctx 
-                               apply-effects!
-                               active-entities*
-                               raycaster)))]
+                (handle-effect! db 
+                                skin 
+                                stage 
+                                textures 
+                                e 
+                                effect-ctx 
+                                apply-effects!
+                                active-entities*
+                                raycaster)))]
       (doseq [eid active-entities*
               component @eid]
-        (tick-component delta-time skin stage textures
+        (tick-component delta-time 
+                        skin 
+                        stage 
+                        textures
                         apply-effects!
-                        eid component)))))
+                        eid 
+                        component)))))
 
 
 (def ^:dynamic *potential-field-cache*)
