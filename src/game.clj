@@ -2548,7 +2548,11 @@
 
 (import '(com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData))
 
-(defn- draw-text! [batch default-font unit-scale {:keys [font scale x y text up?]}]
+(defn- draw-text! 
+  [batch 
+   default-font 
+   unit-scale 
+   {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
         scale (or scale 1)
         font-data (.getData ^BitmapFont font)
@@ -2576,9 +2580,9 @@
 (defn- draw-texture-region! [batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
   (let [[w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
                                 (.getRegionHeight ^TextureRegion texture-region)]]
-                  (if (= @unit-scale 1)
+                  (if (= unit-scale 1)
                     dimensions
-                    (mapv (comp float (partial * @unit-scale))
+                    (mapv (comp float (partial * unit-scale))
                           dimensions)))]
     (if center?
       (Batch/.draw ^Batch batch
@@ -3373,8 +3377,8 @@
         rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
         draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
-                           (draw-texture-region! batch unit-scale rahmen-tex-reg [x y])
-                           (draw-texture-region! batch unit-scale
+                           (draw-texture-region! batch @unit-scale rahmen-tex-reg [x y])
+                           (draw-texture-region! batch @unit-scale
                                                    (get-texture-region textures
                                                                             {:image/file content-file
                                                                              :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
@@ -3455,11 +3459,14 @@
                       vp-width (.getWorldWidth (.getViewport ^Stage stage))
                       vp-height (.getWorldHeight (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
-                    (draw-text! batch default-font unit-scale {:x (/ vp-width 2)
-                                       :y (+ (/ vp-height 2) 200)
-                                       :text text
-                                       :scale 2.5
-                                       :up? true}))))))
+                    (draw-text! batch 
+                                default-font 
+                                @unit-scale 
+                                {:x (/ vp-width 2)
+                                 :y (+ (/ vp-height 2) 200)
+                                 :text text
+                                 :scale 2.5
+                                 :up? true}))))))
       (.setName "player-message")
       (.setUserObject (atom nil)))))
 
@@ -3468,7 +3475,7 @@
   (case k
     :player-item-on-cursor
     (when mouseover-actor*
-      (draw-texture-region! batch unit-scale
+      (draw-texture-region! batch @unit-scale
                               (get-texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-pos
                               {:center? true}))
@@ -3622,15 +3629,18 @@
           {:keys [entity/position entity/height entity/mouseover?]} entity]
       (when (and mouseover? text)
         (let [[x y] position]
-          (draw-text! batch default-font unit-scale {:text text
-                             :x x
-                             :y (+ y (/ height 2))
-                             :up? true}))))
+          (draw-text! batch 
+                      default-font 
+                      @unit-scale 
+                      {:text text
+                       :x x
+                       :y (+ y (/ height 2))
+                       :up? true}))))
 
     :player-item-on-cursor
     (let [{:keys [item]} v]
       (when-not mouseover-actor
-        (draw-texture-region! batch unit-scale
+        (draw-texture-region! batch @unit-scale
                                 (get-texture-region textures (:entity/image item))
                                 (item-place-position Gdx/input
                                                      (:entity/position entity)
@@ -3641,14 +3651,14 @@
     (let [{:keys [frames cnt frame-duration]} v
           image (frames (min (int (/ (float cnt) (float frame-duration)))
                              (dec (count frames))))]
-      (draw-texture-region! batch unit-scale
+      (draw-texture-region! batch @unit-scale
                               (get-texture-region textures image)
                               (:entity/position entity)
                               {:center? true
                                :rotation (or (:entity/rotation-angle entity) 0)}))
 
     :entity/image
-    (draw-texture-region! batch unit-scale
+    (draw-texture-region! batch @unit-scale
                             (get-texture-region textures v)
                             (:entity/position entity)
                             {:center? true
@@ -3700,13 +3710,16 @@
     :entity/string-effect
     (let [{:keys [text]} v
           [x y] (:entity/position entity)]
-      (draw-text! batch default-font unit-scale {:text text
-                         :x x
-                         :y (+ y
-                               (/ (:entity/height entity) 2)
-                               (* 5 world-unit-scale))
-                         :scale 2
-                         :up? true}))
+      (draw-text! batch 
+                  default-font 
+                  @unit-scale 
+                  {:text text
+                   :x x
+                   :y (+ y
+                         (/ (:entity/height entity) 2)
+                         (* 5 world-unit-scale))
+                   :scale 2
+                   :up? true}))
 
     :entity/temp-modifier
     (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4))
@@ -3729,7 +3742,7 @@
                       (math/to-radians 90)
                       (math/to-radians (* (float action-counter-ratio) 360))
                       (float-bits 1 1 1 0.5))
-      (draw-texture-region! batch unit-scale texture-region [(- (float x) radius) y])
+      (draw-texture-region! batch @unit-scale texture-region [(- (float x) radius) y])
       (doseq [effect effects]
         (effect-render effect effect-ctx shape-drawer
                        active-entities
@@ -3740,7 +3753,7 @@
           [x y] position]
       (draw-text! batch 
                   default-font 
-                  unit-scale 
+                  @unit-scale 
                   {:text "zzz"
                    :x x
                    :y (+ y (/ height 2))
@@ -4408,18 +4421,6 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(def active-entities (atom nil))
-(def mouseover-eid (atom nil))
-(def paused? (atom false))
-(def unit-scale (atom 1))
-(def pausing? true)
-(def state->pause-game? {:active-skill false
-                         :stunned false
-                         :player-moving false
-                         :player-idle true
-                         :player-dead true
-                         :player-item-on-cursor true})
-
 (defn create-sound! [path]
   (.newSound Gdx/audio (internal Gdx/files path)))
 
@@ -4438,8 +4439,19 @@
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
         db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
+        pausing? true
+        state->pause-game? {:active-skill false
+                            :stunned false
+                            :player-moving false
+                            :player-idle true
+                            :player-dead true
+                            :player-item-on-cursor true}
         skin (atom nil)
-        stage (atom nil)]
+        stage (atom nil)
+        unit-scale (atom 1)
+        paused? (atom false)
+        active-entities (atom nil)
+        mouseover-eid (atom nil)]
     {
      :create!
      (fn []
