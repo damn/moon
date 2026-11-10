@@ -3047,7 +3047,6 @@
 (defn spawn-effect* [v effect-ctx db]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
-    ; TODO these are actually 3 effects ?
     (play-sound! "bfxr_curse.wav")
     (audiovisual! db position :audiovisuals/spawn)
     (spawn-entity! (spawn-creature {:position position
