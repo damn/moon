@@ -4405,7 +4405,6 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(def stage (atom nil))
 (def active-entities (atom nil))
 (def mouseover-eid (atom nil))
 (def paused? (atom false))
@@ -4436,7 +4435,8 @@
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
         db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
-        skin (atom nil)]
+        skin (atom nil)
+        stage (atom nil)]
     {
      :create!
      (fn []
