@@ -4405,7 +4405,6 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(def skin (atom nil))
 (def stage (atom nil))
 (def active-entities (atom nil))
 (def mouseover-eid (atom nil))
@@ -4436,7 +4435,8 @@
         shape-drawer-texture (atom nil)
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
-        db (create-db (-> "properties.edn" io/resource slurp edn/read-string))]
+        db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
+        skin (atom nil)]
     {
      :create!
      (fn []
@@ -4552,7 +4552,7 @@
                         (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! db active-entities paused?  @skin @stage @textures)
+       (tick-game! db active-entities paused? @skin @stage @textures)
        (destroy-entities! db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
