@@ -308,13 +308,12 @@
            (int 0)
            (int num-vertices))))
 
-(def world-unit-scale (float (/ 48)))
-
 (defn- draw-tile-layer!
   [layer
    batch
    view-bounds
-   color-setter]
+   color-setter
+   world-unit-scale]
   (let [num-vertices 20
         vertices (float-array num-vertices)
         batch-color (.getColor ^Batch batch)
@@ -372,7 +371,8 @@
   [^TiledMap tiled-map
    ^Batch batch
    ^OrthographicCamera camera
-   color-setter]
+   color-setter
+   world-unit-scale]
   (let [width  (* (.viewportWidth camera) (.zoom camera))
         height (* (.viewportHeight camera) (.zoom camera))
         up (.up camera)
@@ -389,7 +389,8 @@
       (draw-tile-layer! layer
                         batch
                         view-bounds
-                        color-setter))))
+                        color-setter
+                        world-unit-scale))))
 
 (defn- recursively-search [^FileHandle handle extensions]
   (loop [[^FileHandle handle & remaining] (.list handle)
@@ -3118,7 +3119,7 @@
     (.dispose pixmap)
     cursor))
 
-(defn create-viewport! []
+(defn create-viewport! [world-unit-scale]
   (let [world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)]
     (FitViewport. (float world-width)
@@ -3451,6 +3452,8 @@
                         (float-bits 1 1 0 0.5)))))
 
     nil))
+
+(def world-unit-scale (float (/ 48)))
 
 (defn- draw-component
   [shape-drawer batch default-font unit-scale mouseover-actor 
@@ -4296,7 +4299,7 @@
 
       (set! *textures* (create-textures {:folder "resources/"
                                          :extensions #{"png" "bmp"}}))
-      (set! *viewport* (create-viewport!))
+      (set! *viewport* (create-viewport! world-unit-scale))
 
       ; just assoc to tiled-map the tiled-map/start-position ?
       (let [{:keys [^TiledMap tiled-map 
@@ -4361,7 +4364,8 @@
                           :see-all-tiles? false
                           :explored-tile-color (float-bits 0.5 0.5 0.5 1)
                           :visible-tile-color (float-bits 1 1 1 1)
-                          :invisible-tile-color (float-bits 0 0 0 1)}))
+                          :invisible-tile-color (float-bits 0 0 0 1)})
+                       world-unit-scale)
       (.setColor ^Batch *batch* (float 1) (float 1) (float 1) (float 1))
       (with-line-width *shape-drawer* world-unit-scale
         (reset! unit-scale world-unit-scale)
@@ -4547,9 +4551,10 @@
           (.setProjectionMatrix batch* (.combined world-camera))
           (.begin batch*)
           (draw-tiled-map! @tiled-map
-                                batch*
-                                world-camera
-                                (constantly (.toFloatBits Color/WHITE)))
+                           batch*
+                           world-camera
+                           (constantly (.toFloatBits Color/WHITE))
+                           world-unit-scale)
           (.end batch*)
           (doseq [[k f] {Input$Keys/MINUS (fn []
                                             (set! (.zoom camera*) (max 0.1 (+ (.zoom camera*) 0.1)))
