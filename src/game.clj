@@ -168,9 +168,12 @@
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
 
+(defn get-properties [^TiledMap tiled-map]
+  (.getProperties tiled-map))
+
 (import '(com.badlogic.gdx.maps MapLayers))
 
-(defn layers-get [^MapLayers map-layers layer-name]
+(defn layers-get [^MapLayers map-layers ^String layer-name]
   (.get map-layers layer-name))
 
 (import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
@@ -181,25 +184,27 @@
 (defn get-height [^TiledMapTileLayer layer]
   (.getHeight layer))
 
+(defn get-cell [^TiledMapTileLayer layer x y]
+  (.getCell layer (int x) (int y)))
+
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
         layer (layers-get (get-layers tiled-map) layer-name)]
     (for [x (range (get-width layer))
           y (range (get-height layer))
-          :let [position [x y]
-                cell (.getCell layer (int x) (int y))]
+          :let [cell (get-cell layer x y)]
           :when cell
           :let [value (.get (.getProperties (.getTile cell)) property-key)]
           :when value]
-      [position value])))
+      [[x y] value])))
 
 (import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell))
 
 (import '(com.badlogic.gdx.maps.tiled TiledMapTile))
 
 (defn tile-movement-property
-  [^TiledMap tiled-map layer [x y]]
+  [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
       (let [value (.get (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
@@ -207,7 +212,7 @@
         (assert value
                 (str "Value for :movement at position "
                      position " / mapeditor inverted position: " [(position 0)
-                                                                 (- (dec (.get (.getProperties tiled-map) "height"))
+                                                                 (- (dec (.get (get-properties tiled-map) "height"))
                                                                     (position 1))]
                      " and layer " (.getName ^TiledMapTileLayer layer) " is undefined."))
         value))))
