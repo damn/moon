@@ -542,6 +542,8 @@
                       (fn [k]
                         (malli-form (get schemas k)))))
 
+; TODO hier auch map draus
+; -> schemas and entitiy effects etc. are our domain objects.
 (defn malli-form [schema]
   (case (first schema)
     :s/animation

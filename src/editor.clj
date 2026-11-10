@@ -134,8 +134,8 @@
                    (.setTouchable Touchable/disabled))])
           stack)))))
 
-
-(defn property-overview-window [property-type clicked-id-fn {:keys [editor/new-window] :as editor}]
+(defn property-overview-window [property-type clicked-id-fn {:keys [editor/new-window
+                                                                    editor/new-text-button] :as editor}]
   (let [window (new-window "Edit")]
     (doseq [row (property-overview-rows property-type clicked-id-fn editor)]
       (doseq [actor row]
@@ -143,7 +143,7 @@
       (.row window))
     (.pack window)
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" @skin)
+          (doto (new-text-button "X")
             (.addListener (proxy [ChangeListener] []
                             (changed [_event _actor]
                               (.remove window))))))
@@ -156,9 +156,205 @@
      (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
                   (* scale (.getRegionHeight ^TextureRegion texture-region))))))
 
+
+
+(defn- create-image-widget [image textures]
+  (scaled-image-button (game/get-texture-region textures image) 2))
+
+(defn- create-animation-widget [animation textures]
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 1))))]
+    (doseq [image (:animation/frames animation)]
+      (.add table ^Actor (scaled-image-button
+                          (game/get-texture-region textures image)
+                          2)))
+    (.row ^Table table)
+    (.pack table)
+    table))
+
+(defn- boolean-widget-value [widget]
+  (.isChecked ^CheckBox widget))
+
+
+(defn- create-boolean-widget [checked? skin]
+  (doto (CheckBox. "" skin)
+    (.setChecked checked?)))
+
+(defn- default-widget-value [widget]
+  ((.getUserObject ^Actor widget) 1))
+
+(defn- truncate ^String [s limit]
+  (if (> (count s) limit)
+    (str (subs s 0 limit) "...")
+    s))
+
+(defn- create-default-widget [v skin]
+  (Label. ^String (truncate (binding [*print-level* nil]
+                              (pr-str v))
+                            60)
+          skin))
+
+(defn- enum-widget-value [widget]
+  (edn/read-string (.getSelected ^SelectBox widget)))
+
+(defn- create-enum-widget [schema v skin]
+  (doto ^SelectBox (SelectBox. skin)
+    (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
+    (.setSelected (pr-str v))))
+
+(defn- number-widget-value [widget]
+  (edn/read-string (.getText ^TextField widget)))
+
+(defn- create-number-widget [schema v skin]
+  (doto (TextField. ^String (pr-str v) skin)
+    (.addListener (TextTooltip. ^String (str schema) skin))))
+
+(defn- string-widget-value [widget]
+  (.getText ^TextField widget))
+
+(defn- create-string-widget [schema v skin]
+  (doto (TextField. ^String (str v) skin)
+    (.addListener (TextTooltip. ^String (str schema) skin))))
+
+(defn- val-max-widget-value [widget]
+  (edn/read-string (.getText ^TextField widget)))
+
+(defn- create-val-max-widget [schema v skin]
+  (doto (TextField. ^String (pr-str v) skin)
+    (.addListener (TextTooltip. ^String (str schema) skin))))
+
+(defn create-text-button [text skin]
+  (TextButton. text skin))
+
+(defn add-listener! [actor listener]
+  (Actor/.addListener actor listener))
+
+(defn create-change-listener [f]
+  (proxy [ChangeListener] []
+    (changed [event actor]
+      (f event actor))))
+
+(defn- play-sound-button [sound-name skin play-sound!]
+  (doto (create-text-button "play!" skin)
+    (add-listener! (create-change-listener
+                     (fn [event _actor]
+                       (play-sound! sound-name))))))
+
+(defn safe-get [m k]
+  {:pre [(contains? m k)]}
+  (get m k))
+
+(defn play! [sound]
+  (Sound/.play sound))
+
+(defn- sound-columns [table sound-name open-select-sounds-handler skin play-sound!]
+  [{:actor (doto (TextButton. sound-name skin)
+             (.addListener (proxy [ChangeListener] []
+                             (changed [event _actor]
+                               (open-select-sounds-handler table)))))}
+   {:actor (play-sound-button sound-name skin play-sound!)}])
+
+(defn clear-children! [^Group group]
+  (.clearChildren group))
+
+(defn add! [^Table table ^Actor actor]
+  (.add table actor))
+
+(defn row! [^Table table]
+  (.row table))
+
+(defn remove! [^Actor actor]
+  (.remove actor))
+
+(defn first-ascendant [^Actor actor]
+  (.firstAscendant actor))
+
+(defn get-user-object [^Actor actor]
+  (.getUserObject actor))
+
+(defn pack! [^Layout layout]
+  (.pack layout))
+
+(defn set-user-object! [^Actor actor obj]
+  (.setUserObject actor obj))
+
+(defn- choose-sound-button [table sound-name ->sound-columns skin]
+  (doto (TextButton. sound-name skin)
+    (.addListener (proxy [ChangeListener] []
+                    (changed [event actor]
+                      (clear-children! table)
+                      (doseq [cell (->sound-columns table sound-name)]
+                        (add! table (:actor cell)))
+                      (row! table)
+                      (remove! (first-ascendant actor Window))
+                      (pack! (first-ascendant table Window))
+                      (let [[k _] (get-user-object table)]
+                        (set-user-object! table [k sound-name])))))))
+
+(defn- list-sounds-table [pad rows]
+  (let [^Table table (Table.)]
+    (.pad (.defaults table) (float pad))
+    (doseq [columns rows]
+      (doseq [^Actor actor columns]
+        (.add table actor))
+      (.row table))
+    (.pack table)
+    table))
+
+(def stage (atom nil))
+(def skin (atom nil))
+
+(defn- choose-sound-window [sound-names table ->sound-columns play-sound!]
+  (let [^Table list-table (list-sounds-table
+                           5
+                           (for [sound-name sound-names]
+                             [(choose-sound-button table sound-name ->sound-columns @skin)
+                              (play-sound-button sound-name @skin play-sound!)]))
+        window (Window. "Choose" @skin)
+        c (.add window (ScrollPane. list-table @skin))]
+    (.width c (float (+ (.getWidth list-table) 50)))
+    (.height c (float (min (- (.getWorldHeight (.getViewport ^Stage @stage)) 50)
+                            (.getHeight list-table))))
+    (.row window)
+    (.pack window)
+    (.add (.getTitleTable window)
+          (doto (TextButton. "X" @skin)
+            (.addListener (proxy [ChangeListener] []
+                            (changed [_event _actor]
+                              (.remove window))))))
+    (.setModal window true)
+    window))
+
+(defn- open-select-sounds-handler [sound-names table ->sound-columns play-sound!]
+  (fn []
+    (.addActor ^Stage @stage (choose-sound-window sound-names table ->sound-columns play-sound!))))
+
+(defn- create-sound-widget [sound-names sound-name play-sound!]
+  (let [table (doto (Table.)
+                (#(.pad (.defaults ^Table %) (float 5))))]
+    (letfn [(sound-columns-fn [table sound-name]
+              (sound-columns table sound-name open-select-fn @skin play-sound!))
+            (open-select-fn [table]
+              (open-select-sounds-handler sound-names table sound-columns-fn play-sound!))]
+      (doseq [cell (if sound-name
+                     (sound-columns-fn table sound-name)
+                     [{:actor
+                       (doto (TextButton. "No sound" @skin)
+                         (.addListener (proxy [ChangeListener] []
+                                         (changed [event _actor]
+                                           ((open-select-fn table))))))}])]
+        (.add ^Table table ^Actor (:actor cell)))
+      (.row ^Table table)
+      table)))
+
+(defn- one-to-one-widget-value [widget]
+  (->> (.getChildren ^Group widget)
+       (keep (fn [^Actor a] (.getUserObject a)))
+       first))
+
 (def db (atom nil))
 (def textures (atom nil))
-(def skin (atom nil))
+
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
                              :image-scale 2
@@ -203,168 +399,10 @@
    :editor/new-window
    (fn [title]
      (Window. title @skin))
+   :editor/new-text-button
+   (fn [title]
+     (TextButton. title @skin))
    })
-
-(defn- create-image-widget [image]
-  (scaled-image-button (game/get-texture-region @textures image) 2))
-
-(defn- create-animation-widget [animation]
-  (let [table (doto (Table.)
-                (#(.pad (.defaults ^Table %) (float 1))))]
-    (doseq [image (:animation/frames animation)]
-      (.add table ^Actor (scaled-image-button
-                          (game/get-texture-region @textures image)
-                          2)))
-    (.row ^Table table)
-    (.pack table)
-    table))
-
-(defn- boolean-widget-value [widget]
-  (.isChecked ^CheckBox widget))
-
-(defn- create-boolean-widget [checked?]
-  (doto (CheckBox. "" @skin)
-    (.setChecked checked?)))
-
-(defn- default-widget-value [widget]
-  ((.getUserObject ^Actor widget) 1))
-
-(defn- truncate ^String [s limit]
-  (if (> (count s) limit)
-    (str (subs s 0 limit) "...")
-    s))
-
-(defn- create-default-widget [v]
-  (Label. ^String (truncate (binding [*print-level* nil]
-                              (pr-str v))
-                            60)
-          @skin))
-
-(defn- enum-widget-value [widget]
-  (edn/read-string (.getSelected ^SelectBox widget)))
-
-(defn- create-enum-widget [schema v]
-  (doto ^SelectBox (SelectBox. @skin)
-    (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
-    (.setSelected (pr-str v))))
-
-(defn- number-widget-value [widget]
-  (edn/read-string (.getText ^TextField widget)))
-
-(defn- create-number-widget [schema v]
-  (doto (TextField. ^String (pr-str v) @skin)
-    (.addListener (TextTooltip. ^String (str schema) @skin))))
-
-(defn- string-widget-value [widget]
-  (.getText ^TextField widget))
-
-(defn- create-string-widget [schema v]
-  (doto (TextField. ^String (str v) @skin)
-    (.addListener (TextTooltip. ^String (str schema) @skin))))
-
-(defn- val-max-widget-value [widget]
-  (edn/read-string (.getText ^TextField widget)))
-
-(defn- create-val-max-widget [schema v]
-  (doto (TextField. ^String (pr-str v) @skin)
-    (.addListener (TextTooltip. ^String (str schema) @skin))))
-
-(def audio (atom nil))
-
-(defn play-sound! [sound-name]
-  (let [sounds @audio]
-    (assert (contains? sounds sound-name) (str sound-name))
-    (.play ^Sound (get sounds sound-name))))
-
-(defn- play-sound-button [sound-name]
-  (doto (TextButton. "play!" @skin)
-    (.addListener (proxy [ChangeListener] []
-                    (changed [event _actor]
-                      (play-sound! sound-name))))))
-
-(defn- sound-columns [table sound-name open-select-sounds-handler]
-  [{:actor (doto (TextButton. sound-name @skin)
-             (.addListener (proxy [ChangeListener] []
-                             (changed [event _actor]
-                               (open-select-sounds-handler table)))))}
-   {:actor (play-sound-button sound-name)}])
-
-(defn- rebuild-sound-widget! [table sound-name ->sound-columns]
-  (fn [actor]
-    (.clearChildren ^Group table)
-    (doseq [cell (->sound-columns table sound-name)]
-      (.add ^Table table ^Actor (:actor cell)))
-    (.row ^Table table)
-    (.remove ^Actor (.firstAscendant ^Actor actor Window))
-    (.pack ^Layout (.firstAscendant ^Actor table Window))
-    (let [[k _] (.getUserObject ^Actor table)]
-      (.setUserObject ^Actor table [k sound-name]))))
-
-(defn- choose-sound-button [table sound-name ->sound-columns]
-  (doto (TextButton. sound-name @skin)
-    (.addListener (proxy [ChangeListener] []
-                    (changed [event actor]
-                      ((rebuild-sound-widget! table sound-name ->sound-columns) actor))))))
-
-(defn- list-sounds-table [pad rows]
-  (let [^Table table (Table.)]
-    (.pad (.defaults table) (float pad))
-    (doseq [columns rows]
-      (doseq [^Actor actor columns]
-        (.add table actor))
-      (.row table))
-    (.pack table)
-    table))
-
-(def stage (atom nil))
-
-(defn- choose-sound-window [sound-names table ->sound-columns]
-  (let [^Table list-table (list-sounds-table
-                           5
-                           (for [sound-name sound-names]
-                             [(choose-sound-button table sound-name ->sound-columns)
-                              (play-sound-button sound-name)]))
-        window (Window. "Choose" @skin)
-        c (.add window (ScrollPane. list-table @skin))]
-    (.width c (float (+ (.getWidth list-table) 50)))
-    (.height c (float (min (- (.getWorldHeight (.getViewport ^Stage @stage)) 50)
-                            (.getHeight list-table))))
-    (.row window)
-    (.pack window)
-    (.add (.getTitleTable window)
-          (doto (TextButton. "X" @skin)
-            (.addListener (proxy [ChangeListener] []
-                            (changed [_event _actor]
-                              (.remove window))))))
-    (.setModal window true)
-    window))
-
-(defn- open-select-sounds-handler [sound-names table ->sound-columns]
-  (fn []
-    (.addActor ^Stage @stage (choose-sound-window sound-names table ->sound-columns))))
-
-(defn- create-sound-widget [sound-names sound-name]
-  (let [table (doto (Table.)
-                (#(.pad (.defaults ^Table %) (float 5))))]
-    (letfn [(sound-columns-fn [table sound-name]
-              (sound-columns table sound-name open-select-fn))
-            (open-select-fn [table]
-              (open-select-sounds-handler sound-names table sound-columns-fn))]
-      (doseq [cell (if sound-name
-                     (sound-columns-fn table sound-name)
-                     [{:actor
-                       (doto (TextButton. "No sound" @skin)
-                         (.addListener (proxy [ChangeListener] []
-                                         (changed [event _actor]
-                                           ((open-select-fn table))))))}])]
-        (.add ^Table table ^Actor (:actor cell)))
-      (.row ^Table table)
-      table)))
-
-(defn- one-to-one-widget-value [widget]
-  (->> (.getChildren ^Group widget)
-       (keep (fn [^Actor a] (.getUserObject a)))
-       first))
 
 (defn- add-one-to-one-rows [table property-type property-id]
   (let [redo-rows (fn [id]
@@ -627,23 +665,32 @@
     (.setUserObject ^Actor widget [k v])
     widget))
 
+(defn play-sound! [sounds sound-name]
+  (play! (safe-get sounds sound-name)))
+
+(def sounds (atom nil))
+
+; TODO mach ne map draus ? 
+; warum default -> was haben wir fuer schemas ?
+; extension namespaces form based ? 
+; -> editor protocol and param ? skin/new-label -> skin protocol?
 (defn create-widget
   [[schema-k :as schema] v]
   (case schema-k
-    :s/animation (create-animation-widget v)
-    :s/boolean (create-boolean-widget v)
-    :s/enum (create-enum-widget schema v)
-    :s/image (create-image-widget v)
+    :s/animation (create-animation-widget v @textures)
+    :s/boolean (create-boolean-widget v @skin)
+    :s/enum (create-enum-widget schema v @skin)
+    :s/image (create-image-widget v @textures)
     :s/map (create-map-widget schema v
                               (fn [schema k v] (build-widget schema k v))
                               widget-value)
-    :s/number (create-number-widget schema v)
+    :s/number (create-number-widget schema v @skin)
     :s/one-to-many (create-one-to-many-widget schema v)
     :s/one-to-one (create-one-to-one-widget schema v)
-    :s/sound (create-sound-widget (keys @audio) v)
-    :s/string (create-string-widget schema v)
-    :s/val-max (create-val-max-widget schema v)
-    (create-default-widget v)))
+    :s/sound (create-sound-widget (keys @sounds) v (fn [sound-name] (play-sound! @sounds sound-name)))
+    :s/string (create-string-widget schema v @skin)
+    :s/val-max (create-val-max-widget schema v @skin)
+    (create-default-widget v @skin)))
 
 (defn- with-window-close [f]
   (fn [actor]
@@ -756,7 +803,7 @@
 
       (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
 
-      (reset! audio (into {}
+      (reset! sounds (into {}
                           (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                             [path (.newSound Gdx/audio (.internal Gdx/files path))])))
 
@@ -769,7 +816,7 @@
       (.addActor ^Stage @stage (main-window)))
 
     (dispose [_]
-      (run! Sound/.dispose (vals @audio))
+      (run! Sound/.dispose (vals @sounds))
       (Disposable/.dispose @batch)
       (Disposable/.dispose @skin)
       (run! Disposable/.dispose (vals @textures)))
