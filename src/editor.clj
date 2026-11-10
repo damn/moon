@@ -131,19 +131,20 @@
 (def db (atom nil))
 (def textures (atom nil))
 
-(defn- property-overview-rows [property-type clicked-id-fn]
+(defn- property-overview-rows 
+  [property-type clicked-id-fn {:keys [editor/all-raw
+                                       editor/get-texture-region]}]
   (let [{:keys [sort-by-fn
                 extra-info-text
                 columns
                 image-scale]} (get property-type->overview-table-props property-type)]
-    (for [row (->> (game/all-raw @db property-type)
+    (for [row (->> (all-raw property-type)
                    (sort-by sort-by-fn)
                    (partition-all columns))]
       (for [property row]
         (let [stack (Stack.)
-              texture-region (game/get-texture-region @textures 
-                                                      (or (:entity/image property)
-                                                          (first (:animation/frames (:entity/animation property)))))]
+              texture-region (get-texture-region (or (:entity/image property)
+                                                     (first (:animation/frames (:entity/animation property)))))]
           (run! #(.addActor ^Group stack %)
                 [(doto (ImageButton.
                          (doto (TextureRegionDrawable. ^TextureRegion texture-region)
@@ -162,7 +163,14 @@
 
 (defn property-overview-window [property-type clicked-id-fn]
   (let [window (Window. "Edit" @skin)]
-    (doseq [row (property-overview-rows property-type clicked-id-fn)]
+    (doseq [row (property-overview-rows property-type 
+                                        clicked-id-fn 
+                                        {:editor/all-raw 
+                                         (fn [property-type]
+                                           (game/all-raw @db property-type))
+                                         :editor/get-texture-region 
+                                         (fn [image]
+                                           (game/get-texture-region @textures image))})]
       (doseq [actor row]
         (.add window ^Actor actor))
       (.row window))
