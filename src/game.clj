@@ -1,5 +1,9 @@
 (ns game)
 
+(defn safe-get [m k]
+  {:pre [(contains? m k)]}
+  (get m k))
+
 (defn- sort-ops [ops]
   (sort-by (fn [[k]]
              (case k
@@ -554,8 +558,6 @@
                       (fn [k]
                         (malli-form (get schemas k)))))
 
-; TODO hier auch map draus
-; -> schemas and entitiy effects etc. are our domain objects.
 (defn malli-form [schema]
   (case (first schema)
     :s/animation
@@ -673,7 +675,6 @@
     (int x)
     (round-n x 2)))
 
-; not using `for` because creates a lazy seq (slow)
 (let [offsets [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]]]
   (defn get-8-neighbours [position]
     (mapv #(mapv + position %) offsets)))
@@ -1764,8 +1765,6 @@
       s
       (remove-newlines new-s))))
 
-; TODO used for item/skill/entity
-; logic should be in inventory window / action-bar and entity info window !
 (defn info-text
   [entity]
   (let [{:keys [k->fn
@@ -1808,7 +1807,6 @@
             (remove nil?
                     [(str "[PRETTY_NAME]" (:property/pretty-name item) "[]")
                      (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
-                     ; seq because they can be empty map ?
                      (when (seq (:stats/modifiers item))
                        (str "[CYAN]" (mods-format-text (:stats/modifiers item)) "[]"))])))
 
@@ -2430,7 +2428,6 @@
 
 (import '(com.badlogic.gdx Input$Keys))
 
-; belongs to game - further down?
 (def ^:private controls
   {:zoom-in Input$Keys/MINUS
    :zoom-out Input$Keys/EQUALS
@@ -2924,7 +2921,6 @@
 
     nil))
 
-; TODO do not pass all context stuff all the time
 (defn- handle-fsm-event! [skin stage textures eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3119,7 +3115,6 @@
         (zero? (hp 0))
         nil
 
-        ; TODO find a better way
         (not (:entity/stats target*))
         nil
 
@@ -3151,8 +3146,6 @@
     (handle-fsm-event! skin stage textures (:effect/target effect-ctx) :kill)
 
     :effects.target/melee-damage
-    ; TODO AT EFFECT CREATION MAKE
-    ; same @ applicable
     (handle-effect! db skin stage textures
                     [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
                     effect-ctx
@@ -4212,9 +4205,6 @@
 
 (import '(com.badlogic.gdx Input$Buttons))
 
-; 1. 
-; too many input - see world first
-; -> handle-fsm-event!
 (defn handle-player-input!
   [interaction-state
    skin stage textures key-pressed? button-just-pressed?]
@@ -4328,11 +4318,11 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
+
 (def ^:dynamic *cursors*)
 
 (defn set-cursor! [cursor-key]
-  (assert (contains? *cursors* cursor-key)) ; == safe-get (same like db)
-  (.setCursor Gdx/graphics (get *cursors* cursor-key))); Cursor type hint / class import not necessary
+  (.setCursor Gdx/graphics (safe-get *cursors* cursor-key)))
 
 (def ^:dynamic *default-font*)
 (def ^:dynamic *shape-drawer*)
@@ -4935,10 +4925,6 @@
     (add-listener! (create-change-listener
                      (fn [event _actor]
                        (play-sound! sound-name))))))
-
-(defn safe-get [m k]
-  {:pre [(contains? m k)]}
-  (get m k))
 
 (defn play! [sound]
   (Sound/.play sound))
