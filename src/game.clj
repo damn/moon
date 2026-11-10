@@ -2555,7 +2555,7 @@
         old-scale (.scaleX ^BitmapFont$BitmapFontData font-data)
         target-width 0
         wrap? false
-        scale (* (float @unit-scale)
+        scale (* (float unit-scale)
                  (float scale))]
     (.setScale ^BitmapFont$BitmapFontData font-data (* old-scale scale))
     (.draw ^BitmapFont font
@@ -3379,14 +3379,17 @@
                                                                             {:image/file content-file
                                                                              :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
                                                    [x y])
-                           (draw-text! batch default-font unit-scale {:text (str (readable (minmaxval 0))
-                                                         "/"
-                                                         (minmaxval 1)
-                                                         " "
-                                                         name)
-                                              :x (+ x 75)
-                                              :y (+ y 2)
-                                              :up? true}))]
+                           (draw-text! batch 
+                                       default-font 
+                                       @unit-scale 
+                                       {:text (str (readable (minmaxval 0))
+                                                   "/"
+                                                   (minmaxval 1)
+                                                   " "
+                                                   name)
+                                        :x (+ x 75)
+                                        :y (+ y 2)
+                                        :up? true}))]
     (proxy [Actor] []
       (act [delta]
         (let [^Actor this this]
