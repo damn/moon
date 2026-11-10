@@ -4502,10 +4502,22 @@
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application 
                                            Lwjgl3ApplicationConfiguration))
 
+(defn lwjgl3-application! [listener config]
+  (Lwjgl3Application. listener config))
+
+(defn use-glfw-async! []
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync))
+
+(defn build-config [{:keys [title width height fps]}]
+  (doto (Lwjgl3ApplicationConfiguration.)
+    (.setTitle "Moon")
+    (.setWindowedMode 1440 900)
+    (.setForegroundFPS 60)))
+
 (gen-class)
 
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (use-glfw-async!)
   (binding [*batch* nil
             *sounds* nil
             *cursors* nil
@@ -4529,11 +4541,13 @@
             *explored-tile-corners* nil
             *raycaster* nil
             ]
-    (Lwjgl3Application. listener
-                        (doto (Lwjgl3ApplicationConfiguration.)
-                          (.setTitle "Moon")
-                          (.setWindowedMode 1440 900)
-                          (.setForegroundFPS 60)))))
+    (lwjgl3-application! listener
+                         (build-config 
+                           {:title "Moon", 
+                            :width 1440, 
+                            :height 900, 
+                            :fps 60}))))
+                          
 
 (defn- generate-level
   [db textures ^OrthographicCamera camera level-fn]
@@ -4668,12 +4682,13 @@
       (resume [_]))))
 
 (defn levelgen! []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (levelgen-listener)
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Levelgen Test")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+  (use-glfw-async!)
+  (lwjgl3-application! (levelgen-listener)
+                       (build-config 
+                         {:title "Levelgen", 
+                          :width 1440, 
+                          :height 900, 
+                          :fps 60})))
 
 (defn map-form-k->properties
   "Given a map schema gives a map of key to key properties (like :optional)."
@@ -5452,51 +5467,49 @@
     (.pack window)
     window))
 
-(defn editor-listener []
-  (let [batch (atom nil)]
-    (reify ApplicationListener
-      (create [_]
-        (reset! batch (SpriteBatch.))
-
-        (reset! editor-skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
-        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
-
-        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
-
-        (reset! sounds (into {}
-                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
-                               [path (.newSound Gdx/audio (.internal Gdx/files path))])))
-
-        (reset! editor-db (game/create-db (-> properties-file slurp edn/read-string)))
-
-        (reset! editor-textures (game/create-textures {:folder "resources/"
-                                                       :extensions #{"png" "bmp"}}))
-
-        (.setInputProcessor Gdx/input @editor-stage)
-        (.addActor ^Stage @editor-stage (main-window)))
-
-      (dispose [_]
-        (run! Sound/.dispose (vals @sounds))
-        (Disposable/.dispose @batch)
-        (Disposable/.dispose @editor-skin)
-        (run! Disposable/.dispose (vals @editor-textures)))
-
-      (render [_]
-        (ScreenUtils/clear 0 0 0 0)
-        (.act ^Stage @editor-stage)
-        (.draw ^Stage @editor-stage))
-
-      (resize [_ width height]
-        (.update (.getViewport ^Stage @editor-stage) width height true))
-
-      (pause [_])
-
-      (resume [_]))))
-
 (defn editor! []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (editor-listener)
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "!Editor!")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+  (use-glfw-async!)
+  (lwjgl3-application! (let [batch (atom nil)]
+                         (reify ApplicationListener
+                           (create [_]
+                             (reset! batch (SpriteBatch.))
+
+                             (reset! editor-skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
+                             (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
+
+                             (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
+
+                             (reset! sounds (into {}
+                                                  (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
+                                                    [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+
+                             (reset! editor-db (game/create-db (-> properties-file slurp edn/read-string)))
+
+                             (reset! editor-textures (game/create-textures {:folder "resources/"
+                                                                            :extensions #{"png" "bmp"}}))
+
+                             (.setInputProcessor Gdx/input @editor-stage)
+                             (.addActor ^Stage @editor-stage (main-window)))
+
+                           (dispose [_]
+                             (run! Sound/.dispose (vals @sounds))
+                             (Disposable/.dispose @batch)
+                             (Disposable/.dispose @editor-skin)
+                             (run! Disposable/.dispose (vals @editor-textures)))
+
+                           (render [_]
+                             (ScreenUtils/clear 0 0 0 0)
+                             (.act ^Stage @editor-stage)
+                             (.draw ^Stage @editor-stage))
+
+                           (resize [_ width height]
+                             (.update (.getViewport ^Stage @editor-stage) width height true))
+
+                           (pause [_])
+
+                           (resume [_])))
+                       (build-config 
+                         {:title "Editor", 
+                          :width 1440, 
+                          :height 900, 
+                          :fps 60})))
