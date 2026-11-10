@@ -5532,9 +5532,6 @@
 
     (resume [_])))
 
-(defn use-glfw-async! []
-  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration/useGlfwAsync))
-
 (defn build-config [{:keys [title width height fps]}]
   (doto (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.)
     (.setTitle title)
@@ -5543,13 +5540,13 @@
 
 (defn lwjgl3-application! 
   [listener config]
+  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application. (application-listener listener) 
                                                        (build-config config)))
 
 
 
 (defn levelgen! []
-  (use-glfw-async!)
   (lwjgl3-application! (levelgen-listener)
                        {:title "Levelgen", 
                         :width 1440, 
@@ -5558,7 +5555,6 @@
 
 
 (defn editor! []
-  (use-glfw-async!)
   (lwjgl3-application! (editor-application-listener)
                        {:title "Editor"
                         :width 1440 
@@ -5566,7 +5562,6 @@
                         :fps 60}))
 
 (defn game! []
-  (use-glfw-async!)
   (binding [*sounds* nil
             *cursors* nil
             *default-font* nil
