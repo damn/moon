@@ -972,12 +972,18 @@
 (import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                 Drawable))
 
+(defn create-stack []
+  (Stack.))
+
+(defn add-actor! [^Group group actor]
+  (.addActor group actor))
+
 (defn- inv-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
-     (let [stack (Stack.)]
-       (run! #(.addActor ^Group stack ^Actor %)
+     (let [stack (create-stack)]
+       (run! #(add-actor! stack %)
              [(proxy [Widget] []
                 (draw [batch parent-alpha]
                   (when-let [stage (.getStage ^Actor this)]
@@ -985,8 +991,8 @@
                                      (.getX ^Actor this)
                                      (.getY ^Actor this)
                                      (let [v2 (.unproject (.getViewport ^Stage stage)
-                                                         (Vector2. (float (.getX Gdx/input))
-                                                                   (float (.getY Gdx/input))))
+                                                          (Vector2. (float (.getX Gdx/input))
+                                                                    (float (.getY Gdx/input))))
                                            local (.stageToLocalCoordinates ^Actor this
                                                                            (Vector2. (.x v2) (.y v2)))
                                            x (.x ^Vector2 local)
@@ -4514,76 +4520,6 @@
      (.update *viewport* width height false))
    })
 
-(import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application 
-                                           Lwjgl3ApplicationConfiguration))
-
-(defn use-glfw-async! []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync))
-
-(defn build-config [{:keys [title width height fps]}]
-  (doto (Lwjgl3ApplicationConfiguration.)
-    (.setTitle title)
-    (.setWindowedMode width height)
-    (.setForegroundFPS fps)))
-
-(defn application-listener 
-  [{:keys [create! dispose! render! resize!]}]
-  (reify com.badlogic.gdx.ApplicationListener
-    (create [_]
-      (create!))
-
-    (dispose [_]
-      (dispose!))
-
-    (render [_]
-      (render!))
-
-    (resize [_ width height]
-      (resize! width height))
-
-    (pause [_])
-
-    (resume [_])))
-
-(defn lwjgl3-application! 
-  [listener config]
-  (Lwjgl3Application. (application-listener listener) 
-                      (build-config config)))
-
-(gen-class)
-
-(defn -main []
-  (use-glfw-async!)
-  (binding [*batch* nil
-            *sounds* nil
-            *cursors* nil
-            *default-font* nil
-            *textures* nil
-            *viewport* nil
-            *shape-drawer* nil
-            *shape-drawer-texture* nil
-
-            *player-eid* nil
-            *elapsed-time* (atom nil)
-
-            ; 'board' ? - state space clear -> wbu entitiy?
-            *tiled-map* nil
-            *start-position* nil
-            *potential-field-cache* nil
-            *id-counter* nil
-            *entity-ids* nil
-            *grid* nil
-            *content-grid* nil
-            *explored-tile-corners* nil
-            *raycaster* nil
-            ]
-    (lwjgl3-application! listener
-                         {:title "Moon", 
-                          :width 1440, 
-                          :height 900, 
-                          :fps 60})))
-                          
-
 (defn- generate-level
   [db textures ^OrthographicCamera camera level-fn]
   (let [level (level-fn {:level/creature-properties
@@ -4716,14 +4652,6 @@
        (.update ^Viewport @viewport width height false))
      }))
 
-(defn levelgen! []
-  (use-glfw-async!)
-  (lwjgl3-application! (levelgen-listener)
-                       {:title "Levelgen", 
-                        :width 1440, 
-                        :height 900, 
-                        :fps 60}))
-
 (defn map-form-k->properties
   "Given a map schema gives a map of key to key properties (like :optional)."
   [map-schema]
@@ -4822,7 +4750,7 @@
                    (sort-by sort-by-fn)
                    (partition-all columns))]
       (for [property row]
-        (let [stack (Stack.)
+        (let [stack (create-stack)
               texture-region (get-texture-region (or (:entity/image property)
                                                      (first (:animation/frames (:entity/animation property)))))]
           (run! #(.addActor ^Group stack %)
@@ -5529,6 +5457,50 @@
        (.update (.getViewport ^Stage @editor-stage) width height true))
      }))
 
+(defn application-listener 
+  [{:keys [create! dispose! render! resize!]}]
+  (reify com.badlogic.gdx.ApplicationListener
+    (create [_]
+      (create!))
+
+    (dispose [_]
+      (dispose!))
+
+    (render [_]
+      (render!))
+
+    (resize [_ width height]
+      (resize! width height))
+
+    (pause [_])
+
+    (resume [_])))
+
+(defn use-glfw-async! []
+  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration/useGlfwAsync))
+
+(defn build-config [{:keys [title width height fps]}]
+  (doto (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.)
+    (.setTitle title)
+    (.setWindowedMode width height)
+    (.setForegroundFPS fps)))
+
+(defn lwjgl3-application! 
+  [listener config]
+  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application. (application-listener listener) 
+                                                       (build-config config)))
+
+
+
+(defn levelgen! []
+  (use-glfw-async!)
+  (lwjgl3-application! (levelgen-listener)
+                       {:title "Levelgen", 
+                        :width 1440, 
+                        :height 900, 
+                        :fps 60}))
+
+
 (defn editor! []
   (use-glfw-async!)
   (lwjgl3-application! (editor-application-listener)
@@ -5536,3 +5508,30 @@
                         :width 1440 
                         :height 900 
                         :fps 60}))
+
+(defn game! []
+  (use-glfw-async!)
+  (binding [*batch* nil
+            *sounds* nil
+            *cursors* nil
+            *default-font* nil
+            *textures* nil
+            *viewport* nil
+            *shape-drawer* nil
+            *shape-drawer-texture* nil
+            *player-eid* nil
+            *elapsed-time* (atom nil)
+            *tiled-map* nil
+            *start-position* nil
+            *potential-field-cache* nil
+            *id-counter* nil
+            *entity-ids* nil
+            *grid* nil
+            *content-grid* nil
+            *explored-tile-corners* nil
+            *raycaster* nil]
+    (lwjgl3-application! listener
+                         {:title "Moon"
+                          :width 1440 
+                          :height 900 
+                          :fps 60})))

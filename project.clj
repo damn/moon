@@ -20,7 +20,7 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "game"     ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
+            "game"     ["run" "-m" "loop" "((requiring-resolve 'game/game!))"]
             "levelgen" ["run" "-m" "loop" "((requiring-resolve 'game/levelgen!))"]
             "editor"   ["run" "-m" "loop" "((requiring-resolve 'game/editor!))"]
             }
