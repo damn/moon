@@ -5513,36 +5513,37 @@
        (.update (.getViewport ^Stage @editor-stage) width height true))
      }))
 
-(defn application-listener 
-  [{:keys [create! dispose! render! resize!]}]
-  (reify com.badlogic.gdx.ApplicationListener
-    (create [_]
-      (create!))
-
-    (dispose [_]
-      (dispose!))
-
-    (render [_]
-      (render!))
-
-    (resize [_ width height]
-      (resize! width height))
-
-    (pause [_])
-
-    (resume [_])))
-
-(defn build-config [{:keys [title width height fps]}]
-  (doto (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.)
-    (.setTitle title)
-    (.setWindowedMode width height)
-    (.setForegroundFPS fps)))
-
 (defn lwjgl3-application! 
-  [listener config]
+  [{:keys [create! 
+           dispose! 
+           render! 
+           resize!]}
+   {:keys [title 
+           width 
+           height 
+           fps]}]
   (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application. (application-listener listener) 
-                                                       (build-config config)))
+  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application. 
+    (reify com.badlogic.gdx.ApplicationListener
+      (create [_]
+        (create!))
+
+      (dispose [_]
+        (dispose!))
+
+      (render [_]
+        (render!))
+
+      (resize [_ width height]
+        (resize! width height))
+
+      (pause [_])
+
+      (resume [_])) 
+    (doto (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.)
+      (.setTitle title)
+      (.setWindowedMode width height)
+      (.setForegroundFPS fps))))
 
 
 
