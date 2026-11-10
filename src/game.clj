@@ -162,12 +162,26 @@
 (import '(com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
         '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
 
-(defn spawn-positions [^TiledMap tiled-map]
+(defn get-layers [^TiledMap tiled-map]
+  (.getLayers tiled-map))
+
+(import '(com.badlogic.gdx.maps MapLayers))
+
+(defn layers-get [^MapLayers map-layers layer-name]
+  (.get map-layers layer-name))
+
+(defn get-width [^TiledMapTileLayer layer]
+  (.getWidth layer))
+
+(defn get-height [^TiledMapTileLayer layer]
+  (.getHeight layer))
+
+(defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        ^TiledMapTileLayer layer (.get (.getLayers tiled-map) layer-name)]
-    (for [x (range (.getWidth layer))
-          y (range (.getHeight layer))
+        layer (layers-get (get-layers tiled-map) layer-name)]
+    (for [x (range (get-width layer))
+          y (range (get-height layer))
           :let [position [x y]
                 cell (.getCell layer (int x) (int y))]
           :when cell
@@ -693,14 +707,26 @@
 
 (import '(com.badlogic.gdx.scenes.scene2d Actor))
 
-(defn- set-label-text-actor [label-widget text-fn]
+(defn create-actor [{:keys [act!]}]
   (proxy [Actor] []
     (act [delta]
-      (when (.getStage ^Actor this)
-        (.setText ^Label label-widget ^String (text-fn)))
+      (act! this delta)
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha])))
+
+(defn get-stage [^Actor actor]
+  (.getStage actor))
+
+(defn set-text! [^Label label ^String text]
+  (Label/.setText label text))
+
+(defn- set-label-text-actor [label-widget text-fn]
+  (create-actor
+    {:act! 
+     (fn [this delta]
+       (when (get-stage this)
+         (set-text! label-widget (text-fn))))}))
 
 (import '(com.badlogic.gdx.scenes.scene2d Group))
 
@@ -928,7 +954,7 @@
 (defn build [db property-id]
   (build-values (get-raw db property-id) db))
 
-(def ^:dynamic *player-eid*)
+(def ^:dynamic *player-eid*) 
 
 (import '(com.badlogic.gdx.math Vector2))
 (import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
@@ -4510,9 +4536,9 @@
 
 (defn build-config [{:keys [title width height fps]}]
   (doto (Lwjgl3ApplicationConfiguration.)
-    (.setTitle "Moon")
-    (.setWindowedMode 1440 900)
-    (.setForegroundFPS 60)))
+    (.setTitle title)
+    (.setWindowedMode width height)
+    (.setForegroundFPS fps)))
 
 (gen-class)
 
