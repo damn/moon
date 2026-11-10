@@ -2857,29 +2857,27 @@
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 (defn- entity-state-exit!
-  [eid [state-k _state-v] {:keys [game/play-sound!]}]
+  [eid [state-k _state-v]]
   (case state-k
     :player-item-on-cursor
     (let [entity @eid
           item (:entity/item-on-cursor entity)]
       (when item
-        (swap! eid dissoc :entity/item-on-cursor)
-        (play-sound! "bfxr_itemputground.wav")
-        (spawn-entity! (spawn-item (item-place-position (:entity/position entity)
-                                                        (- (:entity/click-distance-tiles entity) 0.1))
-                                   item))))
+        [[:tx/swap eid dissoc :entity/item-on-cursor]
+         [:tx/sound "bfxr_itemputground.wav"]
+         [:tx/spawn-entity (spawn-item (item-place-position (:entity/position entity)
+                                                            (- (:entity/click-distance-tiles entity) 0.1))
+                                       item)]]))
 
     :player-moving
-    (do (swap! eid dissoc :entity/movement)
-        nil)
+    [[:tx/swap eid dissoc :entity/movement]]
 
     :npc-sleeping
-    (do (swap! eid add-text-effect "[WHITE]!" 1)
-        (spawn-entity! (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2)))
+    [[:tx/swap eid add-text-effect "[WHITE]!" 1]
+     [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2)]]
 
     :npc-moving
-    (do (swap! eid dissoc :entity/movement)
-        nil)
+    [[:tx/swap eid dissoc :entity/movement]]
 
     nil))
 
@@ -2941,6 +2939,23 @@
   (assert (contains? *sounds* sound-name) (str sound-name))
   (Sound/.play (get *sounds* sound-name)))
 
+(def k->txs
+  {
+   :tx/swap 
+   (fn [eid f & params]
+     (apply swap! eid f params))
+   :tx/sound 
+   (fn [sound-name]
+     (play-sound! sound-name))
+   :tx/spawn-entity 
+   (fn [entity-decl]
+     (spawn-entity! entity-decl))
+   })
+
+(defn handle-txs! [txs]
+  (doseq [[k & params] txs]
+    (apply (safe-get k->txs k) params)))
+
 (defn- handle-fsm-event! [skin stage eid event & [params]]
   (let [game {
               :game/play-sound! play-sound!
@@ -2960,7 +2975,7 @@
         (swap! eid assoc :entity/fsm new-fsm)
         (swap! eid assoc new-state-k (new-state-obj 1))
         (swap! eid dissoc old-state-k)
-        (entity-state-exit! eid old-state-obj game)
+        (handle-txs! (entity-state-exit! eid old-state-obj))
         (entity-state-enter! eid new-state-obj game)
         nil))))
 
@@ -5558,6 +5573,9 @@
                         :height 900 
                         :fps 60}))
 
+; -> side effects always require all params
+; so we need the transaction system again ... ? 
+; describe what should happen (fsm event, swap!, etc.)
 (defn game! []
   (binding [*sounds* nil
             *cursors* nil
