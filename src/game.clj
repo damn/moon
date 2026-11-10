@@ -2927,49 +2927,6 @@
 
     nil))
 
-(def ^:dynamic *sounds*)
-
-(import '(com.badlogic.gdx.audio Sound))
-
-(defn play-sound! [sound-name]
-  (assert (contains? *sounds* sound-name) (str sound-name))
-  (Sound/.play (get *sounds* sound-name)))
-
-(defn- handle-fsm-event! [skin stage eid event & [params]]
-  (let [k->txs {
-                :tx/swap 
-                (fn [eid f & params]
-                  (apply swap! eid f params))
-                :tx/sound 
-                (fn [sound-name]
-                  (play-sound! sound-name))
-                :tx/spawn-entity 
-                (fn [entity-decl]
-                  (spawn-entity! entity-decl))
-                :tx/modal
-                (fn [opts]
-                  (show-modal! skin stage opts))
-                }
-        handle-txs! (fn [txs]
-                      (doseq [[k & params] txs]
-                        (apply (safe-get k->txs k) params)))
-        fsm (:entity/fsm @eid)
-        _ (assert fsm)
-        old-state-k (:state fsm)
-        new-fsm (fsm/fsm-event fsm event)
-        new-state-k (:state new-fsm)]
-    (when-not (= old-state-k new-state-k)
-      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                             [k (k @eid)])
-            state-args (if params [new-state-k params] [new-state-k nil])
-            new-state-obj [new-state-k (create-entity-state state-args eid)]]
-        (swap! eid assoc :entity/fsm new-fsm)
-        (swap! eid assoc new-state-k (new-state-obj 1))
-        (swap! eid dissoc old-state-k)
-        (handle-txs! (entity-state-exit! eid old-state-obj))
-        (handle-txs! (entity-state-enter! eid new-state-obj))
-        nil))))
-
 (defn- effect-applicable?
   [[k v] effect-ctx]
   (case k
@@ -3079,6 +3036,14 @@
                       :faction (:entity/faction source*)}
                      v))))
 
+(def ^:dynamic *sounds*)
+
+(import '(com.badlogic.gdx.audio Sound))
+
+(defn play-sound! [sound-name]
+  (assert (contains? *sounds* sound-name) (str sound-name))
+  (Sound/.play (get *sounds* sound-name)))
+
 (defn spawn-effect* [v effect-ctx db]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
@@ -3132,7 +3097,7 @@
                         (end-point body target-body maxrange)
                         :audiovisuals/hit-ground)))))
 
-(defn damage-effect [v effect-ctx db skin stage]
+(defn damage-effect [v effect-ctx audiovisual! handle-fsm-event!]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -3165,12 +3130,12 @@
             dmg-text (str "[RED]" dmg-amount "[]")]
         (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
         (swap! target add-text-effect dmg-text 0.3)
-        (handle-fsm-event! skin stage target (if (zero? new-hp-val) :kill :alert))
+        (handle-fsm-event! target (if (zero? new-hp-val) :kill :alert))
         (play-sound! "bfxr_normalhit.wav")
-        (audiovisual! db (:entity/position target*) :audiovisuals/damage)))))
+        (audiovisual! (:entity/position target*) :audiovisuals/damage)))))
 
-(defn kill-effect [_v effect-ctx skin stage]
-  (handle-fsm-event! skin stage (:effect/target effect-ctx) :kill))
+(defn kill-effect [_v effect-ctx handle-fsm-event!]
+  (handle-fsm-event! (:effect/target effect-ctx) :kill))
 
 (declare handle-effect!)
 
@@ -3194,12 +3159,53 @@
       (swap! target update :entity/stats add-mods spiderweb-modifiers)
       nil)))
 
-(defn stun-effect [duration effect-ctx skin stage]
-  (handle-fsm-event! skin stage (:effect/target effect-ctx) :stun duration))
+(defn stun-effect [duration effect-ctx handle-fsm-event!]
+  (handle-fsm-event! (:effect/target effect-ctx) :stun duration))
+
+(defn- handle-fsm-event! [skin stage eid event & [params]]
+  (let [k->txs {
+                :tx/swap 
+                (fn [eid f & params]
+                  (apply swap! eid f params))
+                :tx/sound 
+                (fn [sound-name]
+                  (play-sound! sound-name))
+                :tx/spawn-entity 
+                (fn [entity-decl]
+                  (spawn-entity! entity-decl))
+                :tx/modal
+                (fn [opts]
+                  (show-modal! skin stage opts))
+                }
+        handle-txs! (fn [txs]
+                      (doseq [[k & params] txs]
+                        (apply (safe-get k->txs k) params)))
+        fsm (:entity/fsm @eid)
+        _ (assert fsm)
+        old-state-k (:state fsm)
+        new-fsm (fsm/fsm-event fsm event)
+        new-state-k (:state new-fsm)]
+    (when-not (= old-state-k new-state-k)
+      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                             [k (k @eid)])
+            state-args (if params [new-state-k params] [new-state-k nil])
+            new-state-obj [new-state-k (create-entity-state state-args eid)]]
+        (swap! eid assoc :entity/fsm new-fsm)
+        (swap! eid assoc new-state-k (new-state-obj 1))
+        (swap! eid dissoc old-state-k)
+        (handle-txs! (entity-state-exit! eid old-state-obj))
+        (handle-txs! (entity-state-enter! eid new-state-obj))
+        nil))))
 
 (defn- handle-effect!
   [db skin stage textures [k v] effect-ctx apply-effects! active-entities raycaster]
-  (case k
+  (let [audiovisual!
+        (fn [& params]
+          (apply audiovisual! db params))
+        handle-fsm-event! 
+        (fn [& params]
+          (apply handle-fsm-event! skin stage params))]
+    (case k
     :effects/projectile
     (projectile-effect v effect-ctx)
 
@@ -3216,10 +3222,13 @@
     (convert-effect v effect-ctx db)
     
     :effects.target/damage
-    (damage-effect v effect-ctx db skin stage)
+    (damage-effect v effect-ctx 
+                   audiovisual! 
+                   handle-fsm-event!)
 
     :effects.target/kill
-    (kill-effect v effect-ctx skin stage)
+    (kill-effect v effect-ctx 
+                 handle-fsm-event!)
 
     :effects.target/melee-damage
     (melee-damage-effect v effect-ctx apply-effects! active-entities raycaster db skin stage textures)
@@ -3228,7 +3237,8 @@
     (spiderweb-effect v effect-ctx)
 
     :effects.target/stun
-    (stun-effect v effect-ctx skin stage)))
+    (stun-effect v effect-ctx 
+                 handle-fsm-event!))))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
