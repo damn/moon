@@ -21,7 +21,7 @@
   :resource-paths ["resources/"]
   :aliases {
             "game"     ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
-            "levelgen" ["run" "-m" "loop" "((requiring-resolve 'levelgen/-main))"]
+            "levelgen" ["run" "-m" "loop" "((requiring-resolve 'game/levelgen!))"]
             "editor"   ["run" "-m" "loop" "((requiring-resolve 'editor/-main))"]
             }
   :plugins [[lein-hiera "2.0.0"]
