@@ -1,26 +1,5 @@
 (ns game
-  (:require [clj-commons.pretty.repl :as pretty-repl]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.math :as math]
-            [clojure.string :as str]
-            [clojure.set :as set]
-            [clojure.pprint :as pprint]
-            [malli.core :as m]
-            [malli.error :as me]
-            [reduce-fsm :as fsm])
-  (:import (clojure RayCaster)
-           (com.badlogic.gdx ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
-           (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color Colors Cursor OrthographicCamera Pixmap Pixmap$Format Texture Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.maps MapLayer MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
-           (com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3)
+  (:import (com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Stage Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Button 
                                                ButtonGroup 
@@ -43,8 +22,7 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport Viewport)
-           (java.util Random)
-           (space.earlygrey.shapedrawer ShapeDrawer))
+           (java.util Random))
   (:gen-class))
 
 (defn- sort-ops [ops]
@@ -67,6 +45,9 @@
   (apply-ops (modifier-k modifiers)
              base-value))
 
+(require '[clojure.math :as math])
+(require '[clojure.string :as str])
+
 (defn mods-format-text
   [mods]
   (when (seq mods)
@@ -86,6 +67,8 @@
                                                (str/capitalize (name k)))))
                                       (sort-ops modifier-ops))))
                     mods))))
+
+(require '[malli.core :as m])
 
 (def val-max-schema
   (m/schema
@@ -201,6 +184,9 @@
                      (str (str/capitalize (name stat-k)) ": "
                           (get-value stats stat-k))))))
 
+(import '(com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
+        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
+
 (defn spawn-positions [^TiledMap tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -218,7 +204,7 @@
   [^TiledMap tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
-      (let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
+      (let [value (.get (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
                         "movement")]
         (assert value
                 (str "Value for :movement at position "
@@ -254,6 +240,9 @@
      :tile/id id
      :tile/texture-region texture-region}))
 
+(import '(com.badlogic.gdx.graphics.g2d TextureRegion)
+        '(com.badlogic.gdx.maps MapLayer MapProperties))
+
 (defn add-creatures-layer! [^TiledMap tiled-map spawn-positions]
   (let [creature-tile (memoize
                        (fn [{:keys [tile/id
@@ -277,6 +266,9 @@
                 (doto (TiledMapTileLayer$Cell.)
                   (.setTile ^TiledMapTile tile))))
     (.add (.getLayers tiled-map) ^MapLayer layer)))
+
+(import '(com.badlogic.gdx.graphics Texture))
+(import '(com.badlogic.gdx.graphics.g2d Batch))
 
 (defn- draw-tile!
   [x
@@ -328,20 +320,20 @@
            (int num-vertices))))
 
 (defn- draw-tile-layer!
-  [layer
-   batch
+  [^TiledMapTileLayer layer
+   ^Batch batch
    view-bounds
    color-setter
    world-unit-scale]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (.getColor ^Batch batch)
-        layer-width (.getWidth ^TiledMapTileLayer layer)
-        layer-height (.getHeight ^TiledMapTileLayer layer)
-        layer-tile-width (* (.getTileWidth ^TiledMapTileLayer layer) world-unit-scale)
-        layer-tile-height (* (.getTileHeight ^TiledMapTileLayer layer) world-unit-scale)
-        layer-offset-x (* (.getRenderOffsetX ^TiledMapTileLayer layer) world-unit-scale)
-        layer-offset-y (* (- (.getRenderOffsetY ^TiledMapTileLayer layer)) world-unit-scale)
+        batch-color (.getColor batch)
+        layer-width (.getWidth layer)
+        layer-height (.getHeight layer)
+        layer-tile-width (* (.getTileWidth layer) world-unit-scale)
+        layer-tile-height (* (.getTileHeight layer) world-unit-scale)
+        layer-offset-x (* (.getRenderOffsetX layer) world-unit-scale)
+        layer-offset-y (* (- (.getRenderOffsetY layer)) world-unit-scale)
         col1 (max 0
                   (int (/ (- (:x view-bounds) layer-offset-x)
                           layer-tile-width)))
@@ -370,7 +362,7 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [cell (.getCell ^TiledMapTileLayer layer (int col) (int row))]
+            (when-let [cell (.getCell layer (int col) (int row))]
               (when-let [tile (.getTile ^TiledMapTileLayer$Cell cell)]
                 (draw-tile! x
                             y
@@ -385,6 +377,8 @@
                    (+ x layer-tile-width))))
         (recur (dec row)
                (- y layer-tile-height))))))
+
+(import '(com.badlogic.gdx.graphics OrthographicCamera))
 
 (defn draw-tiled-map!
   [^TiledMap tiled-map
@@ -411,6 +405,8 @@
                         color-setter
                         world-unit-scale))))
 
+(import '(com.badlogic.gdx.files FileHandle))
+
 (defn- recursively-search [^FileHandle handle extensions]
   (loop [[^FileHandle handle & remaining] (.list handle)
          result []]
@@ -425,6 +421,8 @@
 
           :else
           (recur remaining result))))
+
+(import '(com.badlogic.gdx Gdx))
 
 (defn internal ^FileHandle [path]
   (.internal Gdx/files path))
@@ -508,6 +506,8 @@
     (math/sqrt (+ (* x-d x-d)
                   (* y-d y-d)))))
 
+(import '(space.earlygrey.shapedrawer ShapeDrawer))
+
 (defmacro with-line-width [shape-drawer width & body]
   `(let [old-line-width# (space.earlygrey.shapedrawer.ShapeDrawer/.getDefaultLineWidth ~shape-drawer)]
      (space.earlygrey.shapedrawer.ShapeDrawer/.setDefaultLineWidth ~shape-drawer (* ~width old-line-width#))
@@ -554,6 +554,9 @@
             (assert (keyword? k))
             (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
             [k schema-props (k->malli-schema-form k)]))))
+
+(require '[clojure.edn :as edn])
+(require '[clojure.java.io :as io])
 
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 
@@ -634,6 +637,8 @@
              y (range b (inc t))]
          [x y])
        [[l b] [l t] [r b] [r t]]))))
+
+(import '(clojure RayCaster))
 
 (defn raycaster-blocked?
   [[bool-arr
@@ -854,6 +859,8 @@
                         %)
                      (vals m)))))
 
+(require '[malli.error :as me])
+
 (defn create-db [properties]
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
@@ -864,6 +871,8 @@
                         {:value property
                          :schema (m/form schema)})))))
   (zipmap (map :property/id properties) properties))
+
+(require '[clojure.pprint :as pprint])
 
 (defn save! [db file]
   (let [data (->> (vals db)
@@ -951,6 +960,8 @@
          (.setName "inventory-cell")
          (.setUserObject cell)))}))
 
+(import '(com.badlogic.gdx.graphics Color))
+
 (defn- build-inventory-window
   [{:keys [on-click-cell
            draw-cell-rect!
@@ -961,7 +972,7 @@
   (let [slot->drawable (fn [slot]
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
-                           (.tint ^Color (Color. 1 1 1 0.4))))
+                           (.tint (Color. 1 1 1 0.4))))
         ->cell (partial inv-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (Table.)
         window (Window. "Inventory" ^Skin skin)]
@@ -2376,6 +2387,8 @@
         (aset arr x y (boolean (blocks-vision? cell)))))
     [arr width height]))
 
+(import '(com.badlogic.gdx Input$Keys))
+
 ; belongs to game - further down?
 (def ^:private controls
   {:zoom-in Input$Keys/MINUS
@@ -2464,6 +2477,8 @@
                 (swap! explored-tile-corners assoc-in (mapv int position) true))
               visible-tile-color))))))
 
+(import '(com.badlogic.gdx.graphics Pixmap Pixmap$Format Texture))
+
 (defn- white-pixel-texture []
   (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
                  (.setColor 1 1 1 1)
@@ -2471,6 +2486,8 @@
         texture (Texture. pixmap)]
     (.dispose pixmap)
     texture))
+
+(import '(com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData))
 
 (defn- draw-text! [batch default-font unit-scale {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
@@ -2621,6 +2638,8 @@
     {:item v}
 
     v))
+
+(require '[reduce-fsm :as fsm])
 
 (def ^:private fsms
   {:npc (fsm/fsm-inc
@@ -2779,6 +2798,8 @@
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 (def ^:dynamic *sounds*)
+
+(import '(com.badlogic.gdx.audio Sound))
 
 (defn play-sound! [sound-name]
   (assert (contains? *sounds* sound-name) (str sound-name))
@@ -3150,6 +3171,9 @@
                           :size 16
                           :quality-scaling 2
                           :use-integer-positions? false})
+
+(import '(com.badlogic.gdx.graphics Texture$TextureFilter)
+        '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
 
 (defn create-default-font! []
   (let [{:keys [path
@@ -4140,6 +4164,8 @@
         (show-message! stage "No selected skill")
         nil)))
 
+(import '(com.badlogic.gdx Input$Buttons))
+
 ; 1. 
 ; too many input - see world first
 ; -> handle-fsm-event!
@@ -4260,7 +4286,7 @@
 
 (defn set-cursor! [cursor-key]
   (assert (contains? *cursors* cursor-key)) ; == safe-get (same like db)
-  (.setCursor Gdx/graphics ^Cursor (get *cursors* cursor-key))); Cursor type hint / class import not necessary
+  (.setCursor Gdx/graphics (get *cursors* cursor-key))); Cursor type hint / class import not necessary
 
 (def ^:dynamic *default-font*)
 (def ^:dynamic *shape-drawer*)
@@ -4288,6 +4314,10 @@
 
 (defn create-sound! [path]
   (.newSound Gdx/audio (internal path)))
+
+(import '(com.badlogic.gdx ApplicationListener)
+        '(com.badlogic.gdx.graphics Colors)
+        '(com.badlogic.gdx.graphics.g2d SpriteBatch))
 
 (def listener
   (reify ApplicationListener
@@ -4447,6 +4477,9 @@
 
     (resume [_])))
 
+(import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application 
+                                           Lwjgl3ApplicationConfiguration))
+
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (binding [*batch* nil
@@ -4543,7 +4576,7 @@
           (.pack window)
           (.addActor s window)
           (reset! ui-stage s))
-        (.setInputProcessor Gdx/input ^InputProcessor @ui-stage)
+        (.setInputProcessor Gdx/input @ui-stage)
         (reset! viewport (FitViewport. (float world-width)
                                              (float world-height)
                                              (doto (OrthographicCamera.)
@@ -5233,6 +5266,8 @@
                            :table table}))
     table))
 
+(require '[clojure.set :as set])
+
 (defn- create-map-widget [schema m build-widget widget-value]
   (map-widget-table-create
    {:schema schema
@@ -5289,6 +5324,8 @@
     :s/string (create-string-widget schema v @editor-skin)
     :s/val-max (create-val-max-widget schema v @editor-skin)
     (create-default-widget v @editor-skin)))
+
+(require '[clj-commons.pretty.repl :as pretty-repl])
 
 (defn- with-window-close [f]
   (fn [actor]
