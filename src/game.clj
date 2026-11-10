@@ -426,17 +426,15 @@
           :else
           (recur remaining result))))
 
-(import '(com.badlogic.gdx Gdx))
-
-(defn internal ^FileHandle [path]
-  (.internal Gdx/files path))
+(defn internal [files path]
+  (com.badlogic.gdx.Files/.internal files path))
 
 (defn create-textures
-  [{:keys [folder extensions]}]
+  [files {:keys [folder extensions]}]
   (into {}
-        (for [path (->> (recursively-search (internal folder) extensions)
+        (for [path (->> (recursively-search (internal files folder) extensions)
                         (map #(str/replace-first % folder "")))]
-          [path (Texture. (internal path))])))
+          [path (Texture. (internal files path))])))
 
 (defn get-texture-region
   [textures {:keys [image/file image/bounds]}]
@@ -978,7 +976,7 @@
 (defn add-actor! [^Group group actor]
   (.addActor group actor))
 
-(defn- inv-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+(defn- inv-window-cell [input on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
@@ -991,8 +989,8 @@
                                      (.getX ^Actor this)
                                      (.getY ^Actor this)
                                      (let [v2 (.unproject (.getViewport ^Stage stage)
-                                                          (Vector2. (float (.getX Gdx/input))
-                                                                    (float (.getY Gdx/input))))
+                                                          (Vector2. (float (.getX input))
+                                                                    (float (.getY input))))
                                            local (.stageToLocalCoordinates ^Actor this
                                                                            (Vector2. (.x v2) (.y v2)))
                                            x (.x ^Vector2 local)
@@ -1014,7 +1012,8 @@
 (import '(com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable))
 
 (defn- build-inventory-window
-  [{:keys [on-click-cell
+  [{:keys [input
+           on-click-cell
            draw-cell-rect!
            skin
            position
@@ -1024,7 +1023,7 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint (Color. 1 1 1 0.4))))
-        ->cell (partial inv-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
+        ->cell (partial inv-window-cell input on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (Table.)
         window (Window. "Inventory" ^Skin skin)]
     (doseq [row (concat [[{:actor nil} {:actor nil}
@@ -1061,7 +1060,7 @@
     window))
 
 (defn create-inventory-window
-  [on-click-cell draw-cell-rect! skin stage textures]
+  [input on-click-cell draw-cell-rect! skin stage textures]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
                                              :shield 1
                                              :rings 2
@@ -1087,7 +1086,8 @@
                                                       :image/bounds bounds})))
         cell-size 48]
     (build-inventory-window
-     {:on-click-cell on-click-cell
+     {:input input
+      :on-click-cell on-click-cell
       :draw-cell-rect! draw-cell-rect!
       :skin skin
       :position [(.getWorldWidth (.getViewport ^Stage stage))
@@ -1918,10 +1918,10 @@
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
 
-(defn ui-mouse-position [stage]
+(defn ui-mouse-position [stage input]
   (let [v2 (.unproject (.getViewport ^Stage stage)
-                       (Vector2. (float (.getX Gdx/input))
-                                 (float (.getY Gdx/input))))]
+                       (Vector2. (float (.getX input))
+                                 (float (.getY input))))]
     [(.x v2) (.y v2)]))
 
 (import '(com.badlogic.gdx.utils Align))
@@ -2470,10 +2470,10 @@
 
 (def ^:dynamic ^Viewport *viewport*)
 
-(defn world-mouse-position []
+(defn world-mouse-position [input]
   (let [v2 (.unproject *viewport*
-                       (Vector2. (float (.getX Gdx/input))
-                                 (float (.getY Gdx/input))))]
+                       (Vector2. (float (.getX input))
+                                 (float (.getY input))))]
     [(.x v2) (.y v2)]))
 
 (defn- button?
@@ -2599,11 +2599,11 @@
              (float w)
              (float h)))))
 
-(defn- item-place-position [player-position maxrange]
+(defn- item-place-position [input player-position maxrange]
   (mapv + player-position
-        (v2-scale (v2-direction player-position (world-mouse-position))
+        (v2-scale (v2-direction player-position (world-mouse-position input))
                   (min maxrange
-                       (v2-distance player-position (world-mouse-position))))))
+                       (v2-distance player-position (world-mouse-position input))))))
 
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
@@ -2856,6 +2856,8 @@
     (spawn-entity! (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
+(import '(com.badlogic.gdx Gdx))
+
 (defn- entity-state-exit!
   [eid [state-k _state-v]]
   (case state-k
@@ -2865,7 +2867,8 @@
       (when item
         [[:tx/swap eid dissoc :entity/item-on-cursor]
          [:tx/sound "bfxr_itemputground.wav"]
-         [:tx/spawn-entity (spawn-item (item-place-position (:entity/position entity)
+         [:tx/spawn-entity (spawn-item (item-place-position Gdx/input
+                                                            (:entity/position entity)
                                                             (- (:entity/click-distance-tiles entity) 0.1))
                                        item)]]))
 
@@ -3264,7 +3267,7 @@
     s))
 
 (defn create-cursor! [[path [hotspot-x hotspot-y]]]
-  (let [pixmap (Pixmap. (internal path))
+  (let [pixmap (Pixmap. (internal Gdx/files path))
         cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
     (.dispose pixmap)
     cursor))
@@ -3292,7 +3295,7 @@
                 size
                 quality-scaling
                 use-integer-positions?]} default-font-params
-        generator (FreeTypeFontGenerator. (internal path))
+        generator (FreeTypeFontGenerator. (internal Gdx/files path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
                     (set! (.minFilter p) Texture$TextureFilter/Linear)
@@ -3484,7 +3487,7 @@
             player-eid *player-eid* 
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            mouse-pos (ui-mouse-position stage)
+            mouse-pos (ui-mouse-position stage Gdx/input)
             [x y] mouse-pos]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
@@ -3569,7 +3572,7 @@
 
 (defn highlight-mouseover-tile
   [shape-drawer]
-  (let [[x y] (mapv int (world-mouse-position))
+  (let [[x y] (mapv int (world-mouse-position Gdx/input))
         cell (cell-at [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
       (rectangle! shape-drawer x y 1 1
@@ -3631,7 +3634,8 @@
       (when-not mouseover-actor
         (draw-texture-region! batch unit-scale
                                 (get-texture-region textures (:entity/image item))
-                                (item-place-position (:entity/position entity)
+                                (item-place-position Gdx/input
+                                                     (:entity/position entity)
                                                      (- (:entity/click-distance-tiles entity) 0.1))
                                 {:center? true})))
 
@@ -4062,10 +4066,10 @@
                                    :update-fn (fn [] @paused?)}
                                   {:label "GUI"
                                    :update-fn (fn []
-                                                (mapv int (ui-mouse-position stage)))}
+                                                (mapv int (ui-mouse-position stage Gdx/input)))}
                                   {:label "World"
                                    :update-fn (fn []
-                                                (mapv int (world-mouse-position)))}
+                                                (mapv int (world-mouse-position Gdx/input)))}
                                   {:label "Zoom"
                                    :update-fn (fn []
                                                 (.zoom ^OrthographicCamera (.getCamera *viewport*)))
@@ -4077,37 +4081,38 @@
      (hp-mana-bar-create default-font stage textures* unit-scale)
      (windows-create [#(info-window-create skin stage mouseover-eid)
                       #(create-inventory-window
-                        (fn [_event cell]
-                          (handle-clicked-inventory-cell *player-eid* 
-                                                         skin
-                                                         stage
-                                                         textures*
-                                                         (fn [cell item] (set-item! skin stage textures* cell item))
-                                                         (fn [cell] (remove-item! stage cell))
-                                                         cell))
-                        (fn [player-entity x y mouseover? cell]
-                          (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
-                          (when (and mouseover?
-                                     (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                            (let [item (:entity/item-on-cursor player-entity)
-                                  color (if (valid-slot? cell item)
-                                          (float-bits 0 0.6 0 0.8)
-                                          (float-bits 0.6 0 0 0.8))]
-                              (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
-                        skin
-                        stage
-                        textures*)])
+                         Gdx/input
+                         (fn [_event cell]
+                           (handle-clicked-inventory-cell *player-eid* 
+                                                          skin
+                                                          stage
+                                                          textures*
+                                                          (fn [cell item] (set-item! skin stage textures* cell item))
+                                                          (fn [cell] (remove-item! stage cell))
+                                                          cell))
+                         (fn [player-entity x y mouseover? cell]
+                           (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
+                           (when (and mouseover?
+                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                             (let [item (:entity/item-on-cursor player-entity)
+                                   color (if (valid-slot? cell item)
+                                           (float-bits 0 0.6 0 0.8)
+                                           (float-bits 0.6 0 0 0.8))]
+                               (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+                         skin
+                         stage
+                         textures*)])
      (player-state-draw-create unit-scale textures*)
      (player-message-actor-create default-font unit-scale)]))
 
 (defn update-mouseover-eid! [mouseover-eid stage]
   (let [old-mouseover-eid @mouseover-eid
-        [x y] (ui-mouse-position stage)
+        [x y] (ui-mouse-position stage Gdx/input)
         new-eid (if (mouseover-actor stage x y)
                   nil
                   (let [player @*player-eid*
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (point->entities *grid* (world-mouse-position)))]
+                                     (point->entities *grid* (world-mouse-position Gdx/input)))]
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
@@ -4131,7 +4136,7 @@
     (.update camera)))
 
 (defn current-mouseover-actor [stage]
-  (let [[x y] (ui-mouse-position stage)]
+  (let [[x y] (ui-mouse-position stage Gdx/input)]
     (mouseover-actor stage x y)))
 
 (defn- cursor-key [interaction-state]
@@ -4287,7 +4292,7 @@
         state-k (:state (:entity/fsm entity))
         left-button-pressed? (button-just-pressed? Input$Buttons/LEFT)
         move-v (movement-vector key-pressed?)
-        [x y] (ui-mouse-position stage)
+        [x y] (ui-mouse-position stage Gdx/input)
         mouseover-actor* (mouseover-actor stage x y)]
     (case state-k
       :player-idle
@@ -4393,7 +4398,7 @@
               skill (skill-id (:entity/skills entity))
               target-position (or (and mouseover-eid
                                        (:entity/position @mouseover-eid))
-                                  (world-mouse-position))
+                                  (world-mouse-position Gdx/input))
               effect-ctx {:effect/source player-eid
                           :effect/target mouseover-eid
                           :effect/target-position target-position
@@ -4434,7 +4439,7 @@
 (def ^:dynamic *explored-tile-corners*)
 
 (defn create-sound! [path]
-  (.newSound Gdx/audio (internal path)))
+  (.newSound Gdx/audio (internal Gdx/files path)))
 
 (import '(com.badlogic.gdx.graphics Colors)
         '(com.badlogic.gdx.graphics.g2d SpriteBatch)
@@ -4455,12 +4460,13 @@
        (set! *default-font* (create-default-font!))
        (set! *shape-drawer-texture* (white-pixel-texture))
        (set! *shape-drawer* (ShapeDrawer. @batch (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
-       (reset! skin (create-skin! (internal "skin/uiskin.json")))
+       (reset! skin (create-skin! (internal Gdx/files "skin/uiskin.json")))
        (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (.setInputProcessor Gdx/input @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-       (set! *textures* (create-textures {:folder "resources/"
+       (set! *textures* (create-textures Gdx/files
+                                         {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
        (set! *viewport* (create-viewport! world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
@@ -4537,7 +4543,7 @@
                          *default-font* 
                          *textures* 
                          unit-scale 
-                         (let [[x y] (ui-mouse-position @stage)]
+                         (let [[x y] (ui-mouse-position @stage Gdx/input)]
                            (mouseover-actor @stage x y))
                          *raycaster*
                          active-entities)
@@ -4642,7 +4648,7 @@
     {:create!
      (fn []
        (reset! batch (SpriteBatch.))
-       (reset! skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
+       (reset! skin (Skin. (internal Gdx/files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
              window (Window. "Edit" skin*)]
@@ -4661,7 +4667,8 @@
                                                      world-height))))
        (reset! camera (.getCamera ^Viewport @viewport))
        (reset! db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
-       (reset! textures (create-textures {:folder "resources/"
+       (reset! textures (create-textures Gdx/files
+                                         {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
        (reset! tiled-map (generate-level @db @textures @camera create-uf-caves)))
 
@@ -5497,14 +5504,15 @@
     {:create!
      (fn []
        (reset! batch (SpriteBatch.))
-       (reset! editor-skin (Skin. (.internal Gdx/files "skin/uiskin.json")))
+       (reset! editor-skin (Skin. (internal Gdx/files "skin/uiskin.json")))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
-                              [path (.newSound Gdx/audio (.internal Gdx/files path))])))
+                              [path (.newSound Gdx/audio (internal Gdx/files path))])))
        (reset! editor-db (create-db (-> properties-file slurp edn/read-string)))
-       (reset! editor-textures (create-textures {:folder "resources/"
+       (reset! editor-textures (create-textures Gdx/files
+                                                {:folder "resources/"
                                                  :extensions #{"png" "bmp"}}))
        (.setInputProcessor Gdx/input @editor-stage)
        (.addActor ^Stage @editor-stage (main-window)))
