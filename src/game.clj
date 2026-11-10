@@ -4425,8 +4425,6 @@
                          :player-dead true
                          :player-item-on-cursor true})
 
-(def ^:dynamic *explored-tile-corners*)
-
 (defn create-sound! [path]
   (.newSound Gdx/audio (internal Gdx/files path)))
 
@@ -4441,7 +4439,8 @@
         default-font (atom nil)
         textures (atom nil)
         shape-drawer (atom nil)
-        shape-drawer-texture (atom nil)]
+        shape-drawer-texture (atom nil)
+        explored-tile-corners (atom nil)]
     {
      :create!
      (fn []
@@ -4476,10 +4475,9 @@
                grid (create-grid tiled-map)]
            (set! *grid* grid) 
            (set! *content-grid* (create-content-grid width height 16))
-           (set! *explored-tile-corners* (atom
-                                           (mapv (fn [x] (mapv (fn [y] false)
-                                                               (range height)))
-                                                 (range width))))
+           (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
+                                                             (range height)))
+                                               (range width)))
            (set! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
        (doseq [^Actor actor (create-ui-actors mouseover-eid
@@ -4519,7 +4517,7 @@
                         (.getCamera *viewport*)
                         (tile-color-setter*
                           {:ray-blocked? (partial raycaster-blocked? *raycaster*)
-                           :explored-tile-corners *explored-tile-corners*
+                           :explored-tile-corners explored-tile-corners
                            :light-position (let [pos (.position (.getCamera *viewport*))]
                                              [(.x pos) (.y pos) (.z pos)])
                            :see-all-tiles? false
@@ -5590,7 +5588,6 @@
             *entity-ids* nil
             *grid* nil
             *content-grid* nil
-            *explored-tile-corners* nil
             *raycaster* nil]
     (lwjgl3-application! (game-listener)
                          {:title "Moon"
