@@ -163,8 +163,7 @@
                      (str (str/capitalize (name stat-k)) ": "
                           (get-value stats stat-k))))))
 
-(import '(com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
-        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
+(import '(com.badlogic.gdx.maps.tiled TiledMap))
 
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
@@ -173,6 +172,8 @@
 
 (defn layers-get [^MapLayers map-layers layer-name]
   (.get map-layers layer-name))
+
+(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
 
 (defn get-width [^TiledMapTileLayer layer]
   (.getWidth layer))
@@ -192,6 +193,10 @@
           :let [value (.get (.getProperties (.getTile cell)) property-key)]
           :when value]
       [position value])))
+
+(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell))
+
+(import '(com.badlogic.gdx.maps.tiled TiledMapTile))
 
 (defn tile-movement-property
   [^TiledMap tiled-map layer [x y]]
@@ -234,7 +239,8 @@
      :tile/texture-region texture-region}))
 
 (import '(com.badlogic.gdx.graphics.g2d TextureRegion)
-        '(com.badlogic.gdx.maps MapLayer MapProperties))
+        '(com.badlogic.gdx.maps MapLayer MapProperties)
+        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
 
 (defn add-creatures-layer! [^TiledMap tiled-map spawn-positions]
   (let [creature-tile (memoize
@@ -1401,6 +1407,8 @@
                       (.setTile ^TiledMapTile tile))))
         (.add (.getLayers tiled-map) ^MapLayer layer)))
     tiled-map))
+
+(import '(com.badlogic.gdx.maps.tiled TmxMapLoader))
 
 (defn create-modules-level
   [{:keys [level/creature-properties
