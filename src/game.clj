@@ -4410,10 +4410,6 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-
-(def ^:dynamic *shape-drawer*)
-(def ^:dynamic *shape-drawer-texture*)
-
 (def skin (atom nil))
 (def stage (atom nil))
 (def db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
@@ -4443,7 +4439,9 @@
   (let [batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
-        textures (atom nil)]
+        textures (atom nil)
+        shape-drawer (atom nil)
+        shape-drawer-texture (atom nil)]
     {
      :create!
      (fn []
@@ -4454,8 +4452,8 @@
                               [path (create-sound! path)])))
        (reset! batch (SpriteBatch.))
        (reset! default-font (create-default-font!))
-       (set! *shape-drawer-texture* (white-pixel-texture))
-       (set! *shape-drawer* (ShapeDrawer. @batch (TextureRegion. ^Texture *shape-drawer-texture* 1 0 1 1)))
+       (reset! shape-drawer-texture (white-pixel-texture))
+       (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal Gdx/files "skin/uiskin.json")))
        (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (.setInputProcessor Gdx/input @stage)
@@ -4488,7 +4486,7 @@
                                               paused?
                                               unit-scale
                                               @default-font
-                                              *shape-drawer*
+                                              @shape-drawer
                                               @skin
                                               @stage
                                               @textures)]
@@ -4503,7 +4501,7 @@
        (Disposable/.dispose @batch)
        (run! Disposable/.dispose (vals @cursors))
        (Disposable/.dispose @default-font)
-       (Disposable/.dispose *shape-drawer-texture*)
+       (Disposable/.dispose @shape-drawer-texture)
        (Disposable/.dispose @skin)
        (run! Disposable/.dispose (vals @textures))
        (Disposable/.dispose *tiled-map*))
@@ -4530,11 +4528,11 @@
                            :invisible-tile-color (float-bits 0 0 0 1)})
                         world-unit-scale)
        (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-       (with-line-width *shape-drawer* world-unit-scale
+       (with-line-width @shape-drawer world-unit-scale
          (reset! unit-scale world-unit-scale)
-         (draw-tile-grid *shape-drawer*)
-         (draw-cell-debug *shape-drawer*)
-         (draw-entities! *shape-drawer* 
+         (draw-tile-grid @shape-drawer)
+         (draw-cell-debug @shape-drawer)
+         (draw-entities! @shape-drawer
                          @batch 
                          @default-font 
                          @textures 
@@ -4543,7 +4541,7 @@
                            (mouseover-actor @stage x y))
                          *raycaster*
                          active-entities)
-         (highlight-mouseover-tile *shape-drawer*)
+         (highlight-mouseover-tile @shape-drawer)
          (reset! unit-scale 1))
        (.end ^Batch @batch)
        (let [interaction-state (create-interaction-state mouseover-eid @stage)]
@@ -5583,8 +5581,6 @@
 (defn game! []
   (binding [*sounds* nil
             *viewport* nil
-            *shape-drawer* nil
-            *shape-drawer-texture* nil
             *player-eid* nil
             *elapsed-time* (atom nil)
             *tiled-map* nil
