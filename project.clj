@@ -22,7 +22,7 @@
   :aliases {
             "game"     ["run" "-m" "loop" "((requiring-resolve 'game/-main))"]
             "levelgen" ["run" "-m" "loop" "((requiring-resolve 'game/levelgen!))"]
-            "editor"   ["run" "-m" "loop" "((requiring-resolve 'editor/-main))"]
+            "editor"   ["run" "-m" "loop" "((requiring-resolve 'game/editor!))"]
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]
