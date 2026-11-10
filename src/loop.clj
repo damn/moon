@@ -4,6 +4,9 @@
             [clojure.tools.namespace.repl]
             [nrepl.server]))
 
+(comment
+  (restart!))
+
 (clojure.tools.namespace.repl/disable-reload!) ; keep same connection/nrepl-server up throughout refreshs
 
 (def ^Object obj (Object.))
