@@ -2941,10 +2941,6 @@
   (assert (contains? *sounds* sound-name) (str sound-name))
   (Sound/.play (get *sounds* sound-name)))
 
-; handle-effect!
-; handle-clicked-inventory-cell
-; tick-component
-; case statements too big ...
 (defn- handle-fsm-event! [skin stage eid event & [params]]
   (let [game {
               :game/play-sound! play-sound!
