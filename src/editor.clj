@@ -102,6 +102,41 @@
       [:asdf {:optional true}]])
     #{:baz :asdf}))
 
+(defn- property-overview-rows 
+  [property-type clicked-id-fn {:keys [editor/all-raw
+                                       editor/get-texture-region
+                                       editor/property-type->overview-table-props
+                                       editor/text-tooltip
+                                       editor/new-label]}]
+  (let [{:keys [sort-by-fn
+                extra-info-text
+                columns
+                image-scale]} (get property-type->overview-table-props property-type)]
+    (for [row (->> (all-raw property-type)
+                   (sort-by sort-by-fn)
+                   (partition-all columns))]
+      (for [property row]
+        (let [stack (Stack.)
+              texture-region (get-texture-region (or (:entity/image property)
+                                                     (first (:animation/frames (:entity/animation property)))))]
+          (run! #(.addActor ^Group stack %)
+                [(doto (ImageButton.
+                         (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                           (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
+                                        (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
+                   (.addListener (proxy [ChangeListener] []
+                                   (changed [event actor]
+                                     (clicked-id-fn actor (:property/id property)))))
+                   (.addListener (text-tooltip (binding [*print-level* 2]
+                                                 (with-out-str
+                                                   (pprint property))))))
+                 (doto (new-label (extra-info-text property))
+                   (.setTouchable Touchable/disabled))])
+          stack)))))
+
+(def db (atom nil))
+(def textures (atom nil))
+(def skin (atom nil))
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
                              :image-scale 2
@@ -127,50 +162,26 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-(def skin (atom nil))
-(def db (atom nil))
-(def textures (atom nil))
-
-(defn- property-overview-rows 
-  [property-type clicked-id-fn {:keys [editor/all-raw
-                                       editor/get-texture-region]}]
-  (let [{:keys [sort-by-fn
-                extra-info-text
-                columns
-                image-scale]} (get property-type->overview-table-props property-type)]
-    (for [row (->> (all-raw property-type)
-                   (sort-by sort-by-fn)
-                   (partition-all columns))]
-      (for [property row]
-        (let [stack (Stack.)
-              texture-region (get-texture-region (or (:entity/image property)
-                                                     (first (:animation/frames (:entity/animation property)))))]
-          (run! #(.addActor ^Group stack %)
-                [(doto (ImageButton.
-                         (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                           (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
-                                        (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
-                   (.addListener (proxy [ChangeListener] []
-                                   (changed [event actor]
-                                     (clicked-id-fn actor (:property/id property)))))
-                   (.addListener (TextTooltip. ^String (binding [*print-level* 2]
-                                                         (with-out-str
-                                                           (pprint property)))
-                                               @skin)))
-                 (doto (Label. ^String (extra-info-text property) @skin)
-                   (.setTouchable Touchable/disabled))])
-          stack)))))
-
 (defn property-overview-window [property-type clicked-id-fn]
   (let [window (Window. "Edit" @skin)]
     (doseq [row (property-overview-rows property-type 
                                         clicked-id-fn 
-                                        {:editor/all-raw 
+                                        {
+                                         :editor/all-raw 
                                          (fn [property-type]
                                            (game/all-raw @db property-type))
                                          :editor/get-texture-region 
                                          (fn [image]
-                                           (game/get-texture-region @textures image))})]
+                                           (game/get-texture-region @textures image))
+                                         :editor/property-type->overview-table-props
+                                         property-type->overview-table-props
+                                         :editor/text-tooltip
+                                         (fn [text]
+                                           (TextTooltip. ^String text @skin))
+                                         :editor/new-label
+                                         (fn [text]
+                                           (Label. ^String text @skin))
+                                         })]
       (doseq [actor row]
         (.add window ^Actor actor))
       (.row window))
