@@ -5572,9 +5572,6 @@
                         :height 900 
                         :fps 60}))
 
-; -> side effects always require all params
-; so we need the transaction system again ... ? 
-; describe what should happen (fsm event, swap!, etc.)
 (defn game! []
   (binding [*sounds* nil
             *viewport* nil
