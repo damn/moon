@@ -4407,7 +4407,6 @@
 
 (def skin (atom nil))
 (def stage (atom nil))
-(def db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
 (def active-entities (atom nil))
 (def mouseover-eid (atom nil))
 (def paused? (atom false))
@@ -4436,7 +4435,8 @@
         shape-drawer (atom nil)
         shape-drawer-texture (atom nil)
         explored-tile-corners (atom nil)
-        tiled-map* (atom nil)]
+        tiled-map* (atom nil)
+        db (create-db (-> "properties.edn" io/resource slurp edn/read-string))]
     {
      :create!
      (fn []
