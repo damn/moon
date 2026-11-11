@@ -2393,9 +2393,9 @@
 
 (def *entity-ids* (atom nil))
 
-(def ^:dynamic *grid*)
+(def *grid* (atom nil))
 
-(def ^:dynamic *content-grid*)
+(def *content-grid* (atom nil))
 
 (defn register-eid!
   [eid]
@@ -2406,38 +2406,38 @@
     (swap! *entity-ids* assoc id eid))
 
   (assert (:entity/position @eid))
-  (update-entity! *content-grid* eid)
+  (update-entity! @*content-grid* eid)
 
   (assert (:entity/position @eid))
   (when (:entity/collides? @eid)
-    (assert (valid-position? *grid* @eid (:entity/id @eid))))
-  (set-touched-cells! *grid* eid)
+    (assert (valid-position? @*grid* @eid (:entity/id @eid))))
+  (set-touched-cells! @*grid* eid)
   (when (:entity/collides? @eid)
-    (set-occupied-cells! *grid* eid))
+    (set-occupied-cells! @*grid* eid))
   nil)
 
 (defn relocate-eid!
   [eid]
-  (update-entity! *content-grid* eid)
-  (remove-from-touched-cells! *grid* eid)
-  (set-touched-cells! *grid* eid)
+  (update-entity! @*content-grid* eid)
+  (remove-from-touched-cells! @*grid* eid)
+  (set-touched-cells! @*grid* eid)
   (when (:entity/collides? @eid)
-    (remove-from-occupied-cells! *grid* eid)
-    (set-occupied-cells! *grid* eid))
+    (remove-from-occupied-cells! @*grid* eid)
+    (set-occupied-cells! @*grid* eid))
   nil)
 
 (defn unregister-eid!
   [eid]
   (let [id (:entity/id @eid)]
     (swap! *entity-ids* dissoc id)
-    (remove-entity! *content-grid* eid)
-    (remove-from-touched-cells! *grid* eid)
+    (remove-entity! @*content-grid* eid)
+    (remove-from-touched-cells! @*grid* eid)
     (when (:entity/collides? @eid)
-      (remove-from-occupied-cells! *grid* eid)))
+      (remove-from-occupied-cells! @*grid* eid)))
   nil)
 
 (defn cell-at [[x y]]
-  (when-let [cell-atom (get-in *grid* [x y])]
+  (when-let [cell-atom (get-in @*grid* [x y])]
     @cell-atom))
 
 (defn cells-at [tile-positions]
@@ -3828,14 +3828,14 @@
                           (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
        first))
 
-(def ^:dynamic *raycaster*)
+(def *raycaster* (atom nil))
 
 (defn- create-effect-ctx
   [eid]
   (let [entity @eid
-        target (nearest-enemy *grid* entity)
+        target (nearest-enemy @*grid* entity)
         target (when (and target
-                          (line-of-sight? *raycaster* entity @target))
+                          (line-of-sight? @*raycaster* entity @target))
                  target)]
     {:effect/source eid
      :effect/target target
@@ -3893,7 +3893,7 @@
         (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
                                            :radius 4}
                                    [x y] (:position circle)
-                                   g2d *grid*
+                                   g2d @*grid*
                                    gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
                                (->> circle
                                     outer-rectangle
@@ -3930,7 +3930,7 @@
     :entity/projectile-collision
     (let [{:keys [entity-effects already-hit-bodies piercing?]} v
           entity @eid
-          touched-cells (map deref (keep #(get-in *grid* %) (touched-tiles entity)))
+          touched-cells (map deref (keep #(get-in @*grid* %) (touched-tiles entity)))
           hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                           (not= (:entity/faction entity)
                                                 (:entity/faction @%))
@@ -3951,7 +3951,7 @@
 
     :active-skill
     (let [{:keys [skill effect-ctx counter]} v
-          effect-ctx (update-effect-ctx *raycaster* effect-ctx)]
+          effect-ctx (update-effect-ctx @*raycaster* effect-ctx)]
       (cond
         (not (seq (filter #(effect-applicable? % effect-ctx)
                           (:skill/effects skill))))
@@ -3979,16 +3979,16 @@
 
     :npc-sleeping
     (let [entity @eid]
-      (when-let [distance (nearest-enemy-distance *grid* entity)]
+      (when-let [distance (nearest-enemy-distance @*grid* entity)]
         (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
           (handle-txs! (handle-fsm-event! eid :alert)))))
 
     :npc-idle
-    (let [raycaster *raycaster*
+    (let [raycaster @*raycaster*
           effect-ctx (create-effect-ctx eid)]
       (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
         (handle-txs! (handle-fsm-event! eid :start-action [skill effect-ctx]))
-        (handle-txs! (handle-fsm-event! eid :movement-direction (or (find-direction *grid* eid)
+        (handle-txs! (handle-fsm-event! eid :movement-direction (or (find-direction @*grid* eid)
                                                                    [0 0])))))
 
     :entity/movement
@@ -4007,7 +4007,7 @@
         (let [movement (assoc movement :delta-time delta-time)
               body @eid]
           (when-let [body (if (:entity/collides? body)
-                            (try-move-solid-body *grid* body (:entity/id @eid) movement)
+                            (try-move-solid-body @*grid* body (:entity/id @eid) movement)
                             (let [{:keys [direction speed delta-time]} movement]
                               (update body :entity/position
                                       #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
@@ -4121,11 +4121,11 @@
                   nil
                   (let [player @player-eid
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (point->entities *grid* (unproject @*viewport* [(.getX input) (.getY input)])))]
+                                     (point->entities @*grid* (unproject @*viewport* [(.getX input) (.getY input)])))]
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
-                         (filter #(line-of-sight? *raycaster* player @%))
+                         (filter #(line-of-sight? @*raycaster* player @%))
                          first)))]
     (when old-mouseover-eid
       (swap! old-mouseover-eid dissoc :entity/mouseover?))
@@ -4134,7 +4134,7 @@
     (reset! mouseover-eid new-eid)))
 
 (defn update-active-entities! [active-entities player-eid]
-  (reset! active-entities (active-entities* *content-grid* @player-eid)))
+  (reset! active-entities (active-entities* @*content-grid* @player-eid)))
 
 (defn set-camera-to-player! [player-eid]
   (let [camera (.getCamera @*viewport*)
@@ -4338,7 +4338,7 @@
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
-        (update! *grid*
+        (update! @*grid*
                  potential-field-cache
                  faction
                  @active-entities
@@ -4458,7 +4458,7 @@
 
                                               ; those 2 should be 1 param?
                                               @active-entities
-                                              *raycaster*
+                                              @*raycaster*
                                               ))))
              })
 
@@ -4535,12 +4535,12 @@
                width (.get props "width")
                height (.get props "height")
                grid (create-grid tiled-map)]
-           (set! *grid* grid) 
-           (set! *content-grid* (create-content-grid width height 16))
+           (reset! *grid* grid) 
+           (reset! *content-grid* (create-content-grid width height 16))
            (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
                                                              (range height)))
                                                (range width)))
-           (set! *raycaster* (create-raycaster grid)))
+           (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build db :creatures/vampire)
@@ -4592,7 +4592,7 @@
                         @batch
                         (.getCamera @*viewport*)
                         (tile-color-setter*
-                          {:ray-blocked? (partial raycaster-blocked? *raycaster*)
+                          {:ray-blocked? (partial raycaster-blocked? @*raycaster*)
                            :explored-tile-corners explored-tile-corners
                            :light-position (let [pos (.position (.getCamera @*viewport*))]
                                              [(.x pos) (.y pos) (.z pos)])
@@ -4613,7 +4613,7 @@
                          unit-scale 
                          (let [[x y] (ui-mouse-position @stage Gdx/input)]
                            (mouseover-actor @stage x y))
-                         *raycaster*
+                         @*raycaster*
                          active-entities
                          @player-eid)
          (highlight-mouseover-tile @shape-drawer Gdx/input)
@@ -5652,12 +5652,8 @@
                         :fps 60}))
 
 (defn game! []
-  (binding [
-            *grid* nil
-            *content-grid* nil
-            *raycaster* nil]
-    (lwjgl3-application! (game-listener)
-                         {:title "Moon"
-                          :width 1440 
-                          :height 900 
-                          :fps 60})))
+  (lwjgl3-application! (game-listener)
+                       {:title "Moon"
+                        :width 1440 
+                        :height 900 
+                        :fps 60}))
