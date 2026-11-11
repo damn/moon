@@ -4196,14 +4196,6 @@
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
-(def ^:dynamic *sounds*)
-
-(import '(com.badlogic.gdx.audio Sound))
-
-(defn play-sound! [sound-name]
-  (assert (contains? *sounds* sound-name) (str sound-name))
-  (Sound/.play (get *sounds* sound-name)))
-
 (defn- interaction-state->txs 
   [[k params] stage player-eid]
   (case k
@@ -4376,6 +4368,8 @@
 (def db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
 (def textures (atom nil))
 (def active-entities (atom nil))
+(def ^:dynamic *sounds*)
+(import '(com.badlogic.gdx.audio Sound))
 
 (def k->txs {
              :tx/swap 
@@ -4383,7 +4377,7 @@
                (apply swap! eid f params))
              :tx/sound 
              (fn [sound-name]
-               (play-sound! sound-name))
+               (Sound/.play (safe-get *sounds* sound-name)))
              :tx/spawn-entity 
              (fn [entity-decl]
                (spawn-entity! entity-decl))
