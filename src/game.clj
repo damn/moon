@@ -1702,7 +1702,7 @@
     :evil :good
     :good :evil))
 
-(def ^:dynamic *elapsed-time*)
+(def *elapsed-time* (atom nil))
 
 (defn timer-stopped? [{:keys [stop-time]}]
   (>= @*elapsed-time* stop-time))
@@ -5653,7 +5653,6 @@
 
 (defn game! []
   (binding [
-            *elapsed-time* (atom nil)
             *start-position* nil
             *id-counter* nil
             *entity-ids* nil
