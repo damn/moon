@@ -3228,15 +3228,8 @@
         (apply (safe-get k->txs k) params)))))
 
 (defn- handle-effect!
-  [db skin stage textures [k v] effect-ctx apply-effects! active-entities raycaster]
-  (let [handle-txs! (handle-txs! skin stage db)
-        audiovisual!
-        (fn [& params]
-          (apply audiovisual! db params))
-        handle-fsm-event! 
-        (fn [& params]
-          (apply handle-fsm-event! handle-txs! params))]
-    (case k
+  [audiovisual! handle-txs! handle-fsm-event! textures [k v] effect-ctx apply-effects! active-entities raycaster]
+  (case k
     :effects/projectile
     (handle-txs! (projectile-effect v effect-ctx))
 
@@ -3248,10 +3241,10 @@
 
     :effects/target-entity
     (target-entity-effect v effect-ctx apply-effects! audiovisual!)
-    
+
     :effects.target/convert
     (handle-txs! (convert-effect v effect-ctx))
-    
+
     :effects.target/damage
     (damage-effect v effect-ctx 
                    audiovisual! 
@@ -3271,7 +3264,7 @@
 
     :effects.target/stun
     (stun-effect v effect-ctx 
-                 handle-fsm-event!))))
+                 handle-fsm-event!)))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
@@ -4374,7 +4367,8 @@
 (defn tick-game!
   [db active-entities paused? skin stage textures potential-field-cache]
   (when-not @paused?
-    (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
+    (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
+          handle-txs! (handle-txs! skin stage db)]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! *grid*
@@ -4385,13 +4379,15 @@
       (tick-entities! db 
                       delta-time 
                       @active-entities 
-                      (handle-txs! skin stage db)
+                      handle-txs!
                       textures
                       (fn apply-effects! [effect-ctx effects]
                         (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                          (handle-effect! db 
-                                          skin 
-                                          stage 
+                          (handle-effect! (fn audiovisual! [& params]
+                                            (apply audiovisual! db params)) 
+                                          handle-txs!
+                                          (fn handle-fsm-event! [& params]
+                                            (apply handle-fsm-event! handle-txs! params))
                                           textures 
                                           e 
                                           effect-ctx 
