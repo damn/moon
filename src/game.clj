@@ -3381,14 +3381,14 @@
   (Sound/.play (get *sounds* sound-name)))
 
 (defn handle-clicked-inventory-cell
-  [player-eid handle-txs! textures set-item! remove-item! cell]
+  [player-eid cell]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (item-at (:entity/inventory @player-eid) cell)]
-      (play-sound! "bfxr_takeit.wav")
-      (swap! player-eid remove-item cell)
-      (remove-item! cell)
-      (handle-fsm-event! handle-txs! player-eid :pickup-item item))
+      [[:tx/sound "bfxr_takeit.wav"]
+       [:tx/swap player-eid remove-item cell]
+       [:tx/remove-item cell]
+       [:tx/event player-eid :pickup-item item]])
 
     :player-item-on-cursor
     (let [entity @player-eid
@@ -3398,22 +3398,22 @@
       (cond
        (and (not item-in-cell)
             (valid-slot? cell item-on-cursor))
-       (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (play-sound! "bfxr_itemput.wav")
-           (swap! player-eid set-item cell item-on-cursor)
-           (set-item! cell item-on-cursor)
-           (handle-fsm-event! handle-txs! player-eid :dropped-item))
+       [[:tx/swap player-eid dissoc :entity/item-on-cursor]
+        [:tx/sound "bfxr_itemput.wav"]
+        [:tx/swap player-eid set-item cell item-on-cursor]
+        [:tx/set-item cell item-on-cursor]
+        [:tx/event player-eid :dropped-item]]
 
        (and item-in-cell
             (valid-slot? cell item-on-cursor))
-       (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (play-sound! "bfxr_itemput.wav")
-           (swap! player-eid remove-item cell)
-           (remove-item! cell)
-           (swap! player-eid set-item cell item-on-cursor)
-           (set-item! cell item-on-cursor)
-           (handle-fsm-event! handle-txs! player-eid :dropped-item)
-           (handle-fsm-event! handle-txs! player-eid :pickup-item item-in-cell))))
+       [[:tx/swap player-eid dissoc :entity/item-on-cursor]
+        [:tx/sound "bfxr_itemput.wav"]
+        [:tx/swap player-eid remove-item cell]
+        [:tx/remove-item cell]
+        [:tx/swap player-eid set-item cell item-on-cursor]
+        [:tx/set-item cell item-on-cursor]
+        [:tx/event player-eid :dropped-item]
+        [:tx/event player-eid :pickup-item item-in-cell]]))
 
     nil))
 
@@ -3550,7 +3550,7 @@
                     (float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
-  [shape-drawer]
+  [shape-drawer input]
   (let [[x y] (mapv int (unproject *viewport* [(.getX input) (.getY input)]))
         cell (cell-at [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
@@ -4051,7 +4051,7 @@
                                                (mapv int (ui-mouse-position stage Gdx/input)))}
                                  {:label "World"
                                   :update-fn (fn []
-                                               (mapv int (unproject *viewport* [(.getX input) (.getY input)])))}
+                                               (mapv int (unproject *viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
                                  {:label "Zoom"
                                   :update-fn (fn []
                                                (.zoom ^OrthographicCamera (.getCamera *viewport*)))
@@ -4066,12 +4066,7 @@
                       (create-inventory-window
                         Gdx/input
                         (fn [_event cell]
-                          (handle-clicked-inventory-cell *player-eid* 
-                                                         handle-txs!
-                                                         textures*
-                                                         (fn [cell item] (set-item! skin stage textures* cell item))
-                                                         (fn [cell] (remove-item! stage cell))
-                                                         cell))
+                          (handle-txs! (handle-clicked-inventory-cell *player-eid* cell)))
                         (fn [player-entity x y mouseover? cell]
                           (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
                           (when (and mouseover?
@@ -4087,7 +4082,7 @@
    (player-state-draw-create unit-scale textures*)
    (player-message-actor-create default-font unit-scale)])
 
-(defn update-mouseover-eid! [mouseover-eid stage]
+(defn update-mouseover-eid! [mouseover-eid stage input]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage Gdx/input)
         new-eid (if (mouseover-actor stage x y)
@@ -4338,7 +4333,7 @@
     (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
       (.getUserObject ^Actor skill-button))))
 
-(defn- create-interaction-state [mouseover-eid stage]
+(defn- create-interaction-state [mouseover-eid stage input]
   (let [player-eid *player-eid*
         mouseover-eid @mouseover-eid
         mouseover-actor (current-mouseover-actor stage)]
@@ -4409,6 +4404,12 @@
              :tx/event
              (fn [& params]
                (apply handle-fsm-event! handle-txs! params))
+             :tx/set-item
+             (fn [cell item] 
+               (set-item! @skin @stage @textures cell item))
+             :tx/remove-item
+             (fn [cell] 
+               (remove-item! @stage cell))
              :tx/apply-effects
              (fn [effect-ctx effects]
                (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
@@ -4521,7 +4522,7 @@
      :render!
      (fn []
        (ScreenUtils/clear 0 0 0 0)
-       (update-mouseover-eid! mouseover-eid @stage)
+       (update-mouseover-eid! mouseover-eid @stage Gdx/input)
        (update-active-entities! active-entities)
        (set-camera-to-player!)
        (.setProjectionMatrix ^Batch @batch (.combined (.getCamera *viewport*)))
@@ -4553,10 +4554,10 @@
                            (mouseover-actor @stage x y))
                          *raycaster*
                          active-entities)
-         (highlight-mouseover-tile @shape-drawer)
+         (highlight-mouseover-tile @shape-drawer Gdx/input)
          (reset! unit-scale 1))
        (.end ^Batch @batch)
-       (let [interaction-state (create-interaction-state mouseover-eid @stage)]
+       (let [interaction-state (create-interaction-state mouseover-eid @stage Gdx/input)]
          (.setCursor Gdx/graphics (safe-get @cursors (cursor-key interaction-state)))
          (handle-player-input! (fn [& params]
                                   (apply handle-fsm-event! handle-txs! params))
