@@ -4339,7 +4339,7 @@
                     component)))
 
 (defn tick-game!
-  [handle-txs! db active-entities paused? skin stage textures potential-field-cache]
+  [apply-effects! handle-txs! db active-entities paused? skin stage textures potential-field-cache]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
@@ -4354,20 +4354,7 @@
                       @active-entities 
                       handle-txs!
                       textures
-                      ; WTF
-                      (fn apply-effects! [effect-ctx effects]
-                        (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                          (handle-effect! (fn audiovisual! [& params]
-                                            (apply audiovisual! db params)) 
-                                          handle-txs!
-                                          (fn handle-fsm-event! [& params]
-                                            (apply handle-fsm-event! handle-txs! params))
-                                          textures 
-                                          e 
-                                          effect-ctx 
-                                          apply-effects!
-                                          @active-entities
-                                          *raycaster*)))))))
+                      apply-effects!))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
@@ -4595,7 +4582,27 @@
                         (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! handle-txs! db active-entities paused? @skin @stage @textures potential-field-cache)
+       (tick-game! (fn apply-effects! [effect-ctx effects]
+                     (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
+                       (handle-effect! (fn audiovisual! [& params]
+                                         (apply audiovisual! db params)) 
+                                       handle-txs!
+                                       (fn handle-fsm-event! [& params]
+                                         (apply handle-fsm-event! handle-txs! params))
+                                       textures 
+                                       e 
+                                       effect-ctx 
+                                       apply-effects!
+                                       @active-entities
+                                       *raycaster*)))
+                   handle-txs! 
+                   db 
+                   active-entities 
+                   paused? 
+                   @skin 
+                   @stage 
+                   @textures 
+                   potential-field-cache)
        (destroy-entities! db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
