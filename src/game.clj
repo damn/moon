@@ -3070,19 +3070,21 @@
                                                                   :initial-state :npc-idle}
                                                      :entity/faction (:entity/faction @source)}})]]))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster apply-effects!]
+(defn target-all-effect [v effect-ctx active-entities raycaster]
   (let [source (:effect/source effect-ctx)
         source* @source]
-    (doseq [target (affected-targets active-entities raycaster source*)]
-      (spawn-entity! (spawn-line
-                       {:start (:entity/position source*)
-                        :end (:entity/position @target)
-                        :duration 0.05
-                        :color (float-bits 1 0 0 0.75)
-                        :thick? true}))
-      (apply-effects! {:effect/source source
-                       :effect/target target}
-                      (:entity-effects v)))))
+    (mapcat (fn [target]
+              [[:tx/spawn-entity 
+                (spawn-line {:start (:entity/position source*)
+                             :end (:entity/position @target)
+                             :duration 0.05
+                             :color (float-bits 1 0 0 0.75)
+                             :thick? true})]
+               [:tx/apply-effects 
+                {:effect/source source
+                 :effect/target target}
+                (:entity-effects v)]])
+            (affected-targets active-entities raycaster source*))))
 
 (defn convert-effect [_v effect-ctx]
   (let [source (:effect/source effect-ctx)
@@ -3099,23 +3101,23 @@
   (assert (contains? *sounds* sound-name) (str sound-name))
   (Sound/.play (get *sounds* sound-name)))
 
-(defn target-entity-effect [v effect-ctx apply-effects! audiovisual!]
+(defn target-entity-effect [v effect-ctx]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
         target-body @target
         {:keys [maxrange entity-effects]} v]
     (if (in-range? body target-body maxrange)
-      (do (spawn-entity! (spawn-line
-                           {:start (start-point body target-body)
-                            :end (:entity/position target-body)
-                            :duration 0.05
-                            :color (float-bits 1 0 0 0.75)
-                            :thick? true}))
-          (apply-effects! effect-ctx entity-effects))
-      (do (play-sound! "bfxr_fisthit.wav")
-          (audiovisual! (end-point body target-body maxrange)
-                        :audiovisuals/hit-ground)))))
+      [[:tx/spawn-entity 
+        (spawn-line
+          {:start (start-point body target-body)
+           :end (:entity/position target-body)
+           :duration 0.05
+           :color (float-bits 1 0 0 0.75)
+           :thick? true})]
+       [:tx/apply-effects effect-ctx entity-effects]]
+      [[:tx/sound "bfxr_fisthit.wav"]
+       [:tx/audiovisual (end-point body target-body maxrange) :audiovisuals/hit-ground]])))
 
 (defn damage-effect [v effect-ctx audiovisual! handle-fsm-event!]
   (let [source (:effect/source effect-ctx)
@@ -3206,7 +3208,7 @@
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 (defn- handle-effect!
-  [audiovisual! handle-txs! handle-fsm-event! textures [k v] effect-ctx apply-effects! active-entities raycaster]
+  [audiovisual! handle-txs! handle-fsm-event! textures [k v] effect-ctx active-entities raycaster]
   (case k
     :effects/projectile
     (handle-txs! (projectile-effect v effect-ctx))
@@ -3215,34 +3217,28 @@
     (handle-txs! (spawn-effect* v effect-ctx))
 
     :effects/target-all
-    (target-all-effect v effect-ctx active-entities raycaster apply-effects!)
+    (handle-txs! (target-all-effect v effect-ctx active-entities raycaster))
 
     :effects/target-entity
-    (target-entity-effect v effect-ctx apply-effects! audiovisual!)
+    (handle-txs! (target-entity-effect v effect-ctx))
 
     :effects.target/convert
     (handle-txs! (convert-effect v effect-ctx))
 
     :effects.target/damage
-    (damage-effect v effect-ctx 
-                   audiovisual! 
-                   handle-fsm-event!)
+    (damage-effect v effect-ctx audiovisual! handle-fsm-event!)
 
     :effects.target/kill
-    (kill-effect v effect-ctx 
-                 handle-fsm-event!)
+    (kill-effect v effect-ctx handle-fsm-event!)
 
     :effects.target/melee-damage
-    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx 
-                   audiovisual!
-                   handle-fsm-event!)
+    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx audiovisual! handle-fsm-event!)
 
     :effects.target/spiderweb
     (spiderweb-effect v effect-ctx)
 
     :effects.target/stun
-    (stun-effect v effect-ctx 
-                 handle-fsm-event!)))
+    (stun-effect v effect-ctx handle-fsm-event!)))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
@@ -3856,7 +3852,7 @@
 (def max-speed (/ minimum-size max-delta))
 
 (defn tick-component
-  [delta-time handle-txs! textures apply-effects! eid [k v]]
+  [delta-time handle-txs! textures eid [k v]]
   (case k
     :entity/animation
     (let [{:keys [delete-after-stopped?
@@ -3934,9 +3930,7 @@
       (when destroy?
         (swap! eid assoc :entity/destroyed? true))
       (when hit-entity
-        (apply-effects! {:effect/source eid
-                         :effect/target hit-entity}
-                        entity-effects))
+        (handle-txs! [[:tx/apply-effects {:effect/source eid :effect/target hit-entity} entity-effects]]))
       nil)
 
     :active-skill
@@ -3948,7 +3942,7 @@
         (handle-fsm-event! handle-txs! eid :action-done)
 
         (timer-stopped? counter)
-        (do (apply-effects! effect-ctx (:skill/effects skill))
+        (do (handle-txs! [[:tx/apply-effects effect-ctx (:skill/effects skill)]])
             (handle-fsm-event! handle-txs! eid :action-done)
             nil)))
 
@@ -4327,19 +4321,17 @@
    delta-time 
    active-entities
    handle-txs!
-   textures
-   apply-effects!]
+   textures]
   (doseq [eid active-entities
           component @eid]
     (tick-component delta-time 
                     handle-txs!
                     textures
-                    apply-effects!
                     eid 
                     component)))
 
 (defn tick-game!
-  [apply-effects! handle-txs! db active-entities paused? skin stage textures potential-field-cache]
+  [handle-txs! db active-entities paused? skin stage textures potential-field-cache]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
@@ -4353,8 +4345,7 @@
                       delta-time 
                       @active-entities 
                       handle-txs!
-                      textures
-                      apply-effects!))))
+                      textures))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
@@ -4406,9 +4397,51 @@
         '(com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
         '(com.badlogic.gdx.utils Disposable ScreenUtils))
 
+(declare handle-txs!)
+
+(def skin (atom nil))
+(def stage (atom nil))
+(def db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
+(def textures (atom nil))
+(def active-entities (atom nil))
+
+(def k->txs {
+             :tx/swap 
+             (fn [eid f & params]
+               (apply swap! eid f params))
+             :tx/sound 
+             (fn [sound-name]
+               (play-sound! sound-name))
+             :tx/spawn-entity 
+             (fn [entity-decl]
+               (spawn-entity! entity-decl))
+             :tx/modal
+             (fn [opts]
+               (show-modal! @skin @stage opts))
+             :tx/audiovisual
+             (fn [position id-key]
+               (audiovisual! db position id-key))
+             :tx/apply-effects
+             (fn [effect-ctx effects]
+               (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
+                 (handle-effect! (fn [& params]
+                                   (apply audiovisual! db params)) 
+                                 handle-txs!
+                                 (fn [& params]
+                                   (apply handle-fsm-event! handle-txs! params))
+                                 textures 
+                                 e 
+                                 effect-ctx 
+                                 @active-entities
+                                 *raycaster*)))
+             })
+
+(defn handle-txs! [txs]
+  (doseq [[k & params] txs]
+    (apply (safe-get k->txs k) params)))
+
 (defn game-listener []
   (let [
-        db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
         pausing? true
         state->pause-game? {:active-skill false
                             :stunned false
@@ -4430,38 +4463,15 @@
         batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
-        textures (atom nil)
         shape-drawer (atom nil)
         shape-drawer-texture (atom nil)
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
-        skin (atom nil)
-        stage (atom nil)
         unit-scale (atom 1)
         paused? (atom false)
-        active-entities (atom nil)
         mouseover-eid (atom nil)
         potential-field-cache (atom nil)
-        k->txs {
-                :tx/swap 
-                (fn [eid f & params]
-                  (apply swap! eid f params))
-                :tx/sound 
-                (fn [sound-name]
-                  (play-sound! sound-name))
-                :tx/spawn-entity 
-                (fn [entity-decl]
-                  (spawn-entity! entity-decl))
-                :tx/modal
-                (fn [opts]
-                  (show-modal! @skin @stage opts))
-                :tx/audiovisual
-                (fn [position id-key]
-                  (audiovisual! db position id-key))
-                }
-        handle-txs! (fn [txs]
-                      (doseq [[k & params] txs]
-                        (apply (safe-get k->txs k) params)))]
+        ]
     {
      :create!
      (fn []
@@ -4582,20 +4592,7 @@
                         (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! (fn apply-effects! [effect-ctx effects]
-                     (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                       (handle-effect! (fn audiovisual! [& params]
-                                         (apply audiovisual! db params)) 
-                                       handle-txs!
-                                       (fn handle-fsm-event! [& params]
-                                         (apply handle-fsm-event! handle-txs! params))
-                                       textures 
-                                       e 
-                                       effect-ctx 
-                                       apply-effects!
-                                       @active-entities
-                                       *raycaster*)))
-                   handle-txs! 
+       (tick-game! handle-txs! 
                    db 
                    active-entities 
                    paused? 
