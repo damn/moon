@@ -3041,16 +3041,16 @@
   (assert (contains? *sounds* sound-name) (str sound-name))
   (Sound/.play (get *sounds* sound-name)))
 
-(defn spawn-effect* [v effect-ctx audiovisual!]
+(defn spawn-effect* [v effect-ctx]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
-    (play-sound! "bfxr_curse.wav")
-    (audiovisual! position :audiovisuals/spawn)
-    (spawn-entity! (spawn-creature {:position position
-                                    :creature-property v
-                                    :components {:entity/fsm {:fsm :fsms/npc
-                                                              :initial-state :npc-idle}
-                                                 :entity/faction (:entity/faction @source)}}))))
+    [[:tx/sound "bfxr_curse.wav"]
+     [:tx/audiovisual position :audiovisuals/spawn]
+     [:tx/spawn-entity (spawn-creature {:position position
+                                        :creature-property v
+                                        :components {:entity/fsm {:fsm :fsms/npc
+                                                                  :initial-state :npc-idle}
+                                                     :entity/faction (:entity/faction @source)}})]]))
 
 (defn target-all-effect [v effect-ctx active-entities raycaster apply-effects!]
   (let [source (:effect/source effect-ctx)
@@ -3193,7 +3193,7 @@
     (spawn-entity! (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
-(defn handle-txs! [skin stage]
+(defn handle-txs! [skin stage db]
   (let [k->txs {
                 :tx/swap 
                 (fn [eid f & params]
@@ -3207,6 +3207,9 @@
                 :tx/modal
                 (fn [opts]
                   (show-modal! skin stage opts))
+                :tx/audiovisual
+                (fn [position id-key]
+                  (audiovisual! db position id-key))
                 }]
     (fn [txs]
       (doseq [[k & params] txs]
@@ -3214,18 +3217,19 @@
 
 (defn- handle-effect!
   [db skin stage textures [k v] effect-ctx apply-effects! active-entities raycaster]
-  (let [audiovisual!
+  (let [handle-txs! (handle-txs! skin stage db)
+        audiovisual!
         (fn [& params]
           (apply audiovisual! db params))
         handle-fsm-event! 
         (fn [& params]
-          (apply handle-fsm-event! (handle-txs! skin stage) params))]
+          (apply handle-fsm-event! handle-txs! params))]
     (case k
     :effects/projectile
     (projectile-effect v effect-ctx)
 
     :effects/spawn
-    (spawn-effect* v effect-ctx audiovisual!) 
+    (handle-txs! (spawn-effect* v effect-ctx))
 
     :effects/target-all
     (target-all-effect v effect-ctx active-entities raycaster apply-effects!)
@@ -3418,14 +3422,14 @@
             (draw-hpmana-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
 
 (defn handle-clicked-inventory-cell
-  [player-eid skin stage textures set-item! remove-item! cell]
+  [player-eid handle-txs! textures set-item! remove-item! cell]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (when-let [item (item-at (:entity/inventory @player-eid) cell)]
       (play-sound! "bfxr_takeit.wav")
       (swap! player-eid remove-item cell)
       (remove-item! cell)
-      (handle-fsm-event! (handle-txs! skin stage) player-eid :pickup-item item))
+      (handle-fsm-event! handle-txs! player-eid :pickup-item item))
 
     :player-item-on-cursor
     (let [entity @player-eid
@@ -3439,7 +3443,7 @@
            (play-sound! "bfxr_itemput.wav")
            (swap! player-eid set-item cell item-on-cursor)
            (set-item! cell item-on-cursor)
-           (handle-fsm-event! (handle-txs! skin stage) player-eid :dropped-item))
+           (handle-fsm-event! handle-txs! player-eid :dropped-item))
 
        (and item-in-cell
             (valid-slot? cell item-on-cursor))
@@ -3449,8 +3453,8 @@
            (remove-item! cell)
            (swap! player-eid set-item cell item-on-cursor)
            (set-item! cell item-on-cursor)
-           (handle-fsm-event! (handle-txs! skin stage) player-eid :dropped-item)
-           (handle-fsm-event! (handle-txs! skin stage) player-eid :pickup-item item-in-cell))))
+           (handle-fsm-event! handle-txs! player-eid :dropped-item)
+           (handle-fsm-event! handle-txs! player-eid :pickup-item item-in-cell))))
 
     nil))
 
@@ -3874,8 +3878,7 @@
 (def max-speed (/ minimum-size max-delta))
 
 (defn tick-component
-  [delta-time skin stage textures
-   apply-effects! eid [k v]]
+  [delta-time handle-txs! textures apply-effects! eid [k v]]
   (case k
     :entity/animation
     (let [{:keys [delete-after-stopped?
@@ -3911,7 +3914,7 @@
                                     (filter #(Intersector/overlaps ^Circle gdx-circle
                                                                    ^Rectangle (rectangle @%)))
                                     (filter #(= (:entity/faction @%) faction))))]
-          (handle-fsm-event! (handle-txs! skin stage) friendly-eid :alert)))
+          (handle-fsm-event! handle-txs! friendly-eid :alert)))
       nil)
 
     :entity/string-effect
@@ -3964,11 +3967,11 @@
       (cond
         (not (seq (filter #(effect-applicable? % effect-ctx)
                           (:skill/effects skill))))
-        (handle-fsm-event! (handle-txs! skin stage) eid :action-done)
+        (handle-fsm-event! handle-txs! eid :action-done)
 
         (timer-stopped? counter)
         (do (apply-effects! effect-ctx (:skill/effects skill))
-            (handle-fsm-event! (handle-txs! skin stage) eid :action-done)
+            (handle-fsm-event! handle-txs! eid :action-done)
             nil)))
 
     :entity/delete-after-duration
@@ -3979,25 +3982,25 @@
     :stunned
     (let [{:keys [counter]} v]
       (when (timer-stopped? counter)
-        (handle-fsm-event! (handle-txs! skin stage) eid :effect-wears-off)))
+        (handle-fsm-event! handle-txs! eid :effect-wears-off)))
 
     :npc-moving
     (let [{:keys [timer]} v]
       (when (timer-stopped? timer)
-        (handle-fsm-event! (handle-txs! skin stage) eid :timer-finished)))
+        (handle-fsm-event! handle-txs! eid :timer-finished)))
 
     :npc-sleeping
     (let [entity @eid]
       (when-let [distance (nearest-enemy-distance *grid* entity)]
         (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
-          (handle-fsm-event! (handle-txs! skin stage) eid :alert))))
+          (handle-fsm-event! handle-txs! eid :alert))))
 
     :npc-idle
     (let [raycaster *raycaster*
           effect-ctx (create-effect-ctx eid)]
       (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
-        (handle-fsm-event! (handle-txs! skin stage) eid :start-action [skill effect-ctx])
-        (handle-fsm-event! (handle-txs! skin stage) eid :movement-direction (or (find-direction *grid* eid)
+        (handle-fsm-event! handle-txs! eid :start-action [skill effect-ctx])
+        (handle-fsm-event! handle-txs! eid :movement-direction (or (find-direction *grid* eid)
                                                                                                       [0 0]))))
 
     :entity/movement
@@ -4067,7 +4070,7 @@
       (.setName "moon.ui.action-bar"))))
 
 (defn create-ui-actors
-  [mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures*]
+  [mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures* db]
   (let [cell-size 48]
     [(create-action-bar)
      (create-dev-menu
@@ -4107,8 +4110,7 @@
                          Gdx/input
                          (fn [_event cell]
                            (handle-clicked-inventory-cell *player-eid* 
-                                                          skin
-                                                          stage
+                                                          (handle-txs! skin stage db)
                                                           textures*
                                                           (fn [cell item] (set-item! skin stage textures* cell item))
                                                           (fn [cell] (remove-item! stage cell))
@@ -4245,7 +4247,7 @@
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
-(defn- interaction-state->txs [[k params] stage skin textures set-item! player-eid]
+(defn- interaction-state->txs [[k params] stage skin db textures set-item! player-eid]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -4266,7 +4268,7 @@
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! "bfxr_takeit.wav")
-                  (handle-fsm-event! (handle-txs! skin stage) player-eid :pickup-item item))
+                  (handle-fsm-event! (handle-txs! skin stage db) player-eid :pickup-item item))
 
               (can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -4289,7 +4291,7 @@
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! (handle-txs! skin stage) player-eid :start-action [skill effect-ctx]))
+      (handle-fsm-event! (handle-txs! skin stage db) player-eid :start-action [skill effect-ctx]))
 
     :interaction-state.skill/not-usable
     (let [state params]
@@ -4308,8 +4310,7 @@
 (import '(com.badlogic.gdx Input$Buttons))
 
 (defn handle-player-input!
-  [interaction-state
-   skin stage textures key-pressed? button-just-pressed?]
+  [interaction-state skin stage textures key-pressed? button-just-pressed? db]
   (let [eid *player-eid*
         entity @eid
         state-k (:state (:entity/fsm entity))
@@ -4320,11 +4321,12 @@
     (case state-k
       :player-idle
       (if move-v
-        (handle-fsm-event! (handle-txs! skin stage) eid :movement-input move-v)
+        (handle-fsm-event! (handle-txs! skin stage db) eid :movement-input move-v)
         (when left-button-pressed?
           (interaction-state->txs interaction-state
                                   stage
                                   skin
+                                  db
                                   textures
                                   #(set-item! skin stage textures %1 %2)
                                   eid)))
@@ -4335,12 +4337,12 @@
                                                :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
                                                           0)})
             nil)
-        (handle-fsm-event! (handle-txs! skin stage) eid :no-movement-input))
+        (handle-fsm-event! (handle-txs! skin stage db) eid :no-movement-input))
 
       :player-item-on-cursor
       (when (and left-button-pressed?
                  (not mouseover-actor*))
-        (handle-fsm-event! (handle-txs! skin stage) eid :drop-item))
+        (handle-fsm-event! (handle-txs! skin stage db) eid :drop-item))
 
       nil)))
 
@@ -4367,8 +4369,7 @@
       (doseq [eid active-entities*
               component @eid]
         (tick-component delta-time 
-                        skin 
-                        stage 
+                        (handle-txs! skin stage db)
                         textures
                         apply-effects!
                         eid 
@@ -4510,7 +4511,8 @@
                                               @shape-drawer
                                               @skin
                                               @stage
-                                              @textures)]
+                                              @textures
+                                              db)]
          (.addActor ^Stage @stage actor))
        (spawn-player! db @skin @stage @textures)
        (bind-player-eid!)
@@ -4572,7 +4574,8 @@
                                @stage 
                                @textures 
                                #(.isKeyPressed Gdx/input (int %))
-                               #(.isButtonJustPressed Gdx/input (int %))))
+                               #(.isButtonJustPressed Gdx/input (int %))
+                               db))
        (reset! paused?
                (or #_error
                    (and pausing?
