@@ -3938,7 +3938,7 @@
       (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
         (handle-fsm-event! handle-txs! eid :start-action [skill effect-ctx])
         (handle-fsm-event! handle-txs! eid :movement-direction (or (find-direction *grid* eid)
-                                                                                                      [0 0]))))
+                                                                   [0 0]))))
 
     :entity/movement
     (let [{:keys [direction
