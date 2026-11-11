@@ -987,6 +987,13 @@
 (defn add-actor! [^Group group actor]
   (.addActor group actor))
 
+(import '(com.badlogic.gdx.utils.viewport Viewport))
+
+(defn unproject [^Viewport viewport [x y]]
+  (let [v2 (Vector2. x y)]
+    (.unproject viewport v2)
+    [(.x v2) (.y v2)]))
+
 (defn inventory-window-cell-highlight-widget [draw-cell-rect! input]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
@@ -994,11 +1001,8 @@
         (draw-cell-rect! @*player-eid*
                          (.getX ^Actor this)
                          (.getY ^Actor this)
-                         (let [v2 (.unproject (.getViewport ^Stage stage)
-                                              (Vector2. (float (.getX input))
-                                                        (float (.getY input))))
-                               local (.stageToLocalCoordinates ^Actor this
-                                                               (Vector2. (.x v2) (.y v2)))
+                         (let [[x y] (unproject (.getViewport ^Stage stage) [(.getX input) (.getY input)])
+                               local (.stageToLocalCoordinates ^Actor this (Vector2. x y))
                                x (.x ^Vector2 local)
                                y (.y ^Vector2 local)]
                            (.hit ^Actor this (float x) (float y) true))
@@ -1950,10 +1954,8 @@
   (.hit ^Stage stage (float x) (float y) true))
 
 (defn ui-mouse-position [stage input]
-  (let [v2 (.unproject (.getViewport ^Stage stage)
-                       (Vector2. (float (.getX input))
-                                 (float (.getY input))))]
-    [(.x v2) (.y v2)]))
+  (unproject (.getViewport ^Stage stage) 
+             [(.getX input) (.getY input)]))
 
 (import '(com.badlogic.gdx.utils Align))
 
@@ -2485,13 +2487,6 @@
              "[-]/[=] - Zoom"
              "[P]/[SPACE] - Unpause"
              "Leftmouse click - use skill/drop item on cursor"]))
-
-(import '(com.badlogic.gdx.utils.viewport Viewport))
-
-(defn unproject [^Viewport viewport [x y]]
-  (let [v2 (Vector2. x y)]
-    (.unproject viewport v2)
-    [(.x v2) (.y v2)]))
 
 (defn- button?
   [actor]
