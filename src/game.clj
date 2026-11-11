@@ -435,18 +435,23 @@
 (defn internal [files path]
   (com.badlogic.gdx.Files/.internal files path))
 
+(defn texture! [file-handle]
+  (Texture. file-handle))
+
+(defn pixmap->texture! [pixmap]
+  (Texture. pixmap))
+
 (defn create-textures
   [files {:keys [folder extensions]}]
   (into {}
         (for [path (->> (recursively-search (internal files folder) extensions)
                         (map #(str/replace-first % folder "")))]
-          [path (Texture. (internal files path))])))
+          [path (texture! (internal files path))])))
 
 (defn get-texture-region
   [textures {:keys [image/file image/bounds]}]
   (assert file)
-  (assert (contains? textures file))
-  (let [^Texture texture (get textures file)] ; TODO safe-get
+  (let [^Texture texture (safe-get textures file)] 
     (if-let [[x y w h] bounds]
       (TextureRegion. texture (int x) (int y) (int w) (int h))
       (TextureRegion. texture))))
@@ -2541,12 +2546,25 @@
 
 (import '(com.badlogic.gdx.graphics Pixmap Pixmap$Format Texture))
 
+(import '(com.badlogic.gdx.utils Disposable))
+
+(defn dispose! [disposable]
+  (Disposable/.dispose disposable))
+
+(def rgba8888 Pixmap$Format/RGBA8888)
+
+(defn pixmap 
+  ([file-handle]
+   (Pixmap. file-handle)
+  ([width height pixmap-format]
+   (Pixmap. width height pixmap-format))))
+
 (defn- white-pixel-texture []
-  (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+  (let [pixmap (doto (pixmap 1 1 rgba8888)
                  (.setColor 1 1 1 1)
                  (.drawPixel 0 0))
-        texture (Texture. pixmap)]
-    (.dispose pixmap)
+        texture (pixmap->texture! pixmap)]
+    (dispose! pixmap)
     texture))
 
 (import '(com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData))
@@ -3231,10 +3249,13 @@
           true)
     s))
 
-(defn create-cursor! [[path [hotspot-x hotspot-y]]]
-  (let [pixmap (Pixmap. (internal Gdx/files path))
-        cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
-    (.dispose pixmap)
+(defn new-cursor [graphics pixmap hotspot-x hotspot-y]
+  (.newCursor graphics pixmap hotspot-x hotspot-y)
+
+(defn create-cursor! [files graphics [path [hotspot-x hotspot-y]]]
+  (let [pixmap (pixmap (internal files path))
+        cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
+    (dispose! pixmap)
     cursor))
 
 (import '(com.badlogic.gdx.utils.viewport FitViewport))
@@ -3268,7 +3289,7 @@
                     p)
         font (.generateFont generator parameter)
         font-data (.getData font)]
-    (.dispose generator)
+    (dispose! generator)
     (.setScale font-data (/ quality-scaling))
     (set! (.markupEnabled font-data) true)
     (.setUseIntegerPositions font use-integer-positions?)
@@ -4334,7 +4355,10 @@
 (import '(com.badlogic.gdx.graphics Colors)
         '(com.badlogic.gdx.graphics.g2d SpriteBatch)
         '(com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
-        '(com.badlogic.gdx.utils Disposable ScreenUtils))
+        '(com.badlogic.gdx.utils ScreenUtils))
+
+(defn clear-screen! [r g b a]
+  (ScreenUtils/clear r g b a))
 
 (defn sprite-batch []
   (SpriteBatch.))
@@ -4443,7 +4467,8 @@
      :create!
      (fn []
        (reset! cursors (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
-                                    create-cursor!))
+                                    (fn [& params]
+                                      (apply create-cursor! Gdx/files Gdx/graphics params)))
        (set! *sounds* (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (create-sound! path)])))
@@ -4506,18 +4531,18 @@
 
      :dispose!
      (fn []
-       (run! Sound/.dispose (vals *sounds*))
-       (Disposable/.dispose @batch)
-       (run! Disposable/.dispose (vals @cursors))
-       (Disposable/.dispose @default-font)
-       (Disposable/.dispose @shape-drawer-texture)
-       (Disposable/.dispose @skin)
-       (run! Disposable/.dispose (vals @textures))
-       (Disposable/.dispose @tiled-map*))
+       (run! dispose! (vals *sounds*))
+       (dispose! @batch)
+       (run! dispose! (vals @cursors))
+       (dispose! @default-font)
+       (dispose! @shape-drawer-texture)
+       (dispose! @skin)
+       (run! dispose! (vals @textures))
+       (dispose! @tiled-map*))
 
      :render!
      (fn []
-       (ScreenUtils/clear 0 0 0 0)
+       (clear-screen! 0 0 0 0)
        (update-mouseover-eid! @player-eid mouseover-eid @stage Gdx/input)
        (update-active-entities! active-entities @player-eid)
        (set-camera-to-player! @player-eid)
@@ -4652,7 +4677,7 @@
                                         ["Modules" create-modules-level]]]
                   [(str "Generate " label)
                    (fn []
-                     (Disposable/.dispose @tiled-map)
+                     (dispose! @tiled-map)
                      (reset! tiled-map
                              (generate-level @db @textures @camera level-fn)))])]
     {:create!
@@ -4684,17 +4709,17 @@
 
      :dispose!
      (fn []
-       (Disposable/.dispose @batch)
-       (Disposable/.dispose @skin)
-       (run! Disposable/.dispose (vals @textures))
-       (Disposable/.dispose @tiled-map))
+       (dispose! @batch)
+       (dispose! @skin)
+       (run! dispose! (vals @textures))
+       (dispose! @tiled-map))
 
      :render!
      (fn []
        (let [^OrthographicCamera camera* @camera
              ^Batch batch* @batch
              ^OrthographicCamera world-camera (.getCamera ^Viewport @viewport)]
-         (ScreenUtils/clear 0 0 0 0)
+         (clear-screen! 0 0 0 0)
          (.setProjectionMatrix batch* (.combined world-camera))
          (.begin batch*)
          (draw-tiled-map! @tiled-map
@@ -5525,13 +5550,13 @@
        (.addActor ^Stage @editor-stage (main-window)))
      :dispose!
      (fn []
-       (run! Sound/.dispose (vals @sounds))
-       (Disposable/.dispose @batch)
-       (Disposable/.dispose @editor-skin)
-       (run! Disposable/.dispose (vals @editor-textures)))
+       (run! dispose! (vals @sounds))
+       (dispose! @batch)
+       (dispose! @editor-skin)
+       (run! dispose! (vals @editor-textures)))
      :render!
      (fn []
-       (ScreenUtils/clear 0 0 0 0)
+       (clear-screen! 0 0 0 0)
        (.act ^Stage @editor-stage)
        (.draw ^Stage @editor-stage))
      :resize!
