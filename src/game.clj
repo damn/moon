@@ -934,10 +934,6 @@
                with-out-str
                (spit file))))))))
 
-(defn get-raw [db property-id]
-  (assert (contains? db property-id))
-  (get db property-id))
-
 (defn all-raw [db property-type]
   (->> (vals db)
        (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
@@ -951,11 +947,11 @@
 
     :s/one-to-many
     (set (map (fn [property-id]
-                (build-values (get-raw db property-id) db))
+                (build-values (safe-get db property-id) db))
               v))
 
     :s/one-to-one
-    (build-values (get-raw db v) db)
+    (build-values (safe-get db v) db)
 
     v))
 
@@ -970,7 +966,7 @@
           (keys property)))
 
 (defn build [db property-id]
-  (build-values (get-raw db property-id) db))
+  (build-values (safe-get db property-id) db))
 
 (import '(com.badlogic.gdx.math Vector2))
 (import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
@@ -3297,10 +3293,10 @@
   (doseq [[position creature-id] (spawn-positions tiled-map)
           :when (not= position *start-position*)]
     (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) position)
-                                           :creature-property (build db* (keyword creature-id))
-                                           :components {:entity/fsm {:fsm :fsms/npc
-                                                                     :initial-state :npc-sleeping}
-                                                        :entity/faction :evil}}))))
+                                    :creature-property (build db* (keyword creature-id))
+                                    :components {:entity/fsm {:fsm :fsms/npc
+                                                              :initial-state :npc-sleeping}
+                                                 :entity/faction :evil}}))))
 
 
 (defn hp-mana-bar-create
@@ -4363,7 +4359,7 @@
              :tx/audiovisual
              (fn [position audiovisual-k]
                (assert (keyword? audiovisual-k))
-               (let [{:keys [entity/animation]} (build db audiovisual-k)]
+               (let [{:keys [entity/animation]} (safe-get db audiovisual-k)]
                  (spawn-entity! (spawn-effect position
                                               {:entity/animation (assoc animation :delete-after-stopped? true)}))))
              :tx/event
@@ -5128,7 +5124,7 @@
                                                          (redo-rows id))
                                                        editor))))))}])
                   property-id
-                  (conj [{:actor (let [property (get-raw @editor-db property-id)]
+                  (conj [{:actor (let [property (safe-get @editor-db property-id)]
                                    (doto (Image. ^TextureRegion (get-texture-region @editor-textures (or (:entity/image property)
                                                                                                      (first (:animation/frames (:entity/animation property))))))
                                      (.addListener (TextTooltip. ^String (binding [*print-level* 2]
@@ -5171,7 +5167,7 @@
                                                         (redo-rows (conj property-ids id)))
                                                       editor))))))}]
              (for [property-id property-ids]
-               (let [property (get-raw @editor-db property-id)]
+               (let [property (safe-get @editor-db property-id)]
                  {:actor (doto (Image. ^TextureRegion (get-texture-region @editor-textures (or (:entity/image property)
                                                                                            (first (:animation/frames (:entity/animation property))))))
                            (.addListener (TextTooltip. ^String (binding [*print-level* 2]
@@ -5490,7 +5486,7 @@
                                                    property-type
                                                    (fn [_actor id]
                                                      (.addActor ^Stage @editor-stage
-                                                                (property-editor-window (get-raw @editor-db id))))
+                                                                (property-editor-window (safe-get @editor-db id))))
                                                    editor)))))))
       (.row window))
     (.pack window)
