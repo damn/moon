@@ -561,9 +561,7 @@
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-
-(defn malli-form [schema]
+(defn malli-form [schemas schema]
   (case (first schema)
     :s/animation
     [:map {:closed true}
@@ -592,7 +590,7 @@
                (do
                  (assert (keyword? k))
                  (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
-                 [k schema-props (malli-form (get schemas k))]))))
+                 [k schema-props (malli-form schemas (get schemas k))]))))
 
     :s/number
     (case (second schema)
@@ -626,8 +624,8 @@
 
 (require '[malli.error :as me])
 
-(defn validate-property [property]
-  (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property))))))]
+(defn validate-property [schemas property]
+  (let [schema (m/schema (malli-form schemas (get schemas (keyword "properties" (namespace (:property/id property))))))]
     (when-not (m/validate schema property)
       (throw (ex-info (str (me/humanize (m/explain schema property)))
                       {:value property
@@ -911,11 +909,11 @@
                         %)
                      (vals m)))))
 
-(defn create-db [properties]
+(defn create-db [schemas properties]
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
   (doseq [property properties]
-    (validate-property property))
+    (validate-property schemas property))
   (zipmap (map :property/id properties) properties))
 
 (require '[clojure.pprint :as pprint])
@@ -955,6 +953,12 @@
 
     v))
 
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
+
+; TODO only for relationships
+; build all relationships manually via safe-get
+; first list relationships
+; also infostring is still recursive?
 (defn build-values [property db]
   (reduce (fn [m k]
             (assoc m k
@@ -4337,7 +4341,7 @@
 
 (def skin (atom nil))
 (def stage (atom nil))
-(def db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
+(def db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
 (def textures (atom nil))
 (def active-entities (atom nil))
 (def ^:dynamic *sounds*)
@@ -4664,7 +4668,7 @@
                                                      world-width
                                                      world-height))))
        (reset! camera (.getCamera ^Viewport @viewport))
-       (reset! db (create-db (-> "properties.edn" io/resource slurp edn/read-string)))
+       (reset! db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
        (reset! textures (create-textures Gdx/files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
@@ -5277,7 +5281,7 @@
 (defn- add-component-window [schema map-widget-table build-widget widget-value]
   (let [window (Window. "Choose" @editor-skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
-                                   (map-keys (malli-form schema))))]
+                                   (map-keys (malli-form schemas schema))))]
     (.pad (.defaults window) (float 5))
     (.add (.getTitleTable window)
           (doto (TextButton. "X" @editor-skin)
@@ -5299,7 +5303,7 @@
                                                                           (#{:s/map} (schema 0)) {}
                                                                           :else nil)))
                                          :k k
-                                         :display-remove-component-button? (optional? (malli-form schema) k)
+                                         :display-remove-component-button? (optional? (malli-form schemas schema) k)
                                          :table map-widget-table})
                                        (rebuild-editor-window!))))))
       (.row window))
@@ -5347,9 +5351,9 @@
     :k->widget (into {}
                      (for [[k v] m]
                        [k (build-widget (get schemas k) k v)]))
-    :k->optional? #(optional? (malli-form schema) %)
+    :k->optional? #(optional? (malli-form schemas schema) %)
     :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
-    :opt? (seq (set/difference (optional-keyset (malli-form schema))
+    :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
 
 (defn widget-value [[schema-k] widget]
@@ -5428,6 +5432,7 @@
 
 (def properties-file (io/resource "properties.edn"))
 
+; pass the keyword?
 (defn property-editor-window [property]
   (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget schema property)
@@ -5446,7 +5451,7 @@
                           id (:property/id property)]
                       (assert (contains? property :property/id))
                       (assert (contains? db id))
-                      (validate-property property)
+                      (validate-property schemas property)
                       (let [new-db (assoc db id property)]
                         (save! new-db properties-file)
                         new-db))))
@@ -5507,7 +5512,7 @@
        (reset! sounds (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (.newSound Gdx/audio (internal Gdx/files path))])))
-       (reset! editor-db (create-db (-> properties-file slurp edn/read-string)))
+       (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
        (reset! editor-textures (create-textures Gdx/files
                                                 {:folder "resources/"
                                                  :extensions #{"png" "bmp"}}))
