@@ -627,6 +627,8 @@
     val-max-schema
     ))
 
+(require '[malli.error :as me])
+
 (defn validate-property [property]
   (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property))))))]
     (when-not (m/validate schema property)
@@ -911,8 +913,6 @@
                         (recur-sort %)
                         %)
                      (vals m)))))
-
-(require '[malli.error :as me])
 
 (defn create-db [properties]
   (assert (or (empty? properties)
