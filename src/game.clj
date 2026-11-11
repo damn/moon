@@ -5477,7 +5477,11 @@
 
 (defn main-window []
   (let [window (Window. "Edit" @editor-skin)]
-    (doseq [property-type (sort (filter #(= "properties" (namespace %)) (keys schemas)))]
+    (doseq [property-type [:properties/audiovisuals
+                           :properties/creatures 
+                           :properties/items
+                           :properties/projectiles
+                           :properties/skills]]
       (.add window (doto (TextButton. (str/capitalize (name property-type)) @editor-skin)
                      (.addListener (proxy [ChangeListener] []
                                      (changed [event _actor]
