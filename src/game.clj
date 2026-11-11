@@ -4369,29 +4369,17 @@
   [db 
    delta-time 
    active-entities
-   skin 
-   stage 
+   handle-txs!
    textures
-   raycaster]
-  (letfn [(apply-effects! [effect-ctx effects]
-            (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-              (handle-effect! db 
-                              skin 
-                              stage 
-                              textures 
-                              e 
-                              effect-ctx 
-                              apply-effects!
-                              active-entities*
-                              raycaster)))]
-    (doseq [eid active-entities*
-            component @eid]
-      (tick-component delta-time 
-                      (handle-txs! skin stage db)
-                      textures
-                      apply-effects!
-                      eid 
-                      component))))
+   apply-effects!]
+  (doseq [eid active-entities
+          component @eid]
+    (tick-component delta-time 
+                    handle-txs!
+                    textures
+                    apply-effects!
+                    eid 
+                    component)))
 
 (defn tick-game!
   [db active-entities paused? skin stage textures potential-field-cache]
@@ -4407,10 +4395,19 @@
       (tick-entities! db 
                       delta-time 
                       @active-entities 
-                      skin 
-                      stage 
+                      (handle-txs! skin stage db)
                       textures
-                      *raycaster*))))
+                      (fn apply-effects! [effect-ctx effects]
+                        (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
+                          (handle-effect! db 
+                                          skin 
+                                          stage 
+                                          textures 
+                                          e 
+                                          effect-ctx 
+                                          apply-effects!
+                                          @active-entities
+                                          *raycaster*)))))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
