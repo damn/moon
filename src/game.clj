@@ -553,9 +553,10 @@
 (defn malli-form [schema]
   (case (first schema)
     :s/animation
-    (create-map-schema [:animation/frames
-                        :animation/frame-duration
-                        :animation/looping?])
+    [:map {:closed true}
+     [:animation/frames :some]
+     [:animation/frame-duration pos?]
+     [:animation/looping? :boolean]]
 
     :s/boolean
     :boolean
@@ -2623,6 +2624,11 @@
          :entity/z-order :z-order/effect
          :entity/position position))
 
+(defn timer-create [duration]
+  {:pre [(>= duration 0)]}
+  {:duration duration
+   :stop-time (+ @*elapsed-time* duration)})
+
 (defn- spawn-alert [position faction duration]
   (spawn-effect position
                 {:entity/alert-friendlies-after-duration
@@ -2849,11 +2855,6 @@
     eid))
 
 (import '(com.badlogic.gdx Gdx))
-
-(defn timer-create [duration]
-  {:pre [(>= duration 0)]}
-  {:duration duration
-   :stop-time (+ @*elapsed-time* duration)})
 
 (defn- entity-state-exit!
   [eid [state-k _state-v]]
@@ -3123,7 +3124,7 @@
                             0)
             dmg-text (str "[RED]" dmg-amount "[]")]
         (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
-        (swap! target add-text-effect dmg-text 0.3)
+        (swap! target add-text-effect dmg-text 0.3 timer-create)
         (handle-fsm-event! target (if (zero? new-hp-val) :kill :alert))
         (play-sound! "bfxr_normalhit.wav")
         (audiovisual! (:entity/position target*) :audiovisuals/damage)))))

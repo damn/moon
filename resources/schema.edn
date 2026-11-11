@@ -5,9 +5,6 @@
  :image/bounds [:s/vector {:size 4} nat-int?]
  :entity/image [:s/image],
 
- :animation/frames [:s/some]
- :animation/frame-duration [:s/number :pos]
- :animation/looping? [:s/boolean]
  :entity/animation [:s/animation],
 
  :properties/audiovisuals [:s/map [:property/id
