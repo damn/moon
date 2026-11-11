@@ -2488,12 +2488,9 @@
 
 (import '(com.badlogic.gdx.utils.viewport Viewport))
 
-(def ^:dynamic ^Viewport *viewport*)
-
-(defn world-mouse-position [input]
-  (let [v2 (.unproject *viewport*
-                       (Vector2. (float (.getX input))
-                                 (float (.getY input))))]
+(defn unproject [^Viewport viewport [x y]]
+  (let [v2 (Vector2. x y)]
+    (.unproject viewport v2)
     [(.x v2) (.y v2)]))
 
 (defn- button?
@@ -2623,11 +2620,11 @@
              (float w)
              (float h)))))
 
-(defn- item-place-position [input player-position maxrange]
+(defn- item-place-position [viewport input player-position maxrange]
   (mapv + player-position
-        (v2-scale (v2-direction player-position (world-mouse-position input))
+        (v2-scale (v2-direction player-position (unproject viewport [(.getX input) (.getY input)]))
                   (min maxrange
-                       (v2-distance player-position (world-mouse-position input))))))
+                       (v2-distance player-position (unproject viewport [(.getX input) (.getY input)]))))))
 
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
@@ -2880,6 +2877,8 @@
 
 (import '(com.badlogic.gdx Gdx))
 
+(def ^:dynamic ^Viewport *viewport*)
+
 (defn- entity-state-exit!
   [eid [state-k _state-v]]
   (case state-k
@@ -2889,7 +2888,8 @@
       (when item
         [[:tx/swap eid dissoc :entity/item-on-cursor]
          [:tx/sound "bfxr_itemputground.wav"]
-         [:tx/spawn-entity (spawn-item (item-place-position Gdx/input
+         [:tx/spawn-entity (spawn-item (item-place-position *viewport*
+                                                            Gdx/input
                                                             (:entity/position entity)
                                                             (- (:entity/click-distance-tiles entity) 0.1))
                                        item)]]))
@@ -3556,7 +3556,7 @@
 
 (defn highlight-mouseover-tile
   [shape-drawer]
-  (let [[x y] (mapv int (world-mouse-position Gdx/input))
+  (let [[x y] (mapv int (unproject *viewport* [(.getX input) (.getY input)]))
         cell (cell-at [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
       (rectangle! shape-drawer x y 1 1
@@ -3621,7 +3621,8 @@
       (when-not mouseover-actor
         (draw-texture-region! batch @unit-scale
                                 (get-texture-region textures (:entity/image item))
-                                (item-place-position Gdx/input
+                                (item-place-position *viewport*
+                                                     Gdx/input
                                                      (:entity/position entity)
                                                      (- (:entity/click-distance-tiles entity) 0.1))
                                 {:center? true})))
@@ -4055,7 +4056,7 @@
                                                (mapv int (ui-mouse-position stage Gdx/input)))}
                                  {:label "World"
                                   :update-fn (fn []
-                                               (mapv int (world-mouse-position Gdx/input)))}
+                                               (mapv int (unproject *viewport* [(.getX input) (.getY input)])))}
                                  {:label "Zoom"
                                   :update-fn (fn []
                                                (.zoom ^OrthographicCamera (.getCamera *viewport*)))
@@ -4098,7 +4099,7 @@
                   nil
                   (let [player @*player-eid*
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (point->entities *grid* (world-mouse-position Gdx/input)))]
+                                     (point->entities *grid* (unproject *viewport* [(.getX input) (.getY input)])))]
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
@@ -4366,7 +4367,7 @@
               skill (skill-id (:entity/skills entity))
               target-position (or (and mouseover-eid
                                        (:entity/position @mouseover-eid))
-                                  (world-mouse-position Gdx/input))
+                                  (unproject *viewport* [(.getX input) (.getY input)]))
               effect-ctx {:effect/source player-eid
                           :effect/target mouseover-eid
                           :effect/target-position target-position
