@@ -4470,27 +4470,12 @@
                            {:k k :params params}
                            t))))))
 
-(defn game-listener []
-  (let [
-        pausing? true
-        state->pause-game? {:active-skill false
-                            :stunned false
-                            :player-moving false
-                            :player-idle true
-                            :player-dead true
-                            :player-item-on-cursor true}
-        level-fn create-vampire-level
-        ;create-uf-caves
-        ;create-modules-level
-        controls {:zoom-in Input$Keys/MINUS
-                  :zoom-out Input$Keys/EQUALS
-                  :unpause-once Input$Keys/P
-                  :unpause-continously Input$Keys/SPACE
-                  :close-windows-key Input$Keys/ESCAPE
-                  :toggle-inventory Input$Keys/I
-                  :toggle-entity-info Input$Keys/E}
-
-        player-eid (atom nil)
+(defn game-listener 
+  [{:keys [pausing?
+           state->pause-game?
+           level-fn
+           controls]}]
+  (let [player-eid (atom nil)
         batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
@@ -4501,8 +4486,7 @@
         unit-scale (atom 1)
         paused? (atom false)
         mouseover-eid (atom nil)
-        potential-field-cache (atom nil)
-        ]
+        potential-field-cache (atom nil)]
     {
      :create!
      (fn []
@@ -5652,7 +5636,26 @@
                         :fps 60}))
 
 (defn game! []
-  (lwjgl3-application! (game-listener)
+  (lwjgl3-application! (game-listener
+                         {
+                          :level-fn create-vampire-level
+                          ;create-uf-caves
+                          ;create-modules-level
+                          :pausing? true
+                          :state->pause-game? {:active-skill false
+                                               :stunned false
+                                               :player-moving false
+                                               :player-idle true
+                                               :player-dead true
+                                               :player-item-on-cursor true}
+                          :controls {:zoom-in Input$Keys/MINUS
+                                     :zoom-out Input$Keys/EQUALS
+                                     :unpause-once Input$Keys/P
+                                     :unpause-continously Input$Keys/SPACE
+                                     :close-windows-key Input$Keys/ESCAPE
+                                     :toggle-inventory Input$Keys/I
+                                     :toggle-entity-info Input$Keys/E}
+                          })
                        {:title "Moon"
                         :width 1440 
                         :height 900 
