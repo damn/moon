@@ -2982,6 +2982,7 @@
          (:entity/fsm @(:effect/target effect-ctx)))
 
     :effects.target/melee-damage
+    ; TODO call damage-effect-applicable ... 
     (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
                          effect-ctx)
 
@@ -3156,19 +3157,6 @@
 (defn kill-effect [_v effect-ctx handle-fsm-event!]
   (handle-fsm-event! (:effect/target effect-ctx) :kill))
 
-(declare handle-effect!)
-
-(defn melee-damage-effect [_v effect-ctx apply-effects! active-entities raycaster db skin stage textures]
-  (handle-effect! db 
-                  skin 
-                  stage 
-                  textures
-                  [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
-                  effect-ctx
-                  apply-effects!
-                  active-entities
-                  raycaster))
-
 (defn spiderweb-effect [_v effect-ctx]
   (let [target (:effect/target effect-ctx)]
     ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
@@ -3274,7 +3262,9 @@
                  handle-fsm-event!)
 
     :effects.target/melee-damage
-    (melee-damage-effect v effect-ctx apply-effects! active-entities raycaster db skin stage textures)
+    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx 
+                   audiovisual!
+                   handle-fsm-event!)
 
     :effects.target/spiderweb
     (spiderweb-effect v effect-ctx)
