@@ -3156,8 +3156,8 @@
         (play-sound! "bfxr_normalhit.wav")
         (audiovisual! (:entity/position target*) :audiovisuals/damage)))))
 
-(defn kill-effect [_v effect-ctx handle-fsm-event!]
-  (handle-fsm-event! (:effect/target effect-ctx) :kill))
+(defn kill-effect [_v effect-ctx]
+  [[:tx/event (:effect/target effect-ctx) :kill]])
 
 (defn spiderweb-effect [_v effect-ctx]
   (let [target (:effect/target effect-ctx)]
@@ -3171,15 +3171,6 @@
 (defn stun-effect [duration effect-ctx handle-fsm-event!]
   (handle-fsm-event! (:effect/target effect-ctx) :stun duration))
 
-; TODO make itself via handle with txs?
-; but weird its passed...
-; should be testable -> concat the one change and state enter/exit ? 
-; how can I test this without going inside all of the fsm details
-; :entity/fsm and state-key should be one component only?
-; TODO weird state key etc. [vector ]
-; weird if params and can be w/oparams same of the input itself varargs
-; state k and fsm should be one component ? not 3 swaps?
-; actually I can pass full state exit/enter also ?
 (defn- handle-fsm-event! [handle-txs! eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3229,7 +3220,7 @@
     (damage-effect v effect-ctx audiovisual! handle-fsm-event!)
 
     :effects.target/kill
-    (kill-effect v effect-ctx handle-fsm-event!)
+    (handle-txs! (kill-effect v effect-ctx))
 
     :effects.target/melee-damage
     (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx audiovisual! handle-fsm-event!)
@@ -4421,6 +4412,9 @@
              :tx/audiovisual
              (fn [position id-key]
                (audiovisual! db position id-key))
+             :tx/event
+             (fn [& params]
+               (apply handle-fsm-event! handle-txs! params))
              :tx/apply-effects
              (fn [effect-ctx effects]
                (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
