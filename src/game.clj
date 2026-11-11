@@ -3372,14 +3372,6 @@
             (draw-hpmana-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
             (draw-hpmana-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
 
-(def ^:dynamic *sounds*)
-
-(import '(com.badlogic.gdx.audio Sound))
-
-(defn play-sound! [sound-name]
-  (assert (contains? *sounds* sound-name) (str sound-name))
-  (Sound/.play (get *sounds* sound-name)))
-
 (defn handle-clicked-inventory-cell
   [player-eid cell]
   (case (:state (:entity/fsm @player-eid))
@@ -4172,17 +4164,20 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn destroy-entities! [db]
+(defn destroy-entities! [handle-txs!]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @*entity-ids*))]
     (unregister-eid! eid)
     (doseq [[k v] @eid]
-      (case k
-        :entity/destroy-audiovisual
-        (do (case v
-              :audiovisuals/creature-die (play-sound! "bfxr_defaultmonsterdeath.wav")
-              :audiovisuals/hit-wall (play-sound! "bfxr_projectile_wallhit.wav"))
-            (audiovisual! db (:entity/position @eid) v))
-        nil))))
+      (handle-txs!
+        (case k
+          :entity/destroy-audiovisual
+          [[:tx/sound
+            (case v
+              :audiovisuals/creature-die "bfxr_defaultmonsterdeath.wav"
+              :audiovisuals/hit-wall "bfxr_projectile_wallhit.wav")]
+           [:tx/audiovisual (:entity/position @eid) v]]
+
+          nil)))))
 
 (import '(com.badlogic.gdx Input$Keys))
 
@@ -4200,6 +4195,14 @@
   (-> (.getRoot ^Stage stage)
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
+
+(def ^:dynamic *sounds*)
+
+(import '(com.badlogic.gdx.audio Sound))
+
+(defn play-sound! [sound-name]
+  (assert (contains? *sounds* sound-name) (str sound-name))
+  (Sound/.play (get *sounds* sound-name)))
 
 (defn- interaction-state->txs 
   [[k params] stage skin db textures set-item! player-eid handle-fsm-event!]
@@ -4583,7 +4586,7 @@
                    @stage 
                    @textures 
                    potential-field-cache)
-       (destroy-entities! db)
+       (destroy-entities! handle-txs!)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
