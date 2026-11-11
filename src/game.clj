@@ -3051,13 +3051,13 @@
         source* @source
         direction (:effect/target-direction effect-ctx)
         size (:projectile/size v)]
-    (spawn-entity! (spawn-projectile
-                     {:position (mapv + (:entity/position source*)
-                                      (v2-scale direction
-                                                (+ (/ (:entity/width source*) 2) size 0.1)))
-                      :direction direction
-                      :faction (:entity/faction source*)}
-                     v))))
+    [[:tx/spawn-entity (spawn-projectile
+                         {:position (mapv + (:entity/position source*)
+                                          (v2-scale direction
+                                                    (+ (/ (:entity/width source*) 2) size 0.1)))
+                          :direction direction
+                          :faction (:entity/faction source*)}
+                         v)]]))
 
 (defn spawn-effect* [v effect-ctx]
   (let [source (:effect/source effect-ctx)
@@ -3238,7 +3238,7 @@
           (apply handle-fsm-event! handle-txs! params))]
     (case k
     :effects/projectile
-    (projectile-effect v effect-ctx)
+    (handle-txs! (projectile-effect v effect-ctx))
 
     :effects/spawn
     (handle-txs! (spawn-effect* v effect-ctx))
