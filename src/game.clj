@@ -3300,9 +3300,9 @@
 
 (import '(com.badlogic.gdx.utils.viewport FitViewport))
 
-(defn create-viewport! [world-unit-scale]
-  (let [world-width (* 1440 world-unit-scale)
-        world-height (* 900 world-unit-scale)]
+(defn create-viewport! [width height world-unit-scale]
+  (let [world-width (* width world-unit-scale)
+        world-height (* height world-unit-scale)]
     (FitViewport. (float world-width)
                   (float world-height)
                   (doto (OrthographicCamera.)
@@ -4508,9 +4508,8 @@
        (.setInputProcessor Gdx/input @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-       (reset! textures (create-textures Gdx/files
-                                         (:textures game-config)))
-       (reset! *viewport* (create-viewport! world-unit-scale))
+       (reset! textures (create-textures Gdx/files (:textures game-config)))
+       (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
@@ -5557,21 +5556,20 @@
     (.pack window)
     window))
 
-(defn editor-application-listener []
+(defn editor-application-listener 
+  [editor-config]
   (let [batch (atom nil)]
     {:create!
      (fn []
        (reset! batch (sprite-batch))
-       (reset! editor-skin (Skin. (internal Gdx/files "skin/uiskin.json")))
+       (reset! editor-skin (Skin. (internal Gdx/files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
-                            (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
+                            (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (.newSound Gdx/audio (internal Gdx/files path))])))
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
-       (reset! editor-textures (create-textures Gdx/files
-                                                {:folder "resources/"
-                                                 :extensions #{"png" "bmp"}}))
+       (reset! editor-textures (create-textures Gdx/files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
        (.addActor ^Stage @editor-stage (main-window)))
      :dispose!
@@ -5631,7 +5629,13 @@
 
 
 (defn editor! []
-  (lwjgl3-application! (editor-application-listener)
+  (lwjgl3-application! (editor-application-listener
+                         {
+                          :skin "skin/uiskin.json"
+                          :sounds "sounds.edn"
+                          :textures {:folder "resources/"
+                                     :extensions #{"png" "bmp"}}
+                          })
                        {:title "Editor"
                         :width 1440 
                         :height 900 
