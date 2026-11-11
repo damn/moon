@@ -2947,49 +2947,82 @@
 
     nil))
 
+(declare effect-applicable?)
+
+(def effects-behaviour
+  {
+   :effects/projectile {
+                        :applicable? 
+                        (fn [_v effect-ctx]
+                          (:effect/target-direction effect-ctx))
+                        }
+   :effects/spawn {
+                   :applicable?
+                   (fn [_v effect-ctx]
+                     (and (:entity/faction @(:effect/source effect-ctx))
+                          (:effect/target-position effect-ctx)))
+                   }
+   :effects/target-all {
+                        :applicable? 
+                        (fn [_v _effect-ctx] 
+                          true)
+                        }
+   :effects/target-entity {
+                           :applicable? 
+                           (fn [v effect-ctx]
+                             (and (:effect/target effect-ctx)
+                                  (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v)))))
+                           }
+   :effects.target/convert {
+                            :applicable?
+                            (fn [_v effect-ctx]
+                              (let [source (:effect/source effect-ctx)
+                                    target (:effect/target effect-ctx)]
+                                (and target
+                                     (= (:entity/faction @target)
+                                        (enemy (:entity/faction @source))))))
+                            }
+
+   :effects.target/damage {
+                           :applicable? 
+                           (fn [_v effect-ctx] 
+                             (and (:effect/target effect-ctx)
+                                  #_(:stats/hp @target)))
+                           }
+
+   :effects.target/kill {
+                         :applicable? 
+                         (fn [_v effect-ctx] 
+                           (and (:effect/target effect-ctx)
+                                (:entity/fsm @(:effect/target effect-ctx))))
+                         }
+
+   :effects.target/melee-damage {
+                                 :applicable? 
+                                 (fn [_v effect-ctx] 
+                                   ; TODO call damage-effect-applicable ... 
+                                   (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
+                                                       effect-ctx))
+                                 }
+
+   :effects.target/spiderweb {
+                              :applicable? 
+                              (fn [_v effect-ctx] 
+                                (:entity/stats @(:effect/target effect-ctx)))
+                              }
+
+   :effects.target/stun {
+                         :applicable? 
+                         (fn [v effect-ctx]
+                           (and (:effect/target effect-ctx)
+                                (:entity/fsm @(:effect/target effect-ctx))))
+                         }
+
+   })
+
 (defn- effect-applicable?
   [[k v] effect-ctx]
-  (case k
-    :effects/projectile
-    (:effect/target-direction effect-ctx)
-
-    :effects/spawn
-    (and (:entity/faction @(:effect/source effect-ctx))
-         (:effect/target-position effect-ctx))
-
-    :effects/target-all
-    true
-
-    :effects/target-entity
-    (and (:effect/target effect-ctx)
-         (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
-
-    :effects.target/convert
-    (let [source (:effect/source effect-ctx)
-          target (:effect/target effect-ctx)]
-      (and target
-           (= (:entity/faction @target)
-              (enemy (:entity/faction @source)))))
-
-    :effects.target/damage
-    (and (:effect/target effect-ctx)
-         #_(:stats/hp @target))
-
-    :effects.target/kill
-    (and (:effect/target effect-ctx)
-         (:entity/fsm @(:effect/target effect-ctx)))
-
-    :effects.target/melee-damage
-    ; TODO call damage-effect-applicable ... 
-    (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
-                         effect-ctx)
-
-    :effects.target/spiderweb
-    (:entity/stats @(:effect/target effect-ctx))
-
-    :effects.target/stun
-    (and (:effect/target effect-ctx)
-         (:entity/fsm @(:effect/target effect-ctx)))))
+  ((:applicable? (safe-get effects-behaviour k)) v effect-ctx))
 
 (defn- double-ray-endpositions
   [[start-x start-y]
@@ -3164,14 +3197,19 @@
                                                      :counter (timer-create spiderweb-duration)}]
        [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
+; this should be a fn in a context bound over a key only
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
+; would have to pass with handle-fsm-event! everywhere as extra param ...
+; or we handle item on cursor drop events differently than through state exit (directly?)
+; see cyberdungeon.
 (import '(com.badlogic.gdx Gdx))
 (def ^:dynamic ^Viewport *viewport*)
 (defn item-place-position* [position click-distance]
   (item-place-position *viewport* Gdx/input position click-distance))
 
+; complete and utter mess
 (defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3191,6 +3229,9 @@
                 (entity-state-exit! eid old-state-obj item-place-position*)
                 (entity-state-enter! eid new-state-obj))))))
 
+; keyword stuffs behaviour should be together for every key somehow
+; or then the key is a var
+; effects/projectile (:applicable? effect) (:useful? effect) etc?
 (defn- handle-effect!
   [[k v] effect-ctx active-entities raycaster]
   (case k
