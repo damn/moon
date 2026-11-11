@@ -1,5 +1,35 @@
 (ns game)
 
+; TODO all 'def ' / data literals
+; *player-eid*
+; *elapsed-time*
+; *id-counter*
+; *entity-ids*
+; *grid*
+; *content-grid*
+; controls-info
+; *viewport*
+; *sounds*
+; spiderweb-modifiers
+; spiderweb-duration
+; default-font-params
+; *start-position*
+; show-potential-field-colors?
+; show-cell-entities?
+; show-cell-occupied?
+; show-body-bounds?
+; factions-iterations
+; show-tile-grid?
+; world-unit-scale
+; render-layers
+; *raycaster*
+; editor-stage
+; editor-skin
+; editor-db
+; editor-textures
+; editor
+; sounds
+
 (defn safe-get [m k]
   {:pre [(contains? m k)]}
   (get m k))
@@ -2439,17 +2469,6 @@
         (aset arr x y (boolean (blocks-vision? cell)))))
     [arr width height]))
 
-(import '(com.badlogic.gdx Input$Keys))
-
-(def ^:private controls
-  {:zoom-in Input$Keys/MINUS
-   :zoom-out Input$Keys/EQUALS
-   :unpause-once Input$Keys/P
-   :unpause-continously Input$Keys/SPACE
-   :close-windows-key Input$Keys/ESCAPE
-   :toggle-inventory Input$Keys/I
-   :toggle-entity-info Input$Keys/E})
-
 (def ^:private controls-info
   (str/join "\n"
             ["[W][A][S][D] - Move"
@@ -3328,13 +3347,7 @@
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
    :start-position [32 71]})
 
-(def level-fn 
-  create-vampire-level
-  ;create-uf-caves
-  ;create-modules-level
-  )
-
-(defn create-level! [db* textures*]
+(defn create-level! [db* textures* level-fn]
   (let [{level-tiled-map :tiled-map
          level-start :start-position}
         (level-fn {:level/creature-properties (prepare-creature-tiles
@@ -4230,6 +4243,8 @@
             (audiovisual! db (:entity/position @eid) v))
         nil))))
 
+(import '(com.badlogic.gdx Input$Keys))
+
 (defn- movement-vector [key-pressed?]
   (let [r (when (key-pressed? Input$Keys/D) [1  0])
         l (when (key-pressed? Input$Keys/A) [-1 0])
@@ -4454,6 +4469,16 @@
                             :player-idle true
                             :player-dead true
                             :player-item-on-cursor true}
+        level-fn create-vampire-level
+        ;create-uf-caves
+        ;create-modules-level
+        controls {:zoom-in Input$Keys/MINUS
+                  :zoom-out Input$Keys/EQUALS
+                  :unpause-once Input$Keys/P
+                  :unpause-continously Input$Keys/SPACE
+                  :close-windows-key Input$Keys/ESCAPE
+                  :toggle-inventory Input$Keys/I
+                  :toggle-entity-info Input$Keys/E}
         skin (atom nil)
         stage (atom nil)
         unit-scale (atom 1)
@@ -4483,7 +4508,7 @@
                                           :extensions #{"png" "bmp"}}))
        (set! *viewport* (create-viewport! world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
-                     start-position]} (create-level! db @textures)]
+                     start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
          (set! *start-position* start-position)
          
@@ -5390,10 +5415,6 @@
 
 (def sounds (atom nil))
 
-; TODO mach ne map draus ? 
-; warum default -> was haben wir fuer schemas ?
-; extension namespaces form based ? 
-; -> editor protocol and param ? skin/new-label -> skin protocol?
 (defn create-widget
   [[schema-k :as schema] v]
   (case schema-k
