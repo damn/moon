@@ -4361,10 +4361,9 @@
              (fn [opts]
                (show-modal! @skin @stage opts))
              :tx/audiovisual
-             (fn [position audiovisual]
-               (let [{:keys [entity/animation]} (if (keyword? audiovisual)
-                                                  (build db audiovisual)
-                                                  audiovisual)]
+             (fn [position audiovisual-k]
+               (assert (keyword? audiovisual-k))
+               (let [{:keys [entity/animation]} (build db audiovisual-k)]
                  (spawn-entity! (spawn-effect position
                                               {:entity/animation (assoc animation :delete-after-stopped? true)}))))
              :tx/event
