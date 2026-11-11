@@ -1,5 +1,7 @@
 (ns game)
 
+; FIRST OF ALL GET RID OF GLOBAL STATE!
+; SIMPLE
 ; TODO all 'def ' / data literals
 ; *player-eid*
 ; *elapsed-time*
@@ -560,6 +562,8 @@
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 
+; TODO get rid of this 'def' -> use vars?
+; what is being done with schemas???
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 
 (defn malli-form [schema]
@@ -622,6 +626,13 @@
     :s/val-max
     val-max-schema
     ))
+
+(defn validate-property [property]
+  (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property))))))]
+    (when-not (m/validate schema property)
+      (throw (ex-info (str (me/humanize (m/explain schema property)))
+                      {:value property
+                       :schema (m/form schema)})))))
 
 (defn touched-tiles*
   "x is leftmost point and y bottom most point in the rectangle."
@@ -907,11 +918,7 @@
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
   (doseq [property properties]
-    (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property))))))]
-      (when-not (m/validate schema property)
-        (throw (ex-info (str (me/humanize (m/explain schema property)))
-                        {:value property
-                         :schema (m/form schema)})))))
+    (validate-property property))
   (zipmap (map :property/id properties) properties))
 
 (require '[clojure.pprint :as pprint])
@@ -5487,11 +5494,7 @@
                           id (:property/id property)]
                       (assert (contains? property :property/id))
                       (assert (contains? db id))
-                      (let [schema (m/schema (malli-form (get schemas (keyword "properties" (namespace (:property/id property))))))]
-                        (when-not (m/validate schema property)
-                          (throw (ex-info (str (me/humanize (m/explain schema property)))
-                                          {:value property
-                                           :schema (m/form schema)}))))
+                      (validate-property property)
                       (let [new-db (assoc db id property)]
                         (save! new-db properties-file)
                         new-db))))
