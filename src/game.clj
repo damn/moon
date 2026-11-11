@@ -3168,8 +3168,8 @@
       (swap! target update :entity/stats add-mods spiderweb-modifiers)
       nil)))
 
-(defn stun-effect [duration effect-ctx handle-fsm-event!]
-  (handle-fsm-event! (:effect/target effect-ctx) :stun duration))
+(defn stun-effect [duration effect-ctx]
+  [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
 (defn- handle-fsm-event! [handle-txs! eid event & [params]]
   (let [fsm (:entity/fsm @eid)
@@ -3229,7 +3229,7 @@
     (spiderweb-effect v effect-ctx)
 
     :effects.target/stun
-    (stun-effect v effect-ctx handle-fsm-event!)))
+    (handle-txs! (stun-effect v effect-ctx))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
