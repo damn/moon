@@ -2555,9 +2555,9 @@
 
 (defn pixmap 
   ([file-handle]
-   (Pixmap. file-handle)
+   (Pixmap. file-handle))
   ([width height pixmap-format]
-   (Pixmap. width height pixmap-format))))
+   (Pixmap. width height pixmap-format)))
 
 (defn- white-pixel-texture []
   (let [pixmap (doto (pixmap 1 1 rgba8888)
@@ -3250,7 +3250,7 @@
     s))
 
 (defn new-cursor [graphics pixmap hotspot-x hotspot-y]
-  (.newCursor graphics pixmap hotspot-x hotspot-y)
+  (.newCursor graphics pixmap hotspot-x hotspot-y))
 
 (defn create-cursor! [files graphics [path [hotspot-x hotspot-y]]]
   (let [pixmap (pixmap (internal files path))
@@ -4468,7 +4468,7 @@
      (fn []
        (reset! cursors (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
                                     (fn [& params]
-                                      (apply create-cursor! Gdx/files Gdx/graphics params)))
+                                      (apply create-cursor! Gdx/files Gdx/graphics params))))
        (set! *sounds* (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (create-sound! path)])))
@@ -5595,6 +5595,8 @@
       (.setTitle title)
       (.setWindowedMode width height)
       (.setForegroundFPS fps))))
+
+; Why applications do not have parameters?
 
 (defn levelgen! []
   (lwjgl3-application! (levelgen-listener)
