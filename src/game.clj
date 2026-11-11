@@ -302,15 +302,31 @@
     (.setName name)
     (.setVisible visible?)))
 
+
+
+
+
+
+
+(defn add-map-layer! [^MapLayers map-layers ^MapLayer layer]
+  (.add map-layers layer))
+
+
+
+
+
+(defn create-static-tiled-map-tile
+  [{:keys [tile/id
+           tile/texture-region]}]
+  (assert (and id
+               texture-region))
+  (let [tile (static-tiled-map-tile texture-region)]
+    (put! (get-properties tile) "id" id)
+    tile))
+
+
 (defn add-creatures-layer! [tiled-map spawn-positions]
-  (let [creature-tile (memoize
-                       (fn [{:keys [tile/id
-                                    tile/texture-region]}]
-                         (assert (and id
-                                      texture-region))
-                         (let [tile (static-tiled-map-tile texture-region)]
-                           (put! (get-properties tile) "id" id)
-                           tile)))
+  (let [creature-tile (memoize create-static-tiled-map-tile)
         props (get-properties tiled-map)
         layer (tiled-map-tile-layer (props-get props "width")
                                     (props-get props "height")
@@ -322,7 +338,17 @@
                            [position (creature-tile creature-property)])
             :when tile]
       (set-cell! layer x y tile))
-    (.add (get-layers tiled-map) ^MapLayer layer)))
+    (add-map-layer! (get-layers tiled-map) layer)))
+
+
+
+
+
+
+
+
+
+
 
 (import '(com.badlogic.gdx.graphics Texture))
 (import '(com.badlogic.gdx.graphics.g2d Batch))
@@ -1472,7 +1498,7 @@
         (doseq [[[x y] tile] tiles
                 :when tile]
           (set-cell! layer x y tile))
-        (.add (get-layers tiled-map) ^MapLayer layer)))
+        (add-map-layer! (get-layers tiled-map) layer)))
     tiled-map))
 
 (import '(com.badlogic.gdx.maps.tiled TmxMapLoader))
@@ -1619,7 +1645,7 @@
         (doseq [[[x y] tile] tiles
                 :when tile]
           (set-cell! layer x y tile))
-        (.add (get-layers tiled-map) ^MapLayer layer)))
+        (add-map-layer! (get-layers tiled-map) layer)))
     tiled-map))
 
 (defn create-uf-caves
@@ -5379,26 +5405,27 @@
 (defn- k-label-text [k]
   (name k))
 
-(defn map-widget-value [table]
+(defn map-widget-value [schemas table]
   (into {}
         (for [widget (filter (comp vector? get-user-object) (get-children table))
               :let [[k _] (get-user-object widget)]]
-          [k (widget-value (get schemas k) widget)])))
+          [k (widget-value schemas (get schemas k) widget)])))
 
 (declare property-editor-window)
 
-(defn- rebuild-editor-window! []
+(defn- rebuild-editor-window! [schemas]
   (let [window (-> (get-root @editor-stage)
                    (find-actor "moon.ui.clojure.editor-window"))
         map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-        property (map-widget-value map-widget-table)]
+        property (map-widget-value schemas map-widget-table)]
     (.remove window)
-    (.addActor ^Stage @editor-stage (property-editor-window property))))
+    (.addActor ^Stage @editor-stage (property-editor-window schemas property))))
 
 (defn- component-row-table
   [{:keys [display-remove-component-button?
            k
-           table]}]
+           table
+           schemas]}]
   (let [row-table (doto (Table.)
                     (#(.pad (.defaults ^Table %) (float 2))))]
     (doto (.add row-table ^Actor (when display-remove-component-button?
@@ -5409,7 +5436,7 @@
                                                                                         (and (get-user-object actor)
                                                                                              (= k ((get-user-object actor) 0))))
                                                                                       (get-children table))))
-                                                       (rebuild-editor-window!)))))))
+                                                       (rebuild-editor-window! schemas)))))))
       (.left))
     (.add row-table ^Actor (Label. ^String (k-label-text k) @editor-skin))
     (.row ^Table row-table)
@@ -5439,7 +5466,7 @@
       (.expandX)))
   (.row ^Table table))
 
-(defn- add-component-window [schema map-widget-table build-widget widget-value]
+(defn- add-component-window [schemas schema map-widget-table build-widget widget-value]
   (let [window (Window. "Choose" @editor-skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (malli-form schemas schema))))]
@@ -5465,14 +5492,16 @@
                                                                           :else nil)))
                                          :k k
                                          :display-remove-component-button? (optional? (malli-form schemas schema) k)
-                                         :table map-widget-table})
-                                       (rebuild-editor-window!))))))
+                                         :table map-widget-table
+                                         :schemas schemas})
+                                       (rebuild-editor-window! schemas))))))
       (.row window))
     (.pack window)
     window))
 
 (defn- map-widget-table-create
-  [{:keys [schema
+  [{:keys [schemas
+           schema
            k->widget
            k->optional?
            ks-sorted
@@ -5488,7 +5517,7 @@
                                  (.addListener (proxy [ChangeListener] []
                                                  (changed [event actor]
                                                    (.addActor ^Stage @editor-stage
-                                                              (add-component-window schema table build-widget widget-value)))))))
+                                                              (add-component-window schemas schema table build-widget widget-value)))))))
         (.colspan (int colspan)))
       (.row table)
       (add-horiz-sep! table colspan))
@@ -5499,14 +5528,16 @@
                           {:editor-widget (k->widget k)
                            :k k
                            :display-remove-component-button? (k->optional? k)
-                           :table table}))
+                           :table table
+                           :schemas schemas}))
     table))
 
 (require '[clojure.set :as set])
 
-(defn- create-map-widget [schema m build-widget widget-value]
+(defn- create-map-widget [schemas schema m build-widget widget-value]
   (map-widget-table-create
-   {:schema schema
+   {:schemas schemas
+    :schema schema
     :build-widget build-widget
     :widget-value widget-value
     :k->widget (into {}
@@ -5517,11 +5548,11 @@
     :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
 
-(defn widget-value [[schema-k] widget]
+(defn widget-value [schemas [schema-k] widget]
   (case schema-k
     :s/boolean (boolean-widget-value widget)
     :s/enum (enum-widget-value widget)
-    :s/map (map-widget-value widget)
+    :s/map (map-widget-value schemas widget)
     :s/number (number-widget-value widget)
     :s/one-to-many (one-to-many-widget-value widget)
     :s/one-to-one (one-to-one-widget-value widget)
@@ -5529,8 +5560,8 @@
     :s/val-max (val-max-widget-value widget)
     (default-widget-value widget)))
 
-(defn- build-widget [schema k v]
-  (let [widget (create-widget schema v)]
+(defn- build-widget [schemas schema k v]
+  (let [widget (create-widget schemas schema v)]
     (set-user-object! widget [k v])
     widget))
 
@@ -5540,15 +5571,15 @@
 (def sounds (atom nil))
 
 (defn create-widget
-  [[schema-k :as schema] v]
+  [schemas [schema-k :as schema] v]
   (case schema-k
     :s/animation (create-animation-widget v @editor-textures)
     :s/boolean (create-boolean-widget v @editor-skin)
     :s/enum (create-enum-widget schema v @editor-skin)
     :s/image (create-image-widget v @editor-textures)
-    :s/map (create-map-widget schema v
-                              (fn [schema k v] (build-widget schema k v))
-                              widget-value)
+    :s/map (create-map-widget schemas schema v
+                              (fn [schema k v] (build-widget schemas schema k v))
+                              (fn [schema widget] (widget-value schemas schema widget)))
     :s/number (create-number-widget schema v @editor-skin)
     :s/one-to-many (create-one-to-many-widget schema v)
     :s/one-to-one (create-one-to-one-widget schema v)
@@ -5556,7 +5587,6 @@
     :s/string (create-string-widget schema v @editor-skin)
     :s/val-max (create-val-max-widget schema v @editor-skin)
     (create-default-widget v @editor-skin)))
-
 (require '[clj-commons.pretty.repl :as pretty-repl])
 
 (defn- with-window-close [f]
@@ -5590,12 +5620,11 @@
 
 (def properties-file (io/resource "properties.edn"))
 
-; pass the keyword?
-(defn property-editor-window [property]
+(defn property-editor-window [schemas property]
   (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
-        widget (create-widget schema property)
+        widget (create-widget schemas schema property)
         scroll-pane-height (.getWorldHeight (.getViewport ^Stage @editor-stage))
-        get-widget-value #(widget-value schema widget)
+        get-widget-value #(widget-value schemas schema widget)
         property-id (:property/id property)
         on-delete (with-window-close 
                     (fn [db]
@@ -5638,7 +5667,7 @@
     (.setName window "moon.ui.clojure.editor-window")
     window))
 
-(defn main-window []
+(defn main-window [schemas]
   (let [window (Window. "Edit" @editor-skin)]
     (doseq [property-type [:properties/audiovisuals
                            :properties/creatures 
@@ -5653,7 +5682,7 @@
                                                    property-type
                                                    (fn [_actor id]
                                                      (.addActor ^Stage @editor-stage
-                                                                (property-editor-window (safe-get @editor-db id))))
+                                                                (property-editor-window schemas (safe-get @editor-db id))))
                                                    editor)))))))
       (.row window))
     (.pack window)
@@ -5661,7 +5690,8 @@
 
 (defn editor-application-listener 
   [editor-config]
-  (let [batch (atom nil)]
+  (let [batch (atom nil)
+        schemas (-> "schema.edn" io/resource slurp edn/read-string)]
     {:create!
      (fn []
        (reset! batch (sprite-batch!))
@@ -5674,7 +5704,7 @@
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
        (reset! editor-textures (create-textures Gdx/files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
-       (.addActor ^Stage @editor-stage (main-window)))
+       (.addActor ^Stage @editor-stage (main-window schemas)))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
@@ -5690,7 +5720,6 @@
      (fn [width height]
        (.update (.getViewport ^Stage @editor-stage) width height true))
      }))
-
 (defn lwjgl3-application! 
   [{:keys [create! 
            dispose! 
