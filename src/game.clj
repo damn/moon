@@ -202,6 +202,9 @@
 (defn get-properties [^TiledMap tiled-map]
   (.getProperties tiled-map))
 
+; TiledMapTile (StaticTiledMapTile?)
+; TiledMapTileLayer
+
 (import '(com.badlogic.gdx.maps MapLayers))
 
 (defn layers-get [^MapLayers map-layers ^String layer-name]
@@ -218,6 +221,11 @@
 (defn get-cell [^TiledMapTileLayer layer x y]
   (.getCell layer (int x) (int y)))
 
+(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell))
+
+(defn get-tile [^TiledMapTileLayer$Cell cell]
+  (.getTile cell))
+
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -226,11 +234,9 @@
           y (range (get-height layer))
           :let [cell (get-cell layer x y)]
           :when cell
-          :let [value (.get (.getProperties (.getTile cell)) property-key)]
+          :let [value (.get (.getProperties (get-tile cell)) property-key)]
           :when value]
       [[x y] value])))
-
-(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell))
 
 (import '(com.badlogic.gdx.maps.tiled TiledMapTile))
 
@@ -238,7 +244,7 @@
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
-      (let [value (.get (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
+      (let [value (.get (.getProperties ^TiledMapTile (get-tile cell))
                         "movement")]
         (assert value
                 (str "Value for :movement at position "
@@ -287,7 +293,7 @@
                          (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
                            (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
                            tile)))
-        props (.getProperties tiled-map)
+        props (get-properties tiled-map)
         ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
                                                            (int (.get props "height"))
                                                            (int (.get props "tilewidth"))
@@ -398,7 +404,7 @@
                x x-start]
           (when (< col col2)
             (when-let [cell (.getCell layer (int col) (int row))]
-              (when-let [tile (.getTile ^TiledMapTileLayer$Cell cell)]
+              (when-let [tile (get-tile cell)]
                 (draw-tile! x
                             y
                             tile
@@ -1370,7 +1376,7 @@
         number-modules-x 8
         number-modules-y 4
         [modules-width modules-height] modules-scale
-        props (.getProperties ^TiledMap modules-tiled-map)
+        props (get-properties modules-tiled-map)
         _ (assert (and (= (.get props "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
                        (= (.get props "height")
@@ -1403,7 +1409,7 @@
                      (if (instance? StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^TextureRegion tile))))]
-    {:properties (merge (let [props (.getProperties schema-tiled-map)]
+    {:properties (merge (let [props (get-properties schema-tiled-map)]
                           (zipmap (.getKeys props)
                                   (.getValues props)))
                         {"width" (count grid)
@@ -1421,18 +1427,18 @@
                              :when local-position]
                          (when (vector? local-position)
                            (when-let [cell (.getCell ^TiledMapTileLayer layer (int (local-position 0)) (int (local-position 1)))]
-                             [position (copy-tile (.getTile ^TiledMapTileLayer$Cell cell))])))})}))
+                             [position (copy-tile (get-tile cell))])))})}))
 
 (defn- create-tiled-map* [schema-tiled-map scaled-grid]
   (let [{:keys [properties layers]} (grid->tiled-map schema-tiled-map scaled-grid)
         tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (.put (.getProperties tiled-map) k v))
+      (.put (get-properties tiled-map) k v))
     (doseq [{:keys [name visible? properties tiles]} layers]
       (assert (string? name))
       (assert (boolean? visible?))
-      (let [props (.getProperties tiled-map)
+      (let [props (get-properties tiled-map)
             ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
                                                                (int (.get props "height"))
                                                                (int (.get props "tilewidth"))
@@ -1577,11 +1583,11 @@
         tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (.put (.getProperties tiled-map) k v))
+      (.put (get-properties tiled-map) k v))
     (doseq [{:keys [name visible? properties tiles]} layers]
       (assert (string? name))
       (assert (boolean? visible?))
-      (let [props (.getProperties tiled-map)
+      (let [props (get-properties tiled-map)
             ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
                                                                (int (.get props "height"))
                                                                (int (.get props "tilewidth"))
@@ -2467,7 +2473,7 @@
     [[x y] cell]))
 
 (defn- create-grid [^TiledMap tiled-map]
-  (let [props (.getProperties tiled-map)
+  (let [props (get-properties tiled-map)
         w (.get props "width")
         h (.get props "height")
         xyfn (fn [position]
@@ -4476,7 +4482,7 @@
          (set! *start-position* start-position)
          (set! *id-counter* (atom 0))
          (set! *entity-ids* (atom {}))
-         (let [props (.getProperties tiled-map)
+         (let [props (get-properties tiled-map)
                width (.get props "width")
                height (.get props "height")
                grid (create-grid tiled-map)]
@@ -4621,7 +4627,7 @@
                           #(get-texture-region textures %))
                          :textures textures})
         ^TiledMap tiled-map (:tiled-map level)
-        props (.getProperties tiled-map)
+        props (get-properties tiled-map)
         width (.get props "width")
         height (.get props "height")]
     (assert tiled-map)
