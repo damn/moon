@@ -4081,41 +4081,41 @@
 
 (defn create-ui-actors
   [mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures* db]
-  (let [cell-size 48]
-    [(create-action-bar)
-     (create-dev-menu
-       {:menus [(debug-flags-menu-item)
-                help-menu-item]
-       :update-labels (for [item [{:label "elapsed-time"
-                                   :update-fn (fn [] 
-                                                (str (readable @*elapsed-time*) " seconds"))
-                                   :icon "images/clock.png"}
-                                  {:label "FPS"
-                                   :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
-                                   :icon "images/fps.png"}
-                                  {:label "Mouseover-entity id"
-                                   :update-fn (fn []
-                                                (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                                  (:entity/id entity)))
-                                   :icon "images/mouseover.png"}
-                                  {:label "paused?"
-                                   :update-fn (fn [] @paused?)}
-                                  {:label "GUI"
-                                   :update-fn (fn []
-                                                (mapv int (ui-mouse-position stage Gdx/input)))}
-                                  {:label "World"
-                                   :update-fn (fn []
-                                                (mapv int (world-mouse-position Gdx/input)))}
-                                  {:label "Zoom"
-                                   :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (.getCamera *viewport*)))
-                                   :icon "images/zoom.png"}]]
-                        (if (:icon item)
-                          (update item :icon #(get textures* %))
-                          item))
-       :skin skin})
-     (hp-mana-bar-create default-font stage textures* unit-scale)
-     (windows-create [(info-window-create skin stage mouseover-eid)
+  [(create-action-bar)
+   (create-dev-menu
+     {:menus [(debug-flags-menu-item)
+              help-menu-item]
+      :update-labels (for [item [{:label "elapsed-time"
+                                  :update-fn (fn [] 
+                                               (str (readable @*elapsed-time*) " seconds"))
+                                  :icon "images/clock.png"}
+                                 {:label "FPS"
+                                  :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
+                                  :icon "images/fps.png"}
+                                 {:label "Mouseover-entity id"
+                                  :update-fn (fn []
+                                               (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                                 (:entity/id entity)))
+                                  :icon "images/mouseover.png"}
+                                 {:label "paused?"
+                                  :update-fn (fn [] @paused?)}
+                                 {:label "GUI"
+                                  :update-fn (fn []
+                                               (mapv int (ui-mouse-position stage Gdx/input)))}
+                                 {:label "World"
+                                  :update-fn (fn []
+                                               (mapv int (world-mouse-position Gdx/input)))}
+                                 {:label "Zoom"
+                                  :update-fn (fn []
+                                               (.zoom ^OrthographicCamera (.getCamera *viewport*)))
+                                  :icon "images/zoom.png"}]]
+                       (if (:icon item)
+                         (update item :icon #(get textures* %))
+                         item))
+      :skin skin})
+   (hp-mana-bar-create default-font stage textures* unit-scale)
+   (windows-create [(info-window-create skin stage mouseover-eid)
+                    (let [cell-size 48]
                       (create-inventory-window
                         Gdx/input
                         (fn [_event cell]
@@ -4136,9 +4136,9 @@
                               (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                         skin
                         stage
-                        textures*)])
-     (player-state-draw-create unit-scale textures*)
-     (player-message-actor-create default-font unit-scale)]))
+                        textures*))])
+   (player-state-draw-create unit-scale textures*)
+   (player-message-actor-create default-font unit-scale)])
 
 (defn update-mouseover-eid! [mouseover-eid stage]
   (let [old-mouseover-eid @mouseover-eid
