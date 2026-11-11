@@ -3290,14 +3290,16 @@
 
 (def ^:dynamic *start-position*)
 
-(defn spawn-map-creatures! [db* tiled-map]
-  (doseq [[position creature-id] (spawn-positions tiled-map)
-          :when (not= position *start-position*)]
-    (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) position)
-                                    :creature-property (build db* (keyword creature-id))
-                                    :components {:entity/fsm {:fsm :fsms/npc
-                                                              :initial-state :npc-sleeping}
-                                                 :entity/faction :evil}}))))
+(defn spawn-map-creatures [db* tiled-map]
+  (mapcat (fn [[position creature-id]] 
+            (when (not= position *start-position*)
+              [[:tx/spawn-entity 
+               (spawn-creature {:position (mapv (partial + 0.5) position)
+                                :creature-property (build db* (keyword creature-id))
+                                :components {:entity/fsm {:fsm :fsms/npc
+                                                          :initial-state :npc-sleeping}
+                                             :entity/faction :evil}})]]))
+          (spawn-positions tiled-map)))
 
 
 (defn hp-mana-bar-create
@@ -4350,18 +4352,25 @@
              :tx/swap 
              (fn [eid f & params]
                (apply swap! eid f params))
+
              :tx/sound 
              (fn [sound-name]
                (Sound/.play (safe-get *sounds* sound-name)))
+
              :tx/spawn-entity 
              (fn [entity-decl]
                (spawn-entity! entity-decl))
-             :tx/modal
-             (fn [opts]
-               (show-modal! @skin @stage opts))
+
+             ;; Can just return handle-fsm-event! and concat with txs?
+             ; or recursive events? (no generic spawn-entity?)
              :tx/event
              (fn [& params]
                (handle-txs! (apply handle-fsm-event! params)))
+
+             ;; Stage txs
+             :tx/modal
+             (fn [opts]
+               (show-modal! @skin @stage opts))
              :tx/set-item
              (fn [cell item] 
                (set-item! @skin @stage @textures cell item))
@@ -4374,13 +4383,19 @@
              :tx/show-message
              (fn [message]
                (show-message! @stage message))
+             ;;
+
+             ; TODO just returns the applicable effect txs and concat them to txs
              :tx/apply-effects
              (fn [effect-ctx effects]
                (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
                  (handle-txs! (handle-effect! e 
                                               effect-ctx 
+
+                                              ; those 2 should be 1 param?
                                               @active-entities
-                                              *raycaster*))))
+                                              *raycaster*
+                                              ))))
              })
 
 (defn handle-txs! [txs]
@@ -4487,7 +4502,7 @@
                                               db)]
          (.addActor ^Stage @stage actor))
        (sync-player-ui! @skin @stage @textures @player-eid)
-       (spawn-map-creatures! db @tiled-map*))
+       (handle-txs! (spawn-map-creatures db @tiled-map*)))
 
      :dispose!
      (fn []
