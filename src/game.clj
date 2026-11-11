@@ -164,22 +164,37 @@
                           (get-value stats stat-k))))))
 
 (import '(com.badlogic.gdx.maps.tiled TiledMap))
+(import '(com.badlogic.gdx.maps.tiled TiledMapTile))
+(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
+
+(defn get-name [^TiledMapTileLayer layer]
+  (.getName layer))
 
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
 
-(defn get-properties [^TiledMap tiled-map]
-  (.getProperties tiled-map))
+(defprotocol GetProperties
+  (get-properties [_]))
 
-; TiledMapTile (StaticTiledMapTile?)
-; TiledMapTileLayer
+(extend-type TiledMap
+  GetProperties
+  (get-properties [this]
+    (.getProperties this)))
+
+(extend-type TiledMapTile
+  GetProperties
+  (get-properties [this]
+    (.getProperties this)))
+
+(extend-type TiledMapTileLayer
+  GetProperties
+  (get-properties [this]
+    (.getProperties this)))
 
 (import '(com.badlogic.gdx.maps MapLayers))
 
 (defn layers-get [^MapLayers map-layers ^String layer-name]
   (.get map-layers layer-name))
-
-(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
 
 (defn get-width [^TiledMapTileLayer layer]
   (.getWidth layer))
@@ -195,42 +210,62 @@
 (defn get-tile [^TiledMapTileLayer$Cell cell]
   (.getTile cell))
 
-(defn spawn-positions [tiled-map]
-  (let [layer-name "creatures"
-        property-key "id"
-        layer (layers-get (get-layers tiled-map) layer-name)]
-    (for [x (range (get-width layer))
-          y (range (get-height layer))
-          :let [cell (get-cell layer x y)]
-          :when cell
-          :let [value (.get (.getProperties (get-tile cell)) property-key)]
-          :when value]
-      [[x y] value])))
 
-(import '(com.badlogic.gdx.maps.tiled TiledMapTile))
+
+
+
+
+
+
+
+
+(import '(com.badlogic.gdx.graphics.g2d TextureRegion)
+        '(com.badlogic.gdx.maps MapLayer MapProperties)
+        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
+
+(defn put! [^MapProperties map-properties k v]
+  (.put map-properties k v))
+
+(defn props-get 
+  [^MapProperites map-properties k]
+  (.get map-properties k))
+
 
 (defn tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
-    (when-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
-      (let [value (.get (.getProperties ^TiledMapTile (get-tile cell))
-                        "movement")]
+    (when-let [cell (get-cell layer (int x) (int y))]
+      (let [value (props-get (get-properties (get-tile cell)) "movement")]
         (assert value
                 (str "Value for :movement at position "
                      position " / mapeditor inverted position: " [(position 0)
-                                                                 (- (dec (.get (get-properties tiled-map) "height"))
+                                                                 (- (dec (props-get (get-properties tiled-map) "height"))
                                                                     (position 1))]
-                     " and layer " (.getName ^TiledMapTileLayer layer) " is undefined."))
+                     " and layer " (get-name layer) " is undefined."))
         value))))
 
-(defn movement-property-layers [^TiledMap tiled-map]
-  (->> (.getLayers tiled-map)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(defn movement-property-layers [tiled-map]
+  (->> (get-layers tiled-map)
        reverse
-       (filter #(.get (.getProperties ^TiledMapTileLayer %) "movement-properties"))))
+       (filter #(props-get (get-properties %) "movement-properties"))))
 
 (defn movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
-    [(.getName ^TiledMapTileLayer layer)
+    [(get-name layer)
      (tile-movement-property tiled-map layer position)]))
 
 (defn movement-property [tiled-map position]
@@ -249,9 +284,8 @@
      :tile/id id
      :tile/texture-region texture-region}))
 
-(import '(com.badlogic.gdx.graphics.g2d TextureRegion)
-        '(com.badlogic.gdx.maps MapLayer MapProperties)
-        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
+(defn static-tiled-map-tile [texture-region]
+  (StaticTiledMapTile. ^TextureRegion texture-region))
 
 (defn add-creatures-layer! [^TiledMap tiled-map spawn-positions]
   (let [creature-tile (memoize
@@ -259,14 +293,14 @@
                                     tile/texture-region]}]
                          (assert (and id
                                       texture-region))
-                         (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-                           (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
+                         (let [tile (static-tiled-map-tile texture-region)]
+                           (put! (get-properties tile) "id" id)
                            tile)))
         props (get-properties tiled-map)
-        ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
-                                                           (int (.get props "height"))
-                                                           (int (.get props "tilewidth"))
-                                                           (int (.get props "tileheight")))
+        ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (props-get props "width"))
+                                                           (int (props-get props "height"))
+                                                           (int (props-get props "tilewidth"))
+                                                           (int (props-get props "tileheight")))
                                    (.setName "creatures")
                                    (.setVisible false))]
     (doseq [[[x y] tile] (for [[position creature-property] spawn-positions]
@@ -275,7 +309,7 @@
       (.setCell layer (int x) (int y)
                 (doto (TiledMapTileLayer$Cell.)
                   (.setTile ^TiledMapTile tile))))
-    (.add (.getLayers tiled-map) ^MapLayer layer)))
+    (.add (get-layers tiled-map) ^MapLayer layer)))
 
 (import '(com.badlogic.gdx.graphics Texture))
 (import '(com.badlogic.gdx.graphics.g2d Batch))
@@ -372,7 +406,7 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [cell (.getCell layer (int col) (int row))]
+            (when-let [cell (get-cell layer col row)]
               (when-let [tile (get-tile cell)]
                 (draw-tile! x
                             y
@@ -408,7 +442,7 @@
                      :y (- (.y pos) (/ h 2))
                      :width w
                      :height h}]
-    (doseq [layer (filter #(.isVisible ^TiledMapTileLayer %) (.getLayers tiled-map))]
+    (doseq [layer (filter #(.isVisible ^TiledMapTileLayer %) (get-layers tiled-map))]
       (draw-tile-layer! layer
                         batch
                         view-bounds
@@ -1351,9 +1385,9 @@
         number-modules-y 4
         [modules-width modules-height] modules-scale
         props (get-properties modules-tiled-map)
-        _ (assert (and (= (.get props "width")
+        _ (assert (and (= (props-get props "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (.get props "height")
+                       (= (props-get props "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* module-offset-tiles
@@ -1382,16 +1416,16 @@
                      (assert tile)
                      (if (instance? StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^StaticTiledMapTile tile)
-                       (StaticTiledMapTile. ^TextureRegion tile))))]
+                       (static-tiled-map-tile tile))))]
     {:properties (merge (let [props (get-properties schema-tiled-map)]
                           (zipmap (.getKeys props)
                                   (.getValues props)))
                         {"width" (count grid)
                          "height" (count (grid 0))})
-     :layers (for [layer (.getLayers schema-tiled-map)]
-               {:name (.getName ^TiledMapTileLayer layer)
+     :layers (for [layer (get-layers schema-tiled-map)]
+               {:name (get-name layer)
                 :visible? (.isVisible ^TiledMapTileLayer layer)
-                :properties (let [props (.getProperties ^TiledMapTileLayer layer)]
+                :properties (let [props (get-properties layer)]
                               (zipmap (.getKeys ^MapProperties props)
                                       (.getValues ^MapProperties props)))
                 :tiles (for [x (range (count grid))
@@ -1400,7 +1434,7 @@
                                    local-position (get-in grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (.getCell ^TiledMapTileLayer layer (int (local-position 0)) (int (local-position 1)))]
+                           (when-let [cell (get-cell layer (local-position 0) (local-position 1))]
                              [position (copy-tile (get-tile cell))])))})}))
 
 (defn- create-tiled-map* [schema-tiled-map scaled-grid]
@@ -1408,26 +1442,26 @@
         tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (.put (get-properties tiled-map) k v))
+      (put! (get-properties tiled-map) k v))
     (doseq [{:keys [name visible? properties tiles]} layers]
       (assert (string? name))
       (assert (boolean? visible?))
       (let [props (get-properties tiled-map)
-            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
-                                                               (int (.get props "height"))
-                                                               (int (.get props "tilewidth"))
-                                                               (int (.get props "tileheight")))
+            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (props-get props "width"))
+                                                               (int (props-get props "height"))
+                                                               (int (props-get props "tilewidth"))
+                                                               (int (props-get props "tileheight")))
                                        (.setName ^String name)
                                        (.setVisible visible?))]
         (doseq [[k v] properties]
           (assert (string? k))
-          (.put ^MapProperties (.getProperties layer) k v))
+          (put! (get-properties layer) k v))
         (doseq [[[x y] tile] tiles
                 :when tile]
           (.setCell layer (int x) (int y)
                     (doto (TiledMapTileLayer$Cell.)
                       (.setTile ^TiledMapTile tile))))
-        (.add (.getLayers tiled-map) ^MapLayer layer)))
+        (.add (get-layers tiled-map) ^MapLayer layer)))
     tiled-map))
 
 (import '(com.badlogic.gdx.maps.tiled TmxMapLoader))
@@ -1557,26 +1591,26 @@
         tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (.put (get-properties tiled-map) k v))
+      (put! (get-properties tiled-map) k v))
     (doseq [{:keys [name visible? properties tiles]} layers]
       (assert (string? name))
       (assert (boolean? visible?))
       (let [props (get-properties tiled-map)
-            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (.get props "width"))
-                                                               (int (.get props "height"))
-                                                               (int (.get props "tilewidth"))
-                                                               (int (.get props "tileheight")))
+            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (props-get props "width"))
+                                                               (int (props-get props "height"))
+                                                               (int (props-get props "tilewidth"))
+                                                               (int (props-get props "tileheight")))
                                        (.setName ^String name)
                                        (.setVisible visible?))]
         (doseq [[k v] properties]
           (assert (string? k))
-          (.put ^MapProperties (.getProperties layer) k v))
+          (put! (get-properties layer) k v))
         (doseq [[[x y] tile] tiles
                 :when tile]
           (.setCell layer (int x) (int y)
                     (doto (TiledMapTileLayer$Cell.)
                       (.setTile ^TiledMapTile tile))))
-        (.add (.getLayers tiled-map) ^MapLayer layer)))
+        (.add (get-layers tiled-map) ^MapLayer layer)))
     tiled-map))
 
 (defn create-uf-caves
@@ -1608,9 +1642,8 @@
                                                               (int (* (sprite-idx 1) tile-size))
                                                               (int tile-size)
                                                               (int tile-size))
-                               tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-                           (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile)
-                                 "movement" movement)
+                               tile (static-tiled-map-tile texture-region)]
+                           (put! (get-properties tile) "movement" movement)
                            tile))))
         _ (assert (= #{:wall :ground} (set (apply concat grid))))
         {:keys [start-position grid]} (scale-grid grid start scaling)
@@ -2448,8 +2481,8 @@
 
 (defn- create-grid [^TiledMap tiled-map]
   (let [props (get-properties tiled-map)
-        w (.get props "width")
-        h (.get props "height")
+        w (props-get props "width")
+        h (props-get props "height")
         xyfn (fn [position]
                (atom
                 (map->Cell
@@ -3284,9 +3317,7 @@
 
 (defn create-skin! [^FileHandle file-handle]
   (let [s (Skin. file-handle)]
-    (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                          (.getData (.getFont ^Skin s "default-font")))
-          true)
+    (set! (.markupEnabled ^BitmapFont$BitmapFontData (.getData (.getFont ^Skin s "default-font"))) true)
     s))
 
 (defn new-cursor [graphics pixmap hotspot-x hotspot-y]
@@ -3308,20 +3339,11 @@
                   (doto (OrthographicCamera.)
                     (.setToOrtho false world-width world-height)))))
 
-(def default-font-params {:path "fonts/films.EXL_____.ttf"
-                          :size 16
-                          :quality-scaling 2
-                          :use-integer-positions? false})
-
 (import '(com.badlogic.gdx.graphics Texture$TextureFilter)
         '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
 
-(defn create-default-font! []
-  (let [{:keys [path
-                size
-                quality-scaling
-                use-integer-positions?]} default-font-params
-        generator (FreeTypeFontGenerator. (internal Gdx/files path))
+(defn create-default-font! [files default-font-params]
+  (let [generator (FreeTypeFontGenerator. (internal files path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
                     (set! (.minFilter p) Texture$TextureFilter/Linear)
@@ -3349,6 +3371,18 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
+(defn spawn-positions [tiled-map]
+  (let [layer-name "creatures"
+        property-key "id"
+        layer (layers-get (get-layers tiled-map) layer-name)]
+    (for [x (range (get-width layer))
+          y (range (get-height layer))
+          :let [cell (get-cell layer x y)]
+          :when cell
+          :let [value (props-get (get-properties (get-tile cell)) property-key)]
+          :when value]
+      [[x y] value])))
+
 (def *start-position* (atom nil))
 
 (defn spawn-map-creatures [db* tiled-map]
@@ -3361,7 +3395,6 @@
                                                           :initial-state :npc-sleeping}
                                              :entity/faction :evil}})]]))
           (spawn-positions tiled-map)))
-
 
 (defn hp-mana-bar-create
   [player-eid default-font stage textures unit-scale]
@@ -4389,8 +4422,8 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(defn create-sound! [path]
-  (.newSound Gdx/audio (internal Gdx/files path)))
+(defn create-sound! [audio files path]
+  (.newSound audio (internal files path)))
 
 (import '(com.badlogic.gdx.graphics Colors)
         '(com.badlogic.gdx.graphics.g2d SpriteBatch)
@@ -4400,7 +4433,7 @@
 (defn clear-screen! [r g b a]
   (ScreenUtils/clear r g b a))
 
-(defn sprite-batch []
+(defn sprite-batch! []
   (SpriteBatch.))
 
 (declare handle-txs!)
@@ -4470,6 +4503,15 @@
                            {:k k :params params}
                            t))))))
 
+(defn key-pressed? [input input-key]
+  (com.badlogic.gdx.Input/.isKeyPressed input input-key))
+
+(defn key-just-pressed? [input input-key]
+  (com.badlogic.gdx.Input/.isKeyJustPressed input input-key))
+
+(defn set-projection-matrix! [^Batch batch matrix]
+  (.setProjectionMatrix batch matrix))
+
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -4491,14 +4533,18 @@
     {
      :create!
      (fn []
-       (reset! cursors (update-vals (-> (:cursors game-config) io/resource slurp edn/read-string)
+       (reset! cursors (update-vals (:cursors game-config)
                                     (fn [& params]
                                       (apply create-cursor! Gdx/files Gdx/graphics params))))
        (reset! sounds (into {}
-                            (for [path (-> (:sounds game-config) io/resource slurp edn/read-string)]
-                              [path (create-sound! path)])))
-       (reset! batch (sprite-batch))
-       (reset! default-font (create-default-font!))
+                            (for [path (:sounds game-config)]
+                              [path (create-sound! Gdx/audio Gdx/files path)])))
+       (reset! batch (sprite-batch!))
+       (reset! default-font (create-default-font! Gdx/files 
+                                                  {:path "fonts/films.EXL_____.ttf"
+                                                   :size 16
+                                                   :quality-scaling 2
+                                                   :use-integer-positions? false}))
        (reset! shape-drawer-texture (white-pixel-texture))
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal Gdx/files (:skin game-config))))
@@ -4508,8 +4554,10 @@
        (.setInputProcessor Gdx/input @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+
        (reset! textures (create-textures Gdx/files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
+
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
@@ -4517,8 +4565,8 @@
          (reset! *id-counter* 0)
          (reset! *entity-ids* {})
          (let [props (get-properties tiled-map)
-               width (.get props "width")
-               height (.get props "height")
+               width (props-get props "width")
+               height (props-get props "height")
                grid (create-grid tiled-map)]
            (reset! *grid* grid) 
            (reset! *content-grid* (create-content-grid width height 16))
@@ -4527,6 +4575,7 @@
                                                (range width)))
            (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
+
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
@@ -4539,6 +4588,7 @@
          (let [eid (get @*entity-ids* 1)] ; TODO not necessary -> pass id to spawn entity ? can use id counter before?
            (assert (:entity/player? @eid)) ; TODO not necessary
            (reset! player-eid eid)))
+
        (doseq [^Actor actor (create-ui-actors @player-eid
                                               handle-txs!
                                               mouseover-eid
@@ -4551,8 +4601,11 @@
                                               @textures
                                               db)]
          (.addActor ^Stage @stage actor))
+
        (sync-player-ui! @skin @stage @textures @player-eid)
-       (handle-txs! (spawn-map-creatures db @tiled-map*)))
+
+       (handle-txs! (spawn-map-creatures db @tiled-map*))
+       )
 
      :dispose!
      (fn []
@@ -4571,7 +4624,7 @@
        (update-mouseover-eid! @player-eid mouseover-eid @stage Gdx/input)
        (update-active-entities! active-entities @player-eid)
        (set-camera-to-player! @player-eid)
-       (.setProjectionMatrix ^Batch @batch (.combined (.getCamera @*viewport*)))
+       (set-projection-matrix! @batch (.combined (.getCamera @*viewport*)))
        (.begin ^Batch @batch)
        (draw-tiled-map! @tiled-map*
                         @batch
@@ -4610,14 +4663,14 @@
                                handle-txs!
                                interaction-state
                                @stage 
-                               #(.isKeyPressed Gdx/input (int %))
+                               #(key-pressed? Gdx/input (int %))
                                #(.isButtonJustPressed Gdx/input (int %))))
        (reset! paused?
                (or #_error
                    (and pausing?
                         (state->pause-game? (:state (:entity/fsm @@player-eid)))
-                        (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
-                                 (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
+                        (not (or (key-just-pressed? Gdx/input (int (:unpause-once controls)))
+                                 (key-pressed? Gdx/input (int (:unpause-continously controls))))))))
        (tick-game! handle-txs! 
                    db 
                    active-entities 
@@ -4634,7 +4687,7 @@
                                              (let [^OrthographicCamera camera (.getCamera @*viewport*)]
                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                (.update camera)))}]
-         (when (.isKeyPressed Gdx/input (int k))
+         (when (key-pressed? Gdx/input (int k))
            (f)))
        (doseq [[k f] {(:close-windows-key controls) (fn []
                                                       (close-windows! @stage))
@@ -4642,7 +4695,7 @@
                                                      (toggle-inventory-visible! @stage))
                       (:toggle-entity-info controls) (fn []
                                                        (toggle-entity-info! @stage))}]
-         (when (.isKeyJustPressed Gdx/input (int k))
+         (when (key-just-pressed? Gdx/input (int k))
            (f)))
        (.act ^Stage @stage)
        (.draw ^Stage @stage))
@@ -4662,11 +4715,10 @@
                          :textures textures})
         ^TiledMap tiled-map (:tiled-map level)
         props (get-properties tiled-map)
-        width (.get props "width")
-        height (.get props "height")]
+        width (props-get props "width")
+        height (props-get props "height")]
     (assert tiled-map)
-    (.setVisible ^TiledMapTileLayer (.get (.getLayers tiled-map) "creatures")
-                 true)
+    (.setVisible ^TiledMapTileLayer (props-get (get-layers tiled-map) "creatures") true)
     (let [pos (.position camera)
           px (float (/ width 2))
           py (float (/ height 2))
@@ -4707,7 +4759,7 @@
                              (generate-level @db @textures @camera level-fn)))])]
     {:create!
      (fn []
-       (reset! batch (sprite-batch))
+       (reset! batch (sprite-batch!))
        (reset! skin (Skin. (internal Gdx/files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
@@ -4745,7 +4797,7 @@
              ^Batch batch* @batch
              ^OrthographicCamera world-camera (.getCamera ^Viewport @viewport)]
          (clear-screen! 0 0 0 0)
-         (.setProjectionMatrix batch* (.combined world-camera))
+         (set-projection-matrix! batch* (.combined world-camera))
          (.begin batch*)
          (draw-tiled-map! @tiled-map
                           batch*
@@ -4775,7 +4827,7 @@
                                           (let [pos (.position camera*)]
                                             (set! (.y pos) (- (.y pos) 1))
                                             (.update camera*)))}]
-           (when (.isKeyPressed Gdx/input k)
+           (when (key-pressed? Gdx/input k)
              (f)))
          (.act ^Stage @ui-stage)
          (.draw ^Stage @ui-stage)))
@@ -5527,7 +5579,7 @@
     (.setModal window true)
     (.addActor window (proxy [Actor] []
                         (act [delta]
-                          (when (.isKeyJustPressed Gdx/input Input$Keys/ENTER)
+                          (when (key-just-pressed? Gdx/input Input$Keys/ENTER)
                             (on-save this))
                           (let [^Actor this this]
                             (proxy-super act delta)))
@@ -5561,7 +5613,7 @@
   (let [batch (atom nil)]
     {:create!
      (fn []
-       (reset! batch (sprite-batch))
+       (reset! batch (sprite-batch!))
        (reset! editor-skin (Skin. (internal Gdx/files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
@@ -5661,10 +5713,11 @@
                                      :close-windows-key Input$Keys/ESCAPE
                                      :toggle-inventory Input$Keys/I
                                      :toggle-entity-info Input$Keys/E}
-                          :cursors "cursors.edn"
-                          :sounds "sounds.edn"
+                          :cursors (-> "cursors.edn" io/resource slurp edn/read-string)
+                          :sounds (-> "sounds.edn" io/resource slurp edn/read-string)
                           :skin "skin/uiskin.json"
-                          :stage {:width 1440 :height 900}
+                          :stage {:width 1440 
+                                  :height 900}
                           :textures {:folder "resources/"
                                      :extensions #{"png" "bmp"}}
                           })
