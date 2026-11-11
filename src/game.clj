@@ -527,28 +527,10 @@
   (.setColor shape-drawer (float color-float-bits))
   (.sector shape-drawer center-x center-y radius start-radians radians))
 
-(declare malli-form)
-
-(defn- create-map-schema* [ks k->malli-schema-form]
-  (apply vector :map {:closed true}
-         (for [k ks
-               :let [k? (keyword? k)
-                     schema-props (if k? nil (k 1))
-                     k (if k? k (k 0))]]
-           (do
-            (assert (keyword? k))
-            (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
-            [k schema-props (k->malli-schema-form k)]))))
-
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-
-(defn create-map-schema [ks]
-  (create-map-schema* ks
-                      (fn [k]
-                        (malli-form (get schemas k)))))
 
 (defn malli-form [schema]
   (case (first schema)
@@ -570,7 +552,16 @@
      [:image/bounds {:optional true} [:vector {:size 4} nat-int?]]]
 
     :s/map
-    (create-map-schema (second schema))
+    (let [ks (second schema)] 
+      (apply vector :map {:closed true}
+             (for [k ks
+                   :let [k? (keyword? k)
+                         schema-props (if k? nil (k 1))
+                         k (if k? k (k 0))]]
+               (do
+                 (assert (keyword? k))
+                 (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
+                 [k schema-props (malli-form (get schemas k))]))))
 
     :s/number
     (case (second schema)
