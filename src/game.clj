@@ -3093,14 +3093,6 @@
      [:tx/audiovisual (:entity/position @target) :audiovisuals/convert]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(def ^:dynamic *sounds*)
-
-(import '(com.badlogic.gdx.audio Sound))
-
-(defn play-sound! [sound-name]
-  (assert (contains? *sounds* sound-name) (str sound-name))
-  (Sound/.play (get *sounds* sound-name)))
-
 (defn target-entity-effect [v effect-ctx]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
@@ -3119,7 +3111,7 @@
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/audiovisual (end-point body target-body maxrange) :audiovisuals/hit-ground]])))
 
-(defn damage-effect [v effect-ctx audiovisual! handle-fsm-event!]
+(defn damage-effect [v effect-ctx]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -3135,8 +3127,7 @@
       (and (:entity/stats source*)
            (:entity/stats target*)
            (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
-      (do (swap! target add-text-effect "[WHITE]ARMOR" 0.3 timer-create)
-          nil)
+      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 timer-create]]
 
       :else
       (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
@@ -3150,11 +3141,11 @@
             new-hp-val (max (- (hp 0) dmg-amount)
                             0)
             dmg-text (str "[RED]" dmg-amount "[]")]
-        (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
-        (swap! target add-text-effect dmg-text 0.3 timer-create)
-        (handle-fsm-event! target (if (zero? new-hp-val) :kill :alert))
-        (play-sound! "bfxr_normalhit.wav")
-        (audiovisual! (:entity/position target*) :audiovisuals/damage)))))
+        [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
+         [:tx/swap target add-text-effect dmg-text 0.3 timer-create]
+         [:tx/event target (if (zero? new-hp-val) :kill :alert)]
+         [:tx/sound "bfxr_normalhit.wav"]
+         [:tx/audiovisual (:entity/position target*) :audiovisuals/damage]]))))
 
 (defn kill-effect [_v effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :kill]])
@@ -3163,10 +3154,9 @@
   (let [target (:effect/target effect-ctx)]
     ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
     (when-not (:entity/temp-modifier @target)
-      (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                 :counter (timer-create spiderweb-duration)})
-      (swap! target update :entity/stats add-mods spiderweb-modifiers)
-      nil)))
+      [[:tx/swap target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
+                                                     :counter (timer-create spiderweb-duration)}]
+       [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
@@ -3199,37 +3189,37 @@
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 (defn- handle-effect!
-  [audiovisual! handle-txs! handle-fsm-event! textures [k v] effect-ctx active-entities raycaster]
+  [[k v] effect-ctx active-entities raycaster]
   (case k
     :effects/projectile
-    (handle-txs! (projectile-effect v effect-ctx))
+    (projectile-effect v effect-ctx)
 
     :effects/spawn
-    (handle-txs! (spawn-effect* v effect-ctx))
+    (spawn-effect* v effect-ctx)
 
     :effects/target-all
-    (handle-txs! (target-all-effect v effect-ctx active-entities raycaster))
+    (target-all-effect v effect-ctx active-entities raycaster)
 
     :effects/target-entity
-    (handle-txs! (target-entity-effect v effect-ctx))
+    (target-entity-effect v effect-ctx)
 
     :effects.target/convert
-    (handle-txs! (convert-effect v effect-ctx))
+    (convert-effect v effect-ctx)
 
     :effects.target/damage
-    (damage-effect v effect-ctx audiovisual! handle-fsm-event!)
+    (damage-effect v effect-ctx)
 
     :effects.target/kill
-    (handle-txs! (kill-effect v effect-ctx))
+    (kill-effect v effect-ctx)
 
     :effects.target/melee-damage
-    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx audiovisual! handle-fsm-event!)
+    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx)
 
     :effects.target/spiderweb
     (spiderweb-effect v effect-ctx)
 
     :effects.target/stun
-    (handle-txs! (stun-effect v effect-ctx))
+    (stun-effect v effect-ctx)))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
@@ -3386,6 +3376,14 @@
                 bar-x (- x (/ rahmenw 2))]
             (draw-hpmana-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
             (draw-hpmana-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))))))
+
+(def ^:dynamic *sounds*)
+
+(import '(com.badlogic.gdx.audio Sound))
+
+(defn play-sound! [sound-name]
+  (assert (contains? *sounds* sound-name) (str sound-name))
+  (Sound/.play (get *sounds* sound-name)))
 
 (defn handle-clicked-inventory-cell
   [player-eid handle-txs! textures set-item! remove-item! cell]
@@ -4418,16 +4416,10 @@
              :tx/apply-effects
              (fn [effect-ctx effects]
                (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                 (handle-effect! (fn [& params]
-                                   (apply audiovisual! db params)) 
-                                 handle-txs!
-                                 (fn [& params]
-                                   (apply handle-fsm-event! handle-txs! params))
-                                 textures 
-                                 e 
-                                 effect-ctx 
-                                 @active-entities
-                                 *raycaster*)))
+                 (handle-txs! (handle-effect! e 
+                                              effect-ctx 
+                                              @active-entities
+                                              *raycaster*))))
              })
 
 (defn handle-txs! [txs]
