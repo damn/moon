@@ -2389,7 +2389,7 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
-(def ^:dynamic *id-counter*)
+(def *id-counter* (atom nil))
 
 (def ^:dynamic *entity-ids*)
 
@@ -4529,7 +4529,7 @@
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
          (reset! *start-position* start-position)
-         (set! *id-counter* (atom 0))
+         (reset! *id-counter* 0)
          (set! *entity-ids* (atom {}))
          (let [props (get-properties tiled-map)
                width (.get props "width")
@@ -5653,7 +5653,6 @@
 
 (defn game! []
   (binding [
-            *id-counter* nil
             *entity-ids* nil
             *grid* nil
             *content-grid* nil
