@@ -952,35 +952,34 @@
 
 (defn- inv-window-cell [input on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
-        background-drawable (slot->drawable slot)]
-    {:actor
-     (let [stack (create-stack)]
-       (run! #(add-actor! stack %)
-             [(proxy [Widget] []
-                (draw [batch parent-alpha]
-                  (when-let [stage (.getStage ^Actor this)]
-                    (draw-cell-rect! @*player-eid*
-                                     (.getX ^Actor this)
-                                     (.getY ^Actor this)
-                                     (let [v2 (.unproject (.getViewport ^Stage stage)
-                                                          (Vector2. (float (.getX input))
-                                                                    (float (.getY input))))
-                                           local (.stageToLocalCoordinates ^Actor this
-                                                                           (Vector2. (.x v2) (.y v2)))
-                                           x (.x ^Vector2 local)
-                                           y (.y ^Vector2 local)]
-                                       (.hit ^Actor this (float x) (float y) true))
-                                     (.getUserObject ^Actor (.getParent ^Actor this))))))
-              (doto (Image. ^Drawable background-drawable)
-                (.setName "image-widget")
-                (.setUserObject {:background-drawable background-drawable
-                                 :cell-size cell-size}))])
-       (doto stack
-         (.addListener (proxy [ClickListener] []
-                         (clicked [event _x _y]
-                           (on-click-cell event cell))))
-         (.setName "inventory-cell")
-         (.setUserObject cell)))}))
+        background-drawable (slot->drawable slot)
+        stack (create-stack)]
+    (run! #(add-actor! stack %)
+          [(proxy [Widget] []
+             (draw [batch parent-alpha]
+               (when-let [stage (.getStage ^Actor this)]
+                 (draw-cell-rect! @*player-eid*
+                                  (.getX ^Actor this)
+                                  (.getY ^Actor this)
+                                  (let [v2 (.unproject (.getViewport ^Stage stage)
+                                                       (Vector2. (float (.getX input))
+                                                                 (float (.getY input))))
+                                        local (.stageToLocalCoordinates ^Actor this
+                                                                        (Vector2. (.x v2) (.y v2)))
+                                        x (.x ^Vector2 local)
+                                        y (.y ^Vector2 local)]
+                                    (.hit ^Actor this (float x) (float y) true))
+                                  (.getUserObject ^Actor (.getParent ^Actor this))))))
+           (doto (Image. ^Drawable background-drawable)
+             (.setName "image-widget")
+             (.setUserObject {:background-drawable background-drawable
+                              :cell-size cell-size}))])
+    (doto stack
+      (.addListener (proxy [ClickListener] []
+                      (clicked [event _x _y]
+                        (on-click-cell event cell))))
+      (.setName "inventory-cell")
+      (.setUserObject cell))))
 
 (import '(com.badlogic.gdx.graphics Color))
 (import '(com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable))
@@ -1000,17 +999,19 @@
         ->cell (partial inv-window-cell input on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (Table.)
         window (Window. "Inventory" ^Skin skin)]
-    (doseq [row (concat [[{:actor nil} {:actor nil}
+    (doseq [row (concat [[nil 
+                          nil
                           (->cell :inventory.slot/helm)
                           (->cell :inventory.slot/necklace)]
-                         [{:actor nil}
+                         [nil
                           (->cell :inventory.slot/weapon)
                           (->cell :inventory.slot/chest)
                           (->cell :inventory.slot/cloak)
                           (->cell :inventory.slot/shield)]
-                         [{:actor nil} {:actor nil}
+                         [nil 
+                          nil
                           (->cell :inventory.slot/leg)]
-                         [{:actor nil}
+                         [nil
                           (->cell :inventory.slot/glove)
                           (->cell :inventory.slot/rings :position [0 0])
                           (->cell :inventory.slot/rings :position [1 0])
@@ -1018,8 +1019,8 @@
                         (for [y (range 4)]
                           (for [x (range 6)]
                             (->cell :inventory.slot/bag :position [x y]))))]
-      (doseq [cell row]
-        (.add cell-table ^Actor (:actor cell)))
+      (doseq [actor row]
+        (.add cell-table ^Actor actor))
       (.row cell-table))
     (.pack cell-table)
     (.setName cell-table "inventory-cell-table")
