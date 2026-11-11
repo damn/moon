@@ -2879,12 +2879,8 @@
       (after-create-component eid component))
     eid))
 
-(import '(com.badlogic.gdx Gdx))
-
-(def ^:dynamic ^Viewport *viewport*)
-
 (defn- entity-state-exit!
-  [eid [state-k _state-v]]
+  [eid [state-k _state-v] item-place-position]
   (case state-k
     :player-item-on-cursor
     (let [entity @eid
@@ -2892,9 +2888,7 @@
       (when item
         [[:tx/swap eid dissoc :entity/item-on-cursor]
          [:tx/sound "bfxr_itemputground.wav"]
-         [:tx/spawn-entity (spawn-item (item-place-position *viewport*
-                                                            Gdx/input
-                                                            (:entity/position entity)
+         [:tx/spawn-entity (spawn-item (item-place-position (:entity/position entity)
                                                             (- (:entity/click-distance-tiles entity) 0.1))
                                        item)]]))
 
@@ -3173,6 +3167,11 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
+(import '(com.badlogic.gdx Gdx))
+(def ^:dynamic ^Viewport *viewport*)
+(defn item-place-position* [position click-distance]
+  (item-place-position *viewport* Gdx/input position click-distance))
+
 (defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3189,7 +3188,7 @@
         (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                  [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                  [:tx/swap eid dissoc old-state-k]]
-                (entity-state-exit! eid old-state-obj)
+                (entity-state-exit! eid old-state-obj item-place-position*)
                 (entity-state-enter! eid new-state-obj))))))
 
 (defn- handle-effect!
