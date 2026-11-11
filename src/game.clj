@@ -4474,7 +4474,8 @@
   [{:keys [pausing?
            state->pause-game?
            level-fn
-           controls]}]
+           controls]
+    :as game-config}]
   (let [player-eid (atom nil)
         batch (atom nil)
         cursors (atom nil)
@@ -4490,24 +4491,25 @@
     {
      :create!
      (fn []
-       (reset! cursors (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
+       (reset! cursors (update-vals (-> (:cursors game-config) io/resource slurp edn/read-string)
                                     (fn [& params]
                                       (apply create-cursor! Gdx/files Gdx/graphics params))))
        (reset! sounds (into {}
-                            (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
+                            (for [path (-> (:sounds game-config) io/resource slurp edn/read-string)]
                               [path (create-sound! path)])))
        (reset! batch (sprite-batch))
        (reset! default-font (create-default-font!))
        (reset! shape-drawer-texture (white-pixel-texture))
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
-       (reset! skin (create-skin! (internal Gdx/files "skin/uiskin.json")))
-       (reset! stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
+       (reset! skin (create-skin! (internal Gdx/files (:skin game-config))))
+       (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
+                                           (float (:height (:stage game-config)))) 
+                             @batch))
        (.setInputProcessor Gdx/input @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (reset! textures (create-textures Gdx/files
-                                         {:folder "resources/"
-                                          :extensions #{"png" "bmp"}}))
+                                         (:textures game-config)))
        (reset! *viewport* (create-viewport! world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
@@ -5655,6 +5657,12 @@
                                      :close-windows-key Input$Keys/ESCAPE
                                      :toggle-inventory Input$Keys/I
                                      :toggle-entity-info Input$Keys/E}
+                          :cursors "cursors.edn"
+                          :sounds "sounds.edn"
+                          :skin "skin/uiskin.json"
+                          :stage {:width 1440 :height 900}
+                          :textures {:folder "resources/"
+                                     :extensions #{"png" "bmp"}}
                           })
                        {:title "Moon"
                         :width 1440 
