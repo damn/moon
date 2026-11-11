@@ -3205,28 +3205,6 @@
     (spawn-entity! (spawn-effect position
                                  {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
-(defn handle-txs! [skin stage db]
-  (let [k->txs {
-                :tx/swap 
-                (fn [eid f & params]
-                  (apply swap! eid f params))
-                :tx/sound 
-                (fn [sound-name]
-                  (play-sound! sound-name))
-                :tx/spawn-entity 
-                (fn [entity-decl]
-                  (spawn-entity! entity-decl))
-                :tx/modal
-                (fn [opts]
-                  (show-modal! skin stage opts))
-                :tx/audiovisual
-                (fn [position id-key]
-                  (audiovisual! db position id-key))
-                }]
-    (fn [txs]
-      (doseq [[k & params] txs]
-        (apply (safe-get k->txs k) params)))))
-
 (defn- handle-effect!
   [audiovisual! handle-txs! handle-fsm-event! textures [k v] effect-ctx apply-effects! active-entities raycaster]
   (case k
@@ -4070,7 +4048,7 @@
       (.setName "moon.ui.action-bar"))))
 
 (defn create-ui-actors
-  [mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures* db]
+  [handle-txs! mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures* db]
   [(create-action-bar)
    (create-dev-menu
      {:menus [(debug-flags-menu-item)
@@ -4110,7 +4088,7 @@
                         Gdx/input
                         (fn [_event cell]
                           (handle-clicked-inventory-cell *player-eid* 
-                                                         (handle-txs! skin stage db)
+                                                         handle-txs!
                                                          textures*
                                                          (fn [cell item] (set-item! skin stage textures* cell item))
                                                          (fn [cell] (remove-item! stage cell))
@@ -4249,7 +4227,8 @@
       (.findActor "player-message")
       (.setUserObject (atom {:text message :counter 0}))))
 
-(defn- interaction-state->txs [[k params] stage skin db textures set-item! player-eid]
+(defn- interaction-state->txs 
+  [[k params] stage skin db textures set-item! player-eid handle-fsm-event!]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -4270,7 +4249,7 @@
                   .isVisible)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
                   (play-sound! "bfxr_takeit.wav")
-                  (handle-fsm-event! (handle-txs! skin stage db) player-eid :pickup-item item))
+                  (handle-fsm-event! player-eid :pickup-item item))
 
               (can-pickup-item? (:entity/inventory @player-eid) item)
               (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -4293,7 +4272,7 @@
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! (handle-txs! skin stage db) player-eid :start-action [skill effect-ctx]))
+      (handle-fsm-event! player-eid :start-action [skill effect-ctx]))
 
     :interaction-state.skill/not-usable
     (let [state params]
@@ -4312,41 +4291,36 @@
 (import '(com.badlogic.gdx Input$Buttons))
 
 (defn handle-player-input!
-  [interaction-state skin stage textures key-pressed? button-just-pressed? db]
-  (let [eid *player-eid*
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        left-button-pressed? (button-just-pressed? Input$Buttons/LEFT)
-        move-v (movement-vector key-pressed?)
-        [x y] (ui-mouse-position stage Gdx/input)
-        mouseover-actor* (mouseover-actor stage x y)]
-    (case state-k
-      :player-idle
-      (if move-v
-        (handle-fsm-event! (handle-txs! skin stage db) eid :movement-input move-v)
-        (when left-button-pressed?
-          (interaction-state->txs interaction-state
-                                  stage
-                                  skin
-                                  db
-                                  textures
-                                  #(set-item! skin stage textures %1 %2)
-                                  eid)))
+  [handle-fsm-event! interaction-state skin stage textures key-pressed? button-just-pressed? db]
+  (case (:state (:entity/fsm @*player-eid*))
+    :player-idle
+    (if-let [move-v (movement-vector key-pressed?)]
+      (handle-fsm-event! *player-eid* :movement-input move-v)
+      (when (button-just-pressed? Input$Buttons/LEFT)
+        (interaction-state->txs interaction-state
+                                stage
+                                skin
+                                db
+                                textures
+                                #(set-item! skin stage textures %1 %2)
+                                *player-eid*
+                                handle-fsm-event!)))
 
-      :player-moving
-      (if move-v
-        (do (swap! eid assoc :entity/movement {:direction move-v
-                                               :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                          0)})
-            nil)
-        (handle-fsm-event! (handle-txs! skin stage db) eid :no-movement-input))
+    :player-moving
+    (if-let [move-v (movement-vector key-pressed?)]
+      (do (swap! *player-eid* assoc :entity/movement {:direction move-v
+                                                      :speed (or (get-value (:entity/stats @*player-eid*) :stats/movement-speed)
+                                                                 0)})
+          nil)
+      (handle-fsm-event! *player-eid* :no-movement-input))
 
-      :player-item-on-cursor
-      (when (and left-button-pressed?
-                 (not mouseover-actor*))
-        (handle-fsm-event! (handle-txs! skin stage db) eid :drop-item))
+    :player-item-on-cursor
+    (let [[x y] (ui-mouse-position stage Gdx/input)]
+      (when (and (button-just-pressed? Input$Buttons/LEFT)
+                 (not (mouseover-actor stage x y)))
+        (handle-fsm-event! *player-eid* :drop-item)))
 
-      nil)))
+    nil))
 
 (defn- tick-entities!
   [db 
@@ -4365,10 +4339,9 @@
                     component)))
 
 (defn tick-game!
-  [db active-entities paused? skin stage textures potential-field-cache]
+  [handle-txs! db active-entities paused? skin stage textures potential-field-cache]
   (when-not @paused?
-    (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)
-          handle-txs! (handle-txs! skin stage db)]
+    (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! *grid*
@@ -4381,6 +4354,7 @@
                       @active-entities 
                       handle-txs!
                       textures
+                      ; WTF
                       (fn apply-effects! [effect-ctx effects]
                         (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
                           (handle-effect! (fn audiovisual! [& params]
@@ -4480,7 +4454,27 @@
         paused? (atom false)
         active-entities (atom nil)
         mouseover-eid (atom nil)
-        potential-field-cache (atom nil)]
+        potential-field-cache (atom nil)
+        k->txs {
+                :tx/swap 
+                (fn [eid f & params]
+                  (apply swap! eid f params))
+                :tx/sound 
+                (fn [sound-name]
+                  (play-sound! sound-name))
+                :tx/spawn-entity 
+                (fn [entity-decl]
+                  (spawn-entity! entity-decl))
+                :tx/modal
+                (fn [opts]
+                  (show-modal! @skin @stage opts))
+                :tx/audiovisual
+                (fn [position id-key]
+                  (audiovisual! db position id-key))
+                }
+        handle-txs! (fn [txs]
+                      (doseq [[k & params] txs]
+                        (apply (safe-get k->txs k) params)))]
     {
      :create!
      (fn []
@@ -4519,7 +4513,8 @@
                                                (range width)))
            (set! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
-       (doseq [^Actor actor (create-ui-actors mouseover-eid
+       (doseq [^Actor actor (create-ui-actors handle-txs!
+                                              mouseover-eid
                                               paused?
                                               unit-scale
                                               @default-font
@@ -4584,20 +4579,23 @@
        (.end ^Batch @batch)
        (let [interaction-state (create-interaction-state mouseover-eid @stage)]
          (.setCursor Gdx/graphics (safe-get @cursors (cursor-key interaction-state)))
-         (handle-player-input! interaction-state
+         (handle-player-input! (fn [& params]
+                                  (apply handle-fsm-event! handle-txs! params))
+                               interaction-state
                                @skin 
                                @stage 
                                @textures 
                                #(.isKeyPressed Gdx/input (int %))
                                #(.isButtonJustPressed Gdx/input (int %))
-                               db))
+                               db
+                               ))
        (reset! paused?
                (or #_error
                    (and pausing?
                         (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! db active-entities paused? @skin @stage @textures potential-field-cache)
+       (tick-game! handle-txs! db active-entities paused? @skin @stage @textures potential-field-cache)
        (destroy-entities! db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
