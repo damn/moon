@@ -3529,11 +3529,10 @@
                                    (mouseover-actor stage x y)
                                    mouse-pos)))))
 
-(defn windows-create [actor-fns]
-  (let [group* (Group.)]
-    (run! #(.addActor ^Group group* ^Actor %) (for [f actor-fns] (f)))
-    (doto group*
-      (.setName "moon.ui.windows"))))
+(defn windows-create [actors]
+  (doto (Group.)
+    (add-actors! actors)
+    (.setName "moon.ui.windows")))
 
 (def show-potential-field-colors? (atom nil))
 (def show-cell-entities? (atom false))
@@ -4116,28 +4115,28 @@
                           item))
        :skin skin})
      (hp-mana-bar-create default-font stage textures* unit-scale)
-     (windows-create [#(info-window-create skin stage mouseover-eid)
-                      #(create-inventory-window
-                         Gdx/input
-                         (fn [_event cell]
-                           (handle-clicked-inventory-cell *player-eid* 
-                                                          (handle-txs! skin stage db)
-                                                          textures*
-                                                          (fn [cell item] (set-item! skin stage textures* cell item))
-                                                          (fn [cell] (remove-item! stage cell))
-                                                          cell))
-                         (fn [player-entity x y mouseover? cell]
-                           (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
-                           (when (and mouseover?
-                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                             (let [item (:entity/item-on-cursor player-entity)
-                                   color (if (valid-slot? cell item)
-                                           (float-bits 0 0.6 0 0.8)
-                                           (float-bits 0.6 0 0 0.8))]
-                               (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
-                         skin
-                         stage
-                         textures*)])
+     (windows-create [(info-window-create skin stage mouseover-eid)
+                      (create-inventory-window
+                        Gdx/input
+                        (fn [_event cell]
+                          (handle-clicked-inventory-cell *player-eid* 
+                                                         (handle-txs! skin stage db)
+                                                         textures*
+                                                         (fn [cell item] (set-item! skin stage textures* cell item))
+                                                         (fn [cell] (remove-item! stage cell))
+                                                         cell))
+                        (fn [player-entity x y mouseover? cell]
+                          (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
+                          (when (and mouseover?
+                                     (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                            (let [item (:entity/item-on-cursor player-entity)
+                                  color (if (valid-slot? cell item)
+                                          (float-bits 0 0.6 0 0.8)
+                                          (float-bits 0.6 0 0 0.8))]
+                              (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+                        skin
+                        stage
+                        textures*)])
      (player-state-draw-create unit-scale textures*)
      (player-message-actor-create default-font unit-scale)]))
 
@@ -5415,6 +5414,9 @@
 
 (def sounds (atom nil))
 
+; this itself pass - first param is editor ... editor state ...
+; property-editor-window
+; build-widget (? )
 (defn create-widget
   [[schema-k :as schema] v]
   (case schema-k
