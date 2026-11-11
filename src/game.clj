@@ -561,8 +561,6 @@
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 
-; TODO get rid of this 'def' -> use vars?
-; what is being done with schemas???
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 
 (defn malli-form [schema]
@@ -3179,13 +3177,6 @@
         (handle-txs! (entity-state-enter! eid new-state-obj))
         nil))))
 
-(defn- audiovisual! [db position audiovisual]
-  (let [{:keys [entity/animation]} (if (keyword? audiovisual)
-                                     (build db audiovisual)
-                                     audiovisual)]
-    (spawn-entity! (spawn-effect position
-                                 {:entity/animation (assoc animation :delete-after-stopped? true)}))))
-
 (defn- handle-effect!
   [[k v] effect-ctx active-entities raycaster]
   (case k
@@ -4370,8 +4361,12 @@
              (fn [opts]
                (show-modal! @skin @stage opts))
              :tx/audiovisual
-             (fn [position id-key]
-               (audiovisual! db position id-key))
+             (fn [position audiovisual]
+               (let [{:keys [entity/animation]} (if (keyword? audiovisual)
+                                                  (build db audiovisual)
+                                                  audiovisual)]
+                 (spawn-entity! (spawn-effect position
+                                              {:entity/animation (assoc animation :delete-after-stopped? true)}))))
              :tx/event
              (fn [& params]
                (apply handle-fsm-event! handle-txs! params))
