@@ -565,8 +565,9 @@
     (apply vector :enum (rest schema))
 
     :s/image
-    (create-map-schema [:image/file
-                        [:image/bounds {:optional true}]])
+    [:map {:closed true}
+     [:image/file :string]
+     [:image/bounds {:optional true} [:vector {:size 4} nat-int?]]]
 
     :s/map
     (create-map-schema (second schema))
@@ -599,9 +600,7 @@
 
     :s/val-max
     val-max-schema
-
-    :s/vector
-    (apply vector :vector (rest schema))))
+    ))
 
 (defn touched-tiles*
   "x is leftmost point and y bottom most point in the rectangle."

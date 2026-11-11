@@ -1,23 +1,15 @@
 {
  :property/id [:s/qualified-keyword],
-
- :image/file [:s/string]
- :image/bounds [:s/vector {:size 4} nat-int?]
  :entity/image [:s/image],
-
  :entity/animation [:s/animation],
-
  :properties/audiovisuals [:s/map [:property/id
                                    :entity/animation]],
-
  :property/pretty-name [:s/string],
  :entity/species [:s/qualified-keyword {:namespace :species}],
  :creature/level [:s/number :pos-int],
-
  :entity/width [:s/number :pos],
  :entity/height [:s/number :pos],
  :entity/flying? [:s/boolean],
-
  :stats/hp             [:s/number :pos-int],
  :stats/movement-speed [:s/number :pos],
  :stats/aggro-range    [:s/number :nat-int],
