@@ -3349,11 +3349,11 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
-(def ^:dynamic *start-position*)
+(def *start-position* (atom nil))
 
 (defn spawn-map-creatures [db* tiled-map]
   (mapcat (fn [[position creature-id]] 
-            (when (not= position *start-position*)
+            (when (not= position @*start-position*)
               [[:tx/spawn-entity 
                (spawn-creature {:position (mapv (partial + 0.5) position)
                                 :creature-property (build db* (keyword creature-id))
@@ -4528,7 +4528,7 @@
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
-         (set! *start-position* start-position)
+         (reset! *start-position* start-position)
          (set! *id-counter* (atom 0))
          (set! *entity-ids* (atom {}))
          (let [props (get-properties tiled-map)
@@ -4542,7 +4542,7 @@
                                                (range width)))
            (set! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
-       (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) *start-position*)
+       (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
                                                                            :initial-state :player-idle}
@@ -5653,7 +5653,6 @@
 
 (defn game! []
   (binding [
-            *start-position* nil
             *id-counter* nil
             *entity-ids* nil
             *grid* nil
