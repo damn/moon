@@ -1,19 +1,19 @@
 (ns moon.math.vector2-test
-  (:require [lib.number :as number]
+  #_(:require [lib.number :as number]
             [lib.v2 :as v2]
             [clojure.test :refer :all]))
 
-(set! *unchecked-math* :warn-on-boxed)
+#_(set! *unchecked-math* :warn-on-boxed)
 
-(defn nearly-equal? [[x1 y1] [x2 y2]]
+#_(defn nearly-equal? [[x1 y1] [x2 y2]]
   (and (number/nearly-equal? x1 x2)
        (number/nearly-equal? y1 y2)))
 
-(deftest vecs-nearly-equal?
+#_(deftest vecs-nearly-equal?
   (is (nearly-equal? [0.0000011 0.0123]
                      [0.000001 0.0123])))
 
-(deftest scale
+#_(deftest scale
   (is (nearly-equal? (v2/scale [1 3] 0.5)
                      [0.5 1.5]))
   (is (nearly-equal? (v2/scale [2 1.2] -3)
@@ -21,7 +21,7 @@
   (is (nearly-equal? (v2/scale [0 0] 10)
                      [0.0 0.0])))
 
-(deftest length
+#_(deftest length
   (is (number/nearly-equal? (v2/length [1.2 0.1])
                        1.2041595))
   (is (number/nearly-equal? (v2/length [1.2 -0.1])

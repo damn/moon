@@ -4205,7 +4205,7 @@
   (Sound/.play (get *sounds* sound-name)))
 
 (defn- interaction-state->txs 
-  [[k params] stage skin db textures set-item! player-eid handle-fsm-event!]
+  [[k params] stage player-eid]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -4215,8 +4215,7 @@
       (if in-click-range?
         (case (:type (:entity/clickable @clicked-eid))
           :clickable/player
-          (do (toggle-inventory-visible! stage)
-              nil)
+          [[:tx/toggle-inventory-visible]]
 
           :clickable/item
           (let [item (:entity/item @clicked-eid)]
@@ -4224,64 +4223,54 @@
               (-> (.getRoot ^Stage stage)
                   (.findActor "moon.ui.windows.inventory")
                   .isVisible)
-              (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (play-sound! "bfxr_takeit.wav")
-                  (handle-fsm-event! player-eid :pickup-item item))
+              [[:tx/swap clicked-eid assoc :entity/destroyed? true]
+               [:tx/sound "bfxr_takeit.wav"]
+               [:tx/event player-eid :pickup-item item]]
 
               (can-pickup-item? (:entity/inventory @player-eid) item)
-              (do (swap! clicked-eid assoc :entity/destroyed? true)
-                  (play-sound! "bfxr_pickup.wav")
-                  (assert (valid-item? item))
-                  (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
-                    (assert cell)
-                    (assert (nil? cell-item))
-                    (swap! player-eid set-item cell item)
-                    (set-item! cell item))
-                  nil)
+              (do
+                (assert (valid-item? item))
+                (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
+                  (assert cell)
+                  (assert (nil? cell-item))
+                  [[:tx/swap clicked-eid assoc :entity/destroyed? true]
+                   [:tx/sound "bfxr_pickup.wav"]
+                   [:tx/swap player-eid set-item cell item]
+                   [:tx/set-item cell item]]))
+               
 
               :else
-              (do (play-sound! "bfxr_denied.wav")
-                  (show-message! stage "Your Inventory is full")
-                  nil))))
-        (do (play-sound! "bfxr_denied.wav")
-            (show-message! stage "Too far away")
-            nil)))
+              [[:tx/sound "bfxr_denied.wav"]
+               [:tx/show-message "Your Inventory is full"]])))
+        [[:tx/sound "bfxr_denied.wav"]
+         [:tx/show-message "Too far away"]]))
 
     :interaction-state.skill/usable
     (let [[skill effect-ctx] params]
-      (handle-fsm-event! player-eid :start-action [skill effect-ctx]))
+      [[:tx/event player-eid :start-action [skill effect-ctx]]])
 
     :interaction-state.skill/not-usable
     (let [state params]
-      (do (play-sound! "bfxr_denied.wav")
-          (show-message! stage (case state
-                                 :cooldown "Skill is still on cooldown"
-                                 :not-enough-mana "Not enough mana"
-                                 :invalid-params "Cannot use this here"))
-          nil))
+      [[:tx/sound "bfxr_denied.wav"]
+       [:tx/show-message (case state
+                           :cooldown "Skill is still on cooldown"
+                           :not-enough-mana "Not enough mana"
+                           :invalid-params "Cannot use this here")]])
 
     :interaction-state/no-skill-selected
-    (do (play-sound! "bfxr_denied.wav")
-        (show-message! stage "No selected skill")
-        nil)))
+    [[:tx/sound "bfxr_denied.wav"]
+     [:tx/show-message "No selected skill"]]))
 
 (import '(com.badlogic.gdx Input$Buttons))
 
 (defn handle-player-input!
-  [handle-fsm-event! interaction-state skin stage textures key-pressed? button-just-pressed? db]
+  [handle-txs! interaction-state stage key-pressed? button-just-pressed?]
   (case (:state (:entity/fsm @*player-eid*))
     :player-idle
     (if-let [move-v (movement-vector key-pressed?)]
-      (handle-fsm-event! *player-eid* :movement-input move-v)
+      (handle-fsm-event! handle-txs! *player-eid* :movement-input move-v)
       (when (button-just-pressed? Input$Buttons/LEFT)
-        (interaction-state->txs interaction-state
-                                stage
-                                skin
-                                db
-                                textures
-                                #(set-item! skin stage textures %1 %2)
-                                *player-eid*
-                                handle-fsm-event!)))
+        (handle-txs! (interaction-state->txs interaction-state stage *player-eid*))))
 
     :player-moving
     (if-let [move-v (movement-vector key-pressed?)]
@@ -4289,13 +4278,13 @@
                                                       :speed (or (get-value (:entity/stats @*player-eid*) :stats/movement-speed)
                                                                  0)})
           nil)
-      (handle-fsm-event! *player-eid* :no-movement-input))
+      (handle-fsm-event! handle-txs! *player-eid* :no-movement-input))
 
     :player-item-on-cursor
     (let [[x y] (ui-mouse-position stage Gdx/input)]
       (when (and (button-just-pressed? Input$Buttons/LEFT)
                  (not (mouseover-actor stage x y)))
-        (handle-fsm-event! *player-eid* :drop-item)))
+        (handle-fsm-event! handle-txs! *player-eid* :drop-item)))
 
     nil))
 
@@ -4413,6 +4402,12 @@
              :tx/remove-item
              (fn [cell] 
                (remove-item! @stage cell))
+             :tx/toggle-inventory-visible
+             (fn []
+               (toggle-inventory-visible! @stage))
+             :tx/show-message
+             (fn [message]
+               (show-message! @stage message))
              :tx/apply-effects
              (fn [effect-ctx effects]
                (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
@@ -4424,7 +4419,11 @@
 
 (defn handle-txs! [txs]
   (doseq [[k & params] txs]
-    (apply (safe-get k->txs k) params)))
+    (try (apply (safe-get k->txs k) params)
+         (catch Throwable t
+           (throw (ex-info "handle-txs! error" 
+                           {:k k :params params}
+                           t))))))
 
 (defn game-listener []
   (let [
@@ -4562,16 +4561,11 @@
        (.end ^Batch @batch)
        (let [interaction-state (create-interaction-state mouseover-eid @stage Gdx/input)]
          (.setCursor Gdx/graphics (safe-get @cursors (cursor-key interaction-state)))
-         (handle-player-input! (fn [& params]
-                                  (apply handle-fsm-event! handle-txs! params))
+         (handle-player-input! handle-txs!
                                interaction-state
-                               @skin 
                                @stage 
-                               @textures 
                                #(.isKeyPressed Gdx/input (int %))
-                               #(.isButtonJustPressed Gdx/input (int %))
-                               db
-                               ))
+                               #(.isButtonJustPressed Gdx/input (int %))))
        (reset! paused?
                (or #_error
                    (and pausing?
