@@ -2391,7 +2391,7 @@
 
 (def *id-counter* (atom nil))
 
-(def ^:dynamic *entity-ids*)
+(def *entity-ids* (atom nil))
 
 (def ^:dynamic *grid*)
 
@@ -4530,7 +4530,7 @@
          (reset! tiled-map* tiled-map)
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
-         (set! *entity-ids* (atom {}))
+         (reset! *entity-ids* {})
          (let [props (get-properties tiled-map)
                width (.get props "width")
                height (.get props "height")
@@ -4551,7 +4551,7 @@
                                                               :entity/free-skill-points 3
                                                               :entity/clickable {:type :clickable/player}
                                                               :entity/click-distance-tiles 1.5}}))]
-         (let [eid (get @*entity-ids* 1)] ; TODO not necessary
+         (let [eid (get @*entity-ids* 1)] ; TODO not necessary -> pass id to spawn entity ? can use id counter before?
            (assert (:entity/player? @eid)) ; TODO not necessary
            (reset! player-eid eid)))
        (doseq [^Actor actor (create-ui-actors @player-eid
@@ -5653,7 +5653,6 @@
 
 (defn game! []
   (binding [
-            *entity-ids* nil
             *grid* nil
             *content-grid* nil
             *raycaster* nil]
