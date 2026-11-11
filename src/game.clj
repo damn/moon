@@ -3045,11 +3045,19 @@
                           :faction (:entity/faction source*)}
                          v)]]))
 
+(def db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+
+(defn animation-entity [position animation-k]
+  (assert (keyword? animation-k))
+  (let [{:keys [entity/animation]} (safe-get db animation-k)]
+    (spawn-effect position
+                  {:entity/animation (assoc animation :delete-after-stopped? true)})))
+
 (defn spawn-effect* [v effect-ctx]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
     [[:tx/sound "bfxr_curse.wav"]
-     [:tx/audiovisual position :audiovisuals/spawn]
+     [:tx/spawn-entity (animation-entity position :audiovisuals/spawn)]
      [:tx/spawn-entity (spawn-creature {:position position
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
@@ -3076,7 +3084,7 @@
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)]
     [[:tx/sound "bfxr_burrow.wav"]
-     [:tx/audiovisual (:entity/position @target) :audiovisuals/convert]
+     [:tx/spawn-entity (animation-entity (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
 (defn target-entity-effect [v effect-ctx]
@@ -3095,7 +3103,7 @@
            :thick? true})]
        [:tx/apply-effects effect-ctx entity-effects]]
       [[:tx/sound "bfxr_fisthit.wav"]
-       [:tx/audiovisual (end-point body target-body maxrange) :audiovisuals/hit-ground]])))
+       [:tx/spawn-entity (animation-entity (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
 
 (defn damage-effect [v effect-ctx]
   (let [source (:effect/source effect-ctx)
@@ -3131,7 +3139,7 @@
          [:tx/swap target add-text-effect dmg-text 0.3 timer-create]
          [:tx/event target (if (zero? new-hp-val) :kill :alert)]
          [:tx/sound "bfxr_normalhit.wav"]
-         [:tx/audiovisual (:entity/position target*) :audiovisuals/damage]]))))
+         [:tx/spawn-entity (animation-entity (:entity/position target*) :audiovisuals/damage)]]))))
 
 (defn kill-effect [_v effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :kill]])
@@ -4144,7 +4152,7 @@
             (case v
               :audiovisuals/creature-die "bfxr_defaultmonsterdeath.wav"
               :audiovisuals/hit-wall "bfxr_projectile_wallhit.wav")]
-           [:tx/audiovisual (:entity/position @eid) v]]
+           [:tx/spawn-entity (animation-entity (:entity/position @eid) v)]]
 
           nil)))))
 
@@ -4326,11 +4334,13 @@
         '(com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
         '(com.badlogic.gdx.utils Disposable ScreenUtils))
 
+(defn sprite-batch []
+  (SpriteBatch.))
+
 (declare handle-txs!)
 
 (def skin (atom nil))
 (def stage (atom nil))
-(def db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
 (def textures (atom nil))
 (def active-entities (atom nil))
 (def ^:dynamic *sounds*)
@@ -4349,12 +4359,6 @@
              :tx/modal
              (fn [opts]
                (show-modal! @skin @stage opts))
-             :tx/audiovisual
-             (fn [position audiovisual-k]
-               (assert (keyword? audiovisual-k))
-               (let [{:keys [entity/animation]} (safe-get db audiovisual-k)]
-                 (spawn-entity! (spawn-effect position
-                                              {:entity/animation (assoc animation :delete-after-stopped? true)}))))
              :tx/event
              (fn [& params]
                (handle-txs! (apply handle-fsm-event! params)))
@@ -4428,7 +4432,7 @@
        (set! *sounds* (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (create-sound! path)])))
-       (reset! batch (SpriteBatch.))
+       (reset! batch (sprite-batch))
        (reset! default-font (create-default-font!))
        (reset! shape-drawer-texture (white-pixel-texture))
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
@@ -4638,7 +4642,7 @@
                              (generate-level @db @textures @camera level-fn)))])]
     {:create!
      (fn []
-       (reset! batch (SpriteBatch.))
+       (reset! batch (sprite-batch))
        (reset! skin (Skin. (internal Gdx/files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
@@ -5491,7 +5495,7 @@
   (let [batch (atom nil)]
     {:create!
      (fn []
-       (reset! batch (SpriteBatch.))
+       (reset! batch (sprite-batch))
        (reset! editor-skin (Skin. (internal Gdx/files "skin/uiskin.json")))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
