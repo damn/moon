@@ -950,31 +950,38 @@
 (defn add-actor! [^Group group actor]
   (.addActor group actor))
 
+(defn inventory-window-cell-highlight-widget [draw-cell-rect! input]
+  (proxy [Widget] []
+    (draw [_batch _parent-alpha]
+      (when-let [stage (.getStage ^Actor this)]
+        (draw-cell-rect! @*player-eid*
+                         (.getX ^Actor this)
+                         (.getY ^Actor this)
+                         (let [v2 (.unproject (.getViewport ^Stage stage)
+                                              (Vector2. (float (.getX input))
+                                                        (float (.getY input))))
+                               local (.stageToLocalCoordinates ^Actor this
+                                                               (Vector2. (.x v2) (.y v2)))
+                               x (.x ^Vector2 local)
+                               y (.y ^Vector2 local)]
+                           (.hit ^Actor this (float x) (float y) true))
+                         (.getUserObject ^Actor (.getParent ^Actor this)))))))
+
+(defn inventory-window-cell-image-widget [background-drawable cell-size]
+  (doto (Image. ^Drawable background-drawable)
+    (.setName "image-widget")
+    (.setUserObject {:background-drawable background-drawable
+                     :cell-size cell-size})))
+
+(defn add-actors! [group actors]
+  (run! #(add-actor! group %) actors))
+
 (defn- inv-window-cell [input on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
-        background-drawable (slot->drawable slot)
-        stack (create-stack)]
-    (run! #(add-actor! stack %)
-          [(proxy [Widget] []
-             (draw [batch parent-alpha]
-               (when-let [stage (.getStage ^Actor this)]
-                 (draw-cell-rect! @*player-eid*
-                                  (.getX ^Actor this)
-                                  (.getY ^Actor this)
-                                  (let [v2 (.unproject (.getViewport ^Stage stage)
-                                                       (Vector2. (float (.getX input))
-                                                                 (float (.getY input))))
-                                        local (.stageToLocalCoordinates ^Actor this
-                                                                        (Vector2. (.x v2) (.y v2)))
-                                        x (.x ^Vector2 local)
-                                        y (.y ^Vector2 local)]
-                                    (.hit ^Actor this (float x) (float y) true))
-                                  (.getUserObject ^Actor (.getParent ^Actor this))))))
-           (doto (Image. ^Drawable background-drawable)
-             (.setName "image-widget")
-             (.setUserObject {:background-drawable background-drawable
-                              :cell-size cell-size}))])
-    (doto stack
+        background-drawable (slot->drawable slot)]
+    (doto (create-stack)
+      (add-actors! [(inventory-window-cell-highlight-widget draw-cell-rect! input)
+                    (inventory-window-cell-image-widget background-drawable cell-size)])
       (.addListener (proxy [ClickListener] []
                       (clicked [event _x _y]
                         (on-click-cell event cell))))
