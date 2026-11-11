@@ -4452,14 +4452,7 @@
         '(com.badlogic.gdx.utils Disposable ScreenUtils))
 
 (defn game-listener []
-  (let [batch (atom nil)
-        cursors (atom nil)
-        default-font (atom nil)
-        textures (atom nil)
-        shape-drawer (atom nil)
-        shape-drawer-texture (atom nil)
-        explored-tile-corners (atom nil)
-        tiled-map* (atom nil)
+  (let [
         db (create-db (-> "properties.edn" io/resource slurp edn/read-string))
         pausing? true
         state->pause-game? {:active-skill false
@@ -4478,6 +4471,15 @@
                   :close-windows-key Input$Keys/ESCAPE
                   :toggle-inventory Input$Keys/I
                   :toggle-entity-info Input$Keys/E}
+
+        batch (atom nil)
+        cursors (atom nil)
+        default-font (atom nil)
+        textures (atom nil)
+        shape-drawer (atom nil)
+        shape-drawer-texture (atom nil)
+        explored-tile-corners (atom nil)
+        tiled-map* (atom nil)
         skin (atom nil)
         stage (atom nil)
         unit-scale (atom 1)
@@ -4510,7 +4512,6 @@
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
          (set! *start-position* start-position)
-         
          (set! *id-counter* (atom 0))
          (set! *entity-ids* (atom {}))
          (let [props (.getProperties tiled-map)
