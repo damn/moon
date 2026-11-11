@@ -3205,9 +3205,9 @@
 ; or we handle item on cursor drop events differently than through state exit (directly?)
 ; see cyberdungeon.
 (import '(com.badlogic.gdx Gdx))
-(def ^:dynamic ^Viewport *viewport*)
+(def *viewport* (atom nil))
 (defn item-place-position* [position click-distance]
-  (item-place-position *viewport* Gdx/input position click-distance))
+  (item-place-position @*viewport* Gdx/input position click-distance))
 
 ; complete and utter mess
 (defn- handle-fsm-event! [eid event & [params]]
@@ -3523,7 +3523,7 @@
 
 (defn draw-cell-debug
   [shape-drawer]
-  (let [^OrthographicCamera camera (.getCamera *viewport*)
+  (let [^OrthographicCamera camera (.getCamera @*viewport*)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
                            (.planePoints (.frustum camera)))
@@ -3563,7 +3563,7 @@
 (defn draw-tile-grid
   [shape-drawer]
   (when @show-tile-grid?
-    (let [^OrthographicCamera camera (.getCamera *viewport*)
+    (let [^OrthographicCamera camera (.getCamera @*viewport*)
           plane-points (mapv (fn [^Vector3 v3]
                                [(.x v3) (.y v3) (.z v3)])
                              (.planePoints (.frustum camera)))
@@ -3573,15 +3573,15 @@
       (draw-fn-grid shape-drawer
                     (int left-x)
                     (int bottom-y)
-                    (inc (int (.getWorldWidth *viewport*)))
-                    (+ 2 (int (.getWorldHeight *viewport*)))
+                    (inc (int (.getWorldWidth @*viewport*)))
+                    (+ 2 (int (.getWorldHeight @*viewport*)))
                     1
                     1
                     (float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
   [shape-drawer input]
-  (let [[x y] (mapv int (unproject *viewport* [(.getX input) (.getY input)]))
+  (let [[x y] (mapv int (unproject @*viewport* [(.getX input) (.getY input)]))
         cell (cell-at [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
       (rectangle! shape-drawer x y 1 1
@@ -3646,7 +3646,7 @@
       (when-not mouseover-actor
         (draw-texture-region! batch @unit-scale
                                 (get-texture-region textures (:entity/image item))
-                                (item-place-position *viewport*
+                                (item-place-position @*viewport*
                                                      Gdx/input
                                                      (:entity/position entity)
                                                      (- (:entity/click-distance-tiles entity) 0.1))
@@ -4082,10 +4082,10 @@
                                                (mapv int (ui-mouse-position stage Gdx/input)))}
                                  {:label "World"
                                   :update-fn (fn []
-                                               (mapv int (unproject *viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
+                                               (mapv int (unproject @*viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
                                  {:label "Zoom"
                                   :update-fn (fn []
-                                               (.zoom ^OrthographicCamera (.getCamera *viewport*)))
+                                               (.zoom ^OrthographicCamera (.getCamera @*viewport*)))
                                   :icon "images/zoom.png"}]]
                        (if (:icon item)
                          (update item :icon #(get textures* %))
@@ -4121,7 +4121,7 @@
                   nil
                   (let [player @player-eid
                         hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (point->entities *grid* (unproject *viewport* [(.getX input) (.getY input)])))]
+                                     (point->entities *grid* (unproject @*viewport* [(.getX input) (.getY input)])))]
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
@@ -4137,7 +4137,7 @@
   (reset! active-entities (active-entities* *content-grid* @player-eid)))
 
 (defn set-camera-to-player! [player-eid]
-  (let [camera (.getCamera *viewport*)
+  (let [camera (.getCamera @*viewport*)
         pos (.position camera)
         [x y] (:entity/position @player-eid)]
     (set! (.x pos) x)
@@ -4377,7 +4377,7 @@
               skill (skill-id (:entity/skills entity))
               target-position (or (and mouseover-eid
                                        (:entity/position @mouseover-eid))
-                                  (unproject *viewport* [(.getX input) (.getY input)]))
+                                  (unproject @*viewport* [(.getX input) (.getY input)]))
               effect-ctx {:effect/source player-eid
                           :effect/target mouseover-eid
                           :effect/target-position target-position
@@ -4524,7 +4524,7 @@
        (reset! textures (create-textures Gdx/files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
-       (set! *viewport* (create-viewport! world-unit-scale))
+       (reset! *viewport* (create-viewport! world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
@@ -4586,15 +4586,15 @@
        (update-mouseover-eid! @player-eid mouseover-eid @stage Gdx/input)
        (update-active-entities! active-entities @player-eid)
        (set-camera-to-player! @player-eid)
-       (.setProjectionMatrix ^Batch @batch (.combined (.getCamera *viewport*)))
+       (.setProjectionMatrix ^Batch @batch (.combined (.getCamera @*viewport*)))
        (.begin ^Batch @batch)
        (draw-tiled-map! @tiled-map*
                         @batch
-                        (.getCamera *viewport*)
+                        (.getCamera @*viewport*)
                         (tile-color-setter*
                           {:ray-blocked? (partial raycaster-blocked? *raycaster*)
                            :explored-tile-corners explored-tile-corners
-                           :light-position (let [pos (.position (.getCamera *viewport*))]
+                           :light-position (let [pos (.position (.getCamera @*viewport*))]
                                              [(.x pos) (.y pos) (.z pos)])
                            :see-all-tiles? false
                            :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4642,11 +4642,11 @@
                    potential-field-cache)
        (destroy-entities! handle-txs!)
        (doseq [[k f] {(:zoom-in controls) (fn []
-                                            (let [^OrthographicCamera camera (.getCamera *viewport*)]
+                                            (let [^OrthographicCamera camera (.getCamera @*viewport*)]
                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
                                               (.update camera)))
                       (:zoom-out controls) (fn []
-                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
+                                             (let [^OrthographicCamera camera (.getCamera @*viewport*)]
                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                (.update camera)))}]
          (when (.isKeyPressed Gdx/input (int k))
@@ -4665,7 +4665,7 @@
      :resize!
      (fn [width height]
        (.update (.getViewport ^Stage @stage) width height true)
-       (.update *viewport* width height false))
+       (.update @*viewport* width height false))
      }))
 
 (defn- generate-level
@@ -5636,8 +5636,6 @@
       (.setWindowedMode width height)
       (.setForegroundFPS fps))))
 
-; Why applications do not have parameters?
-
 (defn levelgen! []
   (lwjgl3-application! (levelgen-listener)
                        {:title "Levelgen", 
@@ -5655,7 +5653,6 @@
 
 (defn game! []
   (binding [
-            *viewport* nil
             *elapsed-time* (atom nil)
             *start-position* nil
             *id-counter* nil
