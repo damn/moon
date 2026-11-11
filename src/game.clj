@@ -4369,7 +4369,7 @@
 (def stage (atom nil))
 (def textures (atom nil))
 (def active-entities (atom nil))
-(def ^:dynamic *sounds*)
+(def sounds (atom nil))
 (import '(com.badlogic.gdx.audio Sound))
 
 (def k->txs {
@@ -4379,7 +4379,7 @@
 
              :tx/sound 
              (fn [sound-name]
-               (Sound/.play (safe-get *sounds* sound-name)))
+               (Sound/.play (safe-get @sounds sound-name)))
 
              :tx/spawn-entity 
              (fn [entity-decl]
@@ -4469,7 +4469,7 @@
        (reset! cursors (update-vals (-> "cursors.edn" io/resource slurp edn/read-string)
                                     (fn [& params]
                                       (apply create-cursor! Gdx/files Gdx/graphics params))))
-       (set! *sounds* (into {}
+       (reset! sounds (into {}
                             (for [path (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [path (create-sound! path)])))
        (reset! batch (sprite-batch))
@@ -4531,7 +4531,7 @@
 
      :dispose!
      (fn []
-       (run! dispose! (vals *sounds*))
+       (run! dispose! (vals @sounds))
        (dispose! @batch)
        (run! dispose! (vals @cursors))
        (dispose! @default-font)
@@ -5614,7 +5614,7 @@
                         :fps 60}))
 
 (defn game! []
-  (binding [*sounds* nil
+  (binding [
             *viewport* nil
             *elapsed-time* (atom nil)
             *start-position* nil
