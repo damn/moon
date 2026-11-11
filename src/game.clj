@@ -445,23 +445,6 @@
       (TextureRegion. texture (int x) (int y) (int w) (int h))
       (TextureRegion. texture))))
 
-(def ^:dynamic *elapsed-time*)
-
-(defn timer-create [duration]
-  {:pre [(>= duration 0)]}
-  {:duration duration
-   :stop-time (+ @*elapsed-time* duration)})
-
-(defn timer-stopped? [{:keys [stop-time]}]
-  (>= @*elapsed-time* stop-time))
-
-(defn timer-ratio [{:keys [duration stop-time] :as timer}]
-  {:post [(<= 0 % 1)]}
-  (if (timer-stopped? timer)
-    0
-    ; min 1 because floating point math inaccuracies
-    (min 1 (/ (- stop-time @*elapsed-time*) duration))))
-
 (defn timer-increment [timer duration]
   (update timer :stop-time + duration))
 
@@ -1691,6 +1674,18 @@
     :evil :good
     :good :evil))
 
+(def ^:dynamic *elapsed-time*)
+
+(defn timer-stopped? [{:keys [stop-time]}]
+  (>= @*elapsed-time* stop-time))
+
+(defn timer-ratio [{:keys [duration stop-time] :as timer}]
+  {:post [(<= 0 % 1)]}
+  (if (timer-stopped? timer)
+    0
+    ; min 1 because floating point math inaccuracies
+    (min 1 (/ (- stop-time @*elapsed-time*) duration))))
+
 (def ^:private info-text-config
   {:k->fn {:creature/level (fn [v]
                               (str "Level: " v))
@@ -2013,7 +2008,7 @@
   (nearest-entity-distance @(get-in grid (mapv int (:entity/position entity)))
                            (enemy (:entity/faction entity))))
 
-(defn add-text-effect [entity text duration]
+(defn add-text-effect [entity text duration timer-create]
   (assoc entity :entity/string-effect
          (if-let [existing (:entity/string-effect entity)]
            (-> existing
@@ -2855,6 +2850,11 @@
 
 (import '(com.badlogic.gdx Gdx))
 
+(defn timer-create [duration]
+  {:pre [(>= duration 0)]}
+  {:duration duration
+   :stop-time (+ @*elapsed-time* duration)})
+
 (defn- entity-state-exit!
   [eid [state-k _state-v]]
   (case state-k
@@ -2873,7 +2873,7 @@
     [[:tx/swap eid dissoc :entity/movement]]
 
     :npc-sleeping
-    [[:tx/swap eid add-text-effect "[WHITE]!" 1]
+    [[:tx/swap eid add-text-effect "[WHITE]!" 1 timer-create]
      [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2)]]
 
     :npc-moving
@@ -3107,7 +3107,7 @@
       (and (:entity/stats source*)
            (:entity/stats target*)
            (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
-      (do (swap! target add-text-effect "[WHITE]ARMOR" 0.3)
+      (do (swap! target add-text-effect "[WHITE]ARMOR" 0.3 timer-create)
           nil)
 
       :else
