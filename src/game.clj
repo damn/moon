@@ -993,6 +993,9 @@
     (.unproject viewport v2)
     [(.x v2) (.y v2)]))
 
+(defn get-user-object [^Actor actor]
+  (.getUserObject actor))
+
 (defn inventory-window-cell-highlight-widget [draw-cell-rect! input player-eid]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
@@ -1005,13 +1008,16 @@
                                x (.x ^Vector2 local)
                                y (.y ^Vector2 local)]
                            (.hit ^Actor this (float x) (float y) true))
-                         (.getUserObject ^Actor (.getParent ^Actor this)))))))
+                         (get-user-object (.getParent ^Actor this)))))))
+
+(defn set-user-object! [^Actor actor obj]
+  (.setUserObject actor obj)
 
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
   (doto (Image. ^Drawable background-drawable)
     (.setName "image-widget")
-    (.setUserObject {:background-drawable background-drawable
-                     :cell-size cell-size})))
+    (set-user-object! {:background-drawable background-drawable
+                       :cell-size cell-size})))
 
 (defn add-actors! [group actors]
   (run! #(add-actor! group %) actors))
@@ -1026,7 +1032,7 @@
                       (clicked [event _x _y]
                         (on-click-cell event cell))))
       (.setName "inventory-cell")
-      (.setUserObject cell))))
+      (set-user-object! cell))))
 
 (import '(com.badlogic.gdx.graphics Color))
 (import '(com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable))
@@ -1842,15 +1848,21 @@
          (str/join "\n")
          remove-newlines)))
 
+(defn find-actor [^Group group actor-name]
+  (.findActor group actor-name))
+
+(defn get-children [^Group group]
+  (.getChildren group))
+
 (defn- inv-get-cell [inventory-window cell]
-  (->> (.getChildren ^Group (.findActor ^Group inventory-window "inventory-cell-table"))
-       (filter #(= (.getUserObject ^Actor %) cell))
+  (->> (get-children (find-actor inventory-window "inventory-cell-table"))
+       (filter #(= (get-user-object %) cell))
        first))
 
 (defn set-item!* [inventory-window cell {:keys [texture-region tooltip-text]} skin]
   (let [cell-widget (inv-get-cell inventory-window cell)
-        image-widget (.findActor ^Group cell-widget "image-widget")
-        cell-size (:cell-size (.getUserObject ^Actor image-widget))]
+        image-widget (find-actor cell-widget "image-widget")
+        cell-size (:cell-size (get-user-object image-widget))]
     (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                                                   (.setMinSize cell-size cell-size)))
     (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
@@ -1865,9 +1877,12 @@
                      (when (seq (:stats/modifiers item))
                        (str "[CYAN]" (mods-format-text (:stats/modifiers item)) "[]"))])))
 
+(defn get-root [^Stage stage]
+  (.getRoot stage))
+
 (defn set-item! [skin stage textures cell item]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.windows.inventory")
+  (-> (get-root stage)
+      (find-actor "moon.ui.windows.inventory")
       (set-item!* cell
                   {:texture-region (get-texture-region textures (:entity/image item))
                    :tooltip-text (item-info-text item)}
@@ -1882,30 +1897,30 @@
            tooltip-text]}
    skin]
   (let [scale 2
-        horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (.getUserObject ^Actor horizontal-group)
+        horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (get-user-object horizontal-group)
         button (doto (ImageButton.
                       (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                         (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
                                      (* scale (.getRegionHeight ^TextureRegion texture-region)))))
                  (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
-                 (.setUserObject skill-id))]
+                 (set-user-object! skill-id))]
     (.addActor ^Group horizontal-group ^Actor button)
     (.add ^ButtonGroup button-group ^Button button)
     nil))
 
 #_(defn remove-skill!
   [action-bar skill-id]
-  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (.getUserObject ^Actor horizontal-group)
+  (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (get-user-object horizontal-group)
         button (get horizontal-group skill-id)]
     (.remove ^Actor button)
     (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
 (defn set-skill! [skin stage textures skill]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.action-bar")
+  (-> (get-root stage)
+      (find-actor "moon.ui.action-bar")
       (add-skill! {:skill-id (:property/id skill)
                    :texture-region (get-texture-region textures (:entity/image skill))
                    :tooltip-text (info-text skill)}
@@ -1913,8 +1928,8 @@
 
 (defn remove-item!* [inventory-window cell]
   (let [cell-widget (inv-get-cell inventory-window cell)
-        image-widget (.findActor ^Group cell-widget "image-widget")]
-    (.setDrawable ^Image image-widget ^Drawable (:background-drawable (.getUserObject ^Actor image-widget)))
+        image-widget (find-actor cell-widget "image-widget")]
+    (.setDrawable ^Image image-widget ^Drawable (:background-drawable (get-user-object image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
     ; ... first find the listener
@@ -1922,8 +1937,8 @@
     nil))
 
 (defn remove-item! [stage cell]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "moon.ui.windows.inventory")
+  (-> (get-root stage)
+      (find-actor "moon.ui.windows.inventory")
       (remove-item!* cell)))
 
 (defn sync-player-ui! [skin stage textures eid]
@@ -1938,16 +1953,16 @@
     (set-item! skin stage textures [slot position] item)))
 
 (defn toggle-inventory-visible! [stage]
-  (let [inventory (-> (.getRoot ^Stage stage)
-                      (.findActor "moon.ui.windows.inventory"))]
+  (let [inventory (-> (get-root stage)
+                      (find-actor "moon.ui.windows.inventory"))]
     (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
 
 (defn close-windows! [stage]
-  (->> (.getChildren ^Group (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows"))
+  (->> (get-children (find-actor (get-root stage) "moon.ui.windows"))
        (run! #(.setVisible ^Actor % false))))
 
 (defn toggle-entity-info! [stage]
-  (let [entity-info (.findActor ^Group (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
+  (let [entity-info (find-actor (get-root stage) "moon.ui.windows.entity-info")]
     (.setVisible ^Actor entity-info
                  (not (.isVisible ^Actor entity-info)))))
 
@@ -1961,7 +1976,7 @@
 (import '(com.badlogic.gdx.utils Align))
 
 (defn show-modal! [^Skin skin ^Stage stage {:keys [title text button-text on-click]}]
-  (assert (not (.findActor (.getRoot stage) "moon.ui.modal-window")))
+  (assert (not (find-actor (get-root stage) "moon.ui.modal-window")))
   (let [^String title title
         ^String text text
         window (Window. title skin)]
@@ -1970,7 +1985,7 @@
     (.add window (doto (TextButton. ^String button-text skin)
                    (.addListener (proxy [ChangeListener] []
                                    (changed [_event _actor]
-                                     (.remove (.findActor (.getRoot stage)
+                                     (.remove (find-actor (get-root stage)
                                                           "moon.ui.modal-window"))
                                      (on-click))))))
     (.row window)
@@ -2499,7 +2514,7 @@
 (defn mouseover-actor-info [actor]
   (let [inventory-slot (and (.getParent ^Actor actor)
                             (= "inventory-cell" (.getName ^Actor (.getParent ^Actor actor)))
-                            (.getUserObject ^Actor (.getParent ^Actor actor)))]
+                            (get-user-object (.getParent ^Actor actor)))]
     (cond
       inventory-slot
       [:mouseover-actor/inventory-cell inventory-slot]
@@ -3394,7 +3409,7 @@
   (let [message-duration-seconds 0.5]
     (doto (proxy [Actor] []
             (act [delta]
-              (let [state (.getUserObject ^Actor this)]
+              (let [state (get-user-object this)]
                 (when (:text @state)
                   (swap! state update :counter + delta)
                   (when (>= (:counter @state) message-duration-seconds)
@@ -3403,7 +3418,7 @@
                 (proxy-super act delta)))
             (draw [batch parent-alpha]
               (when-let [stage (.getStage ^Actor this)]
-                (let [state (.getUserObject ^Actor this)
+                (let [state (get-user-object this)
                       vp-width (.getWorldWidth (.getViewport ^Stage stage))
                       vp-height (.getWorldHeight (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
@@ -3416,7 +3431,7 @@
                                  :scale 2.5
                                  :up? true}))))))
       (.setName "player-message")
-      (.setUserObject (atom nil)))))
+      (set-user-object! (atom nil)))))
 
 (defn- entity-state-draw-ui-view
   [[k _v] eid batch unit-scale textures mouseover-actor* ui-mouse-pos]
@@ -3989,9 +4004,9 @@
                                       (.space (float 2))
                                       (.pad (float 2))
                                       (.setName "moon.ui.action-bar.horizontal-group")
-                                      (.setUserObject (doto (ButtonGroup.)
-                                                        (.setMaxCheckCount (int 1))
-                                                        (.setMinCheckCount (int 0))))))
+                                      (set-user-object! (doto (ButtonGroup.)
+                                                          (.setMaxCheckCount (int 1))
+                                                          (.setMinCheckCount (int 0))))))
       (.expand)
       (.bottom))
     (.row ^Table table)
@@ -4175,9 +4190,9 @@
           v)))))
 
 (defn- show-message! [stage message]
-  (-> (.getRoot ^Stage stage)
-      (.findActor "player-message")
-      (.setUserObject (atom {:text message :counter 0}))))
+  (-> (get-root stage)
+      (find-actor "player-message")
+      (set-user-object! (atom {:text message :counter 0}))))
 
 (defn- interaction-state->txs 
   [[k params] stage player-eid]
@@ -4195,8 +4210,8 @@
           :clickable/item
           (let [item (:entity/item @clicked-eid)]
             (cond
-              (-> (.getRoot ^Stage stage)
-                  (.findActor "moon.ui.windows.inventory")
+              (-> (get-root stage)
+                  (find-actor "moon.ui.windows.inventory")
                   .isVisible)
               [[:tx/swap clicked-eid assoc :entity/destroyed? true]
                [:tx/sound "bfxr_takeit.wav"]
@@ -4292,10 +4307,10 @@
                       handle-txs!))))
 
 (defn selected-skill [action-bar]
-  (let [horizontal-group (.findActor ^Group action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (.getUserObject ^Actor horizontal-group)]
+  (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (get-user-object horizontal-group)]
     (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
-      (.getUserObject ^Actor skill-button))))
+      (get-user-object skill-button))))
 
 (defn- create-interaction-state [player-eid mouseover-eid stage input]
   (let [mouseover-eid @mouseover-eid
@@ -4313,8 +4328,8 @@
                             (:entity/click-distance-tiles @player-eid))}]
 
       :else
-      (if-let [skill-id (-> (.getRoot ^Stage stage)
-                            (.findActor "moon.ui.action-bar")
+      (if-let [skill-id (-> (get-root stage)
+                            (find-actor "moon.ui.action-bar")
                             selected-skill)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
@@ -4892,7 +4907,7 @@
     (.setChecked checked?)))
 
 (defn- default-widget-value [widget]
-  ((.getUserObject ^Actor widget) 1))
+  ((get-user-object widget) 1))
 
 (defn- truncate ^String [s limit]
   (if (> (count s) limit)
@@ -4913,25 +4928,31 @@
     (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
     (.setSelected (pr-str v))))
 
+(defn text-field [text skin]
+  (TextField ^String text skin))
+
+(defn get-text [^TextField text-field]
+  (.getText text-field)
+
 (defn- number-widget-value [widget]
-  (edn/read-string (.getText ^TextField widget)))
+  (edn/read-string (get-text widget)))
 
 (defn- create-number-widget [schema v skin]
-  (doto (TextField. ^String (pr-str v) skin)
+  (doto (text-field (pr-str v) skin)
     (.addListener (TextTooltip. ^String (str schema) skin))))
 
 (defn- string-widget-value [widget]
-  (.getText ^TextField widget))
+  (get-text widget))
 
 (defn- create-string-widget [schema v skin]
-  (doto (TextField. ^String (str v) skin)
+  (doto (text-field (str v) skin)
     (.addListener (TextTooltip. ^String (str schema) skin))))
 
 (defn- val-max-widget-value [widget]
-  (edn/read-string (.getText ^TextField widget)))
+  (edn/read-string (get-text widget)))
 
 (defn- create-val-max-widget [schema v skin]
-  (doto (TextField. ^String (pr-str v) skin)
+  (doto (text-field (pr-str v) skin)
     (.addListener (TextTooltip. ^String (str schema) skin))))
 
 (defn create-text-button [text skin]
@@ -4976,16 +4997,10 @@
 (defn first-ascendant [^Actor actor]
   (.firstAscendant actor))
 
-(defn get-user-object [^Actor actor]
-  (.getUserObject actor))
-
 (import '(com.badlogic.gdx.scenes.scene2d.utils Layout))
 
 (defn pack! [^Layout layout]
   (.pack layout))
-
-(defn set-user-object! [^Actor actor obj]
-  (.setUserObject actor obj))
 
 (defn- choose-sound-button [table sound-name ->sound-columns skin]
   (doto (TextButton. sound-name skin)
@@ -5057,8 +5072,8 @@
       table)))
 
 (defn- one-to-one-widget-value [widget]
-  (->> (.getChildren ^Group widget)
-       (keep (fn [^Actor a] (.getUserObject a)))
+  (->> (get-children widget)
+       (keep get-user-object)
        first))
 
 (def editor-db (atom nil))
@@ -5137,7 +5152,7 @@
                                      (.addListener (TextTooltip. ^String (binding [*print-level* 2]
                                                                            (with-out-str
                                                                              (pprint/pprint property))) @editor-skin))
-                                     (.setUserObject property-id)))}]
+                                     (set-user-object! property-id)))}]
                         [{:actor (doto (TextButton. "-" @editor-skin)
                                    (.addListener (proxy [ChangeListener] []
                                                    (changed [event _actor]
@@ -5153,8 +5168,8 @@
     table))
 
 (defn- one-to-many-widget-value [widget]
-  (->> (.getChildren ^Group widget)
-       (keep (fn [^Actor a] (.getUserObject a)))
+  (->> (get-children widget)
+       (keep get-user-object)
        set))
 
 (defn- add-one-to-many-rows [table property-type property-ids]
@@ -5180,7 +5195,7 @@
                            (.addListener (TextTooltip. ^String (binding [*print-level* 2]
                                                                  (with-out-str
                                                                    (pprint/pprint property))) @editor-skin))
-                           (.setUserObject property-id))}))
+                           (set-user-object! property-id))}))
              (for [id property-ids]
                {:actor (doto (TextButton. "-" @editor-skin)
                          (.addListener (proxy [ChangeListener] []
@@ -5223,16 +5238,16 @@
 
 (defn map-widget-value [table]
   (into {}
-        (for [widget (filter (comp vector? (fn [^Actor a] (.getUserObject a))) (.getChildren ^Group table))
-              :let [[k _] (.getUserObject ^Actor widget)]]
+        (for [widget (filter (comp vector? get-user-object) (get-children table))
+              :let [[k _] (get-user-object widget)]]
           [k (widget-value (get schemas k) widget)])))
 
 (declare property-editor-window)
 
 (defn- rebuild-editor-window! []
-  (let [window (-> (.getRoot ^Stage @editor-stage)
-                   (.findActor "moon.ui.clojure.editor-window"))
-        map-widget-table (.findActor ^Group window "moon.db.schema.map.ui.widget")
+  (let [window (-> (get-root @editor-stage)
+                   (find-actor "moon.ui.clojure.editor-window"))
+        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-value map-widget-table)]
     (.remove window)
     (.addActor ^Stage @editor-stage (property-editor-window property))))
@@ -5248,9 +5263,9 @@
                                      (.addListener (proxy [ChangeListener] []
                                                      (changed [event _actor]
                                                        (.remove ^Actor (first (filter (fn [actor]
-                                                                                        (and (.getUserObject ^Actor actor)
-                                                                                             (= k ((.getUserObject ^Actor actor) 0))))
-                                                                                      (.getChildren ^Group table))))
+                                                                                        (and (get-user-object actor)
+                                                                                             (= k ((get-user-object actor) 0))))
+                                                                                      (get-children table))))
                                                        (rebuild-editor-window!)))))))
       (.left))
     (.add row-table ^Actor (Label. ^String (k-label-text k) @editor-skin))
@@ -5373,7 +5388,7 @@
 
 (defn- build-widget [schema k v]
   (let [widget (create-widget schema v)]
-    (.setUserObject ^Actor widget [k v])
+    (set-user-object! widget [k v])
     widget))
 
 (defn play-sound!* [sounds sound-name]
@@ -5381,9 +5396,6 @@
 
 (def sounds (atom nil))
 
-; this itself pass - first param is editor ... editor state ...
-; property-editor-window
-; build-widget (? )
 (defn create-widget
   [[schema-k :as schema] v]
   (case schema-k
