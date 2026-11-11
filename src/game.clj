@@ -4373,17 +4373,14 @@
                         eid 
                         component)))))
 
-
-(def ^:dynamic *potential-field-cache*)
-
 (defn tick-game!
-  [db active-entities paused?  skin stage textures]
+  [db active-entities paused? skin stage textures potential-field-cache]
   (when-not @paused?
     (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! *grid*
-                 *potential-field-cache*
+                 potential-field-cache
                  faction
                  @active-entities
                  max-iterations))
@@ -4462,7 +4459,8 @@
         unit-scale (atom 1)
         paused? (atom false)
         active-entities (atom nil)
-        mouseover-eid (atom nil)]
+        mouseover-eid (atom nil)
+        potential-field-cache (atom nil)]
     {
      :create!
      (fn []
@@ -4488,7 +4486,7 @@
                      start-position]} (create-level! db @textures)]
          (reset! tiled-map* tiled-map)
          (set! *start-position* start-position)
-         (set! *potential-field-cache* (atom nil))
+         
          (set! *id-counter* (atom 0))
          (set! *entity-ids* (atom {}))
          (let [props (.getProperties tiled-map)
@@ -4580,7 +4578,7 @@
                         (state->pause-game? (:state (:entity/fsm @*player-eid*)))
                         (not (or (.isKeyJustPressed Gdx/input (int (:unpause-once controls)))
                                  (.isKeyPressed Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! db active-entities paused? @skin @stage @textures)
+       (tick-game! db active-entities paused? @skin @stage @textures potential-field-cache)
        (destroy-entities! db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera *viewport*)]
@@ -5601,7 +5599,6 @@
             *player-eid* nil
             *elapsed-time* (atom nil)
             *start-position* nil
-            *potential-field-cache* nil
             *id-counter* nil
             *entity-ids* nil
             *grid* nil
