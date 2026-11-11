@@ -3033,14 +3033,6 @@
                       :faction (:entity/faction source*)}
                      v))))
 
-(def ^:dynamic *sounds*)
-
-(import '(com.badlogic.gdx.audio Sound))
-
-(defn play-sound! [sound-name]
-  (assert (contains? *sounds* sound-name) (str sound-name))
-  (Sound/.play (get *sounds* sound-name)))
-
 (defn spawn-effect* [v effect-ctx]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
@@ -3066,13 +3058,20 @@
                        :effect/target target}
                       (:entity-effects v)))))
 
-(defn convert-effect [_v effect-ctx audiovisual!]
+(defn convert-effect [_v effect-ctx]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)]
-    (play-sound! "bfxr_burrow.wav")
-    (audiovisual! (:entity/position @target) :audiovisuals/convert)
-    (swap! target assoc :entity/faction (:entity/faction @source))
-    nil))
+    [[:tx/sound "bfxr_burrow.wav"]
+     [:tx/audiovisual (:entity/position @target) :audiovisuals/convert]
+     [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
+
+(def ^:dynamic *sounds*)
+
+(import '(com.badlogic.gdx.audio Sound))
+
+(defn play-sound! [sound-name]
+  (assert (contains? *sounds* sound-name) (str sound-name))
+  (Sound/.play (get *sounds* sound-name)))
 
 (defn target-entity-effect [v effect-ctx apply-effects! audiovisual!]
   (let [source (:effect/source effect-ctx)
@@ -3238,7 +3237,7 @@
     (target-entity-effect v effect-ctx apply-effects! audiovisual!)
     
     :effects.target/convert
-    (convert-effect v effect-ctx audiovisual!)
+    (handle-txs! (convert-effect v effect-ctx))
     
     :effects.target/damage
     (damage-effect v effect-ctx 
