@@ -1,36 +1,5 @@
 (ns game)
 
-; FIRST OF ALL GET RID OF GLOBAL STATE!
-; SIMPLE
-; TODO all 'def ' / data literals
-; *elapsed-time*
-; *id-counter*
-; *entity-ids*
-; *grid*
-; *content-grid*
-; controls-info
-; *viewport*
-; *sounds*
-; spiderweb-modifiers
-; spiderweb-duration
-; default-font-params
-; *start-position*
-; show-potential-field-colors?
-; show-cell-entities?
-; show-cell-occupied?
-; show-body-bounds?
-; factions-iterations
-; show-tile-grid?
-; world-unit-scale
-; render-layers
-; *raycaster*
-; editor-stage
-; editor-skin
-; editor-db
-; editor-textures
-; editor
-; sounds
-
 (defn safe-get [m k]
   {:pre [(contains? m k)]}
   (get m k))
@@ -1017,7 +986,7 @@
                          (get-user-object (.getParent ^Actor this)))))))
 
 (defn set-user-object! [^Actor actor obj]
-  (.setUserObject actor obj)
+  (.setUserObject actor obj))
 
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
   (doto (Image. ^Drawable background-drawable)
@@ -3178,7 +3147,7 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
-(defn- handle-fsm-event! [handle-txs! eid event & [params]]
+(defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
         old-state-k (:state fsm)
@@ -3191,15 +3160,11 @@
                          [new-state-k params]
                          [new-state-k nil])
             new-state-obj [new-state-k (create-entity-state state-args eid)]]
-        (swap! eid assoc :entity/fsm new-fsm)
-        (swap! eid assoc new-state-k (new-state-obj 1))
-        (swap! eid dissoc old-state-k)
-        ; TODO reihenfolge von item on cursor imporatnt here (reading eid only after exit changes)o; 
-        ; otherwise cannot make this whole thing as txs
-        ; player item on cursor anyway too complicated!
-        (handle-txs! (entity-state-exit! eid old-state-obj))
-        (handle-txs! (entity-state-enter! eid new-state-obj))
-        nil))))
+        (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
+                 [:tx/swap eid assoc new-state-k (new-state-obj 1)]
+                 [:tx/swap eid dissoc old-state-k]]
+                (entity-state-exit! eid old-state-obj)
+                (entity-state-enter! eid new-state-obj))))))
 
 (defn- handle-effect!
   [[k v] effect-ctx active-entities raycaster]
@@ -3868,7 +3833,7 @@
                                     (filter #(Intersector/overlaps ^Circle gdx-circle
                                                                    ^Rectangle (rectangle @%)))
                                     (filter #(= (:entity/faction @%) faction))))]
-          (handle-fsm-event! handle-txs! friendly-eid :alert)))
+          (handle-txs! (handle-fsm-event! friendly-eid :alert))))
       nil)
 
     :entity/string-effect
@@ -3919,11 +3884,11 @@
       (cond
         (not (seq (filter #(effect-applicable? % effect-ctx)
                           (:skill/effects skill))))
-        (handle-fsm-event! handle-txs! eid :action-done)
+        (handle-txs! (handle-fsm-event! eid :action-done))
 
         (timer-stopped? counter)
         (do (handle-txs! [[:tx/apply-effects effect-ctx (:skill/effects skill)]])
-            (handle-fsm-event! handle-txs! eid :action-done)
+            (handle-txs! (handle-fsm-event! eid :action-done))
             nil)))
 
     :entity/delete-after-duration
@@ -3934,26 +3899,26 @@
     :stunned
     (let [{:keys [counter]} v]
       (when (timer-stopped? counter)
-        (handle-fsm-event! handle-txs! eid :effect-wears-off)))
+        (handle-txs! (handle-fsm-event! eid :effect-wears-off))))
 
     :npc-moving
     (let [{:keys [timer]} v]
       (when (timer-stopped? timer)
-        (handle-fsm-event! handle-txs! eid :timer-finished)))
+        (handle-txs! (handle-fsm-event! eid :timer-finished))))
 
     :npc-sleeping
     (let [entity @eid]
       (when-let [distance (nearest-enemy-distance *grid* entity)]
         (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
-          (handle-fsm-event! handle-txs! eid :alert))))
+          (handle-txs! (handle-fsm-event! eid :alert)))))
 
     :npc-idle
     (let [raycaster *raycaster*
           effect-ctx (create-effect-ctx eid)]
       (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
-        (handle-fsm-event! handle-txs! eid :start-action [skill effect-ctx])
-        (handle-fsm-event! handle-txs! eid :movement-direction (or (find-direction *grid* eid)
-                                                                   [0 0]))))
+        (handle-txs! (handle-fsm-event! eid :start-action [skill effect-ctx]))
+        (handle-txs! (handle-fsm-event! eid :movement-direction (or (find-direction *grid* eid)
+                                                                   [0 0])))))
 
     :entity/movement
     (let [{:keys [direction
@@ -4264,7 +4229,7 @@
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (if-let [move-v (movement-vector key-pressed?)]
-      (handle-fsm-event! handle-txs! player-eid :movement-input move-v)
+      (handle-txs! (handle-fsm-event! player-eid :movement-input move-v))
       (when (button-just-pressed? Input$Buttons/LEFT)
         (handle-txs! (interaction-state->txs interaction-state stage player-eid))))
 
@@ -4274,13 +4239,13 @@
                                                       :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
                                                                  0)})
           nil)
-      (handle-fsm-event! handle-txs! player-eid :no-movement-input))
+      (handle-txs! (handle-fsm-event! player-eid :no-movement-input)))
 
     :player-item-on-cursor
     (let [[x y] (ui-mouse-position stage Gdx/input)]
       (when (and (button-just-pressed? Input$Buttons/LEFT)
                  (not (mouseover-actor stage x y)))
-        (handle-fsm-event! handle-txs! player-eid :drop-item)))
+        (handle-txs! (handle-fsm-event! player-eid :drop-item))))
 
     nil))
 
@@ -4392,7 +4357,7 @@
                                               {:entity/animation (assoc animation :delete-after-stopped? true)}))))
              :tx/event
              (fn [& params]
-               (apply handle-fsm-event! handle-txs! params))
+               (handle-txs! (apply handle-fsm-event! params)))
              :tx/set-item
              (fn [cell item] 
                (set-item! @skin @stage @textures cell item))
@@ -4935,10 +4900,10 @@
     (.setSelected (pr-str v))))
 
 (defn text-field [text skin]
-  (TextField ^String text skin))
+  (TextField. ^String text skin))
 
 (defn get-text [^TextField text-field]
-  (.getText text-field)
+  (.getText text-field))
 
 (defn- number-widget-value [widget]
   (edn/read-string (get-text widget)))
