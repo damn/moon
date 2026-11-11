@@ -227,7 +227,7 @@
   (.put map-properties k v))
 
 (defn props-get 
-  [^MapProperites map-properties k]
+  [^MapProperties map-properties k]
   (.get map-properties k))
 
 
@@ -284,10 +284,25 @@
      :tile/id id
      :tile/texture-region texture-region}))
 
+(defn set-cell! [^TiledMapTileLayer layer x y tile]
+  (.setCell layer 
+            (int x)
+            (int y) 
+            (doto (TiledMapTileLayer$Cell.)
+              (.setTile ^TiledMapTile tile))))
+
 (defn static-tiled-map-tile [texture-region]
   (StaticTiledMapTile. ^TextureRegion texture-region))
 
-(defn add-creatures-layer! [^TiledMap tiled-map spawn-positions]
+(defn tiled-map-tile-layer [width height tilewidth tileheight name visible?]
+  (doto (TiledMapTileLayer. (int width)
+                            (int height)
+                            (int tilewidth)
+                            (int tileheight))
+    (.setName name)
+    (.setVisible visible?)))
+
+(defn add-creatures-layer! [tiled-map spawn-positions]
   (let [creature-tile (memoize
                        (fn [{:keys [tile/id
                                     tile/texture-region]}]
@@ -297,18 +312,16 @@
                            (put! (get-properties tile) "id" id)
                            tile)))
         props (get-properties tiled-map)
-        ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (props-get props "width"))
-                                                           (int (props-get props "height"))
-                                                           (int (props-get props "tilewidth"))
-                                                           (int (props-get props "tileheight")))
-                                   (.setName "creatures")
-                                   (.setVisible false))]
+        layer (tiled-map-tile-layer (props-get props "width")
+                                    (props-get props "height")
+                                    (props-get props "tilewidth")
+                                    (props-get props "tileheight")
+                                    "creatures"
+                                    false)]
     (doseq [[[x y] tile] (for [[position creature-property] spawn-positions]
                            [position (creature-tile creature-property)])
             :when tile]
-      (.setCell layer (int x) (int y)
-                (doto (TiledMapTileLayer$Cell.)
-                  (.setTile ^TiledMapTile tile))))
+      (set-cell! layer x y tile))
     (.add (get-layers tiled-map) ^MapLayer layer)))
 
 (import '(com.badlogic.gdx.graphics Texture))
@@ -1447,20 +1460,18 @@
       (assert (string? name))
       (assert (boolean? visible?))
       (let [props (get-properties tiled-map)
-            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (props-get props "width"))
-                                                               (int (props-get props "height"))
-                                                               (int (props-get props "tilewidth"))
-                                                               (int (props-get props "tileheight")))
-                                       (.setName ^String name)
-                                       (.setVisible visible?))]
+            layer (tiled-map-tile-layer (props-get props "width")
+                                        (props-get props "height")
+                                        (props-get props "tilewidth")
+                                        (props-get props "tileheight")
+                                        name 
+                                        visible?)]
         (doseq [[k v] properties]
           (assert (string? k))
           (put! (get-properties layer) k v))
         (doseq [[[x y] tile] tiles
                 :when tile]
-          (.setCell layer (int x) (int y)
-                    (doto (TiledMapTileLayer$Cell.)
-                      (.setTile ^TiledMapTile tile))))
+          (set-cell! layer x y tile))
         (.add (get-layers tiled-map) ^MapLayer layer)))
     tiled-map))
 
@@ -1596,20 +1607,18 @@
       (assert (string? name))
       (assert (boolean? visible?))
       (let [props (get-properties tiled-map)
-            ^TiledMapTileLayer layer (doto (TiledMapTileLayer. (int (props-get props "width"))
-                                                               (int (props-get props "height"))
-                                                               (int (props-get props "tilewidth"))
-                                                               (int (props-get props "tileheight")))
-                                       (.setName ^String name)
-                                       (.setVisible visible?))]
+            layer (tiled-map-tile-layer (props-get props "width")
+                                        (props-get props "height")
+                                        (props-get props "tilewidth")
+                                        (props-get props "tileheight")
+                                        name 
+                                        visible?)]
         (doseq [[k v] properties]
           (assert (string? k))
           (put! (get-properties layer) k v))
         (doseq [[[x y] tile] tiles
                 :when tile]
-          (.setCell layer (int x) (int y)
-                    (doto (TiledMapTileLayer$Cell.)
-                      (.setTile ^TiledMapTile tile))))
+          (set-cell! layer x y tile))
         (.add (get-layers tiled-map) ^MapLayer layer)))
     tiled-map))
 
@@ -3342,7 +3351,7 @@
 (import '(com.badlogic.gdx.graphics Texture$TextureFilter)
         '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
 
-(defn create-default-font! [files default-font-params]
+(defn create-default-font! [files {:keys [path size quality-scaling use-integer-positions?]}]
   (let [generator (FreeTypeFontGenerator. (internal files path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
@@ -3371,6 +3380,17 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
+
+
+
+
+
+
+
+
+
+
+
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -3383,7 +3403,38 @@
           :when value]
       [[x y] value])))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (def *start-position* (atom nil))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (defn spawn-map-creatures [db* tiled-map]
   (mapcat (fn [[position creature-id]] 
@@ -4718,7 +4769,7 @@
         width (props-get props "width")
         height (props-get props "height")]
     (assert tiled-map)
-    (.setVisible ^TiledMapTileLayer (props-get (get-layers tiled-map) "creatures") true)
+    (.setVisible ^TiledMapTileLayer (layers-get (get-layers tiled-map) "creatures") true)
     (let [pos (.position camera)
           px (float (/ width 2))
           py (float (/ height 2))
