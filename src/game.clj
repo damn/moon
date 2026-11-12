@@ -3976,6 +3976,7 @@
 (def max-speed (/ minimum-size max-delta))
 
 ; FIXME use txs
+; TODO case statment -> dispatch maps ....
 (defn tick-component
   [delta-time handle-txs! eid [k v]]
   (case k
@@ -4127,28 +4128,6 @@
 
     nil))
 
-(def ^:private help-menu-item
-  {:label "Help"
-   :items [{:label controls-info}]})
-
-(defn- debug-flags-menu-item
-  []
-  {:label "Debug"
-   :items [{:label "Toggle show-tile-grid?"
-            :on-click #(swap! show-tile-grid? not)}
-           {:label "Toggle show-cell-entities?"
-            :on-click #(swap! show-cell-entities? not)}
-           {:label "Toggle show-cell-occupied?"
-            :on-click #(swap! show-cell-occupied? not)}
-           {:label "Toggle show-body-bounds?"
-            :on-click #(swap! show-body-bounds? not)}
-           {:label "Potential field colors: off"
-            :on-click #(reset! show-potential-field-colors? nil)}
-           {:label "Potential field colors: :good"
-            :on-click #(reset! show-potential-field-colors? :good)}
-           {:label "Potential field colors: :evil"
-            :on-click #(reset! show-potential-field-colors? :evil)}]})
-
 (defn create-action-bar []
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 2))))]
@@ -4168,11 +4147,36 @@
       (.setName "moon.ui.action-bar"))))
 
 (defn create-ui-actors
-  [player-eid handle-txs! mouseover-eid paused? unit-scale default-font shape-drawer skin stage textures* db]
+  [player-eid 
+   handle-txs! 
+   mouseover-eid 
+   paused? 
+   unit-scale 
+   default-font 
+   shape-drawer 
+   skin 
+   stage 
+   textures* 
+   db]
   [(create-action-bar)
    (create-dev-menu
-     {:menus [(debug-flags-menu-item)
-              help-menu-item]
+     {:menus [{:label "Debug"
+               :items [{:label "Toggle show-tile-grid?"
+                        :on-click #(swap! show-tile-grid? not)}
+                       {:label "Toggle show-cell-entities?"
+                        :on-click #(swap! show-cell-entities? not)}
+                       {:label "Toggle show-cell-occupied?"
+                        :on-click #(swap! show-cell-occupied? not)}
+                       {:label "Toggle show-body-bounds?"
+                        :on-click #(swap! show-body-bounds? not)}
+                       {:label "Potential field colors: off"
+                        :on-click #(reset! show-potential-field-colors? nil)}
+                       {:label "Potential field colors: :good"
+                        :on-click #(reset! show-potential-field-colors? :good)}
+                       {:label "Potential field colors: :evil"
+                        :on-click #(reset! show-potential-field-colors? :evil)}]}
+              {:label "Help"
+               :items [{:label controls-info}]}]
       :update-labels (for [item [{:label "elapsed-time"
                                   :update-fn (fn [] 
                                                (str (readable @*elapsed-time*) " seconds"))
@@ -4201,7 +4205,11 @@
                          (update item :icon #(get textures* %))
                          item))
       :skin skin})
-   (hp-mana-bar-create player-eid default-font stage textures* unit-scale)
+   (hp-mana-bar-create player-eid 
+                       default-font 
+                       stage 
+                       textures* 
+                       unit-scale)
    (windows-create [(info-window-create skin stage mouseover-eid)
                     (let [cell-size 48]
                       (create-inventory-window
@@ -4589,6 +4597,12 @@
 (defn set-projection-matrix! [^Batch batch matrix]
   (.setProjectionMatrix batch matrix))
 
+(defn act! [^Stage stage]
+  (.act stage))
+
+(defn draw! [^Stage stage]
+  (.draw stage))
+
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -4774,8 +4788,8 @@
                                                        (toggle-entity-info! @stage))}]
          (when (key-just-pressed? Gdx/input (int k))
            (f)))
-       (.act ^Stage @stage)
-       (.draw ^Stage @stage))
+       (act! @stage)
+       (draw! @stage))
 
      :resize!
      (fn [width height]
@@ -4906,8 +4920,8 @@
                                             (.update camera*)))}]
            (when (key-pressed? Gdx/input k)
              (f)))
-         (.act ^Stage @ui-stage)
-         (.draw ^Stage @ui-stage)))
+         (act! @ui-stage)
+         (draw! @ui-stage)))
 
      :resize!
      (fn [width height]
@@ -5693,10 +5707,11 @@
   (let [batch (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)]
     {:create!
-     (fn []
+     (fn [] ; pass sprite-batch, skin? or always?
        (reset! batch (sprite-batch!))
        (reset! editor-skin (Skin. (internal Gdx/files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
+
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
@@ -5714,8 +5729,8 @@
      :render!
      (fn []
        (clear-screen! 0 0 0 0)
-       (.act ^Stage @editor-stage)
-       (.draw ^Stage @editor-stage))
+       (act! @editor-stage)
+       (draw! @editor-stage))
      :resize!
      (fn [width height]
        (.update (.getViewport ^Stage @editor-stage) width height true))
