@@ -5665,7 +5665,7 @@
   (let [batch (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)]
     {:create!
-     (fn [] ; pass sprite-batch, skin? or always?
+     (fn [] 
        (reset! batch (sprite-batch!))
        (reset! editor-skin (Skin. (internal Gdx/files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
