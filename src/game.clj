@@ -787,6 +787,9 @@
   [^Texture texture]
   (Image. texture))
 
+(import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
+                                                Drawable))
+
 (defn drawable-image
   [^Drawable drawable]
   (Image. drawable))
@@ -794,6 +797,9 @@
 (defn texture-region-image 
   [^TextureRegion texture-region]
   (Image. texture-region))
+
+(defn add! [^Table table ^Actor actor]
+  (.add table actor))
 
 (defn row! [^Table table]
   (.row table))
@@ -1039,8 +1045,6 @@
   (build-values (safe-get db property-id) db))
 
 (import '(com.badlogic.gdx.math Vector2))
-(import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
-                                                Drawable))
 
 (defn create-stack []
   (Stack.))
@@ -5174,9 +5178,6 @@
 (defn clear-children! [^Group group]
   (.clearChildren group))
 
-(defn add! [^Table table ^Actor actor]
-  (.add table actor))
-
 (defn first-ascendant [^Actor actor]
   (.firstAscendant actor))
 
@@ -5595,19 +5596,6 @@
     :s/val-max (create-val-max-widget schema v skin)
     (create-default-widget v skin)))
 
-(require '[clj-commons.pretty.repl :as pretty-repl])
-
-(def editor-db (atom nil))
-
-(defn- with-window-close [f]
-  (fn [actor]
-    (try
-     (swap! editor-db f)
-     (remove! (first-ascendant actor Window))
-     (catch Throwable t
-       (binding [*print-level* 3]
-         (pretty-repl/pretty-pst t 24))))))
-
 (defn- property-editor-table [widget on-save on-delete skin]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
@@ -5628,7 +5616,9 @@
     (pack! table)
     table))
 
+(require '[clj-commons.pretty.repl :as pretty-repl])
 (def properties-file (io/resource "properties.edn"))
+(def editor-db (atom nil))
 
 (defn property-editor-window [schemas property skin editor]
   (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
@@ -5636,6 +5626,14 @@
         scroll-pane-height (.getWorldHeight (get-viewport @editor-stage))
         get-widget-value #(widget-value schemas schema widget)
         property-id (:property/id property)
+        with-window-close (fn [f]
+                            (fn [actor]
+                              (try
+                                (swap! editor-db f)
+                                (remove! (first-ascendant actor Window))
+                                (catch Throwable t
+                                  (binding [*print-level* 3]
+                                    (pretty-repl/pretty-pst t 24))))))
         on-delete (with-window-close 
                     (fn [db]
                       (assert (contains? db property-id))
