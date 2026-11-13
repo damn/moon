@@ -784,6 +784,9 @@
                                           Stage))
 (import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener))
 
+(defn create-window [^String title skin]
+  (Window. title skin))
+
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (Table.)]
     (doseq [cell (for [{:keys [label items]} menus]
@@ -793,7 +796,7 @@
                                       (changed [event actor]
                                         (let [^Stage stage (.getStage ^Event event)]
                                           (.addActor stage
-                                                     (let [window (Window. ^String label skin)]
+                                                     (let [window (create-window label skin)]
                                                        (doseq [{:keys [label on-click]} items]
                                                          (.add window (doto (TextButton. ^String label skin)
                                                                         (.addListener (proxy [ChangeListener] []
@@ -1063,7 +1066,7 @@
                            (.tint (Color. 1 1 1 0.4))))
         ->cell (partial inv-window-cell player-eid input on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (Table.)
-        window (Window. "Inventory" ^Skin skin)]
+        window (create-window "Inventory" skin)]
     (doseq [row (concat [[nil 
                           nil
                           (->cell :inventory.slot/helm)
@@ -1985,7 +1988,7 @@
   (assert (not (find-actor (get-root stage) "moon.ui.modal-window")))
   (let [^String title title
         ^String text text
-        window (Window. title skin)]
+        window (create-window title skin)]
     (.add window (Label. text skin))
     (.row window)
     (.add window (doto (TextButton. ^String button-text skin)
@@ -2013,7 +2016,7 @@
            skin]}]
   (let [^Skin skin skin
         label (Label. "MY LABEL TEXT" skin)
-        window (Window. ^String title skin)
+        window (create-window title skin)
         c (.add window label)]
     (.expand c)
     (.row window)
@@ -4818,7 +4821,7 @@
        (reset! skin (create-skin (internal Gdx/files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
-             window (Window. "Edit" skin*)]
+             window (create-window "Edit" skin*)]
          (doseq [[label on-click!] buttons]
            (.add window (text-button skin* label on-click!))
            (.row window))
@@ -5181,7 +5184,7 @@
                            (for [sound-name sound-names]
                              [(choose-sound-button table sound-name ->sound-columns @editor-skin)
                               (play-sound-button sound-name @editor-skin play-sound!)]))
-        window (Window. "Choose" @editor-skin)
+        window (create-window "Choose" @editor-skin)
         c (.add window (ScrollPane. list-table @editor-skin))]
     (.width c (float (+ (.getWidth list-table) 50)))
     (.height c (float (min (- (.getWorldHeight (get-viewport @editor-stage)) 50)
@@ -5269,7 +5272,7 @@
      (Label. ^String text @editor-skin))
    :editor/new-window
    (fn [title]
-     (Window. title @editor-skin))
+     (create-window title @editor-skin))
    :editor/new-text-button
    (fn [title]
      (TextButton. title @editor-skin))
@@ -5445,7 +5448,7 @@
   (.row ^Table table))
 
 (defn- add-component-window [schemas schema map-widget-table build-widget widget-value]
-  (let [window (Window. "Choose" @editor-skin)
+  (let [window (create-window "Choose" @editor-skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (malli-form schemas schema))))]
     (.pad (.defaults window) (float 5))
@@ -5621,7 +5624,7 @@
                         (save! new-db properties-file)
                         new-db))))
         ^Table table (property-editor-table widget on-save on-delete)
-        window (Window. "[SKY]Property[]" @editor-skin)]
+        window (create-window "[SKY]Property[]" @editor-skin)]
     (.pad (.defaults window) (float 5))
     (let [c (.add window (ScrollPane. table @editor-skin))]
       (.width c (float (+ (.getWidth table) 50)))
@@ -5646,7 +5649,7 @@
     window))
 
 (defn main-window [schemas]
-  (let [window (Window. "Edit" @editor-skin)]
+  (let [window (create-window "Edit" @editor-skin)]
     (doseq [property-type [:properties/audiovisuals
                            :properties/creatures 
                            :properties/items
