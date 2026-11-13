@@ -804,9 +804,12 @@
 (defn row! [^Table table]
   (.row table))
 
+(defn label-create [^String text ^Skin skin]
+  (Label. text skin))
+
 (defn- add-upd-label!
   ([skin table text-fn icon]
-   (let [label (Label. "" ^Skin skin)
+   (let [label (label-create "" skin)
          sub-table (Table.)]
      (doseq [cell [{:actor (texture-image icon)}
                    {:actor label}]]
@@ -818,7 +821,7 @@
        (.right)
        (.expandX))))
   ([skin table text-fn]
-   (let [label (Label. "" ^Skin skin)]
+   (let [label (label-create "" skin)]
      (add-actor! table (set-label-text-actor label text-fn))
      (doto (add! table label)
        (.right)
@@ -887,7 +890,7 @@
       (.fillX)
       (.colspan (int 1)))
     (row! table)
-    (doto (add! table (doto (Label. "" ^Skin skin)
+    (doto (add! table (doto (label-create "" skin)
                         (.setTouchable Touchable/disabled)))
       (.expand)
       (.fillX)
@@ -2044,7 +2047,7 @@
   (let [^String title title
         ^String text text
         window (create-window title skin)]
-    (add! window (Label. text skin))
+    (add! window (label-create text skin))
     (row! window)
     (add! window (doto (create-text-button button-text skin)
                    (add-listener! (create-change-listener
@@ -2069,7 +2072,7 @@
            set-label-text!
            skin]}]
   (let [^Skin skin skin
-        label (Label. "MY LABEL TEXT" skin)
+        label (label-create "MY LABEL TEXT" skin)
         window (create-window title skin)
         c (add! window label)]
     (.expand c)
@@ -5119,10 +5122,10 @@
     s))
 
 (defn- create-default-widget [v skin]
-  (Label. ^String (truncate (binding [*print-level* nil]
-                              (pr-str v))
-                            60)
-          skin))
+  (label-create (truncate (binding [*print-level* nil]
+                            (pr-str v))
+                          60)
+                skin))
 
 (defn- enum-widget-value [widget]
   (edn/read-string (.getSelected ^SelectBox widget)))
@@ -5429,9 +5432,9 @@
                                                  (rebuild-editor-window! schemas skin editor)))))
                             ; java.lang.IllegalStateException: Table must have a skin set to use this method.
                             ; (can be nil)
-                            (Label. "." skin)))
+                            (label-create "." skin)))
       (.left))
-    (add! row-table (Label. ^String (k-label-text k) skin))
+    (add! row-table (label-create (k-label-text k) skin))
     (row! row-table)
     (pack! row-table)
     row-table))
@@ -5723,7 +5726,7 @@
                   (text-tooltip text @skin))
                 :editor/new-label
                 (fn [text]
-                  (Label. ^String text @skin))
+                  (label-create text @skin))
                 :editor/new-window
                 (fn [title]
                   (create-window title @skin))
