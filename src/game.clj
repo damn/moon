@@ -163,12 +163,12 @@
                      (str (str/capitalize (name stat-k)) ": "
                           (get-value stats stat-k))))))
 
+(defprotocol GetName
+  (get-name [_]))
+
 (import '(com.badlogic.gdx.maps.tiled TiledMap))
 (import '(com.badlogic.gdx.maps.tiled TiledMapTile))
 (import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
-
-(defn get-name [^TiledMapTileLayer layer]
-  (.getName layer))
 
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
@@ -206,6 +206,13 @@
   (.getCell layer (int x) (int y)))
 
 (import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell))
+
+(defn set-cell! [^TiledMapTileLayer layer x y tile]
+  (.setCell layer 
+            (int x)
+            (int y) 
+            (doto (TiledMapTileLayer$Cell.)
+              (.setTile ^TiledMapTile tile))))
 
 (defn get-tile [^TiledMapTileLayer$Cell cell]
   (.getTile cell))
@@ -260,12 +267,6 @@
      :tile/id id
      :tile/texture-region texture-region}))
 
-(defn set-cell! [^TiledMapTileLayer layer x y tile]
-  (.setCell layer 
-            (int x)
-            (int y) 
-            (doto (TiledMapTileLayer$Cell.)
-              (.setTile ^TiledMapTile tile))))
 
 (defn static-tiled-map-tile [texture-region]
   (StaticTiledMapTile. ^TextureRegion texture-region))
@@ -758,7 +759,26 @@
        (when (get-stage this)
          (set-text! label-widget (text-fn))))}))
 
+(defn pack! [layout]
+  (com.badlogic.gdx.scenes.scene2d.utils.Layout/.pack layout))
+
 (import '(com.badlogic.gdx.scenes.scene2d Group))
+
+(defprotocol AddActor
+  (add-actor! [_ actor]))
+
+(extend-type Group
+  AddActor
+  (add-actor! [this actor]
+    (.addActor this actor)))
+
+(import '(com.badlogic.gdx.scenes.scene2d Event
+                                          Stage))
+
+(extend-type Stage
+  AddActor
+  (add-actor! [this actor]
+    (.addActor this actor)))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
@@ -768,51 +788,61 @@
                    {:actor label}]]
        (.add ^Table sub-table ^Actor (:actor cell)))
      (.row ^Table sub-table)
-     (.pack sub-table)
-     (.addActor ^Group table (set-label-text-actor label text-fn))
+     (pack! sub-table)
+     (add-actor! table (set-label-text-actor label text-fn))
      (doto (.add ^Table table ^Actor sub-table)
        (.right)
        (.expandX))))
   ([skin table text-fn]
    (let [label (Label. "" ^Skin skin)]
-     (.addActor ^Group table (set-label-text-actor label text-fn))
+     (add-actor! table (set-label-text-actor label text-fn))
      (doto (.add ^Table table ^Actor label)
        (.right)
        (.expandX)))))
 
-(import '(com.badlogic.gdx.scenes.scene2d Event
-                                          Stage))
+
 (import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener))
 
 (defn create-window [^String title skin]
   (Window. title skin))
 
+(defn add-listener! [actor listener]
+  (Actor/.addListener actor listener))
+
+(defn create-change-listener [f]
+  (proxy [ChangeListener] []
+    (changed [event actor]
+      (f event actor))))
+
+(defn create-text-button [text skin]
+  (TextButton. ^String text skin))
+
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (Table.)]
     (doseq [cell (for [{:keys [label items]} menus]
                    {:actor
-                    (doto (TextButton. ^String label skin)
-                      (.addListener (proxy [ChangeListener] []
-                                      (changed [event actor]
-                                        (let [^Stage stage (.getStage ^Event event)]
-                                          (.addActor stage
-                                                     (let [window (create-window label skin)]
-                                                       (doseq [{:keys [label on-click]} items]
-                                                         (.add window (doto (TextButton. ^String label skin)
-                                                                        (.addListener (proxy [ChangeListener] []
-                                                                                        (changed [_event _actor]
-                                                                                          (on-click)))))))
-                                                       (.row window)
-                                                       (.pack window)
-                                                       (.add (.getTitleTable window)
-                                                             (doto (TextButton. "X" skin)
-                                                               (.addListener (proxy [ChangeListener] []
-                                                                               (changed [_event _actor]
-                                                                                 (.remove window))))))
-                                                       window)))))))})]
+                    (doto (create-text-button label skin)
+                      (add-listener! (create-change-listener
+                                       (fn [event actor]
+                                         (let [^Stage stage (.getStage ^Event event)]
+                                           (add-actor! stage
+                                                      (let [window (create-window label skin)]
+                                                        (doseq [{:keys [label on-click]} items]
+                                                          (.add window (doto (create-text-button label skin)
+                                                                         (add-listener! (create-change-listener
+                                                                                          (fn [_event _actor]
+                                                                                            (on-click)))))))
+                                                        (.row window)
+                                                        (pack! window)
+                                                        (.add (.getTitleTable window)
+                                                              (doto (create-text-button "X" skin)
+                                                                (add-listener! (create-change-listener
+                                                                                 (fn [_event _actor]
+                                                                                   (.remove window))))))
+                                                        window)))))))})]
       (.add table ^Actor (:actor cell)))
     (.row table)
-    (.pack table)
+    (pack! table)
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn))]
         (if icon
@@ -837,7 +867,7 @@
       (.fillY))
     (.row table)
     (doto table
-      (.pack)
+      (pack!)
       (.setFillParent true))))
 
 (defn- nad-corner? [grid [fromx fromy] [tox toy]]
@@ -994,9 +1024,6 @@
 (defn create-stack []
   (Stack.))
 
-(defn add-actor! [^Group group actor]
-  (.addActor group actor))
-
 (import '(com.badlogic.gdx.utils.viewport Viewport))
 
 (defn unproject [^Viewport viewport [x y]]
@@ -1042,9 +1069,9 @@
     (doto (create-stack)
       (add-actors! [(inventory-window-cell-highlight-widget draw-cell-rect! input player-eid)
                     (inventory-window-cell-image-widget background-drawable cell-size)])
-      (.addListener (proxy [ClickListener] []
-                      (clicked [event _x _y]
-                        (on-click-cell event cell))))
+      (add-listener! (proxy [ClickListener] []
+                       (clicked [event _x _y]
+                         (on-click-cell event cell))))
       (.setName "inventory-cell")
       (set-user-object! cell))))
 
@@ -1090,12 +1117,12 @@
       (doseq [actor row]
         (.add cell-table ^Actor actor))
       (.row cell-table))
-    (.pack cell-table)
+    (pack! cell-table)
     (.setName cell-table "inventory-cell-table")
     (let [c (.add window cell-table)]
       (.pad c (float 4)))
     (.row window)
-    (.pack window)
+    (pack! window)
     (.setName window "moon.ui.windows.inventory")
     (.setVisible window false)
     (let [[x y] position]
@@ -1733,9 +1760,12 @@
 
 (def *elapsed-time* (atom nil))
 
+; pass as function 'game/context' function without exposing data
+; maybe game context protocol?
 (defn timer-stopped? [{:keys [stop-time]}]
   (>= @*elapsed-time* stop-time))
 
+; push if up , assert at ratio
 (defn timer-ratio [{:keys [duration stop-time] :as timer}]
   {:post [(<= 0 % 1)]}
   (if (timer-stopped? timer)
@@ -1874,7 +1904,7 @@
         cell-size (:cell-size (get-user-object image-widget))]
     (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                                                   (.setMinSize cell-size cell-size)))
-    (.addListener ^Actor cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
+    (add-listener! cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
     nil))
 
 (defn item-info-text [item]
@@ -1912,9 +1942,9 @@
                       (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                         (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
                                      (* scale (.getRegionHeight ^TextureRegion texture-region)))))
-                 (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
+                 (add-listener! (TextTooltip. ^String tooltip-text ^Skin skin))
                  (set-user-object! skill-id))]
-    (.addActor ^Group horizontal-group ^Actor button)
+    (add-actor! horizontal-group ^Actor button)
     (.add ^ButtonGroup button-group ^Button button)
     nil))
 
@@ -1991,21 +2021,21 @@
         window (create-window title skin)]
     (.add window (Label. text skin))
     (.row window)
-    (.add window (doto (TextButton. ^String button-text skin)
-                   (.addListener (proxy [ChangeListener] []
-                                   (changed [_event _actor]
-                                     (.remove (find-actor (get-root stage)
-                                                          "moon.ui.modal-window"))
-                                     (on-click))))))
+    (.add window (doto (create-text-button button-text skin)
+                   (add-listener! (create-change-listener
+                                    (fn [_event _actor]
+                                      (.remove (find-actor (get-root stage)
+                                                           "moon.ui.modal-window"))
+                                      (on-click))))))
     (.row window)
-    (.pack window)
+    (pack! window)
     (.setModal window true)
     (.setName window "moon.ui.modal-window")
     (.setPosition window
                   (/ (.getWorldWidth (get-viewport stage)) 2)
                   (float (* (.getWorldHeight (get-viewport stage)) (/ 3 4)))
                   (float Align/center))
-    (.addActor stage window)))
+    (add-actor! stage window)))
 
 (defn- create-info-window
   [{:keys [title
@@ -2020,17 +2050,17 @@
         c (.add window label)]
     (.expand c)
     (.row window)
-    (.pack window)
+    (pack! window)
     (.setName window actor-name)
     (.setVisible window visible?)
     (let [[x y] position]
       (.setPosition window (float x) (float y)))
-    (.addActor window (proxy [Actor] []
+    (add-actor! window (proxy [Actor] []
                          (act [delta]
                            (let [^Actor this this]
                              (when (.getStage this)
                                (.setText label ^String (set-label-text!)))
-                             (.pack window)
+                             (pack! window)
                              (proxy-super act delta)))
                          (draw [batch parent-alpha])))
     window))
@@ -2522,7 +2552,7 @@
 
 (defn mouseover-actor-info [actor]
   (let [inventory-slot (and (.getParent ^Actor actor)
-                            (= "inventory-cell" (.getName ^Actor (.getParent ^Actor actor)))
+                            (= "inventory-cell" (get-name (.getParent ^Actor actor)))
                             (get-user-object (.getParent ^Actor actor)))]
     (cond
       inventory-slot
@@ -4106,7 +4136,7 @@
       (.bottom))
     (.row ^Table table)
     (doto table
-      (.pack)
+      (pack!)
       (.setFillParent true)
       (.setName "moon.ui.action-bar"))))
 
@@ -4658,7 +4688,7 @@
                                               @stage
                                               @textures
                                               db)]
-         (.addActor ^Stage @stage actor))
+         (add-actor! @stage actor))
 
        (sync-player-ui! @skin @stage @textures @player-eid)
 
@@ -4790,11 +4820,11 @@
       (.update camera))
     tiled-map))
 
-(defn- text-button ^TextButton [^Skin skin ^String label on-click!]
-  (doto (TextButton. label skin)
-    (.addListener (proxy [ChangeListener] []
-                    (changed [_event _actor]
-                      (on-click!))))))
+(defn- text-button [skin label on-click!]
+  (doto (create-text-button label skin)
+    (add-listener! (create-change-listener
+                     (fn [_event _actor]
+                       (on-click!))))))
 
 (defn levelgen-listener []
   (let [world-width (* 1440 world-unit-scale)
@@ -4825,8 +4855,8 @@
          (doseq [[label on-click!] buttons]
            (.add window (text-button skin* label on-click!))
            (.row window))
-         (.pack window)
-         (.addActor s window)
+         (pack! window)
+         (add-actor! s window)
          (reset! ui-stage s))
        (.setInputProcessor Gdx/input @ui-stage)
        (reset! viewport (FitViewport. (float world-width)
@@ -4997,17 +5027,17 @@
         (let [stack (create-stack)
               texture-region (get-texture-region (or (:entity/image property)
                                                      (first (:animation/frames (:entity/animation property)))))]
-          (run! #(.addActor ^Group stack %)
+          (run! #(add-actor! stack %)
                 [(doto (ImageButton.
                          (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                            (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
                                         (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
-                   (.addListener (proxy [ChangeListener] []
-                                   (changed [event actor]
-                                     (clicked-id-fn actor (:property/id property)))))
-                   (.addListener (text-tooltip (binding [*print-level* 2]
-                                                 (with-out-str
-                                                   (pprint/pprint property))))))
+                   (add-listener! (create-change-listener
+                                    (fn [event actor]
+                                      (clicked-id-fn actor (:property/id property)))))
+                   (add-listener! (text-tooltip (binding [*print-level* 2]
+                                                  (with-out-str
+                                                    (pprint/pprint property))))))
                  (doto (new-label (extra-info-text property))
                    (.setTouchable Touchable/disabled))])
           stack)))))
@@ -5019,12 +5049,12 @@
       (doseq [actor row]
         (.add window ^Actor actor))
       (.row window))
-    (.pack window)
+    (pack! window)
     (.add (.getTitleTable window)
           (doto (new-text-button "X")
-            (.addListener (proxy [ChangeListener] []
-                            (changed [_event _actor]
-                              (.remove window))))))
+            (add-listener! (create-change-listener
+                             (fn [_event _actor]
+                               (.remove window))))))
     (.setModal window true)
     window))
 
@@ -5045,7 +5075,7 @@
                           (get-texture-region textures image)
                           2)))
     (.row ^Table table)
-    (.pack table)
+    (pack! table)
     table))
 
 (defn- boolean-widget-value [widget]
@@ -5089,32 +5119,21 @@
 
 (defn- create-number-widget [schema v skin]
   (doto (text-field (pr-str v) skin)
-    (.addListener (TextTooltip. ^String (str schema) skin))))
+    (add-listener! (TextTooltip. ^String (str schema) skin))))
 
 (defn- string-widget-value [widget]
   (get-text widget))
 
 (defn- create-string-widget [schema v skin]
   (doto (text-field (str v) skin)
-    (.addListener (TextTooltip. ^String (str schema) skin))))
+    (add-listener! (TextTooltip. ^String (str schema) skin))))
 
 (defn- val-max-widget-value [widget]
   (edn/read-string (get-text widget)))
 
 (defn- create-val-max-widget [schema v skin]
   (doto (text-field (pr-str v) skin)
-    (.addListener (TextTooltip. ^String (str schema) skin))))
-
-(defn create-text-button [text skin]
-  (TextButton. text skin))
-
-(defn add-listener! [actor listener]
-  (Actor/.addListener actor listener))
-
-(defn create-change-listener [f]
-  (proxy [ChangeListener] []
-    (changed [event actor]
-      (f event actor))))
+    (add-listener! (TextTooltip. ^String (str schema) skin))))
 
 (defn- play-sound-button [sound-name skin play-sound!]
   (doto (create-text-button "play!" skin)
@@ -5126,10 +5145,10 @@
   (Sound/.play sound))
 
 (defn- sound-columns [table sound-name open-select-sounds-handler skin play-sound!]
-  [{:actor (doto (TextButton. sound-name skin)
-             (.addListener (proxy [ChangeListener] []
-                             (changed [event _actor]
-                               (open-select-sounds-handler table)))))}
+  [{:actor (doto (create-text-button sound-name skin)
+             (add-listener! (create-change-listener
+                              (fn [event _actor]
+                                (open-select-sounds-handler table)))))}
    {:actor (play-sound-button sound-name skin play-sound!)}])
 
 (defn clear-children! [^Group group]
@@ -5147,23 +5166,18 @@
 (defn first-ascendant [^Actor actor]
   (.firstAscendant actor))
 
-(import '(com.badlogic.gdx.scenes.scene2d.utils Layout))
-
-(defn pack! [^Layout layout]
-  (.pack layout))
-
 (defn- choose-sound-button [table sound-name ->sound-columns skin]
-  (doto (TextButton. sound-name skin)
-    (.addListener (proxy [ChangeListener] []
-                    (changed [event actor]
-                      (clear-children! table)
-                      (doseq [cell (->sound-columns table sound-name)]
-                        (add! table (:actor cell)))
-                      (row! table)
-                      (remove! (first-ascendant actor Window))
-                      (pack! (first-ascendant table Window))
-                      (let [[k _] (get-user-object table)]
-                        (set-user-object! table [k sound-name])))))))
+  (doto (create-text-button sound-name skin)
+    (add-listener! (create-change-listener
+                     (fn [event actor]
+                       (clear-children! table)
+                       (doseq [cell (->sound-columns table sound-name)]
+                         (add! table (:actor cell)))
+                       (row! table)
+                       (remove! (first-ascendant actor Window))
+                       (pack! (first-ascendant table Window))
+                       (let [[k _] (get-user-object table)]
+                         (set-user-object! table [k sound-name])))))))
 
 (defn- list-sounds-table [pad rows]
   (let [^Table table (Table.)]
@@ -5172,7 +5186,7 @@
       (doseq [^Actor actor columns]
         (.add table actor))
       (.row table))
-    (.pack table)
+    (pack! table)
     table))
 
 (def editor-stage (atom nil))
@@ -5190,18 +5204,18 @@
     (.height c (float (min (- (.getWorldHeight (get-viewport @editor-stage)) 50)
                             (.getHeight list-table))))
     (.row window)
-    (.pack window)
+    (pack! window)
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" @editor-skin)
-            (.addListener (proxy [ChangeListener] []
-                            (changed [_event _actor]
-                              (.remove window))))))
+          (doto (create-text-button "X" @editor-skin)
+            (add-listener! (create-change-listener
+                             (fn [_event _actor]
+                               (.remove window))))))
     (.setModal window true)
     window))
 
 (defn- open-select-sounds-handler [sound-names table ->sound-columns play-sound!]
   (fn []
-    (.addActor ^Stage @editor-stage (choose-sound-window sound-names table ->sound-columns play-sound!))))
+    (add-actor! @editor-stage (choose-sound-window sound-names table ->sound-columns play-sound!))))
 
 (defn- create-sound-widget [sound-names sound-name play-sound!]
   (let [table (doto (Table.)
@@ -5213,10 +5227,10 @@
       (doseq [cell (if sound-name
                      (sound-columns-fn table sound-name)
                      [{:actor
-                       (doto (TextButton. "No sound" @editor-skin)
-                         (.addListener (proxy [ChangeListener] []
-                                         (changed [event _actor]
-                                           ((open-select-fn table))))))}])]
+                       (doto (create-text-button "No sound" @editor-skin)
+                         (add-listener! (create-change-listener
+                                          (fn [event _actor]
+                                            ((open-select-fn table))))))}])]
         (.add ^Table table ^Actor (:actor cell)))
       (.row ^Table table)
       table)))
@@ -5275,38 +5289,38 @@
      (create-window title @editor-skin))
    :editor/new-text-button
    (fn [title]
-     (TextButton. title @editor-skin))
+     (create-text-button title @editor-skin))
    })
 
 (defn- add-one-to-one-rows [table property-type property-id]
   (let [redo-rows (fn [id]
                     (.clearChildren ^Group table)
                     (add-one-to-one-rows table property-type id)
-                    (.pack ^Layout (.firstAscendant ^Actor table Window)))]
+                    (pack! (.firstAscendant ^Actor table Window)))]
     (doseq [row (cond-> []
                   (not property-id)
-                  (conj [{:actor (doto (TextButton. "+" @editor-skin)
-                                   (.addListener (proxy [ChangeListener] []
-                                                   (changed [event _actor]
-                                                     (.addActor ^Stage @editor-stage
-                                                      (property-overview-window
-                                                       property-type
-                                                       (fn [actor id]
-                                                         (.remove ^Actor (.firstAscendant ^Actor actor Window))
-                                                         (redo-rows id))
-                                                       editor))))))}])
+                  (conj [{:actor (doto (create-text-button "+" @editor-skin)
+                                   (add-listener! (create-change-listener
+                                                    (fn [event _actor]
+                                                      (add-actor! @editor-stage
+                                                                 (property-overview-window
+                                                                   property-type
+                                                                   (fn [actor id]
+                                                                     (.remove ^Actor (.firstAscendant ^Actor actor Window))
+                                                                     (redo-rows id))
+                                                                   editor))))))}])
                   property-id
                   (conj [{:actor (let [property (safe-get @editor-db property-id)]
                                    (doto (Image. ^TextureRegion (get-texture-region @editor-textures (or (:entity/image property)
                                                                                                      (first (:animation/frames (:entity/animation property))))))
-                                     (.addListener (TextTooltip. ^String (binding [*print-level* 2]
-                                                                           (with-out-str
-                                                                             (pprint/pprint property))) @editor-skin))
+                                     (add-listener! (TextTooltip. ^String (binding [*print-level* 2]
+                                                                            (with-out-str
+                                                                              (pprint/pprint property))) @editor-skin))
                                      (set-user-object! property-id)))}]
-                        [{:actor (doto (TextButton. "-" @editor-skin)
-                                   (.addListener (proxy [ChangeListener] []
-                                                   (changed [event _actor]
-                                                     (redo-rows nil)))))}]))]
+                        [{:actor (doto (create-text-button "-" @editor-skin)
+                                   (add-listener! (create-change-listener
+                                                    (fn [event _actor]
+                                                      (redo-rows nil)))))}]))]
       (doseq [cell row]
         (.add ^Table table ^Actor (:actor cell)))
       (.row ^Table table))))
@@ -5326,31 +5340,31 @@
   (let [redo-rows (fn [property-ids]
                     (.clearChildren ^Group table)
                     (add-one-to-many-rows table property-type property-ids)
-                    (.pack ^Layout (.firstAscendant ^Actor table Window)))]
+                    (pack! (.firstAscendant ^Actor table Window)))]
     (doseq [row
-            [[{:actor (doto (TextButton. "+" @editor-skin)
-                        (.addListener (proxy [ChangeListener] []
-                                        (changed [event _actor]
-                                          (.addActor ^Stage @editor-stage
-                                                     (property-overview-window
-                                                      property-type
-                                                      (fn [actor id]
-                                                        (.remove ^Actor (.firstAscendant ^Actor actor Window))
-                                                        (redo-rows (conj property-ids id)))
-                                                      editor))))))}]
+            [[{:actor (doto (create-text-button "+" @editor-skin)
+                        (add-listener! (create-change-listener
+                                         (fn [event _actor]
+                                           (add-actor! @editor-stage
+                                                      (property-overview-window
+                                                        property-type
+                                                        (fn [actor id]
+                                                          (.remove ^Actor (.firstAscendant ^Actor actor Window))
+                                                          (redo-rows (conj property-ids id)))
+                                                        editor))))))}]
              (for [property-id property-ids]
                (let [property (safe-get @editor-db property-id)]
                  {:actor (doto (Image. ^TextureRegion (get-texture-region @editor-textures (or (:entity/image property)
                                                                                            (first (:animation/frames (:entity/animation property))))))
-                           (.addListener (TextTooltip. ^String (binding [*print-level* 2]
-                                                                 (with-out-str
-                                                                   (pprint/pprint property))) @editor-skin))
+                           (add-listener! (TextTooltip. ^String (binding [*print-level* 2]
+                                                                  (with-out-str
+                                                                    (pprint/pprint property))) @editor-skin))
                            (set-user-object! property-id))}))
              (for [id property-ids]
-               {:actor (doto (TextButton. "-" @editor-skin)
-                         (.addListener (proxy [ChangeListener] []
-                                         (changed [event _actor]
-                                           (redo-rows (disj property-ids id))))))})]]
+               {:actor (doto (create-text-button "-" @editor-skin)
+                         (add-listener! (create-change-listener
+                                          (fn [event _actor]
+                                            (redo-rows (disj property-ids id))))))})]]
       (doseq [cell row]
         (.add ^Table table ^Actor (:actor cell)))
       (.row ^Table table))))
@@ -5400,7 +5414,7 @@
         map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-value schemas map-widget-table)]
     (.remove window)
-    (.addActor ^Stage @editor-stage (property-editor-window schemas property))))
+    (add-actor! @editor-stage (property-editor-window schemas property))))
 
 (defn- component-row-table
   [{:keys [display-remove-component-button?
@@ -5410,18 +5424,21 @@
   (let [row-table (doto (Table.)
                     (#(.pad (.defaults ^Table %) (float 2))))]
     (doto (.add row-table ^Actor (when display-remove-component-button?
-                                   (doto (TextButton. "-" @editor-skin)
-                                     (.addListener (proxy [ChangeListener] []
-                                                     (changed [event _actor]
-                                                       (.remove ^Actor (first (filter (fn [actor]
-                                                                                        (and (get-user-object actor)
-                                                                                             (= k ((get-user-object actor) 0))))
-                                                                                      (get-children table))))
-                                                       (rebuild-editor-window! schemas)))))))
+                                   (doto (create-text-button "-" @editor-skin)
+                                     (add-listener! (create-change-listener
+                                                      (fn [event _actor]
+                                                        (.remove ^Actor (first (filter (fn [actor]
+                                                                                         (and (get-user-object actor)
+                                                                                              (= k ((get-user-object actor) 0))))
+                                                                                       (get-children table))))
+                                                        (rebuild-editor-window! schemas)))))
+                                   ; java.lang.IllegalStateException: Table must have a skin set to use this method.
+                                   ; (can be nil)
+                                   (Label. "." @editor-skin)))
       (.left))
     (.add row-table ^Actor (Label. ^String (k-label-text k) @editor-skin))
     (.row ^Table row-table)
-    (.pack row-table)
+    (pack! row-table)
     row-table))
 
 (defn- add-component-row! [table opts]
@@ -5453,31 +5470,31 @@
                                    (map-keys (malli-form schemas schema))))]
     (.pad (.defaults window) (float 5))
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" @editor-skin)
-            (.addListener (proxy [ChangeListener] []
-                            (changed [_event _actor]
-                              (.remove window))))))
+          (doto (create-text-button "X" @editor-skin)
+            (add-listener! (create-change-listener
+                             (fn [_event _actor]
+                               (.remove window))))))
     (.setModal window true)
     (doseq [k remaining-ks]
-      (.add window (doto (TextButton. (name k) @editor-skin)
-                     (.addListener (proxy [ChangeListener] []
-                                     (changed [event _actor]
-                                       (.remove window)
-                                       (add-component-row!
-                                        map-widget-table
-                                        {:editor-widget (build-widget (get schemas k)
-                                                                      k
-                                                                      (let [schema (get schemas k)]
-                                                                        (cond
-                                                                          (#{:s/map} (schema 0)) {}
-                                                                          :else nil)))
-                                         :k k
-                                         :display-remove-component-button? (optional? (malli-form schemas schema) k)
-                                         :table map-widget-table
-                                         :schemas schemas})
-                                       (rebuild-editor-window! schemas))))))
+      (.add window (doto (create-text-button (name k) @editor-skin)
+                     (add-listener! (create-change-listener
+                                      (fn [event _actor]
+                                        (.remove window)
+                                        (add-component-row!
+                                          map-widget-table
+                                          {:editor-widget (build-widget (get schemas k)
+                                                                        k
+                                                                        (let [schema (get schemas k)]
+                                                                          (cond
+                                                                            (#{:s/map} (schema 0)) {}
+                                                                            :else nil)))
+                                           :k k
+                                           :display-remove-component-button? (optional? (malli-form schemas schema) k)
+                                           :table map-widget-table
+                                           :schemas schemas})
+                                        (rebuild-editor-window! schemas))))))
       (.row window))
-    (.pack window)
+    (pack! window)
     window))
 
 (defn- map-widget-table-create
@@ -5494,11 +5511,11 @@
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3]
     (when opt?
-      (doto (.add table ^Actor (doto (TextButton. "Add component" @editor-skin)
-                                 (.addListener (proxy [ChangeListener] []
-                                                 (changed [event actor]
-                                                   (.addActor ^Stage @editor-stage
-                                                              (add-component-window schemas schema table build-widget widget-value)))))))
+      (doto (.add table ^Actor (doto (create-text-button "Add component" @editor-skin)
+                                 (add-listener! (create-change-listener
+                                                  (fn [event actor]
+                                                    (add-actor! @editor-stage
+                                                               (add-component-window schemas schema table build-widget widget-value)))))))
         (.colspan (int colspan)))
       (.row table)
       (add-horiz-sep! table colspan))
@@ -5529,6 +5546,9 @@
     :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
 
+; TODO unify with other one ?
+; user object is fn which gets value or sth other idea we had
+
 (defn widget-value [schemas [schema-k] widget]
   (case schema-k
     :s/boolean (boolean-widget-value widget)
@@ -5551,6 +5571,8 @@
 
 (def sounds (atom nil))
 
+; toDO make as map ? pass as configuration?
+; use symbols for keywords so we can have all behaviour there? idk . 
 (defn create-widget
   [schemas [schema-k :as schema] v]
   (case schema-k
@@ -5585,18 +5607,18 @@
     (doto (.add table ^Actor widget)
       (.colspan (int 2)))
     (.row table)
-    (doto (.add table ^Actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" @editor-skin)
-                               (.addListener (proxy [ChangeListener] []
-                                               (changed [event actor]
-                                                 (on-save actor))))))
+    (doto (.add table ^Actor (doto (create-text-button "Save [LIGHT_GRAY](ENTER)[]" @editor-skin)
+                               (add-listener! (create-change-listener
+                                                (fn [event actor]
+                                                  (on-save actor))))))
       (.center))
-    (doto (.add table ^Actor (doto (TextButton. "Delete" @editor-skin)
-                               (.addListener (proxy [ChangeListener] []
-                                               (changed [event actor]
-                                                 (on-delete actor))))))
+    (doto (.add table ^Actor (doto (create-text-button "Delete" @editor-skin)
+                               (add-listener! (create-change-listener
+                                                (fn [event actor]
+                                                  (on-delete actor))))))
       (.center))
     (.row table)
-    (.pack table)
+    (pack! table)
     table))
 
 (def properties-file (io/resource "properties.edn"))
@@ -5631,14 +5653,14 @@
       (.height c (float (min (- scroll-pane-height 50)
                              (.getHeight table)))))
     (.row window)
-    (.pack window)
+    (pack! window)
     (.add (.getTitleTable window)
-          (doto (TextButton. "X" @editor-skin)
-            (.addListener (proxy [ChangeListener] []
-                            (changed [_event _actor]
-                              (.remove window))))))
+          (doto (create-text-button "X" @editor-skin)
+            (add-listener! (create-change-listener
+                             (fn [_event _actor]
+                               (.remove window))))))
     (.setModal window true)
-    (.addActor window (proxy [Actor] []
+    (add-actor! window (proxy [Actor] []
                         (act [delta]
                           (when (key-just-pressed? Gdx/input Input$Keys/ENTER)
                             (on-save this))
@@ -5655,19 +5677,25 @@
                            :properties/items
                            :properties/projectiles
                            :properties/skills]]
-      (.add window (doto (TextButton. (str/capitalize (name property-type)) @editor-skin)
-                     (.addListener (proxy [ChangeListener] []
-                                     (changed [event _actor]
-                                       (.addActor ^Stage @editor-stage
-                                                  (property-overview-window
-                                                   property-type
-                                                   (fn [_actor id]
-                                                     (.addActor ^Stage @editor-stage
-                                                                (property-editor-window schemas (safe-get @editor-db id))))
-                                                   editor)))))))
-      (.row window))
-    (.pack window)
+      (add! window (doto (create-text-button (str/capitalize (name property-type)) @editor-skin)
+                     (add-listener! (create-change-listener
+                                      (fn [_event _actor]
+                                        ; this is also weird .... why here defined let it do it?
+                                        (add-actor! @editor-stage
+                                                    (property-overview-window
+                                                      property-type
+                                                      (fn [_actor id]
+                                                        (add-actor! @editor-stage
+                                                                   (property-editor-window schemas (safe-get @editor-db id))))
+                                                      editor)))))))
+      (row! window))
+    (pack! window)
     window))
+
+; FIXME erstmal java classes fixen...!
+; TODO state remove 'def 's and data literals -> pass capabilities only ... symbolic programming...
+; _language_ == data RAUS 
+; editor choose lvl (?) and start that game ? new window?
 
 (defn editor-application-listener 
   [editor-config]
@@ -5686,7 +5714,7 @@
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
        (reset! editor-textures (create-textures Gdx/files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
-       (.addActor ^Stage @editor-stage (main-window schemas)))
+       (add-actor! @editor-stage (main-window schemas)))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
@@ -5702,6 +5730,16 @@
      (fn [width height]
        (resize! (get-viewport @editor-stage) width height true))
      }))
+
+(extend-type TiledMapTileLayer
+  GetName
+  (get-name [this]
+    (.getName this)))
+
+(extend-type Actor
+  GetName
+  (get-name [this]
+    (.getName this)))
 
 (defn lwjgl3-application! 
   [{:keys [create! 
