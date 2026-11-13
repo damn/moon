@@ -463,7 +463,7 @@
 (defn internal [files path]
   (com.badlogic.gdx.Files/.internal files path))
 
-(defn texture! [file-handle]
+(defn texture! [^FileHandle file-handle]
   (Texture. file-handle))
 
 (defn pixmap->texture! [pixmap]
