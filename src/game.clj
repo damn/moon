@@ -736,6 +736,9 @@
                                              Widget 
                                              Window))
 
+(defn text-tooltip [^String text ^Skin skin]
+  (TextTooltip. text skin))
+
 (import '(com.badlogic.gdx.scenes.scene2d Actor))
 
 (defn create-actor [{:keys [act!]}]
@@ -780,23 +783,38 @@
   (add-actor! [this actor]
     (.addActor this actor)))
 
+(defn texture-image
+  [^Texture texture]
+  (Image. texture))
+
+(defn drawable-image
+  [^Drawable drawable]
+  (Image. drawable))
+
+(defn texture-region-image 
+  [^TextureRegion texture-region]
+  (Image. texture-region))
+
+(defn row! [^Table table]
+  (.row table))
+
 (defn- add-upd-label!
   ([skin table text-fn icon]
    (let [label (Label. "" ^Skin skin)
          sub-table (Table.)]
-     (doseq [cell [{:actor (Image. ^Texture icon)}
+     (doseq [cell [{:actor (texture-image icon)}
                    {:actor label}]]
-       (.add ^Table sub-table ^Actor (:actor cell)))
-     (.row ^Table sub-table)
+       (add! sub-table (:actor cell)))
+     (row! sub-table)
      (pack! sub-table)
      (add-actor! table (set-label-text-actor label text-fn))
-     (doto (.add ^Table table ^Actor sub-table)
+     (doto (add! table sub-table)
        (.right)
        (.expandX))))
   ([skin table text-fn]
    (let [label (Label. "" ^Skin skin)]
      (add-actor! table (set-label-text-actor label text-fn))
-     (doto (.add ^Table table ^Actor label)
+     (doto (add! table label)
        (.right)
        (.expandX)))))
 
@@ -817,6 +835,9 @@
 (defn create-text-button [text skin]
   (TextButton. ^String text skin))
 
+(defn remove! [^Actor actor]
+  (.remove actor))
+
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (Table.)]
     (doseq [cell (for [{:keys [label items]} menus]
@@ -828,20 +849,20 @@
                                            (add-actor! stage
                                                       (let [window (create-window label skin)]
                                                         (doseq [{:keys [label on-click]} items]
-                                                          (.add window (doto (create-text-button label skin)
+                                                          (add! window (doto (create-text-button label skin)
                                                                          (add-listener! (create-change-listener
                                                                                           (fn [_event _actor]
                                                                                             (on-click)))))))
-                                                        (.row window)
+                                                        (row! window)
                                                         (pack! window)
-                                                        (.add (.getTitleTable window)
+                                                        (add! (.getTitleTable window)
                                                               (doto (create-text-button "X" skin)
                                                                 (add-listener! (create-change-listener
                                                                                  (fn [_event _actor]
-                                                                                   (.remove window))))))
+                                                                                   (remove! window))))))
                                                         window)))))))})]
-      (.add table ^Actor (:actor cell)))
-    (.row table)
+      (add! table (:actor cell)))
+    (row! table)
     (pack! table)
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn))]
@@ -855,17 +876,17 @@
 (defn create-dev-menu
   [{:keys [menus update-labels skin]}]
   (let [table (Table.)]
-    (doto (.add table ^Actor (main-table skin menus update-labels))
+    (doto (add! table (main-table skin menus update-labels))
       (.expandX)
       (.fillX)
       (.colspan (int 1)))
-    (.row table)
-    (doto (.add table ^Actor (doto (Label. "" ^Skin skin)
-                               (.setTouchable Touchable/disabled)))
+    (row! table)
+    (doto (add! table (doto (Label. "" ^Skin skin)
+                        (.setTouchable Touchable/disabled)))
       (.expand)
       (.fillX)
       (.fillY))
-    (.row table)
+    (row! table)
     (doto table
       (pack!)
       (.setFillParent true))))
@@ -1055,7 +1076,7 @@
   (.setUserObject actor obj))
 
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
-  (doto (Image. ^Drawable background-drawable)
+  (doto (drawable-image background-drawable)
     (.setName "image-widget")
     (set-user-object! {:background-drawable background-drawable
                        :cell-size cell-size})))
@@ -1115,13 +1136,13 @@
                           (for [x (range 6)]
                             (->cell :inventory.slot/bag :position [x y]))))]
       (doseq [actor row]
-        (.add cell-table ^Actor actor))
-      (.row cell-table))
+        (add! cell-table actor))
+      (row! cell-table))
     (pack! cell-table)
     (.setName cell-table "inventory-cell-table")
-    (let [c (.add window cell-table)]
+    (let [c (add! window cell-table)]
       (.pad c (float 4)))
-    (.row window)
+    (row! window)
     (pack! window)
     (.setName window "moon.ui.windows.inventory")
     (.setVisible window false)
@@ -1904,7 +1925,7 @@
         cell-size (:cell-size (get-user-object image-widget))]
     (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                                                   (.setMinSize cell-size cell-size)))
-    (add-listener! cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
+    (add-listener! cell-widget (text-tooltip tooltip-text skin))
     nil))
 
 (defn item-info-text [item]
@@ -1942,7 +1963,7 @@
                       (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                         (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
                                      (* scale (.getRegionHeight ^TextureRegion texture-region)))))
-                 (add-listener! (TextTooltip. ^String tooltip-text ^Skin skin))
+                 (add-listener! (text-tooltip tooltip-text skin))
                  (set-user-object! skill-id))]
     (add-actor! horizontal-group ^Actor button)
     (.add ^ButtonGroup button-group ^Button button)
@@ -1953,7 +1974,7 @@
   (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
         button-group (get-user-object horizontal-group)
         button (get horizontal-group skill-id)]
-    (.remove ^Actor button)
+    (remove! button)
     (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
@@ -2019,15 +2040,14 @@
   (let [^String title title
         ^String text text
         window (create-window title skin)]
-    (.add window (Label. text skin))
-    (.row window)
-    (.add window (doto (create-text-button button-text skin)
+    (add! window (Label. text skin))
+    (row! window)
+    (add! window (doto (create-text-button button-text skin)
                    (add-listener! (create-change-listener
                                     (fn [_event _actor]
-                                      (.remove (find-actor (get-root stage)
-                                                           "moon.ui.modal-window"))
+                                      (remove! (find-actor (get-root stage) "moon.ui.modal-window"))
                                       (on-click))))))
-    (.row window)
+    (row! window)
     (pack! window)
     (.setModal window true)
     (.setName window "moon.ui.modal-window")
@@ -2047,9 +2067,9 @@
   (let [^Skin skin skin
         label (Label. "MY LABEL TEXT" skin)
         window (create-window title skin)
-        c (.add window label)]
+        c (add! window label)]
     (.expand c)
-    (.row window)
+    (row! window)
     (pack! window)
     (.setName window actor-name)
     (.setVisible window visible?)
@@ -4125,16 +4145,16 @@
 (defn create-action-bar []
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 2))))]
-    (doto (.add ^Table table ^Actor (doto (HorizontalGroup.)
-                                      (.space (float 2))
-                                      (.pad (float 2))
-                                      (.setName "moon.ui.action-bar.horizontal-group")
-                                      (set-user-object! (doto (ButtonGroup.)
-                                                          (.setMaxCheckCount (int 1))
-                                                          (.setMinCheckCount (int 0))))))
+    (doto (add! table (doto (HorizontalGroup.)
+                        (.space (float 2))
+                        (.pad (float 2))
+                        (.setName "moon.ui.action-bar.horizontal-group")
+                        (set-user-object! (doto (ButtonGroup.)
+                                            (.setMaxCheckCount (int 1))
+                                            (.setMinCheckCount (int 0))))))
       (.expand)
       (.bottom))
-    (.row ^Table table)
+    (row! table)
     (doto table
       (pack!)
       (.setFillParent true)
@@ -4853,8 +4873,8 @@
              ^Skin skin* @skin
              window (create-window "Edit" skin*)]
          (doseq [[label on-click!] buttons]
-           (.add window (text-button skin* label on-click!))
-           (.row window))
+           (add! window (text-button skin* label on-click!))
+           (row! window))
          (pack! window)
          (add-actor! s window)
          (reset! ui-stage s))
@@ -5047,14 +5067,14 @@
   (let [window (new-window "Edit")]
     (doseq [row (property-overview-rows property-type clicked-id-fn editor)]
       (doseq [actor row]
-        (.add window ^Actor actor))
-      (.row window))
+        (add! window actor))
+      (row! window))
     (pack! window)
-    (.add (.getTitleTable window)
+    (add! (.getTitleTable window)
           (doto (new-text-button "X")
             (add-listener! (create-change-listener
                              (fn [_event _actor]
-                               (.remove window))))))
+                               (remove! window))))))
     (.setModal window true)
     window))
 
@@ -5071,10 +5091,10 @@
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 1))))]
     (doseq [image (:animation/frames animation)]
-      (.add table ^Actor (scaled-image-button
-                          (get-texture-region textures image)
-                          2)))
-    (.row ^Table table)
+      (add! table (scaled-image-button
+                    (get-texture-region textures image)
+                    2)))
+    (row! table)
     (pack! table)
     table))
 
@@ -5119,21 +5139,21 @@
 
 (defn- create-number-widget [schema v skin]
   (doto (text-field (pr-str v) skin)
-    (add-listener! (TextTooltip. ^String (str schema) skin))))
+    (add-listener! (text-tooltip (str schema) skin))))
 
 (defn- string-widget-value [widget]
   (get-text widget))
 
 (defn- create-string-widget [schema v skin]
   (doto (text-field (str v) skin)
-    (add-listener! (TextTooltip. ^String (str schema) skin))))
+    (add-listener! (text-tooltip (str schema) skin))))
 
 (defn- val-max-widget-value [widget]
   (edn/read-string (get-text widget)))
 
 (defn- create-val-max-widget [schema v skin]
   (doto (text-field (pr-str v) skin)
-    (add-listener! (TextTooltip. ^String (str schema) skin))))
+    (add-listener! (text-tooltip (str schema) skin))))
 
 (defn- play-sound-button [sound-name skin play-sound!]
   (doto (create-text-button "play!" skin)
@@ -5157,12 +5177,6 @@
 (defn add! [^Table table ^Actor actor]
   (.add table actor))
 
-(defn row! [^Table table]
-  (.row table))
-
-(defn remove! [^Actor actor]
-  (.remove actor))
-
 (defn first-ascendant [^Actor actor]
   (.firstAscendant actor))
 
@@ -5183,9 +5197,9 @@
   (let [^Table table (Table.)]
     (.pad (.defaults table) (float pad))
     (doseq [columns rows]
-      (doseq [^Actor actor columns]
-        (.add table actor))
-      (.row table))
+      (doseq [actor columns]
+        (add! table actor))
+      (row! table))
     (pack! table)
     table))
 
@@ -5198,17 +5212,17 @@
                              [(choose-sound-button table sound-name ->sound-columns skin)
                               (play-sound-button sound-name skin play-sound!)]))
         window (create-window "Choose" skin)
-        c (.add window (ScrollPane. list-table skin))]
+        c (add! window (ScrollPane. list-table skin))]
     (.width c (float (+ (.getWidth list-table) 50)))
     (.height c (float (min (- (.getWorldHeight (get-viewport @editor-stage)) 50)
                             (.getHeight list-table))))
-    (.row window)
+    (row! window)
     (pack! window)
-    (.add (.getTitleTable window)
+    (add! (.getTitleTable window)
           (doto (create-text-button "X" skin)
             (add-listener! (create-change-listener
                              (fn [_event _actor]
-                               (.remove window))))))
+                               (remove! window))))))
     (.setModal window true)
     window))
 
@@ -5230,8 +5244,8 @@
                          (add-listener! (create-change-listener
                                           (fn [event _actor]
                                             ((open-select-fn table))))))}])]
-        (.add ^Table table ^Actor (:actor cell)))
-      (.row ^Table table)
+        (add! table (:actor cell)))
+      (row! table)
       table)))
 
 (defn- one-to-one-widget-value [widget]
@@ -5267,11 +5281,13 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
+; TODO this is too big ....
+; also java mixup
 (defn- add-one-to-one-rows [table property-type property-id skin editor]
   (let [redo-rows (fn [id]
-                    (.clearChildren ^Group table)
+                    (clear-children! table)
                     (add-one-to-one-rows table property-type id skin editor)
-                    (pack! (.firstAscendant ^Actor table Window)))]
+                    (pack! (first-ascendant table Window)))]
     (doseq [row (cond-> []
                   (not property-id)
                   (conj [{:actor (doto (create-text-button "+" skin)
@@ -5281,24 +5297,25 @@
                                                                  (property-overview-window
                                                                    property-type
                                                                    (fn [actor id]
-                                                                     (.remove ^Actor (.firstAscendant ^Actor actor Window))
+                                                                     (remove! (first-ascendant actor Window))
                                                                      (redo-rows id))
                                                                    editor))))))}])
                   property-id
                   (conj [{:actor (let [property (safe-get @editor-db property-id)]
-                                   (doto (Image. ^TextureRegion (get-texture-region @editor-textures (or (:entity/image property)
-                                                                                                     (first (:animation/frames (:entity/animation property))))))
-                                     (add-listener! (TextTooltip. ^String (binding [*print-level* 2]
-                                                                            (with-out-str
-                                                                              (pprint/pprint property))) skin))
+                                   (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
+                                                                                            (first (:animation/frames (:entity/animation property))))))
+                                     (add-listener! (text-tooltip (binding [*print-level* 2]
+                                                                    (with-out-str
+                                                                      (pprint/pprint property)))
+                                                                  skin))
                                      (set-user-object! property-id)))}]
                         [{:actor (doto (create-text-button "-" skin)
                                    (add-listener! (create-change-listener
                                                     (fn [event _actor]
                                                       (redo-rows nil)))))}]))]
       (doseq [cell row]
-        (.add ^Table table ^Actor (:actor cell)))
-      (.row ^Table table))))
+        (add! table (:actor cell)))
+      (row! table))))
 
 (defn- create-one-to-one-widget [[_ property-type] property-id skin editor]
   (let [table (doto (Table.)
@@ -5313,9 +5330,9 @@
 
 (defn- add-one-to-many-rows [table property-type property-ids skin editor]
   (let [redo-rows (fn [property-ids]
-                    (.clearChildren ^Group table)
+                    (clear-children! table)
                     (add-one-to-many-rows table property-type property-ids skin editor)
-                    (pack! (.firstAscendant ^Actor table Window)))]
+                    (pack! (first-ascendant table Window)))]
     (doseq [row
             [[{:actor (doto (create-text-button "+" skin)
                         (add-listener! (create-change-listener
@@ -5324,16 +5341,17 @@
                                                       (property-overview-window
                                                         property-type
                                                         (fn [actor id]
-                                                          (.remove ^Actor (.firstAscendant ^Actor actor Window))
+                                                          (remove! (first-ascendant actor Window))
                                                           (redo-rows (conj property-ids id)))
                                                         editor))))))}]
              (for [property-id property-ids]
                (let [property (safe-get @editor-db property-id)]
-                 {:actor (doto (Image. ^TextureRegion (get-texture-region @editor-textures (or (:entity/image property)
-                                                                                           (first (:animation/frames (:entity/animation property))))))
-                           (add-listener! (TextTooltip. ^String (binding [*print-level* 2]
-                                                                  (with-out-str
-                                                                    (pprint/pprint property))) skin))
+                 {:actor (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
+                                                                                  (first (:animation/frames (:entity/animation property))))))
+                           (add-listener! (text-tooltip (binding [*print-level* 2]
+                                                          (with-out-str
+                                                            (pprint/pprint property)))
+                                                        skin))
                            (set-user-object! property-id))}))
              (for [id property-ids]
                {:actor (doto (create-text-button "-" skin)
@@ -5341,8 +5359,8 @@
                                           (fn [event _actor]
                                             (redo-rows (disj property-ids id))))))})]]
       (doseq [cell row]
-        (.add ^Table table ^Actor (:actor cell)))
-      (.row ^Table table))))
+        (add! table (:actor cell)))
+      (row! table))))
 
 (defn- create-one-to-many-widget [[_ property-type] property-ids skin editor]
   (let [table (doto (Table.)
@@ -5388,7 +5406,7 @@
                    (find-actor "moon.ui.clojure.editor-window"))
         map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-value schemas map-widget-table)]
-    (.remove window)
+    (remove! window)
     (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
 
 (defn- component-row-table
@@ -5400,63 +5418,63 @@
            editor]}]
   (let [row-table (doto (Table.)
                     (#(.pad (.defaults ^Table %) (float 2))))]
-    (doto (.add row-table ^Actor (when display-remove-component-button?
-                                   (doto (create-text-button "-" skin)
-                                     (add-listener! (create-change-listener
-                                                      (fn [event _actor]
-                                                        (.remove ^Actor (first (filter (fn [actor]
-                                                                                         (and (get-user-object actor)
-                                                                                              (= k ((get-user-object actor) 0))))
-                                                                                       (get-children table))))
-                                                        (rebuild-editor-window! schemas skin editor)))))
-                                   ; java.lang.IllegalStateException: Table must have a skin set to use this method.
-                                   ; (can be nil)
-                                   (Label. "." skin)))
+    (doto (add! row-table (when display-remove-component-button?
+                            (doto (create-text-button "-" skin)
+                              (add-listener! (create-change-listener
+                                               (fn [event _actor]
+                                                 (remove! (first (filter (fn [actor]
+                                                                           (and (get-user-object actor)
+                                                                                (= k ((get-user-object actor) 0))))
+                                                                         (get-children table))))
+                                                 (rebuild-editor-window! schemas skin editor)))))
+                            ; java.lang.IllegalStateException: Table must have a skin set to use this method.
+                            ; (can be nil)
+                            (Label. "." skin)))
       (.left))
-    (.add row-table ^Actor (Label. ^String (k-label-text k) skin))
-    (.row ^Table row-table)
+    (add! row-table (Label. ^String (k-label-text k) skin))
+    (row! row-table)
     (pack! row-table)
     row-table))
 
 (defn- add-component-row! [table opts]
-  (doto (.add ^Table table ^Actor (component-row-table opts))
+  (doto (add! table (component-row-table opts))
     (.right))
   (let [^Actor empty nil]
-    (doto (.add ^Table table empty)
+    (doto (add! table empty)
       (.padTop (float 2))
       (.padBottom (float 2))
       (.fillY)
       (.expandY)))
-  (doto (.add ^Table table ^Actor (:editor-widget opts))
+  (doto (add! table (:editor-widget opts))
     (.left))
-  (.row ^Table table))
+  (row! table))
 
 (defn- add-horiz-sep! [table colspan]
   (let [^Actor empty nil]
-    (doto (.add ^Table table empty)
+    (doto (add! table empty)
       (.padTop (float 2))
       (.padBottom (float 2))
       (.colspan (int colspan))
       (.fillX)
       (.expandX)))
-  (.row ^Table table))
+  (row! table))
 
 (defn- add-component-window [schemas schema map-widget-table build-widget widget-value skin editor]
   (let [window (create-window "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (malli-form schemas schema))))]
     (.pad (.defaults window) (float 5))
-    (.add (.getTitleTable window)
+    (add! (.getTitleTable window)
           (doto (create-text-button "X" skin)
             (add-listener! (create-change-listener
                              (fn [_event _actor]
-                               (.remove window))))))
+                               (remove! window))))))
     (.setModal window true)
     (doseq [k remaining-ks]
-      (.add window (doto (create-text-button (name k) skin)
+      (add! window (doto (create-text-button (name k) skin)
                      (add-listener! (create-change-listener
                                       (fn [event _actor]
-                                        (.remove window)
+                                        (remove! window)
                                         (add-component-row!
                                           map-widget-table
                                           {:editor-widget (build-widget (get schemas k)
@@ -5472,7 +5490,7 @@
                                            :skin skin
                                            :editor editor})
                                         (rebuild-editor-window! schemas skin editor))))))
-      (.row window))
+      (row! window))
     (pack! window)
     window))
 
@@ -5492,13 +5510,13 @@
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3]
     (when opt?
-      (doto (.add table ^Actor (doto (create-text-button "Add component" skin)
-                                 (add-listener! (create-change-listener
-                                                  (fn [event actor]
-                                                    (add-actor! @editor-stage
-                                                               (add-component-window schemas schema table build-widget widget-value skin editor)))))))
+      (doto (add! table (doto (create-text-button "Add component" skin)
+                          (add-listener! (create-change-listener
+                                           (fn [event actor]
+                                             (add-actor! @editor-stage
+                                                         (add-component-window schemas schema table build-widget widget-value skin editor)))))))
         (.colspan (int colspan)))
-      (.row table)
+      (row! table)
       (add-horiz-sep! table colspan))
     (doseq [[i k] (map-indexed vector ks-sorted)]
       (when (pos? i)
@@ -5583,7 +5601,7 @@
   (fn [actor]
     (try
      (swap! editor-db f)
-     (.remove ^Actor (.firstAscendant ^Actor actor Window))
+     (remove! (first-ascendant actor Window))
      (catch Throwable t
        (binding [*print-level* 3]
          (pretty-repl/pretty-pst t 24))))))
@@ -5591,20 +5609,20 @@
 (defn- property-editor-table [widget on-save on-delete skin]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5))))]
-    (doto (.add table ^Actor widget)
+    (doto (add! table widget)
       (.colspan (int 2)))
-    (.row table)
-    (doto (.add table ^Actor (doto (create-text-button "Save [LIGHT_GRAY](ENTER)[]" skin)
-                               (add-listener! (create-change-listener
-                                                (fn [event actor]
-                                                  (on-save actor))))))
+    (row! table)
+    (doto (add! table (doto (create-text-button "Save [LIGHT_GRAY](ENTER)[]" skin)
+                        (add-listener! (create-change-listener
+                                         (fn [event actor]
+                                           (on-save actor))))))
       (.center))
-    (doto (.add table ^Actor (doto (create-text-button "Delete" skin)
-                               (add-listener! (create-change-listener
-                                                (fn [event actor]
-                                                  (on-delete actor))))))
+    (doto (add! table (doto (create-text-button "Delete" skin)
+                        (add-listener! (create-change-listener
+                                         (fn [event actor]
+                                           (on-delete actor))))))
       (.center))
-    (.row table)
+    (row! table)
     (pack! table)
     table))
 
@@ -5635,17 +5653,17 @@
         ^Table table (property-editor-table widget on-save on-delete skin)
         window (create-window "[SKY]Property[]" skin)]
     (.pad (.defaults window) (float 5))
-    (let [c (.add window (ScrollPane. table skin))]
+    (let [c (add! window (ScrollPane. table skin))]
       (.width c (float (+ (.getWidth table) 50)))
       (.height c (float (min (- scroll-pane-height 50)
                              (.getHeight table)))))
-    (.row window)
+    (row! window)
     (pack! window)
-    (.add (.getTitleTable window)
+    (add! (.getTitleTable window)
           (doto (create-text-button "X" skin)
             (add-listener! (create-change-listener
                              (fn [_event _actor]
-                               (.remove window))))))
+                               (remove! window))))))
     (.setModal window true)
     (add-actor! window (proxy [Actor] []
                         (act [delta]
@@ -5699,7 +5717,7 @@
                 property-type->overview-table-props
                 :editor/text-tooltip
                 (fn [text]
-                  (TextTooltip. ^String text @skin))
+                  (text-tooltip text @skin))
                 :editor/new-label
                 (fn [text]
                   (Label. ^String text @skin))
