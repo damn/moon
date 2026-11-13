@@ -3308,8 +3308,11 @@
    :else
    :usable))
 
-(defn create-skin! [^FileHandle file-handle]
-  (let [s (Skin. file-handle)]
+(defn create-skin [^FileHandle file-handle]
+  (Skin. file-handle))
+
+(defn create-skin! [file-handle]
+  (let [s (create-skin file-handle)]
     (set! (.markupEnabled ^BitmapFont$BitmapFontData (.getData (.getFont ^Skin s "default-font"))) true)
     s))
 
@@ -4809,7 +4812,7 @@
     {:create!
      (fn []
        (reset! batch (sprite-batch!))
-       (reset! skin (Skin. (internal Gdx/files "skin/uiskin.json")))
+       (reset! skin (create-skin (internal Gdx/files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
              window (Window. "Edit" skin*)]
@@ -5667,7 +5670,7 @@
     {:create!
      (fn [] 
        (reset! batch (sprite-batch!))
-       (reset! editor-skin (Skin. (internal Gdx/files (:skin editor-config))))
+       (reset! editor-skin (create-skin (internal Gdx/files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @editor-skin "default-font"))) true)
 
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
