@@ -3988,45 +3988,53 @@
 (def max-delta 0.04)
 (def max-speed (/ minimum-size max-delta))
 
+(defn animation-tick
+  [v eid delta-time handle-txs!]
+  (let [{:keys [delete-after-stopped?
+                looping?
+                cnt
+                maxcnt]
+         :as animation} v]
+    (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
+                                             newcnt (+ (float cnt) (float delta-time))]
+                                         (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
+                                                                     looping? (min maxcnt (- newcnt maxcnt))
+                                                                     :else maxcnt))))
+    (when (and delete-after-stopped?
+               (and (not looping?) (>= cnt maxcnt)))
+      (swap! eid assoc :entity/destroyed? true))
+    nil))
+
+(defn alert-friendlies-after-duration-tick
+  [v eid _delta-time handle-txs!]
+  (let [{:keys [counter faction]} v]
+    (when (timer-stopped? counter)
+      (swap! eid assoc :entity/destroyed? true)
+      (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
+                                         :radius 4}
+                                 [x y] (:position circle)
+                                 g2d @*grid*
+                                 gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
+                             (->> circle
+                                  outer-rectangle
+                                  touched-tiles*
+                                  (keep #(get-in g2d %))
+                                  (map deref)
+                                  (into #{} (mapcat :entities))
+                                  (filter #(Intersector/overlaps ^Circle gdx-circle
+                                                                 ^Rectangle (rectangle @%)))
+                                  (filter #(= (:entity/faction @%) faction))))]
+        (handle-txs! (handle-fsm-event! friendly-eid :alert))))
+    nil))
+
 (defn tick-component
   [delta-time handle-txs! eid [k v]]
   (case k
     :entity/animation
-    (let [{:keys [delete-after-stopped?
-                  looping?
-                  cnt
-                  maxcnt]
-           :as animation} v]
-      (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
-                                               newcnt (+ (float cnt) (float delta-time))]
-                                           (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
-                                                                       looping? (min maxcnt (- newcnt maxcnt))
-                                                                       :else maxcnt))))
-      (when (and delete-after-stopped?
-                 (and (not looping?) (>= cnt maxcnt)))
-        (swap! eid assoc :entity/destroyed? true))
-      nil)
+    (animation-tick v eid delta-time handle-txs!)
 
     :entity/alert-friendlies-after-duration
-    (let [{:keys [counter faction]} v]
-      (when (timer-stopped? counter)
-        (swap! eid assoc :entity/destroyed? true)
-        (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
-                                           :radius 4}
-                                   [x y] (:position circle)
-                                   g2d @*grid*
-                                   gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
-                               (->> circle
-                                    outer-rectangle
-                                    touched-tiles*
-                                    (keep #(get-in g2d %))
-                                    (map deref)
-                                    (into #{} (mapcat :entities))
-                                    (filter #(Intersector/overlaps ^Circle gdx-circle
-                                                                   ^Rectangle (rectangle @%)))
-                                    (filter #(= (:entity/faction @%) faction))))]
-          (handle-txs! (handle-fsm-event! friendly-eid :alert))))
-      nil)
+    (alert-friendlies-after-duration-tick v eid delta-time handle-txs!)
 
     :entity/string-effect
     (let [{:keys [counter]} v]
