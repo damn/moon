@@ -5253,7 +5253,6 @@
        (keep get-user-object)
        first))
 
-(def editor-db (atom nil))
 (def editor-textures (atom nil))
 
 (def ^:private property-type->overview-table-props
@@ -5301,7 +5300,7 @@
                                                                      (redo-rows id))
                                                                    editor))))))}])
                   property-id
-                  (conj [{:actor (let [property (safe-get @editor-db property-id)]
+                  (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
                                    (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
                                                                                             (first (:animation/frames (:entity/animation property))))))
                                      (add-listener! (text-tooltip (binding [*print-level* 2]
@@ -5345,7 +5344,7 @@
                                                           (redo-rows (conj property-ids id)))
                                                         editor))))))}]
              (for [property-id property-ids]
-               (let [property (safe-get @editor-db property-id)]
+               (let [property ((:editor/get-property editor) property-id)]
                  {:actor (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
                                                                                   (first (:animation/frames (:entity/animation property))))))
                            (add-listener! (text-tooltip (binding [*print-level* 2]
@@ -5595,7 +5594,10 @@
     :s/string (create-string-widget schema v skin)
     :s/val-max (create-val-max-widget schema v skin)
     (create-default-widget v skin)))
+
 (require '[clj-commons.pretty.repl :as pretty-repl])
+
+(def editor-db (atom nil))
 
 (defn- with-window-close [f]
   (fn [actor]
@@ -5691,7 +5693,7 @@
                                                       property-type
                                                       (fn [_actor id]
                                                         (add-actor! @editor-stage
-                                                                   (property-editor-window schemas (safe-get @editor-db id) skin editor)))
+                                                                   (property-editor-window schemas ((:editor/get-property editor) id) skin editor)))
                                                       editor)))))))
       (row! window))
     (pack! window)
@@ -5710,6 +5712,9 @@
         editor {:editor/all-raw
                 (fn [property-type]
                   (all-raw @editor-db property-type))
+                :editor/get-property
+                (fn [property-id]
+                  (safe-get @editor-db property-id))
                 :editor/get-texture-region
                 (fn [image]
                   (get-texture-region @editor-textures image))
