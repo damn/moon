@@ -4419,10 +4419,13 @@
                     eid 
                     component)))
 
+(defn get-delta-time [graphics]
+  (com.badlogic.gdx.Graphics/.getDeltaTime graphics)
+
 (defn tick-game!
-  [handle-txs! db active-entities paused? skin stage potential-field-cache]
+  [handle-txs! db active-entities paused? skin stage potential-field-cache graphics]
   (when-not @paused?
-    (let [delta-time (min (.getDeltaTime Gdx/graphics) max-delta)]
+    (let [delta-time (min (get-delta-time graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! @*grid*
@@ -4575,6 +4578,12 @@
 (defn draw! [^Stage stage]
   (.draw stage))
 
+(defn get-frames-per-second [graphics]
+  (com.badlogic.gdx.Graphics/.getFramesPerSecond graphics))
+
+(defn set-cursor! [graphics cursor]
+  (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
+
 ; Schritt 1: pass functions instead e.g. reset! cursors?
 ; No global state
 ; pass Gdx from create! (or as functions ....)
@@ -4599,11 +4608,11 @@
         potential-field-cache (atom nil)]
     {
      :create!
-     (fn [audio files]
+     (fn [audio files graphics]
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
                                       (let [pixmap (pixmap (internal files path))
-                                            cursor (new-cursor Gdx/graphics pixmap hotspot-x hotspot-y)]
+                                            cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
                                         (dispose! pixmap)
                                         cursor))))
        (reset! sounds (into {}
@@ -4691,7 +4700,7 @@
                                                                                         (str (readable @*elapsed-time*) " seconds"))
                                                                            :icon "images/clock.png"}
                                                                           {:label "FPS"
-                                                                           :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
+                                                                           :update-fn (fn [] (get-frames-per-second graphics))
                                                                            :icon "images/fps.png"}
                                                                           {:label "Mouseover-entity id"
                                                                            :update-fn (fn []
@@ -4733,7 +4742,7 @@
        (dispose! @tiled-map*))
 
      :render!
-     (fn []
+     (fn [graphics]
        (clear-screen! 0 0 0 0)
        (update-mouseover-eid! @player-eid mouseover-eid @stage Gdx/input)
        (update-active-entities! active-entities @player-eid)
@@ -4772,7 +4781,7 @@
          (reset! unit-scale 1))
        (.end ^Batch @batch)
        (let [interaction-state (create-interaction-state @player-eid mouseover-eid @stage Gdx/input)]
-         (.setCursor Gdx/graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
+         (set-cursor! graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
          (handle-player-input! @player-eid
                                handle-txs!
                                interaction-state
@@ -4791,7 +4800,8 @@
                    paused? 
                    @skin 
                    @stage 
-                   potential-field-cache)
+                   potential-field-cache
+                   graphics)
        (destroy-entities! handle-txs!)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (.getCamera @*viewport*)]
@@ -4872,7 +4882,7 @@
                      (reset! tiled-map
                              (generate-level @db @textures @camera level-fn)))])]
     {:create!
-     (fn [_audio files]
+     (fn [_audio files _graphics]
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
@@ -4906,7 +4916,7 @@
        (dispose! @tiled-map))
 
      :render!
-     (fn []
+     (fn [_]
        (let [^OrthographicCamera camera* @camera
              ^Batch batch* @batch
              ^OrthographicCamera world-camera (.getCamera ^Viewport @viewport)]
@@ -5733,7 +5743,7 @@
                 (fn [title]
                   (create-text-button title @skin))}]
     {:create!
-     (fn [audio files] 
+     (fn [audio files _graphics] 
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
@@ -5753,7 +5763,7 @@
        (dispose! @skin)
        (run! dispose! (vals @editor-textures)))
      :render!
-     (fn []
+     (fn [_]
        (clear-screen! 0 0 0 0)
        (act! @editor-stage)
        (draw! @editor-stage))
@@ -5786,13 +5796,14 @@
     (reify com.badlogic.gdx.ApplicationListener
       (create [_]
         (create! Gdx/audio
-                 Gdx/files))
+                 Gdx/files
+                 Gdx/graphics))
 
       (dispose [_]
         (dispose!))
 
       (render [_]
-        (render!))
+        (render! Gdx/graphics))
 
       (resize [_ width height]
         (resize! width height))
