@@ -4420,7 +4420,7 @@
                     component)))
 
 (defn get-delta-time [graphics]
-  (com.badlogic.gdx.Graphics/.getDeltaTime graphics)
+  (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
 
 (defn tick-game!
   [handle-txs! db active-entities paused? skin stage potential-field-cache graphics]
