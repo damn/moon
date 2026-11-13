@@ -1004,6 +1004,9 @@
 (defn get-user-object [^Actor actor]
   (.getUserObject actor))
 
+(defn get-viewport [^Stage stage]
+  (.getViewport stage))
+
 (defn inventory-window-cell-highlight-widget [draw-cell-rect! input player-eid]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
@@ -1011,7 +1014,7 @@
         (draw-cell-rect! @player-eid
                          (.getX ^Actor this)
                          (.getY ^Actor this)
-                         (let [[x y] (unproject (.getViewport ^Stage stage) [(.getX input) (.getY input)])
+                         (let [[x y] (unproject (get-viewport stage) [(.getX input) (.getY input)])
                                local (.stageToLocalCoordinates ^Actor this (Vector2. x y))
                                x (.x ^Vector2 local)
                                y (.y ^Vector2 local)]
@@ -1128,8 +1131,8 @@
       :on-click-cell on-click-cell
       :draw-cell-rect! draw-cell-rect!
       :skin skin
-      :position [(.getWorldWidth (.getViewport ^Stage stage))
-                 (.getWorldHeight (.getViewport ^Stage stage))]
+      :position [(.getWorldWidth (get-viewport stage))
+                 (.getWorldHeight (get-viewport stage))]
       :slot->texture-region slot->texture-region
       :cell-size cell-size})))
 
@@ -1973,7 +1976,7 @@
   (.hit ^Stage stage (float x) (float y) true))
 
 (defn ui-mouse-position [stage input]
-  (unproject (.getViewport ^Stage stage) 
+  (unproject (get-viewport stage) 
              [(.getX input) (.getY input)]))
 
 (import '(com.badlogic.gdx.utils Align))
@@ -1996,8 +1999,8 @@
     (.setModal window true)
     (.setName window "moon.ui.modal-window")
     (.setPosition window
-                  (/ (.getWorldWidth (.getViewport stage)) 2)
-                  (float (* (.getWorldHeight (.getViewport stage)) (/ 3 4)))
+                  (/ (.getWorldWidth (get-viewport stage)) 2)
+                  (float (* (.getWorldHeight (get-viewport stage)) (/ 3 4)))
                   (float Align/center))
     (.addActor stage window)))
 
@@ -2035,7 +2038,7 @@
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
-    :position [(.getWorldWidth (.getViewport ^Stage stage)) 0]
+    :position [(.getWorldWidth (get-viewport stage)) 0]
     :set-label-text! (fn []
                        (if-let [eid @mouseover-eid]
                          (info-text (apply dissoc @eid [:entity/skills
@@ -3441,7 +3444,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (.getWorldWidth (.getViewport ^Stage stage)) 2)
+        [x y-mana] [(/ (.getWorldWidth (get-viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -3526,8 +3529,8 @@
             (draw [batch parent-alpha]
               (when-let [stage (.getStage ^Actor this)]
                 (let [state (get-user-object this)
-                      vp-width (.getWorldWidth (.getViewport ^Stage stage))
-                      vp-height (.getWorldHeight (.getViewport ^Stage stage))]
+                      vp-width (.getWorldWidth (get-viewport stage))
+                      vp-height (.getWorldHeight (get-viewport stage))]
                   (when-let [text (:text @state)]
                     (draw-text! batch 
                                 default-font 
@@ -4748,7 +4751,7 @@
 
      :resize!
      (fn [width height]
-       (.update (.getViewport ^Stage @stage) width height true)
+       (.update (get-viewport @stage) width height true)
        (.update @*viewport* width height false))
      }))
 
@@ -4880,7 +4883,7 @@
 
      :resize!
      (fn [width height]
-       (.update (.getViewport ^Stage @ui-stage) width height true)
+       (.update (get-viewport @ui-stage) width height true)
        (.update ^Viewport @viewport width height false))
      }))
 
@@ -5175,7 +5178,7 @@
         window (Window. "Choose" @editor-skin)
         c (.add window (ScrollPane. list-table @editor-skin))]
     (.width c (float (+ (.getWidth list-table) 50)))
-    (.height c (float (min (- (.getWorldHeight (.getViewport ^Stage @editor-stage)) 50)
+    (.height c (float (min (- (.getWorldHeight (get-viewport @editor-stage)) 50)
                             (.getHeight list-table))))
     (.row window)
     (.pack window)
@@ -5592,7 +5595,7 @@
 (defn property-editor-window [schemas property]
   (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget schemas schema property)
-        scroll-pane-height (.getWorldHeight (.getViewport ^Stage @editor-stage))
+        scroll-pane-height (.getWorldHeight (get-viewport @editor-stage))
         get-widget-value #(widget-value schemas schema widget)
         property-id (:property/id property)
         on-delete (with-window-close 
@@ -5688,7 +5691,7 @@
        (draw! @editor-stage))
      :resize!
      (fn [width height]
-       (.update (.getViewport ^Stage @editor-stage) width height true))
+       (.update (get-viewport @editor-stage) width height true))
      }))
 
 (defn lwjgl3-application! 
