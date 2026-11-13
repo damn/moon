@@ -4651,25 +4651,25 @@
         potential-field-cache (atom nil)]
     {
      :create!
-     (fn [audio]
+     (fn [audio files]
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
-                                      (let [pixmap (pixmap (internal Gdx/files path))
+                                      (let [pixmap (pixmap (internal files path))
                                             cursor (new-cursor Gdx/graphics pixmap hotspot-x hotspot-y)]
                                         (dispose! pixmap)
                                         cursor))))
        (reset! sounds (into {}
                             (for [path (:sounds game-config)]
-                              [path (create-sound! audio Gdx/files path)])))
+                              [path (create-sound! audio files path)])))
        (reset! batch (sprite-batch!))
-       (reset! default-font (create-default-font! Gdx/files 
+       (reset! default-font (create-default-font! files 
                                                   {:path "fonts/films.EXL_____.ttf"
                                                    :size 16
                                                    :quality-scaling 2
                                                    :use-integer-positions? false}))
        (reset! shape-drawer-texture (white-pixel-texture))
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
-       (reset! skin (create-skin! (internal Gdx/files (:skin game-config))))
+       (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                            (float (:height (:stage game-config)))) 
                              @batch))
@@ -4677,7 +4677,7 @@
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
 
-       (reset! textures (create-textures Gdx/files (:textures game-config)))
+       (reset! textures (create-textures files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
 
        (let [{:keys [^TiledMap tiled-map 
@@ -4880,9 +4880,9 @@
                      (reset! tiled-map
                              (generate-level @db @textures @camera level-fn)))])]
     {:create!
-     (fn [_audio]
+     (fn [_audio files]
        (reset! batch (sprite-batch!))
-       (reset! skin (create-skin (internal Gdx/files "skin/uiskin.json")))
+       (reset! skin (create-skin (internal files "skin/uiskin.json")))
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
              window (create-window "Edit" skin*)]
@@ -4901,7 +4901,7 @@
                                                      world-height))))
        (reset! camera (.getCamera ^Viewport @viewport))
        (reset! db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
-       (reset! textures (create-textures Gdx/files
+       (reset! textures (create-textures files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
        (reset! tiled-map (generate-level @db @textures @camera create-uf-caves)))
@@ -5741,17 +5741,17 @@
                 (fn [title]
                   (create-text-button title @skin))}]
     {:create!
-     (fn [audio] 
+     (fn [audio files] 
        (reset! batch (sprite-batch!))
-       (reset! skin (create-skin (internal Gdx/files (:skin editor-config))))
+       (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
 
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
-                              [path (.newSound audio (internal Gdx/files path))])))
+                              [path (.newSound audio (internal files path))])))
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
-       (reset! editor-textures (create-textures Gdx/files (:textures editor-config)))
+       (reset! editor-textures (create-textures files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
        (add-actor! @editor-stage (main-window schemas @skin editor)))
      :dispose!
@@ -5793,7 +5793,8 @@
   (com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application. 
     (reify com.badlogic.gdx.ApplicationListener
       (create [_]
-        (create! Gdx/audio))
+        (create! Gdx/audio
+                 Gdx/files))
 
       (dispose [_]
         (dispose!))
