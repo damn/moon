@@ -1157,6 +1157,12 @@
       (.setPosition window (float x) (float y)))
     window))
 
+(defn get-world-width [^Viewport viewport]
+  (.getWorldWidth viewport))
+
+(defn get-world-height [^Viewport viewport]
+  (.getWorldHeight viewport))
+
 (defn create-inventory-window
   [player-eid input on-click-cell draw-cell-rect! skin stage textures]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
@@ -1189,8 +1195,8 @@
       :on-click-cell on-click-cell
       :draw-cell-rect! draw-cell-rect!
       :skin skin
-      :position [(.getWorldWidth (get-viewport stage))
-                 (.getWorldHeight (get-viewport stage))]
+      :position [(get-world-width (get-viewport stage))
+                 (get-world-height (get-viewport stage))]
       :slot->texture-region slot->texture-region
       :cell-size cell-size})))
 
@@ -2059,8 +2065,8 @@
     (.setModal window true)
     (.setName window "moon.ui.modal-window")
     (.setPosition window
-                  (/ (.getWorldWidth (get-viewport stage)) 2)
-                  (float (* (.getWorldHeight (get-viewport stage)) (/ 3 4)))
+                  (/ (get-world-width (get-viewport stage)) 2)
+                  (float (* (get-world-height (get-viewport stage)) (/ 3 4)))
                   (float Align/center))
     (add-actor! stage window)))
 
@@ -2098,7 +2104,7 @@
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
-    :position [(.getWorldWidth (get-viewport stage)) 0]
+    :position [(get-world-width (get-viewport stage)) 0]
     :set-label-text! (fn []
                        (if-let [eid @mouseover-eid]
                          (info-text (apply dissoc @eid [:entity/skills
@@ -3379,12 +3385,6 @@
 (defn new-cursor [graphics pixmap hotspot-x hotspot-y]
   (.newCursor graphics pixmap hotspot-x hotspot-y))
 
-(defn create-cursor! [files graphics [path [hotspot-x hotspot-y]]]
-  (let [pixmap (pixmap (internal files path))
-        cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
-    (dispose! pixmap)
-    cursor))
-
 (import '(com.badlogic.gdx.utils.viewport FitViewport))
 
 (defn create-viewport! [width height world-unit-scale]
@@ -3507,7 +3507,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (.getWorldWidth (get-viewport stage)) 2)
+        [x y-mana] [(/ (get-world-width (get-viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -3592,8 +3592,8 @@
             (draw [batch parent-alpha]
               (when-let [stage (.getStage ^Actor this)]
                 (let [state (get-user-object this)
-                      vp-width (.getWorldWidth (get-viewport stage))
-                      vp-height (.getWorldHeight (get-viewport stage))]
+                      vp-width (get-world-width (get-viewport stage))
+                      vp-height (get-world-height (get-viewport stage))]
                   (when-let [text (:text @state)]
                     (draw-text! batch 
                                 default-font 
@@ -3704,8 +3704,8 @@
       (draw-fn-grid shape-drawer
                     (int left-x)
                     (int bottom-y)
-                    (inc (int (.getWorldWidth @*viewport*)))
-                    (+ 2 (int (.getWorldHeight @*viewport*)))
+                    (inc (int (get-world-width @*viewport*)))
+                    (+ 2 (int (get-world-height @*viewport*)))
                     1
                     1
                     (float-bits 1 1 1 0.8)))))
@@ -4627,6 +4627,11 @@
 (defn draw! [^Stage stage]
   (.draw stage))
 
+; Schritt 1: pass functions instead e.g. reset! cursors?
+; No global state
+; pass Gdx from create! (or as functions ....)
+; => WHERE IS GDX USED
+; => Gdx/audio
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -4649,8 +4654,11 @@
      :create!
      (fn []
        (reset! cursors (update-vals (:cursors game-config)
-                                    (fn [& params]
-                                      (apply create-cursor! Gdx/files Gdx/graphics params))))
+                                    (fn [[path [hotspot-x hotspot-y]]]
+                                      (let [pixmap (pixmap (internal Gdx/files path))
+                                            cursor (new-cursor Gdx/graphics pixmap hotspot-x hotspot-y)]
+                                        (dispose! pixmap)
+                                        cursor))))
        (reset! sounds (into {}
                             (for [path (:sounds game-config)]
                               [path (create-sound! Gdx/audio Gdx/files path)])))
@@ -5218,7 +5226,7 @@
         window (create-window "Choose" skin)
         c (add! window (ScrollPane. list-table skin))]
     (.width c (float (+ (.getWidth list-table) 50)))
-    (.height c (float (min (- (.getWorldHeight (get-viewport @editor-stage)) 50)
+    (.height c (float (min (- (get-world-height (get-viewport @editor-stage)) 50)
                             (.getHeight list-table))))
     (row! window)
     (pack! window)
@@ -5626,7 +5634,7 @@
 (defn property-editor-window [schemas property skin editor]
   (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
         widget (create-widget schemas schema property skin editor)
-        scroll-pane-height (.getWorldHeight (get-viewport @editor-stage))
+        scroll-pane-height (get-world-height (get-viewport @editor-stage))
         get-widget-value #(widget-value schemas schema widget)
         property-id (:property/id property)
         with-window-close (fn [f]
