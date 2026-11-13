@@ -842,7 +842,7 @@
       (f event actor))))
 
 (defn create-text-button [text skin]
-  (TextButton. ^String text skin))
+  (TextButton. ^String text ^Skin skin))
 
 (defn remove! [^Actor actor]
   (.remove actor))
@@ -4168,66 +4168,17 @@
   [player-eid 
    handle-txs! 
    mouseover-eid 
-   paused? 
    unit-scale 
    default-font 
    shape-drawer 
    skin 
    stage 
    textures* 
-   db]
+   db
+   options]
   [(create-action-bar)
-   (create-dev-menu
-     {:menus [{:label "Debug"
-               :items [{:label "Toggle show-tile-grid?"
-                        :on-click #(swap! show-tile-grid? not)}
-                       {:label "Toggle show-cell-entities?"
-                        :on-click #(swap! show-cell-entities? not)}
-                       {:label "Toggle show-cell-occupied?"
-                        :on-click #(swap! show-cell-occupied? not)}
-                       {:label "Toggle show-body-bounds?"
-                        :on-click #(swap! show-body-bounds? not)}
-                       {:label "Potential field colors: off"
-                        :on-click #(reset! show-potential-field-colors? nil)}
-                       {:label "Potential field colors: :good"
-                        :on-click #(reset! show-potential-field-colors? :good)}
-                       {:label "Potential field colors: :evil"
-                        :on-click #(reset! show-potential-field-colors? :evil)}]}
-              {:label "Help"
-               :items [{:label controls-info}]}]
-      :update-labels (for [item [{:label "elapsed-time"
-                                  :update-fn (fn [] 
-                                               (str (readable @*elapsed-time*) " seconds"))
-                                  :icon "images/clock.png"}
-                                 {:label "FPS"
-                                  :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
-                                  :icon "images/fps.png"}
-                                 {:label "Mouseover-entity id"
-                                  :update-fn (fn []
-                                               (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                                 (:entity/id entity)))
-                                  :icon "images/mouseover.png"}
-                                 {:label "paused?"
-                                  :update-fn (fn [] @paused?)}
-                                 {:label "GUI"
-                                  :update-fn (fn []
-                                               (mapv int (ui-mouse-position stage Gdx/input)))}
-                                 {:label "World"
-                                  :update-fn (fn []
-                                               (mapv int (unproject @*viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
-                                 {:label "Zoom"
-                                  :update-fn (fn []
-                                               (.zoom ^OrthographicCamera (.getCamera @*viewport*)))
-                                  :icon "images/zoom.png"}]]
-                       (if (:icon item)
-                         (update item :icon #(get textures* %))
-                         item))
-      :skin skin})
-   (hp-mana-bar-create player-eid 
-                       default-font 
-                       stage 
-                       textures* 
-                       unit-scale)
+   (create-dev-menu options)
+   (hp-mana-bar-create player-eid default-font stage textures* unit-scale)
    (windows-create [(info-window-create skin stage mouseover-eid)
                     (let [cell-size 48]
                       (create-inventory-window
@@ -4711,14 +4662,58 @@
        (doseq [^Actor actor (create-ui-actors @player-eid
                                               handle-txs!
                                               mouseover-eid
-                                              paused?
                                               unit-scale
                                               @default-font
                                               @shape-drawer
                                               @skin
                                               @stage
                                               @textures
-                                              db)]
+                                              db
+                                              {:menus [{:label "Debug"
+                                                        :items [{:label "Toggle show-tile-grid?"
+                                                                 :on-click #(swap! show-tile-grid? not)}
+                                                                {:label "Toggle show-cell-entities?"
+                                                                 :on-click #(swap! show-cell-entities? not)}
+                                                                {:label "Toggle show-cell-occupied?"
+                                                                 :on-click #(swap! show-cell-occupied? not)}
+                                                                {:label "Toggle show-body-bounds?"
+                                                                 :on-click #(swap! show-body-bounds? not)}
+                                                                {:label "Potential field colors: off"
+                                                                 :on-click #(reset! show-potential-field-colors? nil)}
+                                                                {:label "Potential field colors: :good"
+                                                                 :on-click #(reset! show-potential-field-colors? :good)}
+                                                                {:label "Potential field colors: :evil"
+                                                                 :on-click #(reset! show-potential-field-colors? :evil)}]}
+                                                       {:label "Help"
+                                                        :items [{:label controls-info}]}]
+                                               :update-labels (for [item [{:label "elapsed-time"
+                                                                           :update-fn (fn [] 
+                                                                                        (str (readable @*elapsed-time*) " seconds"))
+                                                                           :icon "images/clock.png"}
+                                                                          {:label "FPS"
+                                                                           :update-fn (fn [] (.getFramesPerSecond Gdx/graphics))
+                                                                           :icon "images/fps.png"}
+                                                                          {:label "Mouseover-entity id"
+                                                                           :update-fn (fn []
+                                                                                        (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                                                                          (:entity/id entity)))
+                                                                           :icon "images/mouseover.png"}
+                                                                          {:label "paused?"
+                                                                           :update-fn (fn [] @paused?)}
+                                                                          {:label "GUI"
+                                                                           :update-fn (fn []
+                                                                                        (mapv int (ui-mouse-position @stage Gdx/input)))}
+                                                                          {:label "World"
+                                                                           :update-fn (fn []
+                                                                                        (mapv int (unproject @*viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
+                                                                          {:label "Zoom"
+                                                                           :update-fn (fn []
+                                                                                        (.zoom ^OrthographicCamera (.getCamera @*viewport*)))
+                                                                           :icon "images/zoom.png"}]]
+                                                                (if (:icon item)
+                                                                  (update item :icon #(get @textures %))
+                                                                  item))
+                                               :skin @skin})]
          (add-actor! @stage actor))
 
        (sync-player-ui! @skin @stage @textures @player-eid)
