@@ -3289,19 +3289,12 @@
                                                      :counter (timer-create spiderweb-duration)}]
        [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
-; this should be a fn in a context bound over a key only
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
-; would have to pass with handle-fsm-event! everywhere as extra param ...
-; or we handle item on cursor drop events differently than through state exit (directly?)
-; see cyberdungeon.
 (import '(com.badlogic.gdx Gdx))
 (def *viewport* (atom nil))
-(defn item-place-position* [position click-distance]
-  (item-place-position @*viewport* Gdx/input position click-distance))
 
-; complete and utter mess
 (defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3318,12 +3311,10 @@
         (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                  [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                  [:tx/swap eid dissoc old-state-k]]
-                (entity-state-exit! eid old-state-obj item-place-position*)
+                (entity-state-exit! eid old-state-obj (fn [input position click-distance]
+                                                        (item-place-position @*viewport* Gdx/input position click-distance)))
                 (entity-state-enter! eid new-state-obj))))))
 
-; keyword stuffs behaviour should be together for every key somehow
-; or then the key is a var
-; effects/projectile (:applicable? effect) (:useful? effect) etc?
 (defn- handle-effect!
   [[k v] effect-ctx active-entities raycaster]
   (case k
@@ -4007,16 +3998,19 @@
                   cnt
                   maxcnt]
            :as animation} v]
+      ; FIXME animation-tick or just 'tick'
       (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
                                                newcnt (+ (float cnt) (float delta-time))]
                                            (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
                                                                        looping? (min maxcnt (- newcnt maxcnt))
                                                                        :else maxcnt))))
+      ; TX/swap
       (when (and delete-after-stopped?
                  (and (not looping?) (>= cnt maxcnt)))
         (swap! eid assoc :entity/destroyed? true))
       nil)
 
+    ; ??? make a fn out of it ....? dispatch table?
     :entity/alert-friendlies-after-duration
     (let [{:keys [counter faction]} v]
       (when (timer-stopped? counter)
