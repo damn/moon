@@ -210,15 +210,6 @@
 (defn get-tile [^TiledMapTileLayer$Cell cell]
   (.getTile cell))
 
-
-
-
-
-
-
-
-
-
 (import '(com.badlogic.gdx.graphics.g2d TextureRegion)
         '(com.badlogic.gdx.maps MapLayer MapProperties)
         '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
@@ -229,7 +220,6 @@
 (defn props-get 
   [^MapProperties map-properties k]
   (.get map-properties k))
-
 
 (defn tile-movement-property
   [tiled-map layer [x y]]
@@ -243,20 +233,6 @@
                                                                     (position 1))]
                      " and layer " (get-name layer) " is undefined."))
         value))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 (defn movement-property-layers [tiled-map]
   (->> (get-layers tiled-map)
@@ -302,18 +278,8 @@
     (.setName name)
     (.setVisible visible?)))
 
-
-
-
-
-
-
 (defn add-map-layer! [^MapLayers map-layers ^MapLayer layer]
   (.add map-layers layer))
-
-
-
-
 
 (defn create-static-tiled-map-tile
   [{:keys [tile/id
@@ -323,7 +289,6 @@
   (let [tile (static-tiled-map-tile texture-region)]
     (put! (get-properties tile) "id" id)
     tile))
-
 
 (defn add-creatures-layer! [tiled-map spawn-positions]
   (let [creature-tile (memoize create-static-tiled-map-tile)
@@ -339,16 +304,6 @@
             :when tile]
       (set-cell! layer x y tile))
     (add-map-layer! (get-layers tiled-map) layer)))
-
-
-
-
-
-
-
-
-
-
 
 (import '(com.badlogic.gdx.graphics Texture))
 (import '(com.badlogic.gdx.graphics.g2d Batch))
@@ -5735,6 +5690,7 @@
      (fn [width height]
        (.update (.getViewport ^Stage @editor-stage) width height true))
      }))
+
 (defn lwjgl3-application! 
   [{:keys [create! 
            dispose! 
