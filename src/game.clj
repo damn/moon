@@ -3295,6 +3295,7 @@
 (import '(com.badlogic.gdx Gdx))
 (def *viewport* (atom nil))
 
+; * tick-component
 (defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3987,8 +3988,6 @@
 (def max-delta 0.04)
 (def max-speed (/ minimum-size max-delta))
 
-; FIXME use txs
-; TODO case statment -> dispatch maps ....
 (defn tick-component
   [delta-time handle-txs! eid [k v]]
   (case k
@@ -3998,24 +3997,20 @@
                   cnt
                   maxcnt]
            :as animation} v]
-      ; FIXME animation-tick or just 'tick'
       (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
                                                newcnt (+ (float cnt) (float delta-time))]
                                            (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
                                                                        looping? (min maxcnt (- newcnt maxcnt))
                                                                        :else maxcnt))))
-      ; TX/swap
       (when (and delete-after-stopped?
                  (and (not looping?) (>= cnt maxcnt)))
         (swap! eid assoc :entity/destroyed? true))
       nil)
 
-    ; ??? make a fn out of it ....? dispatch table?
     :entity/alert-friendlies-after-duration
     (let [{:keys [counter faction]} v]
       (when (timer-stopped? counter)
         (swap! eid assoc :entity/destroyed? true)
-        ; FIXME just check distance over all entities.
         (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
                                            :radius 4}
                                    [x y] (:position circle)
