@@ -4558,6 +4558,9 @@
 (defn set-projection-matrix! [^Batch batch matrix]
   (.setProjectionMatrix batch matrix))
 
+(defn resize! [^Viewport viewport width height center-camera?]
+  (.update viewport width height center-camera?))
+
 (defn act! [^Stage stage]
   (.act stage))
 
@@ -4754,8 +4757,8 @@
 
      :resize!
      (fn [width height]
-       (.update (get-viewport @stage) width height true)
-       (.update @*viewport* width height false))
+       (resize! (get-viewport @stage) width height true)
+       (resize! @*viewport* width height false))
      }))
 
 (defn- generate-level
@@ -4886,8 +4889,8 @@
 
      :resize!
      (fn [width height]
-       (.update (get-viewport @ui-stage) width height true)
-       (.update ^Viewport @viewport width height false))
+       (resize! (get-viewport @ui-stage) width height true)
+       (resize! @viewport width height false))
      }))
 
 (defn map-form-k->properties
@@ -5694,7 +5697,7 @@
        (draw! @editor-stage))
      :resize!
      (fn [width height]
-       (.update (get-viewport @editor-stage) width height true))
+       (resize! (get-viewport @editor-stage) width height true))
      }))
 
 (defn lwjgl3-application! 
