@@ -4005,25 +4005,28 @@
       (swap! eid assoc :entity/destroyed? true))
     nil))
 
+(defn get-friendlies-for-alert [eid faction]
+  (let [circle {:position (:entity/position @eid)
+                :radius 4}
+        [x y] (:position circle)
+        g2d @*grid*
+        gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
+    (->> circle
+         outer-rectangle
+         touched-tiles*
+         (keep #(get-in g2d %))
+         (map deref)
+         (into #{} (mapcat :entities))
+         (filter #(Intersector/overlaps ^Circle gdx-circle
+                                        ^Rectangle (rectangle @%)))
+         (filter #(= (:entity/faction @%) faction)))))
+
 (defn alert-friendlies-after-duration-tick
   [v eid _delta-time handle-txs!]
   (let [{:keys [counter faction]} v]
     (when (timer-stopped? counter)
       (swap! eid assoc :entity/destroyed? true)
-      (doseq [friendly-eid (let [circle {:position (:entity/position @eid)
-                                         :radius 4}
-                                 [x y] (:position circle)
-                                 g2d @*grid*
-                                 gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
-                             (->> circle
-                                  outer-rectangle
-                                  touched-tiles*
-                                  (keep #(get-in g2d %))
-                                  (map deref)
-                                  (into #{} (mapcat :entities))
-                                  (filter #(Intersector/overlaps ^Circle gdx-circle
-                                                                 ^Rectangle (rectangle @%)))
-                                  (filter #(= (:entity/faction @%) faction))))]
+      (doseq [friendly-eid (get-friendlies-for-alert eid faction)]
         (handle-txs! (handle-fsm-event! friendly-eid :alert))))
     nil))
 
