@@ -4270,7 +4270,8 @@
    stage 
    textures* 
    db
-   options]
+   options
+   input]
   [(create-action-bar)
    (create-dev-menu options)
    (hp-mana-bar-create player-eid default-font stage textures* unit-scale)
@@ -4818,7 +4819,8 @@
                                                                 (if (:icon item)
                                                                   (update item :icon #(get @textures %))
                                                                   item))
-                                               :skin @skin})]
+                                               :skin @skin}
+                                              Gdx/input)]
          (add-actor! @stage actor))
 
        (sync-player-ui! @skin @stage @textures @player-eid)
@@ -4894,8 +4896,8 @@
                    db 
                    active-entities 
                    paused? 
-                   @skin 
-                   @stage 
+                   @skin  ; why 
+                   @stage  ; why
                    potential-field-cache
                    graphics)
        (destroy-entities! handle-txs!)
