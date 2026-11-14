@@ -3610,7 +3610,7 @@
 
     nil))
 
-(defn player-state-draw-create [player-eid unit-scale textures]
+(defn player-state-draw-create [player-eid unit-scale textures input]
   (proxy [Actor] []
     (act [delta]
       (let [^Actor this this]
@@ -3620,7 +3620,7 @@
             player-eid player-eid 
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            mouse-pos (ui-mouse-position stage Gdx/input)
+            mouse-pos (ui-mouse-position stage input)
             [x y] mouse-pos]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
@@ -3746,149 +3746,197 @@
 
 (def world-unit-scale (float (/ 48)))
 
+(defn clickable-draw
+  [v entity batch default-font unit-scale]
+  (let [{:keys [text]} v
+        {:keys [entity/position entity/height entity/mouseover?]} entity]
+    (when (and mouseover? text)
+      (let [[x y] position]
+        (draw-text! batch
+                    default-font
+                    @unit-scale
+                    {:text text
+                     :x x
+                     :y (+ y (/ height 2))
+                     :up? true})))))
+
+(defn player-item-on-cursor-draw
+  [v entity batch unit-scale mouseover-actor textures]
+  (let [{:keys [item]} v]
+    (when-not mouseover-actor
+      (draw-texture-region! batch @unit-scale
+                            (get-texture-region textures (:entity/image item))
+                            (item-place-position @*viewport*
+                                                 Gdx/input
+                                                 (:entity/position entity)
+                                                 (- (:entity/click-distance-tiles entity) 0.1))
+                            {:center? true}))))
+
+(defn animation-draw
+  [v entity batch unit-scale textures]
+  (let [{:keys [frames cnt frame-duration]} v
+        image (frames (min (int (/ (float cnt) (float frame-duration)))
+                           (dec (count frames))))]
+    (draw-texture-region! batch @unit-scale
+                          (get-texture-region textures image)
+                          (:entity/position entity)
+                          {:center? true
+                           :rotation (or (:entity/rotation-angle entity) 0)})))
+
+(defn image-draw
+  [v entity batch unit-scale textures]
+  (draw-texture-region! batch @unit-scale
+                        (get-texture-region textures v)
+                        (:entity/position entity)
+                        {:center? true
+                         :rotation (or (:entity/rotation-angle entity) 0)}))
+
+(defn line-render-draw
+  [v entity shape-drawer]
+  (let [{:keys [thick? end color]} v
+        position (:entity/position entity)]
+    (if thick?
+      (with-line-width shape-drawer 4
+        (line! shape-drawer position end color))
+      (line! shape-drawer position end color))))
+
+(defn mouseover?-draw
+  [entity shape-drawer player]
+  (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
+        color (cond (= faction (enemy (:entity/faction player)))
+                    (float-bits 1 0 0 0.4)
+                    (= faction (:entity/faction player))
+                    (float-bits 0 1 0 0.4)
+                    :else
+                    (float-bits 1 1 1 0.4))]
+    (with-line-width shape-drawer 5
+      (ellipse! shape-drawer position
+                (/ width 2)
+                (/ height 2)
+                color))))
+
+(defn stats-draw
+  [entity shape-drawer]
+  (let [ratio (val-max-ratio (get-hitpoints (:entity/stats entity)))]
+    (when (or (< ratio 1) (:entity/mouseover? entity))
+      (let [{:keys [entity/position entity/width entity/height]} entity
+            [x y] position
+            x (- x (/ width  2))
+            y (+ y (/ height 2))
+            height (* 5 world-unit-scale)
+            border (* 1 world-unit-scale)]
+        (filled-rectangle! shape-drawer x y width height (float-bits 0 0 0 1))
+        (filled-rectangle! shape-drawer
+                           (+ x border)
+                           (+ y border)
+                           (- (* width ratio) (* 2 border))
+                           (- height (* 2 border))
+                           (cond
+                             (> ratio 0.75) (float-bits 0 0.8 0 1)
+                             (> ratio 0.5) (float-bits 0 0.5 0 1)
+                             (> ratio 0.25) (float-bits 0.5 0.5 0 1)
+                             :else (float-bits 0.5 0 0 1)))))))
+
+(defn string-effect-draw
+  [v entity batch default-font unit-scale]
+  (let [{:keys [text]} v
+        [x y] (:entity/position entity)]
+    (draw-text! batch
+                default-font
+                @unit-scale
+                {:text text
+                 :x x
+                 :y (+ y
+                       (/ (:entity/height entity) 2)
+                       (* 5 world-unit-scale))
+                 :scale 2
+                 :up? true})))
+
+(defn temp-modifier-draw
+  [entity shape-drawer]
+  (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
+
+(defn active-skill-draw
+  [v entity shape-drawer batch unit-scale textures active-entities raycaster]
+  (let [{:keys [skill effect-ctx counter]} v
+        {:keys [entity/image skill/effects]} skill
+        radius active-skill-radius
+        action-counter-ratio (timer-ratio counter)
+        texture-region (get-texture-region textures image)
+        [x y] (:entity/position entity)
+        y (+ (float y)
+             (float (/ (:entity/height entity) 2))
+             (float 0.15))
+        center [x (+ y radius)]]
+    (filled-circle! shape-drawer center radius (float-bits 1 1 1 0.125))
+    (sector! shape-drawer
+             center
+             radius
+             (math/to-radians 90)
+             (math/to-radians (* (float action-counter-ratio) 360))
+             (float-bits 1 1 1 0.5))
+    (draw-texture-region! batch @unit-scale texture-region [(- (float x) radius) y])
+    (doseq [effect effects]
+      (effect-render effect effect-ctx shape-drawer
+                     active-entities
+                     raycaster))))
+
+(defn npc-sleeping-draw
+  [entity batch default-font unit-scale]
+  (let [{:keys [entity/position entity/height]} entity
+        [x y] position]
+    (draw-text! batch
+                default-font
+                @unit-scale
+                {:text "zzz"
+                 :x x
+                 :y (+ y (/ height 2))
+                 :up? true})))
+
+(defn stunned-draw
+  [entity shape-drawer]
+  (circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6)))
+
 (defn- draw-component
-  [shape-drawer batch default-font unit-scale mouseover-actor 
+  [shape-drawer batch default-font unit-scale mouseover-actor
    textures player active-entities raycaster
    entity k v]
   (case k
     :entity/clickable
-    (let [{:keys [text]} v
-          {:keys [entity/position entity/height entity/mouseover?]} entity]
-      (when (and mouseover? text)
-        (let [[x y] position]
-          (draw-text! batch 
-                      default-font 
-                      @unit-scale 
-                      {:text text
-                       :x x
-                       :y (+ y (/ height 2))
-                       :up? true}))))
+    (clickable-draw v entity batch default-font unit-scale)
 
     :player-item-on-cursor
-    (let [{:keys [item]} v]
-      (when-not mouseover-actor
-        (draw-texture-region! batch @unit-scale
-                                (get-texture-region textures (:entity/image item))
-                                (item-place-position @*viewport*
-                                                     Gdx/input
-                                                     (:entity/position entity)
-                                                     (- (:entity/click-distance-tiles entity) 0.1))
-                                {:center? true})))
+    (player-item-on-cursor-draw v entity batch unit-scale mouseover-actor textures)
 
     :entity/animation
-    (let [{:keys [frames cnt frame-duration]} v
-          image (frames (min (int (/ (float cnt) (float frame-duration)))
-                             (dec (count frames))))]
-      (draw-texture-region! batch @unit-scale
-                              (get-texture-region textures image)
-                              (:entity/position entity)
-                              {:center? true
-                               :rotation (or (:entity/rotation-angle entity) 0)}))
+    (animation-draw v entity batch unit-scale textures)
 
     :entity/image
-    (draw-texture-region! batch @unit-scale
-                            (get-texture-region textures v)
-                            (:entity/position entity)
-                            {:center? true
-                             :rotation (or (:entity/rotation-angle entity) 0)})
+    (image-draw v entity batch unit-scale textures)
 
     :entity/line-render
-    (let [{:keys [thick? end color]} v
-          position (:entity/position entity)]
-      (if thick?
-        (with-line-width shape-drawer 4
-          (line! shape-drawer position end color))
-        (line! shape-drawer position end color)))
+    (line-render-draw v entity shape-drawer)
 
     :entity/mouseover?
-    (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
-          color (cond (= faction (enemy (:entity/faction player)))
-                      (float-bits 1 0 0 0.4)
-                      (= faction (:entity/faction player))
-                      (float-bits 0 1 0 0.4)
-                      :else
-                      (float-bits 1 1 1 0.4))]
-      (with-line-width shape-drawer 5
-        (ellipse! shape-drawer position
-                               (/ width 2)
-                               (/ height 2)
-                               color)))
+    (mouseover?-draw entity shape-drawer player)
 
     :entity/stats
-    (let [ratio (val-max-ratio (get-hitpoints (:entity/stats entity)))]
-      (when (or (< ratio 1) (:entity/mouseover? entity))
-        (let [{:keys [entity/position entity/width entity/height]} entity
-              [x y] position
-              x (- x (/ width  2))
-              y (+ y (/ height 2))
-              height (* 5 world-unit-scale)
-              border (* 1 world-unit-scale)]
-          (filled-rectangle! shape-drawer x y width height (float-bits 0 0 0 1))
-          (filled-rectangle! shape-drawer
-                                    (+ x border)
-                                    (+ y border)
-                                    (- (* width ratio) (* 2 border))
-                                    (- height (* 2 border))
-                                    (cond
-                                      (> ratio 0.75) (float-bits 0 0.8 0 1)
-                                      (> ratio 0.5) (float-bits 0 0.5 0 1)
-                                      (> ratio 0.25) (float-bits 0.5 0.5 0 1)
-                                      :else (float-bits 0.5 0 0 1))))))
+    (stats-draw entity shape-drawer)
 
     :entity/string-effect
-    (let [{:keys [text]} v
-          [x y] (:entity/position entity)]
-      (draw-text! batch 
-                  default-font 
-                  @unit-scale 
-                  {:text text
-                   :x x
-                   :y (+ y
-                         (/ (:entity/height entity) 2)
-                         (* 5 world-unit-scale))
-                   :scale 2
-                   :up? true}))
+    (string-effect-draw v entity batch default-font unit-scale)
 
     :entity/temp-modifier
-    (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4))
+    (temp-modifier-draw entity shape-drawer)
 
     :active-skill
-    (let [{:keys [skill effect-ctx counter]} v
-          {:keys [entity/image skill/effects]} skill
-          radius active-skill-radius
-          action-counter-ratio (timer-ratio counter)
-          texture-region (get-texture-region textures image)
-          [x y] (:entity/position entity)
-          y (+ (float y)
-               (float (/ (:entity/height entity) 2))
-               (float 0.15))
-          center [x (+ y radius)]]
-      (filled-circle! shape-drawer center radius (float-bits 1 1 1 0.125))
-      (sector! shape-drawer
-                      center
-                      radius
-                      (math/to-radians 90)
-                      (math/to-radians (* (float action-counter-ratio) 360))
-                      (float-bits 1 1 1 0.5))
-      (draw-texture-region! batch @unit-scale texture-region [(- (float x) radius) y])
-      (doseq [effect effects]
-        (effect-render effect effect-ctx shape-drawer
-                       active-entities
-                       raycaster)))
+    (active-skill-draw v entity shape-drawer batch unit-scale textures active-entities raycaster)
 
     :npc-sleeping
-    (let [{:keys [entity/position entity/height]} entity
-          [x y] position]
-      (draw-text! batch 
-                  default-font 
-                  @unit-scale 
-                  {:text "zzz"
-                   :x x
-                   :y (+ y (/ height 2))
-                   :up? true}))
+    (npc-sleeping-draw entity batch default-font unit-scale)
 
     :stunned
-    (circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6))))
+    (stunned-draw entity shape-drawer)))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -4245,7 +4293,7 @@
                         skin
                         stage
                         textures*))])
-   (player-state-draw-create player-eid unit-scale textures*)
+   (player-state-draw-create player-eid unit-scale textures* input)
    (player-message-actor-create default-font unit-scale)])
 
 (defn update-mouseover-eid! [player-eid mouseover-eid stage input]
@@ -4631,10 +4679,6 @@
 (defn set-cursor! [graphics cursor]
   (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
 
-; Schritt 1: pass functions instead e.g. reset! cursors?
-; No global state
-; pass Gdx from create! (or as functions ....)
-; => WHERE IS GDX USED
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -4677,16 +4721,21 @@
        (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                            (float (:height (:stage game-config)))) 
                              @batch))
+
        (.setInputProcessor Gdx/input @stage)
+
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
 
        (reset! textures (create-textures files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
 
+       ; TODO non-plattform data ... but tiled-map ....
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
+
+         ; GAME:
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
          (reset! *entity-ids* {})
@@ -5887,9 +5936,9 @@
 (defn game! []
   (lwjgl3-application! (game-listener
                          {
-                          :level-fn create-vampire-level
+                          :level-fn ;create-vampire-level
                           ;create-uf-caves
-                          ;create-modules-level
+                          create-modules-level
                           :pausing? true
                           :state->pause-game? {:active-skill false
                                                :stunned false
