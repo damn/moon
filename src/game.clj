@@ -3442,18 +3442,49 @@
           :when value]
       [[x y] value])))
 
-; TODO the tiledmap/level can directly emit the proper :tx/spawn ... effects?
-; for player too?
-(defn spawn-map-creatures [db spawn-positions start-position]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(def *start-position* (atom nil))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(defn spawn-map-creatures [db* tiled-map]
   (mapcat (fn [[position creature-id]] 
-            (when (not= position start-position)
+            (when (not= position @*start-position*)
               [[:tx/spawn-entity 
                (spawn-creature {:position (mapv (partial + 0.5) position)
-                                :creature-property (build db (keyword creature-id))
+                                :creature-property (build db* (keyword creature-id))
                                 :components {:entity/fsm {:fsm :fsms/npc
                                                           :initial-state :npc-sleeping}
                                              :entity/faction :evil}})]]))
-          spawn-positions))
+          (spawn-positions tiled-map)))
 
 (defn hp-mana-bar-create
   [player-eid default-font stage textures unit-scale]
@@ -4666,57 +4697,10 @@
         unit-scale (atom 1)
         paused? (atom false)
         mouseover-eid (atom nil)
-        potential-field-cache (atom nil)
-        dev-menu-options {:menus [{:label "Debug"
-                                   :items [{:label "Toggle show-tile-grid?"
-                                            :on-click #(swap! show-tile-grid? not)}
-                                           {:label "Toggle show-cell-entities?"
-                                            :on-click #(swap! show-cell-entities? not)}
-                                           {:label "Toggle show-cell-occupied?"
-                                            :on-click #(swap! show-cell-occupied? not)}
-                                           {:label "Toggle show-body-bounds?"
-                                            :on-click #(swap! show-body-bounds? not)}
-                                           {:label "Potential field colors: off"
-                                            :on-click #(reset! show-potential-field-colors? nil)}
-                                           {:label "Potential field colors: :good"
-                                            :on-click #(reset! show-potential-field-colors? :good)}
-                                           {:label "Potential field colors: :evil"
-                                            :on-click #(reset! show-potential-field-colors? :evil)}]}
-                                  {:label "Help"
-                                   :items [{:label controls-info}]}]
-                          :update-labels (for [item [{:label "elapsed-time"
-                                                      :update-fn (fn [] 
-                                                                   (str (readable @*elapsed-time*) " seconds"))
-                                                      :icon "images/clock.png"}
-                                                     {:label "FPS"
-                                                      :update-fn (fn [] (get-frames-per-second Gdx/graphics))
-                                                      :icon "images/fps.png"}
-                                                     {:label "Mouseover-entity id"
-                                                      :update-fn (fn []
-                                                                   (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                                                     (:entity/id entity)))
-                                                      :icon "images/mouseover.png"}
-                                                     {:label "paused?"
-                                                      :update-fn (fn [] @paused?)}
-                                                     {:label "GUI"
-                                                      :update-fn (fn []
-                                                                   (mapv int (ui-mouse-position @stage Gdx/input)))}
-                                                     {:label "World"
-                                                      :update-fn (fn []
-                                                                   (mapv int (unproject @*viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
-                                                     {:label "Zoom"
-                                                      :update-fn (fn []
-                                                                   (.zoom ^OrthographicCamera (.getCamera @*viewport*)))
-                                                      :icon "images/zoom.png"}]]
-                                           (if (:icon item)
-                                             (update item :icon #(get @textures %))
-                                             item))
-                          :skin @skin}]
+        potential-field-cache (atom nil)]
     {
      :create!
      (fn [audio files graphics]
-       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-       (set! (.initialTime (TooltipManager/getInstance)) 0)
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
                                       (let [pixmap (pixmap (internal files path))
@@ -4738,12 +4722,21 @@
        (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                            (float (:height (:stage game-config)))) 
                              @batch))
+
        (.setInputProcessor Gdx/input @stage)
+
+       (set! (.initialTime (TooltipManager/getInstance)) 0)
+       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+
        (reset! textures (create-textures files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
+
+       ; TODO non-plattform data ... but tiled-map ....
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
+
+         ; GAME: FIXME STATE SPACE GLOBAL
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
          (reset! *entity-ids* {})
@@ -4758,7 +4751,7 @@
                                                (range width)))
            (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
-       ; just pass id explicit always ? and here special ?
+
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
@@ -4768,26 +4761,72 @@
                                                               :entity/free-skill-points 3
                                                               :entity/clickable {:type :clickable/player}
                                                               :entity/click-distance-tiles 1.5}}))]
-         (let [eid (get @*entity-ids* 1)] 
-           (assert (:entity/player? @eid)) 
+         (let [eid (get @*entity-ids* 1)] ; TODO not necessary -> pass id to spawn entity ? can use id counter before?
+           (assert (:entity/player? @eid)) ; TODO not necessary
            (reset! player-eid eid)))
-       (doseq [actor (create-ui-actors @player-eid
-                                       handle-txs!
-                                       mouseover-eid
-                                       unit-scale
-                                       @default-font
-                                       @shape-drawer
-                                       @skin
-                                       @stage
-                                       @textures
-                                       db
-                                       dev-menu-options
-                                       Gdx/input)]
+
+       (doseq [^Actor actor (create-ui-actors @player-eid
+                                              handle-txs!
+                                              mouseover-eid
+                                              unit-scale
+                                              @default-font
+                                              @shape-drawer
+                                              @skin
+                                              @stage
+                                              @textures
+                                              db
+                                              {:menus [{:label "Debug"
+                                                        :items [{:label "Toggle show-tile-grid?"
+                                                                 :on-click #(swap! show-tile-grid? not)}
+                                                                {:label "Toggle show-cell-entities?"
+                                                                 :on-click #(swap! show-cell-entities? not)}
+                                                                {:label "Toggle show-cell-occupied?"
+                                                                 :on-click #(swap! show-cell-occupied? not)}
+                                                                {:label "Toggle show-body-bounds?"
+                                                                 :on-click #(swap! show-body-bounds? not)}
+                                                                {:label "Potential field colors: off"
+                                                                 :on-click #(reset! show-potential-field-colors? nil)}
+                                                                {:label "Potential field colors: :good"
+                                                                 :on-click #(reset! show-potential-field-colors? :good)}
+                                                                {:label "Potential field colors: :evil"
+                                                                 :on-click #(reset! show-potential-field-colors? :evil)}]}
+                                                       {:label "Help"
+                                                        :items [{:label controls-info}]}]
+                                               :update-labels (for [item [{:label "elapsed-time"
+                                                                           :update-fn (fn [] 
+                                                                                        (str (readable @*elapsed-time*) " seconds"))
+                                                                           :icon "images/clock.png"}
+                                                                          {:label "FPS"
+                                                                           :update-fn (fn [] (get-frames-per-second graphics))
+                                                                           :icon "images/fps.png"}
+                                                                          {:label "Mouseover-entity id"
+                                                                           :update-fn (fn []
+                                                                                        (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                                                                          (:entity/id entity)))
+                                                                           :icon "images/mouseover.png"}
+                                                                          {:label "paused?"
+                                                                           :update-fn (fn [] @paused?)}
+                                                                          {:label "GUI"
+                                                                           :update-fn (fn []
+                                                                                        (mapv int (ui-mouse-position @stage Gdx/input)))}
+                                                                          {:label "World"
+                                                                           :update-fn (fn []
+                                                                                        (mapv int (unproject @*viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
+                                                                          {:label "Zoom"
+                                                                           :update-fn (fn []
+                                                                                        (.zoom ^OrthographicCamera (.getCamera @*viewport*)))
+                                                                           :icon "images/zoom.png"}]]
+                                                                (if (:icon item)
+                                                                  (update item :icon #(get @textures %))
+                                                                  item))
+                                               :skin @skin}
+                                              Gdx/input)]
          (add-actor! @stage actor))
+
        (sync-player-ui! @skin @stage @textures @player-eid)
-       (handle-txs! (spawn-map-creatures db 
-                                         (spawn-positions @tiled-map*) 
-                                         @*start-position*)))
+
+       (handle-txs! (spawn-map-creatures db @tiled-map*))
+       )
 
      :dispose!
      (fn []
