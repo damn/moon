@@ -3442,38 +3442,7 @@
           :when value]
       [[x y] value])))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 (def *start-position* (atom nil))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 (defn spawn-map-creatures [db* tiled-map]
   (mapcat (fn [[position creature-id]] 
