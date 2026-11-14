@@ -4519,7 +4519,7 @@
   (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
 
 (defn tick-game!
-  [handle-txs! db active-entities paused? skin stage potential-field-cache graphics]
+  [handle-txs! db active-entities paused? potential-field-cache graphics]
   (when-not @paused?
     (let [delta-time (min (get-delta-time graphics) max-delta)]
       (swap! *elapsed-time* + delta-time)
@@ -4736,7 +4736,7 @@
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
 
-         ; GAME:
+         ; GAME: FIXME STATE SPACE GLOBAL
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
          (reset! *entity-ids* {})
@@ -4896,8 +4896,6 @@
                    db 
                    active-entities 
                    paused? 
-                   @skin  ; why 
-                   @stage  ; why
                    potential-field-cache
                    graphics)
        (destroy-entities! handle-txs!)
