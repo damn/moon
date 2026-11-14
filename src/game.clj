@@ -267,7 +267,6 @@
      :tile/id id
      :tile/texture-region texture-region}))
 
-
 (defn static-tiled-map-tile [texture-region]
   (StaticTiledMapTile. ^TextureRegion texture-region))
 
@@ -1024,16 +1023,8 @@
 
     v))
 
-; :entity/inventory -> :properties/creatures
-; :entity/skills -> -> :properties/creatures
-; :effects/projectile -> :skill/effects (but recursive creature also not?) -> need to build projectile also (get)
-; :effects/spawn -> :skill/effects -> need to get creature id also then 
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 
-; TODO only for relationships
-; build all relationships manually via safe-get
-; first list relationships
-; also infostring is still recursive?
 (defn build-values [property db]
   (reduce (fn [m k]
             (assoc m k
@@ -1082,9 +1073,12 @@
 (defn set-user-object! [^Actor actor obj]
   (.setUserObject actor obj))
 
+(defn set-name! [^Actor actor name]
+  (.setName actor name))
+
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
   (doto (drawable-image background-drawable)
-    (.setName "image-widget")
+    (set-name! "image-widget")
     (set-user-object! {:background-drawable background-drawable
                        :cell-size cell-size})))
 
@@ -1100,7 +1094,7 @@
       (add-listener! (proxy [ClickListener] []
                        (clicked [event _x _y]
                          (on-click-cell event cell))))
-      (.setName "inventory-cell")
+      (set-name! "inventory-cell")
       (set-user-object! cell))))
 
 (import '(com.badlogic.gdx.graphics Color))
@@ -1146,12 +1140,12 @@
         (add! cell-table actor))
       (row! cell-table))
     (pack! cell-table)
-    (.setName cell-table "inventory-cell-table")
+    (set-name! cell-table "inventory-cell-table")
     (let [c (add! window cell-table)]
       (.pad c (float 4)))
     (row! window)
     (pack! window)
-    (.setName window "moon.ui.windows.inventory")
+    (set-name! window "moon.ui.windows.inventory")
     (.setVisible window false)
     (let [[x y] position]
       (.setPosition window (float x) (float y)))
@@ -1794,12 +1788,9 @@
 
 (def *elapsed-time* (atom nil))
 
-; pass as function 'game/context' function without exposing data
-; maybe game context protocol?
 (defn timer-stopped? [{:keys [stop-time]}]
   (>= @*elapsed-time* stop-time))
 
-; push if up , assert at ratio
 (defn timer-ratio [{:keys [duration stop-time] :as timer}]
   {:post [(<= 0 % 1)]}
   (if (timer-stopped? timer)
@@ -2063,7 +2054,7 @@
     (row! window)
     (pack! window)
     (.setModal window true)
-    (.setName window "moon.ui.modal-window")
+    (set-name! window "moon.ui.modal-window")
     (.setPosition window
                   (/ (get-world-width (get-viewport stage)) 2)
                   (float (* (get-world-height (get-viewport stage)) (/ 3 4)))
@@ -2084,7 +2075,7 @@
     (.expand c)
     (row! window)
     (pack! window)
-    (.setName window actor-name)
+    (set-name! window actor-name)
     (.setVisible window visible?)
     (let [[x y] position]
       (.setPosition window (float x) (float y)))
@@ -3564,7 +3555,7 @@
                                  :text text
                                  :scale 2.5
                                  :up? true}))))))
-      (.setName "player-message")
+      (set-name! "player-message")
       (set-user-object! (atom nil)))))
 
 (defn- entity-state-draw-ui-view
@@ -3602,7 +3593,7 @@
 (defn windows-create [actors]
   (doto (Group.)
     (add-actors! actors)
-    (.setName "moon.ui.windows")))
+    (set-name! "moon.ui.windows")))
 
 (def show-potential-field-colors? (atom nil))
 (def show-cell-entities? (atom false))
@@ -3613,9 +3604,12 @@
 
 (import '(com.badlogic.gdx.math Vector3))
 
+(defn get-camera [^Viewport viewport]
+  (.getCamera viewport))
+
 (defn draw-cell-debug
   [shape-drawer]
-  (let [^OrthographicCamera camera (.getCamera @*viewport*)
+  (let [^OrthographicCamera camera (get-camera @*viewport*)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
                            (.planePoints (.frustum camera)))
@@ -3655,7 +3649,7 @@
 (defn draw-tile-grid
   [shape-drawer]
   (when @show-tile-grid?
-    (let [^OrthographicCamera camera (.getCamera @*viewport*)
+    (let [^OrthographicCamera camera (get-camera @*viewport*)
           plane-points (mapv (fn [^Vector3 v3]
                                [(.x v3) (.y v3) (.z v3)])
                              (.planePoints (.frustum camera)))
@@ -4216,7 +4210,7 @@
     (doto (add! table (doto (HorizontalGroup.)
                         (.space (float 2))
                         (.pad (float 2))
-                        (.setName "moon.ui.action-bar.horizontal-group")
+                        (set-name! "moon.ui.action-bar.horizontal-group")
                         (set-user-object! (doto (ButtonGroup.)
                                             (.setMaxCheckCount (int 1))
                                             (.setMinCheckCount (int 0))))))
@@ -4226,7 +4220,7 @@
     (doto table
       (pack!)
       (.setFillParent true)
-      (.setName "moon.ui.action-bar"))))
+      (set-name! "moon.ui.action-bar"))))
 
 (defn create-ui-actors
   [player-eid 
@@ -4289,7 +4283,7 @@
   (reset! active-entities (active-entities* @*content-grid* @player-eid)))
 
 (defn set-camera-to-player! [player-eid]
-  (let [camera (.getCamera @*viewport*)
+  (let [camera (get-camera @*viewport*)
         pos (.position camera)
         [x y] (:entity/position @player-eid)]
     (set! (.x pos) x)
@@ -4544,8 +4538,8 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(defn create-sound! [audio files path]
-  (.newSound audio (internal files path)))
+(defn new-sound [audio file-handle]
+  (com.badlogic.gdx.Audio/.newSound audio file-handle))
 
 (import '(com.badlogic.gdx.graphics Colors)
         '(com.badlogic.gdx.graphics.g2d SpriteBatch)
@@ -4678,7 +4672,7 @@
                                         cursor))))
        (reset! sounds (into {}
                             (for [path (:sounds game-config)]
-                              [path (create-sound! audio files path)])))
+                              [path (new-sound audio (internal files path))])))
        (reset! batch (sprite-batch!))
        (reset! default-font (create-default-font! files 
                                                   {:path "fonts/films.EXL_____.ttf"
@@ -4783,7 +4777,7 @@
                                                                                         (mapv int (unproject @*viewport* [(.getX Gdx/input) (.getY Gdx/input)])))}
                                                                           {:label "Zoom"
                                                                            :update-fn (fn []
-                                                                                        (.zoom ^OrthographicCamera (.getCamera @*viewport*)))
+                                                                                        (.zoom ^OrthographicCamera (get-camera @*viewport*)))
                                                                            :icon "images/zoom.png"}]]
                                                                 (if (:icon item)
                                                                   (update item :icon #(get @textures %))
@@ -4814,15 +4808,15 @@
        (update-mouseover-eid! @player-eid mouseover-eid @stage Gdx/input)
        (update-active-entities! active-entities @player-eid)
        (set-camera-to-player! @player-eid)
-       (set-projection-matrix! @batch (.combined (.getCamera @*viewport*)))
+       (set-projection-matrix! @batch (.combined (get-camera @*viewport*)))
        (.begin ^Batch @batch)
        (draw-tiled-map! @tiled-map*
                         @batch
-                        (.getCamera @*viewport*)
+                        (get-camera @*viewport*)
                         (tile-color-setter*
                           {:ray-blocked? (partial raycaster-blocked? @*raycaster*)
                            :explored-tile-corners explored-tile-corners
-                           :light-position (let [pos (.position (.getCamera @*viewport*))]
+                           :light-position (let [pos (.position (get-camera @*viewport*))]
                                              [(.x pos) (.y pos) (.z pos)])
                            :see-all-tiles? false
                            :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4869,11 +4863,11 @@
                    graphics)
        (destroy-entities! handle-txs!)
        (doseq [[k f] {(:zoom-in controls) (fn []
-                                            (let [^OrthographicCamera camera (.getCamera @*viewport*)]
+                                            (let [^OrthographicCamera camera (get-camera @*viewport*)]
                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
                                               (.update camera)))
                       (:zoom-out controls) (fn []
-                                             (let [^OrthographicCamera camera (.getCamera @*viewport*)]
+                                             (let [^OrthographicCamera camera (get-camera @*viewport*)]
                                                (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                (.update camera)))}]
          (when (key-pressed? Gdx/input (int k))
@@ -4966,7 +4960,7 @@
                                         (.setToOrtho false
                                                      world-width
                                                      world-height))))
-       (reset! camera (.getCamera ^Viewport @viewport))
+       (reset! camera (get-camera @viewport))
        (reset! db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
        (reset! textures (create-textures files
                                          {:folder "resources/"
@@ -4984,7 +4978,7 @@
      (fn [_]
        (let [^OrthographicCamera camera* @camera
              ^Batch batch* @batch
-             ^OrthographicCamera world-camera (.getCamera ^Viewport @viewport)]
+             ^OrthographicCamera world-camera (get-camera @viewport)]
          (clear-screen! 0 0 0 0)
          (set-projection-matrix! batch* (.combined world-camera))
          (.begin batch*)
@@ -5486,6 +5480,9 @@
     (remove! window)
     (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
 
+(defn left! [cell]
+  (.left ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+
 (defn- component-row-table
   [{:keys [display-remove-component-button?
            k
@@ -5507,7 +5504,7 @@
                             ; java.lang.IllegalStateException: Table must have a skin set to use this method.
                             ; (can be nil)
                             (label-create "." skin)))
-      (.left))
+      (left!))
     (add! row-table (label-create (k-label-text k) skin))
     (row! row-table)
     (pack! row-table)
@@ -5523,7 +5520,7 @@
       (.fillY)
       (.expandY)))
   (doto (add! table (:editor-widget opts))
-    (.left))
+    (left!))
   (row! table))
 
 (defn- add-horiz-sep! [table colspan]
@@ -5584,7 +5581,7 @@
            editor]}]
   (let [table (doto (Table.)
                 (#(.pad (.defaults ^Table %) (float 5)))
-                (.setName "moon.db.schema.map.ui.widget"))
+                (set-name! "moon.db.schema.map.ui.widget"))
         colspan 3]
     (when opt?
       (doto (add! table (doto (create-text-button "Add component" skin)
@@ -5749,7 +5746,7 @@
                           (let [^Actor this this]
                             (proxy-super act delta)))
                         (draw [batch parent-alpha])))
-    (.setName window "moon.ui.clojure.editor-window")
+    (set-name! window "moon.ui.clojure.editor-window")
     window))
 
 (defn main-window [schemas skin editor]
@@ -5816,7 +5813,7 @@
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
-                              [path (.newSound audio (internal files path))])))
+                              [path (new-sound audio (internal files path))])))
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
        (reset! editor-textures (create-textures files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
