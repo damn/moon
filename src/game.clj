@@ -1,7 +1,3 @@
-; state defs weg
-; data literals weg
-; dependencies weg -> protocols/import facades
-; => lang...
 (ns game)
 
 (defn safe-get [m k]
@@ -5001,7 +4997,7 @@
         world-height (* 900 world-unit-scale)
         batch (atom nil)
         skin (atom nil)
-        ui-stage (atom nil)
+        stage (atom nil)
         viewport (atom nil)
         camera (atom nil)
         db (atom nil)
@@ -5019,7 +5015,6 @@
                                 height (props-get props "height")]
                             (assert tiled-map)
                             (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
-                            ; adjust-camera!
                             (let [pos (.position ^OrthographicCamera @camera)
                                   px (float (/ width 2))
                                   py (float (/ height 2))
@@ -5031,7 +5026,6 @@
                               (set! (.y pos) py)
                               (set! (.zoom @camera) (max vp-ratio-w vp-ratio-h))
                               (.update @camera))
-                            ;
                             tiled-map))
         buttons (for [[label level-fn] [["Vampire" create-vampire-level]
                                         ["UF Caves" create-uf-caves]
@@ -5043,35 +5037,28 @@
     {:create!
      (fn [_audio files _graphics]
        (reset! batch (sprite-batch!))
-
        (reset! skin (create-skin (internal files "skin/uiskin.json")))
-
-       (let [s (Stage. (FitViewport. 1440 900) @batch)
-             ^Skin skin* @skin
-             window (create-window "Edit" skin*)]
-         (doseq [[label on-click!] buttons]
-           (add! window (text-button skin* label on-click!))
-           (row! window))
-         (pack! window)
-         (add-actor! s window)
-         (reset! ui-stage s))
-
-       (.setInputProcessor Gdx/input @ui-stage) ; pass gdx
+       (reset! stage (let [stage (Stage. (FitViewport. 1440 900) @batch)
+                           window (create-window "Edit" @skin)] 
+                       (doseq [[label on-click!] buttons]
+                         (add! window (text-button @skin label on-click!))
+                         (row! window))
+                       (pack! window)
+                       (add-actor! stage window)
+                       stage))
+       (.setInputProcessor Gdx/input @stage) 
        (reset! viewport (FitViewport. (float world-width)
                                       (float world-height)
                                       (doto (OrthographicCamera.)
                                         (.setToOrtho false
                                                      world-width
                                                      world-height))))
-       (reset! camera (get-camera @viewport)) ; we already have viewport
-
-       ; TODO this can be done before and no atom necessary
+       (reset! camera (get-camera @viewport)) 
        (reset! db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
-
        (reset! textures (create-textures files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
-       (reset! tiled-map (generate-level! create-uf-caves)))
+       (reset! tiled-map (generate-level! create-uf-caves))) 
 
      :dispose!
      (fn []
@@ -5082,48 +5069,45 @@
 
      :render!
      (fn [_]
-       (let [^OrthographicCamera camera* @camera
-             ^Batch batch* @batch
-             ^OrthographicCamera world-camera (get-camera @viewport)]
-         (clear-screen! 0 0 0 0)
-         (set-projection-matrix! batch* (.combined world-camera))
-         (.begin batch*)
-         (draw-tiled-map! @tiled-map
-                          batch*
-                          world-camera
-                          (constantly (.toFloatBits Color/WHITE))
-                          world-unit-scale)
-         (.end batch*)
-         (doseq [[k f] {Input$Keys/MINUS (fn []
-                                           (set! (.zoom camera*) (max 0.1 (+ (.zoom camera*) 0.1)))
-                                           (.update camera*))
-                        Input$Keys/EQUALS (fn []
-                                            (set! (.zoom camera*) (max 0.1 (+ (.zoom camera*) -0.1)))
-                                            (.update camera*))
-                        Input$Keys/LEFT (fn []
-                                          (let [pos (.position camera*)]
-                                            (set! (.x pos) (- (.x pos) 1))
-                                            (.update camera*)))
-                        Input$Keys/RIGHT (fn []
-                                           (let [pos (.position camera*)]
-                                             (set! (.x pos) (+ (.x pos) 1))
-                                             (.update camera*)))
-                        Input$Keys/UP (fn []
-                                        (let [pos (.position camera*)]
-                                          (set! (.y pos) (+ (.y pos) 1))
-                                          (.update camera*)))
-                        Input$Keys/DOWN (fn []
-                                          (let [pos (.position camera*)]
-                                            (set! (.y pos) (- (.y pos) 1))
-                                            (.update camera*)))}]
-           (when (key-pressed? Gdx/input k)
-             (f)))
-         (act! @ui-stage)
-         (draw! @ui-stage)))
+       (clear-screen! 0 0 0 0) 
+       (set-projection-matrix! @batch (.combined (get-camera @viewport)))
+       (Batch/.begin @batch) 
+       (draw-tiled-map! @tiled-map
+                        @batch
+                        (get-camera @viewport)
+                        (constantly (.toFloatBits Color/WHITE))
+                        world-unit-scale)
+       (Batch/.end @batch)
+       (doseq [[k f] {Input$Keys/MINUS (fn [] 
+                                         (set! (.zoom @camera) (max 0.1 (+ (.zoom @camera) 0.1)))
+                                         (.update @camera))
+                      Input$Keys/EQUALS (fn []
+                                          (set! (.zoom @camera) (max 0.1 (+ (.zoom @camera) -0.1)))
+                                          (.update @camera))
+                      Input$Keys/LEFT (fn []
+                                        (let [pos (.position @camera)]
+                                          (set! (.x pos) (- (.x pos) 1))
+                                          (.update @camera)))
+                      Input$Keys/RIGHT (fn []
+                                         (let [pos (.position @camera)]
+                                           (set! (.x pos) (+ (.x pos) 1))
+                                           (.update @camera)))
+                      Input$Keys/UP (fn []
+                                      (let [pos (.position @camera)]
+                                        (set! (.y pos) (+ (.y pos) 1))
+                                        (.update @camera)))
+                      Input$Keys/DOWN (fn []
+                                        (let [pos (.position @camera)]
+                                          (set! (.y pos) (- (.y pos) 1))
+                                          (.update @camera)))}]
+         (when (key-pressed? Gdx/input k)
+           (f)))
+       (act! @stage)
+       (draw! @stage))
 
      :resize!
      (fn [width height]
-       (resize! (get-viewport @ui-stage) width height true)
+       (resize! (get-viewport @stage) width height true)
        (resize! @viewport width height false))
      }))
 
