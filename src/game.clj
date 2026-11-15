@@ -4990,32 +4990,6 @@
        (resize! @*viewport* width height false))
      }))
 
-(defn- generate-level
-  [db textures ^OrthographicCamera camera level-fn]
-  (let [level (level-fn {:level/creature-properties
-                         (prepare-creature-tiles
-                          (all-raw db :properties/creatures)
-                          #(get-texture-region textures %))
-                         :textures textures})
-        ^TiledMap tiled-map (:tiled-map level)
-        props (get-properties tiled-map)
-        width (props-get props "width")
-        height (props-get props "height")]
-    (assert tiled-map)
-    (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
-    (let [pos (.position camera)
-          px (float (/ width 2))
-          py (float (/ height 2))
-          x-diff (max (- px (float 0)) (- (float width) px))
-          y-diff (max (- (float height) py) (- py (float 0)))
-          vp-ratio-w (/ (* x-diff 2) (.viewportWidth camera))
-          vp-ratio-h (/ (* y-diff 2) (.viewportHeight camera))]
-      (set! (.x pos) px)
-      (set! (.y pos) py)
-      (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
-      (.update camera))
-    tiled-map))
-
 (defn- text-button [skin label on-click!]
   (doto (create-text-button label skin)
     (add-listener! (create-change-listener
@@ -5033,18 +5007,45 @@
         db (atom nil)
         textures (atom nil)
         tiled-map (atom nil)
+        generate-level! (fn [level-fn]
+                          (let [level (level-fn {:level/creature-properties
+                                                 (prepare-creature-tiles
+                                                   (all-raw @db :properties/creatures)
+                                                   #(get-texture-region @textures %))
+                                                 :textures @textures})
+                                ^TiledMap tiled-map (:tiled-map level)
+                                props (get-properties tiled-map)
+                                width (props-get props "width")
+                                height (props-get props "height")]
+                            (assert tiled-map)
+                            (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
+                            ; adjust-camera!
+                            (let [pos (.position ^OrthographicCamera @camera)
+                                  px (float (/ width 2))
+                                  py (float (/ height 2))
+                                  x-diff (max (- px (float 0)) (- (float width) px))
+                                  y-diff (max (- (float height) py) (- py (float 0)))
+                                  vp-ratio-w (/ (* x-diff 2) (.viewportWidth @camera))
+                                  vp-ratio-h (/ (* y-diff 2) (.viewportHeight @camera))]
+                              (set! (.x pos) px)
+                              (set! (.y pos) py)
+                              (set! (.zoom @camera) (max vp-ratio-w vp-ratio-h))
+                              (.update @camera))
+                            ;
+                            tiled-map))
         buttons (for [[label level-fn] [["Vampire" create-vampire-level]
                                         ["UF Caves" create-uf-caves]
                                         ["Modules" create-modules-level]]]
                   [(str "Generate " label)
                    (fn []
                      (dispose! @tiled-map)
-                     (reset! tiled-map
-                             (generate-level @db @textures @camera level-fn)))])]
+                     (reset! tiled-map (generate-level! level-fn)))])]
     {:create!
      (fn [_audio files _graphics]
        (reset! batch (sprite-batch!))
+
        (reset! skin (create-skin (internal files "skin/uiskin.json")))
+
        (let [s (Stage. (FitViewport. 1440 900) @batch)
              ^Skin skin* @skin
              window (create-window "Edit" skin*)]
@@ -5054,19 +5055,23 @@
          (pack! window)
          (add-actor! s window)
          (reset! ui-stage s))
-       (.setInputProcessor Gdx/input @ui-stage)
+
+       (.setInputProcessor Gdx/input @ui-stage) ; pass gdx
        (reset! viewport (FitViewport. (float world-width)
                                       (float world-height)
                                       (doto (OrthographicCamera.)
                                         (.setToOrtho false
                                                      world-width
                                                      world-height))))
-       (reset! camera (get-camera @viewport))
+       (reset! camera (get-camera @viewport)) ; we already have viewport
+
+       ; TODO this can be done before and no atom necessary
        (reset! db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+
        (reset! textures (create-textures files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
-       (reset! tiled-map (generate-level @db @textures @camera create-uf-caves)))
+       (reset! tiled-map (generate-level! create-uf-caves)))
 
      :dispose!
      (fn []
