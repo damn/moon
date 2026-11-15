@@ -5331,40 +5331,14 @@
   (doto (text-field (pr-str v) skin)
     (add-listener! (text-tooltip (str schema) skin))))
 
-(defn- play-sound-button [sound-name skin play-sound!]
-  (doto (create-text-button "play!" skin)
-    (add-listener! (create-change-listener
-                     (fn [event _actor]
-                       (play-sound! sound-name))))))
-
 (defn play! [sound]
   (Sound/.play sound))
-
-(defn- sound-columns [table sound-name open-select-sounds-handler skin play-sound!]
-  [{:actor (doto (create-text-button sound-name skin)
-             (add-listener! (create-change-listener
-                              (fn [event _actor]
-                                (open-select-sounds-handler table)))))}
-   {:actor (play-sound-button sound-name skin play-sound!)}])
 
 (defn clear-children! [^Group group]
   (.clearChildren group))
 
-(defn first-ascendant [^Actor actor]
-  (.firstAscendant actor))
-
-(defn- choose-sound-button [table sound-name ->sound-columns skin]
-  (doto (create-text-button sound-name skin)
-    (add-listener! (create-change-listener
-                     (fn [event actor]
-                       (clear-children! table)
-                       (doseq [cell (->sound-columns table sound-name)]
-                         (add! table (:actor cell)))
-                       (row! table)
-                       (remove! (first-ascendant actor Window))
-                       (pack! (first-ascendant table Window))
-                       (let [[k _] (get-user-object table)]
-                         (set-user-object! table [k sound-name])))))))
+(defn first-ascendant [^Actor actor class]
+  (.firstAscendant actor class))
 
 (defn- list-sounds-table [pad rows]
   (let [^Table table (table-create)]
@@ -5376,8 +5350,6 @@
     (pack! table)
     table))
 
-(def editor-stage (atom nil))
-
 (defn width! [cell fv]
   (.width ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
 
@@ -5387,42 +5359,63 @@
 (defn scroll-pane [actor skin]
   (ScrollPane. actor skin))
 
-; Now showing but doesnt play sound and select does not work.
-(defn- choose-sound-window [sound-names table ->sound-columns play-sound! skin]
-  (let [list-table (list-sounds-table
-                     5
-                     (for [sound-name sound-names]
-                       [(choose-sound-button table sound-name ->sound-columns skin)
-                        (play-sound-button sound-name skin play-sound!)]))
-        window (create-window "Choose" skin)]
-    (doto (add! window (scroll-pane list-table skin))
-      (width! (+ (get-width list-table) 50))
-      (height! (min (- (get-world-height (get-viewport @editor-stage)) 50)
-                    (get-height list-table))))
-    (row! window)
-    (pack! window)
-    (add! (get-title-table window)
-          (doto (create-text-button "X" skin)
-            (add-listener! (create-change-listener
-                             (fn [_event _actor]
-                               (remove! window))))))
-    (set-modal! window true)
-    window))
+(def editor-stage (atom nil))
 
 (defn- create-sound-widget [sound-names sound-name play-sound! skin]
   (let [table (doto (table-create)
                 (#(pad! (.defaults %) 5)))]
-    (letfn [(sound-columns-fn [table sound-name]
-              (sound-columns table sound-name open-select-fn skin play-sound!))
-            (open-select-fn [table]
-              (add-actor! @editor-stage (choose-sound-window sound-names table sound-columns-fn play-sound! skin)))]
+    (letfn [(play-sound-button [sound-name]
+              (doto (create-text-button "play!" skin)
+                (add-listener! (create-change-listener
+                                 (fn [event _actor]
+                                   (play-sound! sound-name))))))
+            (choose-sound-button [sound-name]
+              (doto (create-text-button sound-name skin)
+                (add-listener! (create-change-listener
+                                 (fn [event actor]
+                                   (clear-children! table)
+                                   (doseq [cell (sound-columns-fn sound-name)]
+                                     (add! table (:actor cell)))
+                                   (row! table)
+                                   (remove! (first-ascendant actor Window))
+                                   (pack! (first-ascendant table Window))
+                                   (let [[k _] (get-user-object table)]
+                                     (set-user-object! table [k sound-name])))))))
+            (choose-sound-window []
+              (let [list-table (list-sounds-table
+                                 5
+                                 (for [sound-name sound-names]
+                                   [(choose-sound-button sound-name)
+                                    (play-sound-button sound-name)]))
+                    window (create-window "Choose" skin)]
+                (doto (add! window (scroll-pane list-table skin))
+                  (width! (+ (get-width list-table) 50))
+                  (height! (min (- (get-world-height (get-viewport @editor-stage)) 50)
+                                (get-height list-table))))
+                (row! window)
+                (pack! window)
+                (add! (get-title-table window)
+                      (doto (create-text-button "X" skin)
+                        (add-listener! (create-change-listener
+                                         (fn [_event _actor]
+                                           (remove! window))))))
+                (set-modal! window true)
+                window))
+            (sound-columns-fn [sound-name]
+              [{:actor (doto (create-text-button sound-name skin)
+                         (add-listener! (create-change-listener
+                                          (fn [_event _actor]
+                                            (open-select-fn)))))}
+               {:actor (play-sound-button sound-name)}])
+            (open-select-fn []
+              (add-actor! @editor-stage (choose-sound-window)))]
       (doseq [cell (if sound-name
-                     (sound-columns-fn table sound-name)
+                     (sound-columns-fn sound-name)
                      [{:actor
                        (doto (create-text-button "No sound" skin)
                          (add-listener! (create-change-listener
-                                          (fn [event _actor]
-                                            ((open-select-fn table))))))}])]
+                                          (fn [_event _actor]
+                                            (open-select-fn)))))}])]
         (add! table (:actor cell)))
       (row! table)
       table)))
