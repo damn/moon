@@ -4797,21 +4797,14 @@
        (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                            (float (:height (:stage game-config)))) 
                              @batch))
-
        (.setInputProcessor Gdx/input @stage)
-
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-
        (reset! textures (create-textures files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
-
-       ; TODO non-plattform data ... but tiled-map ....
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! db @textures level-fn)]
          (reset! tiled-map* tiled-map)
-
-         ; GAME: FIXME STATE SPACE GLOBAL
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
          (reset! *entity-ids* {})
@@ -4826,7 +4819,6 @@
                                                (range width)))
            (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
-
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
@@ -4836,11 +4828,10 @@
                                                               :entity/free-skill-points 3
                                                               :entity/clickable {:type :clickable/player}
                                                               :entity/click-distance-tiles 1.5}}))]
-         (let [eid (get @*entity-ids* 1)] ; TODO not necessary -> pass id to spawn entity ? can use id counter before?
-           (assert (:entity/player? @eid)) ; TODO not necessary
+         (let [eid (get @*entity-ids* 1)]
+           (assert (:entity/player? @eid))
            (reset! player-eid eid)))
-
-       (doseq [^Actor actor (create-ui-actors @player-eid
+       (doseq [       actor (create-ui-actors @player-eid
                                               handle-txs!
                                               mouseover-eid
                                               unit-scale
@@ -4897,9 +4888,7 @@
                                                :skin @skin}
                                               Gdx/input)]
          (add-actor! @stage actor))
-
        (sync-player-ui! @skin @stage @textures @player-eid)
-
        (handle-txs! (spawn-map-creatures db @tiled-map*))
        )
 
