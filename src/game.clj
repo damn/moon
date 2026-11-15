@@ -3815,8 +3815,6 @@
 
     nil))
 
-(def world-unit-scale (float (/ 48)))
-
 (defn clickable-draw
   [v entity batch default-font unit-scale]
   (let [{:keys [text]} v
@@ -3825,7 +3823,7 @@
       (let [[x y] position]
         (draw-text! batch
                     default-font
-                    @unit-scale
+                    unit-scale
                     {:text text
                      :x x
                      :y (+ y (/ height 2))
@@ -3835,7 +3833,7 @@
   [v entity batch unit-scale mouseover-actor textures]
   (let [{:keys [item]} v]
     (when-not mouseover-actor
-      (draw-texture-region! batch @unit-scale
+      (draw-texture-region! batch unit-scale
                             (get-texture-region textures (:entity/image item))
                             (item-place-position @*viewport*
                                                  Gdx/input
@@ -3848,7 +3846,7 @@
   (let [{:keys [frames cnt frame-duration]} v
         image (frames (min (int (/ (float cnt) (float frame-duration)))
                            (dec (count frames))))]
-    (draw-texture-region! batch @unit-scale
+    (draw-texture-region! batch unit-scale
                           (get-texture-region textures image)
                           (:entity/position entity)
                           {:center? true
@@ -3856,7 +3854,7 @@
 
 (defn image-draw
   [v entity batch unit-scale textures]
-  (draw-texture-region! batch @unit-scale
+  (draw-texture-region! batch unit-scale
                         (get-texture-region textures v)
                         (:entity/position entity)
                         {:center? true
@@ -3887,15 +3885,15 @@
                 color))))
 
 (defn stats-draw
-  [entity shape-drawer]
+  [entity shape-drawer unit-scale]
   (let [ratio (val-max-ratio (get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [entity/position entity/width entity/height]} entity
             [x y] position
             x (- x (/ width  2))
             y (+ y (/ height 2))
-            height (* 5 world-unit-scale)
-            border (* 1 world-unit-scale)]
+            height (* 5 unit-scale)
+            border (* 1 unit-scale)]
         (filled-rectangle! shape-drawer x y width height (float-bits 0 0 0 1))
         (filled-rectangle! shape-drawer
                            (+ x border)
@@ -3914,12 +3912,12 @@
         [x y] (:entity/position entity)]
     (draw-text! batch
                 default-font
-                @unit-scale
+                unit-scale
                 {:text text
                  :x x
                  :y (+ y
                        (/ (:entity/height entity) 2)
-                       (* 5 world-unit-scale))
+                       (* 5 unit-scale))
                  :scale 2
                  :up? true})))
 
@@ -3946,7 +3944,7 @@
              (math/to-radians 90)
              (math/to-radians (* (float action-counter-ratio) 360))
              (float-bits 1 1 1 0.5))
-    (draw-texture-region! batch @unit-scale texture-region [(- (float x) radius) y])
+    (draw-texture-region! batch unit-scale texture-region [(- (float x) radius) y])
     (doseq [effect effects]
       (effect-render effect effect-ctx shape-drawer
                      active-entities
@@ -3958,7 +3956,7 @@
         [x y] position]
     (draw-text! batch
                 default-font
-                @unit-scale
+                unit-scale
                 {:text "zzz"
                  :x x
                  :y (+ y (/ height 2))
@@ -3992,7 +3990,7 @@
     (mouseover?-draw entity shape-drawer player)
 
     :entity/stats
-    (stats-draw entity shape-drawer)
+    (stats-draw entity shape-drawer unit-scale)
 
     :entity/string-effect
     (string-effect-draw v entity batch default-font unit-scale)
@@ -4755,7 +4753,8 @@
   [{:keys [pausing?
            state->pause-game?
            level-fn
-           controls]
+           controls
+           world-unit-scale]
     :as game-config}]
   (let [player-eid (atom nil)
         batch (atom nil)
@@ -4929,7 +4928,7 @@
                          @batch 
                          @default-font 
                          @textures 
-                         unit-scale 
+                         @unit-scale 
                          (let [[x y] (ui-mouse-position @stage Gdx/input)]
                            (mouseover-actor @stage x y))
                          @*raycaster*
@@ -4993,7 +4992,8 @@
                        (on-click!))))))
 
 (defn levelgen-listener []
-  (let [world-width (* 1440 world-unit-scale)
+  (let [world-unit-scale (/ 48)
+        world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
         batch (atom nil)
         skin (atom nil)
@@ -6017,6 +6017,7 @@
                                   :height 900}
                           :textures {:folder "resources/"
                                      :extensions #{"png" "bmp"}}
+                          :world-unit-scale (/ 48)
                           })
                        {:title "Moon"
                         :width 1440 
