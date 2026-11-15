@@ -5381,17 +5381,24 @@
 (defn width! [cell fv]
   (.width ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
 
+(defn height! [cell fv]
+  (.height ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
+
+(defn scroll-pane [actor skin]
+  (ScrollPane. actor skin))
+
+; Now showing but doesnt play sound and select does not work.
 (defn- choose-sound-window [sound-names table ->sound-columns play-sound! skin]
-  (let [^Table list-table (list-sounds-table
-                           5
-                           (for [sound-name sound-names]
-                             [(choose-sound-button table sound-name ->sound-columns skin)
-                              (play-sound-button sound-name skin play-sound!)]))
-        window (create-window "Choose" skin)
-        c (add! window (ScrollPane. list-table skin))]
-    (width! c (+ (get-width list-table) 50))
-    (.height c (float (min (- (get-world-height (get-viewport @editor-stage)) 50)
-                            (get-height list-table))))
+  (let [list-table (list-sounds-table
+                     5
+                     (for [sound-name sound-names]
+                       [(choose-sound-button table sound-name ->sound-columns skin)
+                        (play-sound-button sound-name skin play-sound!)]))
+        window (create-window "Choose" skin)]
+    (doto (add! window (scroll-pane list-table skin))
+      (width! (+ (get-width list-table) 50))
+      (height! (min (- (get-world-height (get-viewport @editor-stage)) 50)
+                    (get-height list-table))))
     (row! window)
     (pack! window)
     (add! (get-title-table window)
@@ -5402,17 +5409,13 @@
     (set-modal! window true)
     window))
 
-(defn- open-select-sounds-handler [sound-names table ->sound-columns play-sound! skin]
-  (fn []
-    (add-actor! @editor-stage (choose-sound-window sound-names table ->sound-columns play-sound! skin))))
-
 (defn- create-sound-widget [sound-names sound-name play-sound! skin]
   (let [table (doto (table-create)
                 (#(pad! (.defaults %) 5)))]
     (letfn [(sound-columns-fn [table sound-name]
               (sound-columns table sound-name open-select-fn skin play-sound!))
             (open-select-fn [table]
-              (open-select-sounds-handler sound-names table sound-columns-fn play-sound! skin))]
+              (add-actor! @editor-stage (choose-sound-window sound-names table sound-columns-fn play-sound! skin)))]
       (doseq [cell (if sound-name
                      (sound-columns-fn table sound-name)
                      [{:actor
@@ -5833,10 +5836,10 @@
         ^Table table (property-editor-table widget on-save on-delete skin)
         window (create-window "[SKY]Property[]" skin)]
     (pad! (.defaults window) 5)
-    (let [c (add! window (ScrollPane. table skin))]
+    (let [c (add! window (scroll-pane table skin))]
       (width! c (+ (get-width table) 50))
-      (.height c (float (min (- scroll-pane-height 50)
-                             (get-height table)))))
+      (height! c (min (- scroll-pane-height 50)
+                      (get-height table))))
     (row! window)
     (pack! window)
     (add! (get-title-table window)
