@@ -1,3 +1,7 @@
+; state defs weg
+; data literals weg
+; dependencies weg -> protocols/import facades
+; => lang...
 (ns game)
 
 (defn safe-get [m k]
@@ -166,6 +170,12 @@
 (defprotocol GetName
   (get-name [_]))
 
+(defprotocol GetWidth
+  (get-width [_]))
+
+(defprotocol GetHeight
+  (get-height [_]))
+
 (import '(com.badlogic.gdx.maps.tiled TiledMap))
 (import '(com.badlogic.gdx.maps.tiled TiledMapTile))
 (import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
@@ -189,18 +199,18 @@
 (extend-type TiledMapTileLayer
   GetProperties
   (get-properties [this]
-    (.getProperties this)))
+    (.getProperties this))
+  GetWidth
+  (get-width [this]
+    (.getWidth this))
+  GetHeight
+  (get-height [this]
+    (.getHeight this)))
 
 (import '(com.badlogic.gdx.maps MapLayers))
 
 (defn layers-get [^MapLayers map-layers ^String layer-name]
   (.get map-layers layer-name))
-
-(defn get-width [^TiledMapTileLayer layer]
-  (.getWidth layer))
-
-(defn get-height [^TiledMapTileLayer layer]
-  (.getHeight layer))
 
 (defn get-cell [^TiledMapTileLayer layer x y]
   (.getCell layer (int x) (int y)))
@@ -270,13 +280,21 @@
 (defn static-tiled-map-tile [texture-region]
   (StaticTiledMapTile. ^TextureRegion texture-region))
 
+(defprotocol SetVisible
+  (set-visible! [_ visible?]))
+
+(extend-type TiledMapTileLayer
+  SetVisible
+  (set-visible! [this visible?]
+    (.setVisible this visible?)))
+
 (defn tiled-map-tile-layer [width height tilewidth tileheight name visible?]
   (doto (TiledMapTileLayer. (int width)
                             (int height)
                             (int tilewidth)
                             (int tileheight))
     (.setName name)
-    (.setVisible visible?)))
+    (set-visible! visible?)))
 
 (defn add-map-layer! [^MapLayers map-layers ^MapLayer layer]
   (.add map-layers layer))
@@ -366,8 +384,8 @@
   (let [num-vertices 20
         vertices (float-array num-vertices)
         batch-color (.getColor batch)
-        layer-width (.getWidth layer)
-        layer-height (.getHeight layer)
+        layer-width (get-width layer)
+        layer-height (get-height layer)
         layer-tile-width (* (.getTileWidth layer) world-unit-scale)
         layer-tile-height (* (.getTileHeight layer) world-unit-scale)
         layer-offset-x (* (.getRenderOffsetX layer) world-unit-scale)
@@ -741,6 +759,14 @@
   (TextTooltip. text skin))
 
 (import '(com.badlogic.gdx.scenes.scene2d Actor))
+
+(extend-type Actor
+  GetWidth
+  (get-width [this]
+    (.getWidth this))
+  GetHeight
+  (get-height [this]
+    (.getHeight this)))
 
 (defn create-actor [{:keys [act!]}]
   (proxy [Actor] []
@@ -1178,6 +1204,14 @@
 (defn expand-y! [cell]
   (.expandY ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
 
+(extend-type Actor
+  SetVisible
+  (set-visible! [this visible?]
+    (.setVisible this visible?)))
+
+(defn set-position! [actor x y]
+  (Actor/.setPosition actor (float x) (float y)))
+
 (defn- build-inventory-window
   [{:keys [player-eid
            input
@@ -1224,9 +1258,9 @@
     (row! window)
     (pack! window)
     (set-name! window "moon.ui.windows.inventory")
-    (.setVisible window false)
+    (set-visible! window false)
     (let [[x y] position]
-      (.setPosition window (float x) (float y)))
+      (set-position! window x y))
     window))
 
 (defn get-world-width [^Viewport viewport]
@@ -1316,11 +1350,13 @@
        (keep #(get-in grid %))
        (mapcat (comp :entities deref))))
 
+(import '(java.util Random))
+
 (defn- sshuffle
   "Return a random permutation of coll"
   [coll random]
   (let [al (java.util.ArrayList. ^java.util.Collection coll)]
-    (java.util.Collections/shuffle al random)
+    (java.util.Collections/shuffle al ^Random random)
     (clojure.lang.RT/vector (.toArray al))))
 
 (defn- from-mapgrid
@@ -1349,8 +1385,6 @@
                          (range h)))
            (range w))
      convert]))
-
-(import '(java.util Random))
 
 ;  Cave Algorithmus.
 ;  http://properundead.com/2009/03/cave-generator.html
@@ -1550,7 +1584,7 @@
                      (if (instance? StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^StaticTiledMapTile tile)
                        (static-tiled-map-tile tile))))]
-    {:properties (merge (let [props (get-properties schema-tiled-map)]
+    {:properties (merge (let [^MapProperties props (get-properties schema-tiled-map)]
                           (zipmap (.getKeys props)
                                   (.getValues props)))
                         {"width" (count grid)
@@ -1558,9 +1592,9 @@
      :layers (for [layer (get-layers schema-tiled-map)]
                {:name (get-name layer)
                 :visible? (.isVisible ^TiledMapTileLayer layer)
-                :properties (let [props (get-properties layer)]
-                              (zipmap (.getKeys ^MapProperties props)
-                                      (.getValues ^MapProperties props)))
+                :properties (let [^MapProperties props (get-properties layer)]
+                              (zipmap (.getKeys props)
+                                      (.getValues props)))
                 :tiles (for [x (range (count grid))
                              y (range (count (grid 0)))
                              :let [position [x y]
@@ -2097,16 +2131,15 @@
 (defn toggle-inventory-visible! [stage]
   (let [inventory (-> (get-root stage)
                       (find-actor "moon.ui.windows.inventory"))]
-    (.setVisible ^Actor inventory (not (.isVisible ^Actor inventory)))))
+    (set-visible! inventory (not (.isVisible ^Actor inventory)))))
 
 (defn close-windows! [stage]
   (->> (get-children (find-actor (get-root stage) "moon.ui.windows"))
-       (run! #(.setVisible ^Actor % false))))
+       (run! #(set-visible! % false))))
 
 (defn toggle-entity-info! [stage]
   (let [entity-info (find-actor (get-root stage) "moon.ui.windows.entity-info")]
-    (.setVisible ^Actor entity-info
-                 (not (.isVisible ^Actor entity-info)))))
+    (set-visible! entity-info (not (.isVisible ^Actor entity-info)))))
 
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
@@ -2136,10 +2169,10 @@
     (pack! window)
     (set-modal! window true)
     (set-name! window "moon.ui.modal-window")
-    (.setPosition window
+    (set-position! window
                   (/ (get-world-width (get-viewport stage)) 2)
-                  (float (* (get-world-height (get-viewport stage)) (/ 3 4)))
-                  (float Align/center))
+                  (* (get-world-height (get-viewport stage)) (/ 3 4))
+                  Align/center)
     (add-actor! stage window)))
 
 (defn- create-info-window
@@ -2157,9 +2190,9 @@
     (row! window)
     (pack! window)
     (set-name! window actor-name)
-    (.setVisible window visible?)
+    (set-visible! window visible?)
     (let [[x y] position]
-      (.setPosition window (float x) (float y)))
+      (set-position! window x y))
     (add-actor! window (proxy [Actor] []
                          (act [delta]
                            (let [^Actor this this]
@@ -4980,7 +5013,7 @@
         width (props-get props "width")
         height (props-get props "height")]
     (assert tiled-map)
-    (.setVisible ^TiledMapTileLayer (layers-get (get-layers tiled-map) "creatures") true)
+    (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
     (let [pos (.position camera)
           px (float (/ width 2))
           py (float (/ height 2))
@@ -5367,9 +5400,9 @@
                               (play-sound-button sound-name skin play-sound!)]))
         window (create-window "Choose" skin)
         c (add! window (ScrollPane. list-table skin))]
-    (width! c (+ (.getWidth list-table) 50))
+    (width! c (+ (get-width list-table) 50))
     (.height c (float (min (- (get-world-height (get-viewport @editor-stage)) 50)
-                            (.getHeight list-table))))
+                            (get-height list-table))))
     (row! window)
     (pack! window)
     (add! (get-title-table window)
@@ -5812,9 +5845,9 @@
         window (create-window "[SKY]Property[]" skin)]
     (pad! (.defaults window) 5)
     (let [c (add! window (ScrollPane. table skin))]
-      (width! c (+ (.getWidth table) 50))
+      (width! c (+ (get-width table) 50))
       (.height c (float (min (- scroll-pane-height 50)
-                             (.getHeight table)))))
+                             (get-height table)))))
     (row! window)
     (pack! window)
     (add! (get-title-table window)
