@@ -5500,36 +5500,8 @@
     (add-one-to-many-rows table property-type property-ids skin editor)
     table))
 
-(declare create-widget widget-value)
-
-(def ^:private property-k-order-index
-  (zipmap [:property/id
-           :property/pretty-name
-           :entity/image
-           :entity/animation
-           :entity/species
-           :creature/level
-           :entity/width
-           :entity/height
-           :entity/flying?
-           :item/slot
-           :projectile/speed
-           :projectile/max-range
-           :projectile/piercing?
-           :skill/action-time-modifier-key
-           :skill/action-time
-           :skill/start-action-sound
-           :skill/cost]
-          (range)))
-
 (defn- k-label-text [k]
   (name k))
-
-(defn map-widget-value [schemas table]
-  (into {}
-        (for [widget (filter (comp vector? get-user-object) (get-children table))
-              :let [[k _] (get-user-object widget)]]
-          [k (widget-value schemas (get schemas k) widget)])))
 
 (defn left! [cell]
   (.left ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
@@ -5660,6 +5632,25 @@
 
 (require '[clojure.set :as set])
 
+(def ^:private property-k-order-index
+  (zipmap [:property/id
+           :property/pretty-name
+           :entity/image
+           :entity/animation
+           :entity/species
+           :creature/level
+           :entity/width
+           :entity/height
+           :entity/flying?
+           :item/slot
+           :projectile/speed
+           :projectile/max-range
+           :projectile/piercing?
+           :skill/action-time-modifier-key
+           :skill/action-time
+           :skill/start-action-sound
+           :skill/cost]
+          (range)))
 (defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window!]
   (map-widget-table-create
    {:rebuild-editor-window! rebuild-editor-window!
@@ -5677,6 +5668,12 @@
     :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
 
+(declare widget-value)
+(defn map-widget-value [schemas table]
+  (into {}
+        (for [widget (filter (comp vector? get-user-object) (get-children table))
+              :let [[k _] (get-user-object widget)]]
+          [k (widget-value schemas (get schemas k) widget)])))
 (defn widget-value [schemas [schema-k] widget]
   (case schema-k
     :s/boolean (boolean-widget-value widget)
@@ -5688,11 +5685,6 @@
     :s/string (string-widget-value widget)
     :s/val-max (val-max-widget-value widget)
     (default-widget-value widget)))
-
-(defn- build-widget [schemas schema k v skin editor]
-  (let [widget (create-widget schemas schema v skin editor)]
-    (set-user-object! widget [k v])
-    widget))
 
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
@@ -5707,7 +5699,6 @@
         property (map-widget-value schemas map-widget-table)]
     (remove! window)
     (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-
 (defn create-widget
   [schemas [schema-k :as schema] v skin editor]
   (case schema-k
@@ -5716,7 +5707,10 @@
     :s/enum (create-enum-widget schema v skin)
     :s/image (create-image-widget v (:editor/get-texture-region editor))
     :s/map (create-map-widget schemas schema v
-                              (fn [schema k v] (build-widget schemas schema k v skin editor))
+                              (fn build-widget [schema k v] 
+                                (let [widget (create-widget schemas schema v skin editor)]
+                                  (set-user-object! widget [k v])
+                                  widget))
                               (fn [schema widget] (widget-value schemas schema widget))
                               skin
                               editor
