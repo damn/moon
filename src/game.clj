@@ -3277,13 +3277,15 @@
                          v)]]))
 
 (def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-(def db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+
+(def game-db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+
 (defn build [db property-id]
   (build-values schemas (safe-get db property-id) db))
 
 (defn animation-entity [position animation-k]
   (assert (keyword? animation-k))
-  (let [{:keys [entity/animation]} (safe-get db animation-k)]
+  (let [{:keys [entity/animation]} (safe-get game-db animation-k)]
     (spawn-effect position
                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
 
@@ -4799,7 +4801,7 @@
        (reset! textures (create-textures files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
-                     start-position]} (create-level! db @textures level-fn)]
+                     start-position]} (create-level! game-db @textures level-fn)]
          (reset! tiled-map* tiled-map)
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
@@ -4816,7 +4818,7 @@
            (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
-                                                 :creature-property (build db :creatures/vampire)
+                                                 :creature-property (build game-db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
                                                                            :initial-state :player-idle}
                                                               :entity/faction :good
@@ -4836,7 +4838,7 @@
                                               @skin
                                               @stage
                                               @textures
-                                              db
+                                              game-db
                                               {:menus [{:label "Debug"
                                                         :items [{:label "Toggle show-tile-grid?"
                                                                  :on-click #(swap! show-tile-grid? not)}
@@ -4885,7 +4887,7 @@
                                               Gdx/input)]
          (add-actor! @stage actor))
        (sync-player-ui! @skin @stage @textures @player-eid)
-       (handle-txs! (spawn-map-creatures db @tiled-map*))
+       (handle-txs! (spawn-map-creatures game-db @tiled-map*))
        )
 
      :dispose!
@@ -4953,7 +4955,7 @@
                         (not (or (key-just-pressed? Gdx/input (int (:unpause-once controls)))
                                  (key-pressed? Gdx/input (int (:unpause-continously controls))))))))
        (tick-game! handle-txs! 
-                   db 
+                   game-db 
                    active-entities 
                    paused? 
                    potential-field-cache
