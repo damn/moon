@@ -5531,18 +5531,6 @@
               :let [[k _] (get-user-object widget)]]
           [k (widget-value schemas (get schemas k) widget)])))
 
-(declare property-editor-window)
-
-(def editor-stage (atom nil))
-
-(defn- rebuild-editor-window! [schemas skin editor]
-  (let [window (-> (get-root @editor-stage)
-                   (find-actor "moon.ui.clojure.editor-window"))
-        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-        property (map-widget-value schemas map-widget-table)]
-    (remove! window)
-    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-
 (defn left! [cell]
   (.left ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
 
@@ -5552,7 +5540,8 @@
            table
            schemas
            skin
-           editor]}]
+           editor
+           rebuild-editor-window!]}]
   (let [row-table (table-create)]
     (pad! (defaults table) 2)
     (doto (add! row-table (when display-remove-component-button?
@@ -5594,6 +5583,17 @@
     (expand-x!))
   (row! table))
 
+(declare property-editor-window)
+(def editor-stage (atom nil))
+
+(defn- rebuild-editor-window! [schemas skin editor]
+  (let [window (-> (get-root @editor-stage)
+                   (find-actor "moon.ui.clojure.editor-window"))
+        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+        property (map-widget-value schemas map-widget-table)]
+    (remove! window)
+    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
+
 (defn- add-component-window [schemas schema map-widget-table build-widget widget-value skin editor]
   (let [window (create-window "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
@@ -5612,7 +5612,8 @@
                                         (remove! window)
                                         (add-component-row!
                                           map-widget-table
-                                          {:editor-widget (build-widget (get schemas k)
+                                          {:rebuild-editor-window! rebuild-editor-window! 
+                                           :editor-widget (build-widget (get schemas k)
                                                                         k
                                                                         (let [schema (get schemas k)]
                                                                           (cond
@@ -5657,7 +5658,8 @@
       (when (pos? i)
         (add-horiz-sep! table colspan))
       (add-component-row! table
-                          {:editor-widget (k->widget k)
+                          {:rebuild-editor-window! rebuild-editor-window!
+                           :editor-widget (k->widget k)
                            :k k
                            :display-remove-component-button? (k->optional? k)
                            :table table
