@@ -5527,6 +5527,8 @@
     (pack! window)
     window))
 
+; schema itself also dont want to pass .. rather 'what'?
+; mixing layout & logic ...
 (defn- map-widget-table-create
   [{:keys [schemas
            rebuild-editor-window!
@@ -5574,29 +5576,31 @@
                              (doto (add! table (:editor-widget opts))
                                (left!))
                              (row! table))
+        open-add-component-window! (fn []
+                                     ((:editor/add-actor! editor)
+                                      (let [columns (sort (remove (set (keys (widget-value schema table)))
+                                                                  (map-keys (malli-form schemas schema))))
+                                            columns (for [k columns]
+                                                      {:text (name k)
+                                                       :f (fn []
+                                                            (add-component-row!
+                                                              {:editor-widget (build-widget (get schemas k)
+                                                                                            k
+                                                                                            (let [schema (get schemas k)]
+                                                                                              (cond
+                                                                                                (#{:s/map} (schema 0)) {}
+                                                                                                :else nil)))
+                                                               :k k
+                                                               :display-remove-component-button? (optional? (malli-form schemas schema) k)})
+                                                            (rebuild-editor-window!))})]
+                                        (add-component-window skin columns))))
         colspan 3]
     (pad! (defaults table) 5)
     (when opt?
       (doto (add! table (doto (create-text-button "Add component" skin)
                           (add-listener! (create-change-listener
-                                           (fn [event actor]
-                                             ((:editor/add-actor! editor)
-                                              (let [columns (sort (remove (set (keys (widget-value schema table)))
-                                                                          (map-keys (malli-form schemas schema))))
-                                                    columns (for [k columns]
-                                                              {:text (name k)
-                                                               :f (fn []
-                                                                    (add-component-row!
-                                                                      {:editor-widget (build-widget (get schemas k)
-                                                                                                    k
-                                                                                                    (let [schema (get schemas k)]
-                                                                                                      (cond
-                                                                                                        (#{:s/map} (schema 0)) {}
-                                                                                                        :else nil)))
-                                                                       :k k
-                                                                       :display-remove-component-button? (optional? (malli-form schemas schema) k)})
-                                                                    (rebuild-editor-window!))})]
-                                                (add-component-window skin columns))))))))
+                                           (fn [_event _actor]
+                                             (open-add-component-window!))))))
         (colspan! colspan))
       (row! table)
       (add-horiz-sep! table colspan))
