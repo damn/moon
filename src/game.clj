@@ -4745,6 +4745,50 @@
                                         item (get-in grid position)]
                                   :when item]
                             (set-item! [slot position] item)))
+        menus [{:label "Debug"
+                :items [{:label "Toggle show-tile-grid?"
+                         :on-click #(swap! show-tile-grid? not)}
+                        {:label "Toggle show-cell-entities?"
+                         :on-click #(swap! show-cell-entities? not)}
+                        {:label "Toggle show-cell-occupied?"
+                         :on-click #(swap! show-cell-occupied? not)}
+                        {:label "Toggle show-body-bounds?"
+                         :on-click #(swap! show-body-bounds? not)}
+                        {:label "Potential field colors: off"
+                         :on-click #(reset! show-potential-field-colors? nil)}
+                        {:label "Potential field colors: :good"
+                         :on-click #(reset! show-potential-field-colors? :good)}
+                        {:label "Potential field colors: :evil"
+                         :on-click #(reset! show-potential-field-colors? :evil)}]}
+               {:label "Help"
+                :items [{:label controls-info}]}]
+        update-labels (for [item [{:label "elapsed-time"
+                                   :update-fn (fn [] 
+                                                (str (readable @*elapsed-time*) " seconds"))
+                                   :icon "images/clock.png"}
+                                  {:label "FPS"
+                                   :update-fn (fn [] (get-frames-per-second graphics))
+                                   :icon "images/fps.png"}
+                                  {:label "Mouseover-entity id"
+                                   :update-fn (fn []
+                                                (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                                  (:entity/id entity)))
+                                   :icon "images/mouseover.png"}
+                                  {:label "paused?"
+                                   :update-fn (fn [] @paused?)}
+                                  {:label "GUI"
+                                   :update-fn (fn []
+                                                (mapv int (ui-mouse-position @stage Gdx/input)))}
+                                  {:label "World"
+                                   :update-fn (fn []
+                                                (mapv int (unproject @*viewport* [(get-x Gdx/input) (get-y Gdx/input)])))}
+                                  {:label "Zoom"
+                                   :update-fn (fn []
+                                                (.zoom ^OrthographicCamera (get-camera @*viewport*)))
+                                   :icon "images/zoom.png"}]]
+                        (if (:icon item)
+                          (update item :icon #(get @textures %))
+                          item))
         ]
     {
      :create!
@@ -4815,50 +4859,8 @@
                                               @stage
                                               @textures
                                               game-db
-                                              {:menus [{:label "Debug"
-                                                        :items [{:label "Toggle show-tile-grid?"
-                                                                 :on-click #(swap! show-tile-grid? not)}
-                                                                {:label "Toggle show-cell-entities?"
-                                                                 :on-click #(swap! show-cell-entities? not)}
-                                                                {:label "Toggle show-cell-occupied?"
-                                                                 :on-click #(swap! show-cell-occupied? not)}
-                                                                {:label "Toggle show-body-bounds?"
-                                                                 :on-click #(swap! show-body-bounds? not)}
-                                                                {:label "Potential field colors: off"
-                                                                 :on-click #(reset! show-potential-field-colors? nil)}
-                                                                {:label "Potential field colors: :good"
-                                                                 :on-click #(reset! show-potential-field-colors? :good)}
-                                                                {:label "Potential field colors: :evil"
-                                                                 :on-click #(reset! show-potential-field-colors? :evil)}]}
-                                                       {:label "Help"
-                                                        :items [{:label controls-info}]}]
-                                               :update-labels (for [item [{:label "elapsed-time"
-                                                                           :update-fn (fn [] 
-                                                                                        (str (readable @*elapsed-time*) " seconds"))
-                                                                           :icon "images/clock.png"}
-                                                                          {:label "FPS"
-                                                                           :update-fn (fn [] (get-frames-per-second graphics))
-                                                                           :icon "images/fps.png"}
-                                                                          {:label "Mouseover-entity id"
-                                                                           :update-fn (fn []
-                                                                                        (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                                                                          (:entity/id entity)))
-                                                                           :icon "images/mouseover.png"}
-                                                                          {:label "paused?"
-                                                                           :update-fn (fn [] @paused?)}
-                                                                          {:label "GUI"
-                                                                           :update-fn (fn []
-                                                                                        (mapv int (ui-mouse-position @stage Gdx/input)))}
-                                                                          {:label "World"
-                                                                           :update-fn (fn []
-                                                                                        (mapv int (unproject @*viewport* [(get-x Gdx/input) (get-y Gdx/input)])))}
-                                                                          {:label "Zoom"
-                                                                           :update-fn (fn []
-                                                                                        (.zoom ^OrthographicCamera (get-camera @*viewport*)))
-                                                                           :icon "images/zoom.png"}]]
-                                                                (if (:icon item)
-                                                                  (update item :icon #(get @textures %))
-                                                                  item))
+                                              {:menus menus
+                                               :update-labels update-labels
                                                :skin @skin}
                                               Gdx/input)]
          (add-actor! @stage actor))
