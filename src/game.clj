@@ -1,16 +1,14 @@
 (ns game)
 
-; FIXME 
-; k-order-index
-; k->colors
-; diagonal-check-indizes ?
-; rgba8888 (is also data??)
+; Missing defs:
+; diagonal-check-indizes 
+; rgba8888 
 ; effect-applicable?
-; effects-behaviour (config!)
+; effects-behaviour 
 ; spiderweb-modifiers
 ; spiderweb-duration
-; *viewport*
 
+(def *viewport* (atom nil))
 (def *raycaster* (atom nil))
 (def show-potential-field-colors? (atom nil))
 (def show-cell-entities? (atom false))
@@ -1919,37 +1917,6 @@
     ; min 1 because floating point math inaccuracies
     (min 1 (/ (- stop-time @*elapsed-time*) duration))))
 
-(def k-order-index (zipmap [:property/pretty-name
-                            :skill/action-time-modifier-key
-                            :skill/action-time
-                            :skill/cooldown
-                            :skill/cost
-                            :skill/effects
-                            :entity/species
-                            :creature/level
-                            :entity/stats
-                            :entity/delete-after-duration
-                            :projectile/piercing?
-                            :entity/projectile-collision
-                            :maxrange
-                            :entity-effects]
-                           (range)))
-
-(def k->colors {:property/pretty-name "PRETTY_NAME"
-                :stats/modifiers "CYAN"
-                :maxrange "LIGHT_GRAY"
-                :creature/level "GRAY"
-                :projectile/piercing? "LIME"
-                :skill/action-time-modifier-key "VIOLET"
-                :skill/action-time "GOLD"
-                :skill/cooldown "SKY"
-                :skill/cost "CYAN"
-                :entity/delete-after-duration "LIGHT_GRAY"
-                :entity/faction "SLATE"
-                :entity/fsm "YELLOW"
-                :entity/species "LIGHT_GRAY"
-                :entity/temp-modifier "LIGHT_GRAY"})
-
 (defn- remove-newlines [s]
   (let [new-s (-> s
                   (str/replace "\n\n" "\n")
@@ -1958,25 +1925,6 @@
     (if (= (count new-s) (count s))
       s
       (remove-newlines new-s))))
-
-(defn info-text
-  [k->info-fn entity]
-  (let [component-info (fn [[k v]]
-                         (let [s (if-let [info-fn (k->info-fn k)]
-                                   (str (info-fn v)))]
-                           (if-let [color (k->colors k)]
-                             (str "[" color "]" s "[]")
-                             s)))]
-    (->> entity
-         (sort-by (fn [[k _]] (get k-order-index k Integer/MAX_VALUE)))
-         (keep (fn [{k 0 v 1 :as component}]
-                 (str (try (component-info component)
-                           (catch Throwable _t
-                             (str "*info-error* " k)))
-                      (when (map? v)
-                        (str "\n" (info-text k->info-fn v))))))
-         (str/join "\n")
-         remove-newlines)))
 
 (defn find-actor [^Group group actor-name]
   (.findActor group actor-name))
@@ -3249,7 +3197,6 @@
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
 (import '(com.badlogic.gdx Gdx))
-(def *viewport* (atom nil))
 (defn item-place-position* [position click-distance]
   (item-place-position @*viewport* Gdx/input position click-distance))
 (defn- handle-fsm-event! [eid event & [params]]
@@ -4618,6 +4565,35 @@
                                   (str "Cost: " v " Mana"))
                     :maxrange (fn [v]
                                 (str "Range: " v " Meters."))}
+        k-order-index (zipmap [:property/pretty-name
+                               :skill/action-time-modifier-key
+                               :skill/action-time
+                               :skill/cooldown
+                               :skill/cost
+                               :skill/effects
+                               :entity/species
+                               :creature/level
+                               :entity/stats
+                               :entity/delete-after-duration
+                               :projectile/piercing?
+                               :entity/projectile-collision
+                               :maxrange
+                               :entity-effects]
+                              (range))
+        k->colors {:property/pretty-name "PRETTY_NAME"
+                   :stats/modifiers "CYAN"
+                   :maxrange "LIGHT_GRAY"
+                   :creature/level "GRAY"
+                   :projectile/piercing? "LIME"
+                   :skill/action-time-modifier-key "VIOLET"
+                   :skill/action-time "GOLD"
+                   :skill/cooldown "SKY"
+                   :skill/cost "CYAN"
+                   :entity/delete-after-duration "LIGHT_GRAY"
+                   :entity/faction "SLATE"
+                   :entity/fsm "YELLOW"
+                   :entity/species "LIGHT_GRAY"
+                   :entity/temp-modifier "LIGHT_GRAY"}
         player-eid (atom nil)
         batch (atom nil)
         cursors (atom nil)
@@ -4677,12 +4653,29 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
+        info-text (fn info-text [entity]
+                    (let [component-info (fn [[k v]]
+                                           (let [s (if-let [info-fn (k->info-fn k)]
+                                                     (str (info-fn v)))]
+                                             (if-let [color (k->colors k)]
+                                               (str "[" color "]" s "[]")
+                                               s)))]
+                      (->> entity
+                           (sort-by (fn [[k _]] (get k-order-index k Integer/MAX_VALUE)))
+                           (keep (fn [{k 0 v 1 :as component}]
+                                   (str (try (component-info component)
+                                             (catch Throwable _t
+                                               (str "*info-error* " k)))
+                                        (when (map? v)
+                                          (str "\n" (info-text v))))))
+                           (str/join "\n")
+                           remove-newlines)))
         set-skill! (fn [skill]
                      (-> (get-root @stage)
                          (find-actor "moon.ui.action-bar")
                          (add-skill! {:skill-id (:property/id skill)
                                       :texture-region (get-texture-region @textures (:entity/image skill))
-                                      :tooltip-text (info-text k->info-fn skill)}
+                                      :tooltip-text (info-text skill)}
                                      @skin)))
         sync-player-ui! (fn []
                           (doseq [skill (vals (:entity/skills @@player-eid))]
@@ -4809,8 +4802,7 @@
                                           :position [(get-world-width (get-viewport @stage)) 0]
                                           :set-label-text! (fn []
                                                              (if-let [eid @mouseover-eid]
-                                                               (info-text k->info-fn
-                                                                          (apply dissoc @eid [:entity/skills
+                                                               (info-text (apply dissoc @eid [:entity/skills
                                                                                               :entity/faction
                                                                                               :active-skill]))
                                                                ""))
