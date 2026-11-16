@@ -4655,8 +4655,8 @@
 (def textures (atom nil))
 (def active-entities (atom nil))
 (def sounds (atom nil))
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-(def game-db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+(def game-schemas (-> "schema.edn" io/resource slurp edn/read-string))
+(def game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string)))
 (def k->txs {
              :tx/swap 
              (fn [eid f & params]
@@ -4807,7 +4807,7 @@
            (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
-                                                 :creature-property (build schemas game-db :creatures/vampire)
+                                                 :creature-property (build game-schemas game-db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
                                                                            :initial-state :player-idle}
                                                               :entity/faction :good
@@ -4876,7 +4876,7 @@
                                               Gdx/input)]
          (add-actor! @stage actor))
        (sync-player-ui! @skin @stage @textures @player-eid)
-       (handle-txs! (spawn-map-creatures schemas game-db @tiled-map* @*start-position*))
+       (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* @*start-position*))
        )
 
      :dispose!
@@ -5046,7 +5046,8 @@
                                                      world-width
                                                      world-height))))
        (reset! camera (get-camera @viewport)) 
-       (reset! db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+       (reset! db (create-db (-> "schema.edn" io/resource slurp edn/read-string) 
+                             (-> "properties.edn" io/resource slurp edn/read-string)))
        (reset! textures (create-textures files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
@@ -5722,6 +5723,7 @@
 (defn editor-application-listener 
   [editor-config]
   (let [properties-file (io/resource "properties.edn")
+        schemas (-> "schema.edn" io/resource slurp edn/read-string)
         db (atom (create-db schemas (-> properties-file slurp edn/read-string)))
         editor-stage (atom nil)
         property-type->overview-table-props {:properties/audiovisuals {:columns 10
