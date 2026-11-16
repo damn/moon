@@ -5524,18 +5524,6 @@
     (pack! row-table)
     row-table))
 
-(defn- add-component-row! [table opts]
-  (doto (add! table (component-row-table opts))
-    (right!))
-  (doto (add! table nil)
-    (pad-top! 2)
-    (pad-bottom! 2)
-    (fill-y!)
-    (expand-y!))
-  (doto (add! table (:editor-widget opts))
-    (left!))
-  (row! table))
-
 (defn- add-horiz-sep! [table colspan]
   (doto (add! table nil)
     (pad-top! 2)
@@ -5579,6 +5567,17 @@
            editor]}]
   (let [table (doto (table-create)
                 (set-name! "moon.db.schema.map.ui.widget"))
+        add-component-row! (fn [opts]
+                             (doto (add! table (component-row-table opts))
+                               (right!))
+                             (doto (add! table nil)
+                               (pad-top! 2)
+                               (pad-bottom! 2)
+                               (fill-y!)
+                               (expand-y!))
+                             (doto (add! table (:editor-widget opts))
+                               (left!))
+                             (row! table))
         colspan 3]
     (pad! (defaults table) 5)
     (when opt?
@@ -5592,7 +5591,6 @@
                                                               {:text (name k)
                                                                :f (fn []
                                                                     (add-component-row!
-                                                                      table
                                                                       {:rebuild-editor-window! rebuild-editor-window! 
                                                                        :editor-widget (build-widget (get schemas k)
                                                                                                     k
@@ -5612,8 +5610,7 @@
     (doseq [[i k] (map-indexed vector ks-sorted)]
       (when (pos? i)
         (add-horiz-sep! table colspan))
-      (add-component-row! table
-                          {:rebuild-editor-window! rebuild-editor-window!
+      (add-component-row! {:rebuild-editor-window! rebuild-editor-window!
                            :editor-widget (k->widget k)
                            :k k
                            :display-remove-component-button? (k->optional? k)
