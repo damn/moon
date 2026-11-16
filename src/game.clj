@@ -4035,50 +4035,6 @@
           (relocate-eid! eid)
           nil)))))
 
-(defn tick-component
-  [delta-time handle-txs! eid [k v] active-entities raycaster game-db]
-  (case k
-    :entity/animation
-    (animation-tick v eid delta-time handle-txs!)
-
-    :entity/alert-friendlies-after-duration
-    (alert-friendlies-after-duration-tick v eid delta-time handle-txs!)
-
-    :entity/string-effect
-    (string-effect-tick v eid delta-time handle-txs!)
-
-    :entity/skills
-    (skills-tick v eid delta-time handle-txs!)
-
-    :entity/temp-modifier
-    (temp-modifier-tick v eid delta-time handle-txs!)
-
-    :entity/projectile-collision
-    (projectile-collision-tick v eid delta-time handle-txs! active-entities raycaster game-db)
-
-    :active-skill
-    (active-skill-tick v eid delta-time handle-txs! active-entities game-db)
-
-    :entity/delete-after-duration
-    (delete-after-duration-tick v eid delta-time handle-txs!)
-
-    :stunned
-    (stunned-tick v eid delta-time handle-txs!)
-
-    :npc-moving
-    (npc-moving-tick v eid delta-time handle-txs!)
-
-    :npc-sleeping
-    (npc-sleeping-tick v eid delta-time handle-txs!)
-
-    :npc-idle
-    (npc-idle-tick v eid delta-time handle-txs!)
-
-    :entity/movement
-    (movement-tick v eid delta-time handle-txs!)
-
-    nil))
-
 (defn defaults [^Table table]
   (.defaults table))
 
@@ -4596,16 +4552,52 @@
                         (if (:icon item)
                           (update item :icon #(get @textures %))
                           item))
+        tick-component (fn [[k v] eid delta-time]
+                         (case k
+                           :entity/animation
+                           (animation-tick v eid delta-time handle-txs!)
+
+                           :entity/alert-friendlies-after-duration
+                           (alert-friendlies-after-duration-tick v eid delta-time handle-txs!)
+
+                           :entity/string-effect
+                           (string-effect-tick v eid delta-time handle-txs!)
+
+                           :entity/skills
+                           (skills-tick v eid delta-time handle-txs!)
+
+                           :entity/temp-modifier
+                           (temp-modifier-tick v eid delta-time handle-txs!)
+
+                           :entity/projectile-collision
+                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @*raycaster* game-db)
+
+                           :active-skill
+                           (active-skill-tick v eid delta-time handle-txs! active-entities game-db)
+
+                           :entity/delete-after-duration
+                           (delete-after-duration-tick v eid delta-time handle-txs!)
+
+                           :stunned
+                           (stunned-tick v eid delta-time handle-txs!)
+
+                           :npc-moving
+                           (npc-moving-tick v eid delta-time handle-txs!)
+
+                           :npc-sleeping
+                           (npc-sleeping-tick v eid delta-time handle-txs!)
+
+                           :npc-idle
+                           (npc-idle-tick v eid delta-time handle-txs!)
+
+                           :entity/movement
+                           (movement-tick v eid delta-time handle-txs!)
+
+                           nil))
         tick-entities! (fn [delta-time]
                          (doseq [eid @active-entities
                                  component @eid]
-                           (tick-component delta-time 
-                                           handle-txs!
-                                           eid 
-                                           component
-                                           active-entities
-                                           @*raycaster*
-                                           game-db)))
+                           (tick-component component eid delta-time)))
         tick-game! (fn [delta-time]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
