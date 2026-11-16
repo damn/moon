@@ -3819,16 +3819,6 @@
                           (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
        first))
 
-(defn- update-effect-ctx
-  [raycaster effect-ctx]
-  (let [source (:effect/source effect-ctx)
-        target (:effect/target effect-ctx)]
-    (if (and target
-             (not (:entity/destroyed? @target))
-             (line-of-sight? raycaster @source @target))
-      effect-ctx
-      (dissoc effect-ctx :effect/target))))
-
 (defn outer-rectangle
   [{[x y] :position :keys [radius]}]
   (let [radius (float radius)
@@ -3936,7 +3926,13 @@
 (defn active-skill-tick
   [v eid _delta-time handle-txs! active-entities game-db]
   (let [{:keys [skill effect-ctx counter]} v
-        effect-ctx (update-effect-ctx @*raycaster* effect-ctx)]
+        source (:effect/source effect-ctx)
+        target (:effect/target effect-ctx)
+        effect-ctx (if (and target
+                            (not (:entity/destroyed? @target))
+                            (line-of-sight? @*raycaster* @source @target))
+                     effect-ctx
+                     (dissoc effect-ctx :effect/target))]
     (cond
       (not (seq (filter #(effect-applicable? % effect-ctx)
                         (:skill/effects skill))))
