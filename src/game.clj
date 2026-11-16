@@ -4691,45 +4691,6 @@
 
 (import '(com.badlogic.gdx.audio Sound))
 
-(defn handle-txs! [txs]
-  (let [k->txs {
-                :tx/swap 
-                (fn [eid f & params]
-                  (apply swap! eid f params))
-                :tx/sound 
-                (fn [sound-name]
-                  (Sound/.play (safe-get @sounds sound-name)))
-                :tx/spawn-entity 
-                (fn [entity-decl]
-                  (spawn-entity! entity-decl))
-                :tx/event
-                (fn [& params]
-                  ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
-                  ; maybe no exit/enter events at all ? 
-                  (handle-txs! (apply handle-fsm-event! params)))
-                :tx/modal
-                (fn [opts]
-                  (show-modal! @skin @stage opts))
-                :tx/set-item
-                (fn [cell item] 
-                  (set-item! @skin @stage @textures cell item))
-                :tx/remove-item
-                (fn [cell] 
-                  (remove-item! @stage cell))
-                :tx/toggle-inventory-visible
-                (fn []
-                  (toggle-inventory-visible! @stage))
-                :tx/show-message
-                (fn [message]
-                  (show-message! @stage message))
-                }]
-    (doseq [[k & params] txs]
-      (try (apply (safe-get k->txs k) params)
-           (catch Throwable t
-             (throw (ex-info "handle-txs! error" 
-                             {:k k :params params}
-                             t)))))))
-
 (defn key-pressed? [input input-key]
   (Input/.isKeyPressed input input-key))
 
@@ -4772,7 +4733,46 @@
         unit-scale (atom 1)
         paused? (atom false)
         mouseover-eid (atom nil)
-        potential-field-cache (atom nil)]
+        potential-field-cache (atom nil)
+        handle-txs! (fn handle-txs! [txs]
+                      (let [k->txs {
+                                    :tx/swap 
+                                    (fn [eid f & params]
+                                      (apply swap! eid f params))
+                                    :tx/sound 
+                                    (fn [sound-name]
+                                      (Sound/.play (safe-get @sounds sound-name)))
+                                    :tx/spawn-entity 
+                                    (fn [entity-decl]
+                                      (spawn-entity! entity-decl))
+                                    :tx/event
+                                    (fn [& params]
+                                      ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
+                                      ; maybe no exit/enter events at all ? 
+                                      (handle-txs! (apply handle-fsm-event! params)))
+                                    :tx/modal
+                                    (fn [opts]
+                                      (show-modal! @skin @stage opts))
+                                    :tx/set-item
+                                    (fn [cell item] 
+                                      (set-item! @skin @stage @textures cell item))
+                                    :tx/remove-item
+                                    (fn [cell] 
+                                      (remove-item! @stage cell))
+                                    :tx/toggle-inventory-visible
+                                    (fn []
+                                      (toggle-inventory-visible! @stage))
+                                    :tx/show-message
+                                    (fn [message]
+                                      (show-message! @stage message))
+                                    }]
+                        (doseq [[k & params] txs]
+                          (try (apply (safe-get k->txs k) params)
+                               (catch Throwable t
+                                 (throw (ex-info "handle-txs! error" 
+                                                 {:k k :params params}
+                                                 t)))))))
+        ]
     {
      :create!
      (fn [audio files graphics]
