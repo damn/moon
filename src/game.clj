@@ -647,6 +647,11 @@
     val-max-schema
     ))
 
+; pass malli-schema instead of schemas too?
+; but onlyused for validate? schemas better as vars?? 
+; otherwise malli-form:
+; map-keys
+; optional?
 (defn malli-schema [schemas k]
   (m/schema (malli-form schemas (get schemas k))))
 
@@ -5530,17 +5535,19 @@
 ; schema itself also dont want to pass .. rather 'what'?
 ; mixing layout & logic ...
 (defn- map-widget-table-create
-  [{:keys [schemas
+  [{:keys [map-schema-keys
            rebuild-editor-window!
            schema
            k->widget
            k->optional?
            ks-sorted
            opt?
-           build-widget
            widget-value
            skin
-           editor]}]
+           editor
+           new-default-value-widget
+           map-schema-keys
+           ]}]
   (let [table (doto (table-create)
                 (set-name! "moon.db.schema.map.ui.widget"))
         component-row-table (fn
@@ -5579,17 +5586,12 @@
         open-add-component-window! (fn []
                                      ((:editor/add-actor! editor)
                                       (let [columns (sort (remove (set (keys (widget-value schema table)))
-                                                                  (map-keys (malli-form schemas schema))))
+                                                                  map-schema-keys))
                                             columns (for [k columns]
                                                       {:text (name k)
                                                        :f (fn []
                                                             (add-component-row!
-                                                              {:editor-widget (build-widget (get schemas k)
-                                                                                            k
-                                                                                            (let [schema (get schemas k)]
-                                                                                              (cond
-                                                                                                (#{:s/map} (schema 0)) {}
-                                                                                                :else nil)))
+                                                              {:editor-widget (new-default-value-widget k)
                                                                :k k
                                                                :display-remove-component-button? (k->optional? k)})
                                                             (rebuild-editor-window!))})]
@@ -5615,14 +5617,21 @@
 (require '[clojure.set :as set])
 
 (defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window! property-k-order-index]
+  ; TODO calculate the map-schema-form once instead of always 'malli-form'
   (map-widget-table-create
-   {:rebuild-editor-window! rebuild-editor-window!
-    :schemas schemas
+   {:map-schema-keys (map-keys (malli-form schemas schema))
+    :rebuild-editor-window! rebuild-editor-window!
     :schema schema
-    :build-widget build-widget
     :widget-value widget-value
     :skin skin
     :editor editor
+    :new-default-value-widget (fn [k]
+                                (build-widget (get schemas k)
+                                              k
+                                              (let [schema (get schemas k)]
+                                                (cond
+                                                  (#{:s/map} (schema 0)) {}
+                                                  :else nil))))
     :k->widget (into {}
                      (for [[k v] m]
                        [k (build-widget (get schemas k) k v)]))
