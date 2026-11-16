@@ -5633,26 +5633,7 @@
 
 (require '[clojure.set :as set])
 
-(def ^:private property-k-order-index
-  (zipmap [:property/id
-           :property/pretty-name
-           :entity/image
-           :entity/animation
-           :entity/species
-           :creature/level
-           :entity/width
-           :entity/height
-           :entity/flying?
-           :item/slot
-           :projectile/speed
-           :projectile/max-range
-           :projectile/piercing?
-           :skill/action-time-modifier-key
-           :skill/action-time
-           :skill/start-action-sound
-           :skill/cost]
-          (range)))
-(defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window!]
+(defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window! property-k-order-index]
   (map-widget-table-create
    {:rebuild-editor-window! rebuild-editor-window!
     :schemas schemas
@@ -5693,7 +5674,7 @@
 (def sounds (atom nil))
 
 (defn create-widget
-  [schemas [schema-k :as schema] v skin editor rebuild-editor-window!]
+  [schemas [schema-k :as schema] v skin editor rebuild-editor-window! property-k-order-index]
   (case schema-k
     :s/animation (create-animation-widget v (:editor/get-texture-region editor))
     :s/boolean (create-boolean-widget v skin)
@@ -5701,13 +5682,14 @@
     :s/image (create-image-widget v (:editor/get-texture-region editor))
     :s/map (create-map-widget schemas schema v
                               (fn build-widget [schema k v] 
-                                (let [widget (create-widget schemas schema v skin editor rebuild-editor-window!)]
+                                (let [widget (create-widget schemas schema v skin editor rebuild-editor-window! property-k-order-index)]
                                   (set-user-object! widget [k v])
                                   widget))
                               (fn [schema widget] (widget-value schemas schema widget))
                               skin
                               editor
-                              rebuild-editor-window!)
+                              rebuild-editor-window!
+                              property-k-order-index)
     :s/number (create-number-widget schema v skin)
     :s/one-to-many (create-one-to-many-widget schema v skin editor)
     :s/one-to-one (create-one-to-one-widget schema v editor)
@@ -5806,6 +5788,24 @@
                 :editor/add-actor!
                 #(add-actor! @editor-stage %)
                 }
+        property-k-order-index (zipmap [:property/id
+                                        :property/pretty-name
+                                        :entity/image
+                                        :entity/animation
+                                        :entity/species
+                                        :creature/level
+                                        :entity/width
+                                        :entity/height
+                                        :entity/flying?
+                                        :item/slot
+                                        :projectile/speed
+                                        :projectile/max-range
+                                        :projectile/piercing?
+                                        :skill/action-time-modifier-key
+                                        :skill/action-time
+                                        :skill/start-action-sound
+                                        :skill/cost]
+                                       (range))
         property-types [:properties/audiovisuals
                         :properties/creatures 
                         :properties/items
@@ -5820,7 +5820,7 @@
                                                                       property (map-widget-value schemas map-widget-table)]
                                                                   (remove! window)
                                                                   (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-                                       widget (create-widget schemas schema property skin editor rebuild-editor-window!)
+                                       widget (create-widget schemas schema property skin editor rebuild-editor-window! property-k-order-index)
                                        scroll-pane-height (get-world-height (get-viewport @editor-stage))
                                        get-widget-value #(widget-value schemas schema widget)
                                        property-id (:property/id property)
