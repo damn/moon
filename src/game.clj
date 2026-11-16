@@ -3819,19 +3819,6 @@
                           (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
        first))
 
-(defn- create-effect-ctx
-  [eid]
-  (let [entity @eid
-        target (nearest-enemy @*grid* entity)
-        target (when (and target
-                          (line-of-sight? @*raycaster* entity @target))
-                 target)]
-    {:effect/source eid
-     :effect/target target
-     :effect/target-direction (when target
-                                (direction entity
-                                                @target))}))
-
 (defn- update-effect-ctx
   [raycaster effect-ctx]
   (let [source (:effect/source effect-ctx)
@@ -3992,8 +3979,16 @@
 (defn npc-idle-tick
   [_v eid _delta-time handle-txs!]
   (let [raycaster @*raycaster*
-        effect-ctx (create-effect-ctx eid)]
-    (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
+        entity @eid
+        target (nearest-enemy @*grid* entity)
+        target (when (and target
+                          (line-of-sight? raycaster entity @target))
+                 target)
+        effect-ctx {:effect/source eid
+                    :effect/target target
+                    :effect/target-direction (when target
+                                               (direction entity @target))}]
+    (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) entity effect-ctx)]
       (handle-txs! [[:tx/event eid :start-action [skill effect-ctx]]])
       (handle-txs! [[:tx/event eid :movement-direction (or (find-direction @*grid* eid)
                                                            [0 0])]]))))
