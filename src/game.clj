@@ -4261,41 +4261,6 @@
     (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
       (get-user-object skill-button))))
 
-(defn- create-interaction-state [player-eid mouseover-eid stage input]
-  (let [mouseover-eid @mouseover-eid
-        mouseover-actor (current-mouseover-actor stage)]
-    (cond
-      mouseover-actor
-      [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
-
-      (and mouseover-eid
-           (:entity/clickable @mouseover-eid))
-      [:interaction-state/clickable-mouseover-eid
-       {:clicked-eid mouseover-eid
-        :in-click-range? (< (v2-distance (:entity/position @player-eid)
-                                         (:entity/position @mouseover-eid))
-                            (:entity/click-distance-tiles @player-eid))}]
-
-      :else
-      (if-let [skill-id (-> (get-root stage)
-                            (find-actor "moon.ui.action-bar")
-                            selected-skill)]
-        (let [entity @player-eid
-              skill (skill-id (:entity/skills entity))
-              target-position (or (and mouseover-eid
-                                       (:entity/position @mouseover-eid))
-                                  (unproject @*viewport* [(get-x input) (get-y input)]))
-              effect-ctx {:effect/source player-eid
-                          :effect/target mouseover-eid
-                          :effect/target-position target-position
-                          :effect/target-direction (v2-direction (:entity/position @player-eid)
-                                                                target-position)}
-              state (usable-state skill entity effect-ctx)]
-          (if (= state :usable)
-            [:interaction-state.skill/usable [skill effect-ctx]]
-            [:interaction-state.skill/not-usable state]))
-        [:interaction-state/no-skill-selected]))))
-
 (defn new-sound [audio file-handle]
   (com.badlogic.gdx.Audio/.newSound audio file-handle))
 
@@ -4605,9 +4570,45 @@
                               (level-fn {:level/creature-properties (prepare-creature-tiles
                                                                       (all-raw game-db :properties/creatures)
                                                                       #(get-texture-region @textures %))
-                                         :textures textures*})]
+                                         :textures @textures})]
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
+        create-interaction-state (fn [input]
+                                   (let [player-eid @player-eid
+                                         stage @stage
+                                         mouseover-eid @mouseover-eid
+                                         mouseover-actor (current-mouseover-actor stage)]
+                                     (cond
+                                       mouseover-actor
+                                       [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+
+                                       (and mouseover-eid
+                                            (:entity/clickable @mouseover-eid))
+                                       [:interaction-state/clickable-mouseover-eid
+                                        {:clicked-eid mouseover-eid
+                                         :in-click-range? (< (v2-distance (:entity/position @player-eid)
+                                                                          (:entity/position @mouseover-eid))
+                                                             (:entity/click-distance-tiles @player-eid))}]
+
+                                       :else
+                                       (if-let [skill-id (-> (get-root stage)
+                                                             (find-actor "moon.ui.action-bar")
+                                                             selected-skill)]
+                                         (let [entity @player-eid
+                                               skill (skill-id (:entity/skills entity))
+                                               target-position (or (and mouseover-eid
+                                                                        (:entity/position @mouseover-eid))
+                                                                   (unproject @*viewport* [(get-x input) (get-y input)]))
+                                               effect-ctx {:effect/source player-eid
+                                                           :effect/target mouseover-eid
+                                                           :effect/target-position target-position
+                                                           :effect/target-direction (v2-direction (:entity/position @player-eid)
+                                                                                                  target-position)}
+                                               state (usable-state skill entity effect-ctx)]
+                                           (if (= state :usable)
+                                             [:interaction-state.skill/usable [skill effect-ctx]]
+                                             [:interaction-state.skill/not-usable state]))
+                                         [:interaction-state/no-skill-selected]))))
         ]
     {
      :create!
@@ -4757,7 +4758,7 @@
          (highlight-mouseover-tile @shape-drawer Gdx/input)
          (reset! unit-scale 1))
        (.end ^Batch @batch)
-       (let [interaction-state (create-interaction-state @player-eid mouseover-eid @stage Gdx/input)]
+       (let [interaction-state (create-interaction-state Gdx/input)]
          (set-cursor! graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
          (handle-player-input! @player-eid
                                handle-txs!
