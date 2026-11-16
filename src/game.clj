@@ -5498,32 +5498,6 @@
 (defn left! [cell]
   (.left ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
 
-(defn- component-row-table
-  [{:keys [display-remove-component-button?
-           k
-           table
-           skin
-           rebuild-editor-window!]}]
-  (let [row-table (table-create)]
-    (pad! (defaults table) 2)
-    (doto (add! row-table (when display-remove-component-button?
-                            (doto (create-text-button "-" skin)
-                              (add-listener! (create-change-listener
-                                               (fn [event _actor]
-                                                 (remove! (first (filter (fn [actor]
-                                                                           (and (get-user-object actor)
-                                                                                (= k ((get-user-object actor) 0))))
-                                                                         (get-children table))))
-                                                 (rebuild-editor-window!)))))
-                            ; java.lang.IllegalStateException: Table must have a skin set to use this method.
-                            ; (can be nil)
-                            (label-create "." skin)))
-      (left!))
-    (add! row-table (label-create (k-label-text k) skin))
-    (row! row-table)
-    (pack! row-table)
-    row-table))
-
 (defn- add-horiz-sep! [table colspan]
   (doto (add! table nil)
     (pad-top! 2)
@@ -5567,6 +5541,28 @@
            editor]}]
   (let [table (doto (table-create)
                 (set-name! "moon.db.schema.map.ui.widget"))
+        component-row-table (fn
+                              [{:keys [display-remove-component-button?
+                                       k]}]
+                              (let [row-table (table-create)]
+                                (pad! (defaults table) 2)
+                                (doto (add! row-table (when display-remove-component-button?
+                                                        (doto (create-text-button "-" skin)
+                                                          (add-listener! (create-change-listener
+                                                                           (fn [event _actor]
+                                                                             (remove! (first (filter (fn [actor]
+                                                                                                       (and (get-user-object actor)
+                                                                                                            (= k ((get-user-object actor) 0))))
+                                                                                                     (get-children table))))
+                                                                             (rebuild-editor-window!)))))
+                                                        ; java.lang.IllegalStateException: Table must have a skin set to use this method.
+                                                        ; (can be nil)
+                                                        (label-create "." skin)))
+                                  (left!))
+                                (add! row-table (label-create (k-label-text k) skin))
+                                (row! row-table)
+                                (pack! row-table)
+                                row-table))
         add-component-row! (fn [opts]
                              (doto (add! table (component-row-table opts))
                                (right!))
@@ -5591,17 +5587,14 @@
                                                               {:text (name k)
                                                                :f (fn []
                                                                     (add-component-row!
-                                                                      {:rebuild-editor-window! rebuild-editor-window! 
-                                                                       :editor-widget (build-widget (get schemas k)
+                                                                      {:editor-widget (build-widget (get schemas k)
                                                                                                     k
                                                                                                     (let [schema (get schemas k)]
                                                                                                       (cond
                                                                                                         (#{:s/map} (schema 0)) {}
                                                                                                         :else nil)))
                                                                        :k k
-                                                                       :display-remove-component-button? (optional? (malli-form schemas schema) k)
-                                                                       :table table
-                                                                       :skin skin})
+                                                                       :display-remove-component-button? (optional? (malli-form schemas schema) k)})
                                                                     (rebuild-editor-window!))})]
                                                 (add-component-window skin columns))))))))
         (colspan! colspan))
@@ -5610,12 +5603,9 @@
     (doseq [[i k] (map-indexed vector ks-sorted)]
       (when (pos? i)
         (add-horiz-sep! table colspan))
-      (add-component-row! {:rebuild-editor-window! rebuild-editor-window!
-                           :editor-widget (k->widget k)
+      (add-component-row! {:editor-widget (k->widget k)
                            :k k
-                           :display-remove-component-button? (k->optional? k)
-                           :table table
-                           :skin skin}))
+                           :display-remove-component-button? (k->optional? k)}))
     table))
 
 (require '[clojure.set :as set])
