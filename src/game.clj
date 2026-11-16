@@ -2019,61 +2019,6 @@
     ; min 1 because floating point math inaccuracies
     (min 1 (/ (- stop-time @*elapsed-time*) duration))))
 
-(def k->info-fn
-  {:creature/level (fn [v]
-                     (str "Level: " v))
-   :entity/stats (fn [entity-stats]
-                   (stats-format-text entity-stats))
-   :effects.target/convert (fn [_]
-                             "Converts target to your side.")
-   :effects.target/damage (fn [{[min max] :damage/min-max}]
-                            (str min "-" max " damage"))
-   :effects.target/kill (fn [_]
-                          "Kills target")
-   :effects.target/melee-damage (fn [_]
-                                  "Damage based on entity strength.")
-   :effects.target/spiderweb (fn [_]
-                               "Spiderweb slows 50% for 5 seconds.")
-   :effects.target/stun (fn [duration]
-                          (str "Stuns for " (readable duration) " seconds"))
-   :effects/spawn (fn [{:keys [property/pretty-name]}]
-                    (str "Spawns a " pretty-name))
-   :effects/target-all (fn [_]
-                         "All visible targets")
-   :entity/delete-after-duration (fn [counter]
-                                   (str "Remaining: " (readable (timer-ratio counter)) "/1"))
-   :entity/faction (fn [faction]
-                     (str "Faction: " (name faction)))
-   :entity/fsm (fn [fsm]
-                 (str "State: " (name (:state fsm))))
-   :stats/modifiers (fn [mods]
-                      (mods-format-text mods))
-   :entity/skills (fn [skills]
-                    (when (seq skills)
-                      (str "Skills: " (str/join "," (map name (keys skills))))))
-   :entity/species (fn [species]
-                     (str "Creature - " (str/capitalize (name species))))
-   :entity/temp-modifier (fn [{:keys [counter]}]
-                           (str "Spiderweb - remaining: " (readable (timer-ratio counter)) "/1"))
-   :projectile/piercing? (fn [_]
-                           "Piercing")
-   :property/pretty-name (fn [v]
-                           v)
-   :skill/cooling-down? (fn [counter]
-                          (str "Cooldown: " (readable (timer-ratio counter)) "/1"))
-   :skill/action-time (fn [v]
-                        (str "Action-Time: " (readable v) " seconds"))
-   :skill/action-time-modifier-key (fn [v]
-                                     (case v
-                                       :stats/cast-speed "Spell"
-                                       :stats/attack-speed "Attack"))
-   :skill/cooldown (fn [v]
-                     (str "Cooldown: " (readable v) " seconds"))
-   :skill/cost (fn [v]
-                 (str "Cost: " v " Mana"))
-   :maxrange (fn [v]
-               (str "Range: " v " Meters."))})
-
 (def k-order-index (zipmap [:property/pretty-name
                             :skill/action-time-modifier-key
                             :skill/action-time
@@ -2115,7 +2060,7 @@
       (remove-newlines new-s))))
 
 (defn info-text
-  [entity]
+  [k->info-fn entity]
   (let [component-info (fn [[k v]]
                          (let [s (if-let [info-fn (k->info-fn k)]
                                    (str (info-fn v)))]
@@ -2129,7 +2074,7 @@
                            (catch Throwable _t
                              (str "*info-error* " k)))
                       (when (map? v)
-                        (str "\n" (info-text v))))))
+                        (str "\n" (info-text k->info-fn v))))))
          (str/join "\n")
          remove-newlines)))
 
@@ -2203,12 +2148,12 @@
     (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
-(defn set-skill! [skin stage textures skill]
+(defn set-skill! [k->info-fn skin stage textures skill]
   (-> (get-root stage)
       (find-actor "moon.ui.action-bar")
       (add-skill! {:skill-id (:property/id skill)
                    :texture-region (get-texture-region textures (:entity/image skill))
-                   :tooltip-text (info-text skill)}
+                   :tooltip-text (info-text k->info-fn skill)}
                   skin)))
 
 (defn remove-item!* [inventory-window cell]
@@ -2226,9 +2171,9 @@
       (find-actor "moon.ui.windows.inventory")
       (remove-item!* cell)))
 
-(defn sync-player-ui! [skin stage textures eid]
+(defn sync-player-ui! [k->info-fn skin stage textures eid]
   (doseq [skill (vals (:entity/skills @eid))]
-    (set-skill! skin stage textures skill))
+    (set-skill! k->info-fn skin stage textures skill))
   (doseq [[slot grid] (:entity/inventory @eid)
           x (range (count grid))
           y (range (count (grid 0)))
@@ -2313,7 +2258,7 @@
     window))
 
 (defn info-window-create
-  [skin stage mouseover-eid]
+  [k->info-fn skin stage mouseover-eid]
   (create-info-window
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
@@ -2321,7 +2266,8 @@
     :position [(get-world-width (get-viewport stage)) 0]
     :set-label-text! (fn []
                        (if-let [eid @mouseover-eid]
-                         (info-text (apply dissoc @eid [:entity/skills
+                         (info-text k->info-fn
+                                    (apply dissoc @eid [:entity/skills
                                                         :entity/faction
                                                         :active-skill]))
                          ""))
@@ -4349,7 +4295,8 @@
       (set-name! "moon.ui.action-bar"))))
 
 (defn create-ui-actors
-  [player-eid 
+  [k->info-fn
+   player-eid 
    handle-txs! 
    mouseover-eid 
    unit-scale 
@@ -4364,7 +4311,7 @@
   [(create-action-bar)
    (create-dev-menu options)
    (hp-mana-bar-create player-eid default-font stage textures* unit-scale)
-   (windows-create [(info-window-create skin stage mouseover-eid)
+   (windows-create [(info-window-create k->info-fn skin stage mouseover-eid)
                     (let [cell-size 48]
                       (create-inventory-window
                         player-eid
@@ -4718,7 +4665,60 @@
            controls
            world-unit-scale]
     :as game-config}]
-  (let [player-eid (atom nil)
+  (let [k->info-fn {:creature/level (fn [v]
+                                      (str "Level: " v))
+                    :entity/stats (fn [entity-stats]
+                                    (stats-format-text entity-stats))
+                    :effects.target/convert (fn [_]
+                                              "Converts target to your side.")
+                    :effects.target/damage (fn [{[min max] :damage/min-max}]
+                                             (str min "-" max " damage"))
+                    :effects.target/kill (fn [_]
+                                           "Kills target")
+                    :effects.target/melee-damage (fn [_]
+                                                   "Damage based on entity strength.")
+                    :effects.target/spiderweb (fn [_]
+                                                "Spiderweb slows 50% for 5 seconds.")
+                    :effects.target/stun (fn [duration]
+                                           (str "Stuns for " (readable duration) " seconds"))
+                    :effects/spawn (fn [{:keys [property/pretty-name]}]
+                                     (str "Spawns a " pretty-name))
+                    :effects/target-all (fn [_]
+                                          "All visible targets")
+                    :entity/delete-after-duration (fn [counter]
+                                                    (str "Remaining: " (readable (timer-ratio counter)) "/1"))
+                    :entity/faction (fn [faction]
+                                      (str "Faction: " (name faction)))
+                    :entity/fsm (fn [fsm]
+                                  (str "State: " (name (:state fsm))))
+                    :stats/modifiers (fn [mods]
+                                       (mods-format-text mods))
+                    :entity/skills (fn [skills]
+                                     (when (seq skills)
+                                       (str "Skills: " (str/join "," (map name (keys skills))))))
+                    :entity/species (fn [species]
+                                      (str "Creature - " (str/capitalize (name species))))
+                    :entity/temp-modifier (fn [{:keys [counter]}]
+                                            (str "Spiderweb - remaining: " (readable (timer-ratio counter)) "/1"))
+                    :projectile/piercing? (fn [_]
+                                            "Piercing")
+                    :property/pretty-name (fn [v]
+                                            v)
+                    :skill/cooling-down? (fn [counter]
+                                           (str "Cooldown: " (readable (timer-ratio counter)) "/1"))
+                    :skill/action-time (fn [v]
+                                         (str "Action-Time: " (readable v) " seconds"))
+                    :skill/action-time-modifier-key (fn [v]
+                                                      (case v
+                                                        :stats/cast-speed "Spell"
+                                                        :stats/attack-speed "Attack"))
+                    :skill/cooldown (fn [v]
+                                      (str "Cooldown: " (readable v) " seconds"))
+                    :skill/cost (fn [v]
+                                  (str "Cost: " v " Mana"))
+                    :maxrange (fn [v]
+                                (str "Range: " v " Meters."))}
+        player-eid (atom nil)
         batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
@@ -4831,7 +4831,8 @@
          (let [eid (get @*entity-ids* 1)]
            (assert (:entity/player? @eid))
            (reset! player-eid eid)))
-       (doseq [       actor (create-ui-actors @player-eid
+       (doseq [       actor (create-ui-actors k->info-fn
+                                              @player-eid
                                               handle-txs!
                                               mouseover-eid
                                               unit-scale
@@ -4888,7 +4889,7 @@
                                                :skin @skin}
                                               Gdx/input)]
          (add-actor! @stage actor))
-       (sync-player-ui! @skin @stage @textures @player-eid)
+       (sync-player-ui! k->info-fn @skin @stage @textures @player-eid)
        (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* @*start-position*))
        )
 
