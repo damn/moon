@@ -1065,35 +1065,35 @@
 
 (declare build-values)
 
-(defn- create-value [[k] v db]
+(defn- create-value [schemas [k] v db]
   (case k
     :s/map
-    (build-values v db)
+    (build-values schemas v db)
 
     :s/one-to-many
     (set (map (fn [property-id]
-                (build-values (safe-get db property-id) db))
+                (build-values schemas (safe-get db property-id) db))
               v))
 
     :s/one-to-one
-    (build-values (safe-get db v) db)
+    (build-values schemas (safe-get db v) db)
 
     v))
 
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-
-(defn build-values [property db]
+(defn build-values [schemas property db]
   (reduce (fn [m k]
             (assoc m k
-                   (try (create-value (get schemas k) (k m) db)
+                   (try (create-value schemas (get schemas k) (k m) db)
                         (catch Throwable t
                           (throw (ex-info " " {:k k
                                                :v (k m)} t))))))
           property
           (keys property)))
 
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
+
 (defn build [db property-id]
-  (build-values (safe-get db property-id) db))
+  (build-values schemas (safe-get db property-id) db))
 
 (import '(com.badlogic.gdx.math Vector2))
 
