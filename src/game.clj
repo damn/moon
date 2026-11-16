@@ -3302,20 +3302,33 @@
                                                                   :initial-state :npc-idle}
                                                      :entity/faction (:entity/faction @source)}})]]))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster]
+(declare effect-transactions)
+
+(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db]
+  (mapcat (fn [effect] 
+            (effect-transactions effect
+                                 effect-ctx 
+                                 active-entities
+                                 raycaster
+                                 game-db))
+          (filter #(effect-applicable? % effect-ctx) effects)))
+
+(defn target-all-effect [v effect-ctx active-entities raycaster game-db]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
-              [[:tx/spawn-entity 
-                (spawn-line {:start (:entity/position source*)
-                             :end (:entity/position @target)
-                             :duration 0.05
-                             :color (float-bits 1 0 0 0.75)
-                             :thick? true})]
-               [:tx/apply-effects 
-                {:effect/source source
-                 :effect/target target}
-                (:entity-effects v)]])
+              (cons [:tx/spawn-entity 
+                     (spawn-line {:start (:entity/position source*)
+                                  :end (:entity/position @target)
+                                  :duration 0.05
+                                  :color (float-bits 1 0 0 0.75)
+                                  :thick? true})]
+                    (applicable-effect-txs {:effect/source source
+                                            :effect/target target}
+                                           (:entity-effects v)
+                                           active-entities
+                                           raycaster
+                                           game-db)))
             (affected-targets active-entities raycaster source*))))
 
 (defn convert-effect [_v effect-ctx game-db]
@@ -3325,21 +3338,25 @@
      [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx game-db]
+(defn target-entity-effect [v effect-ctx active-entities raycaster game-db]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
         target-body @target
         {:keys [maxrange entity-effects]} v]
     (if (in-range? body target-body maxrange)
-      [[:tx/spawn-entity 
-        (spawn-line
-          {:start (start-point body target-body)
-           :end (:entity/position target-body)
-           :duration 0.05
-           :color (float-bits 1 0 0 0.75)
-           :thick? true})]
-       [:tx/apply-effects effect-ctx entity-effects]]
+      (cons [:tx/spawn-entity 
+             (spawn-line
+               {:start (start-point body target-body)
+                :end (:entity/position target-body)
+                :duration 0.05
+                :color (float-bits 1 0 0 0.75)
+                :thick? true})]
+            (applicable-effect-txs effect-ctx 
+                                   entity-effects
+                                   active-entities
+                                   raycaster
+                                   game-db))
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
 
@@ -3426,10 +3443,10 @@
     (spawn-effect* v effect-ctx game-db)
 
     :effects/target-all
-    (target-all-effect v effect-ctx active-entities raycaster)
+    (target-all-effect v effect-ctx active-entities raycaster game-db)
 
     :effects/target-entity
-    (target-entity-effect v effect-ctx game-db)
+    (target-entity-effect v effect-ctx active-entities raycaster game-db)
 
     :effects.target/convert
     (convert-effect v effect-ctx game-db)
@@ -4162,7 +4179,7 @@
     nil))
 
 (defn projectile-collision-tick
-  [v eid _delta-time handle-txs!]
+  [v eid _delta-time handle-txs! active-entities raycaster game-db]
   (let [{:keys [entity-effects already-hit-bodies piercing?]} v
         entity @eid
         touched-cells (map deref (keep #(get-in @*grid* %) (touched-tiles entity)))
@@ -4181,11 +4198,16 @@
     (when destroy?
       (swap! eid assoc :entity/destroyed? true))
     (when hit-entity
-      (handle-txs! [[:tx/apply-effects {:effect/source eid :effect/target hit-entity} entity-effects]]))
+      (handle-txs! (applicable-effect-txs {:effect/source eid 
+                                           :effect/target hit-entity} 
+                                          entity-effects
+                                          active-entities
+                                          raycaster
+                                          game-db)))
     nil))
 
 (defn active-skill-tick
-  [v eid _delta-time handle-txs!]
+  [v eid _delta-time handle-txs! active-entities game-db]
   (let [{:keys [skill effect-ctx counter]} v
         effect-ctx (update-effect-ctx @*raycaster* effect-ctx)]
     (cond
@@ -4194,7 +4216,11 @@
       (handle-txs! (handle-fsm-event! eid :action-done))
 
       (timer-stopped? counter)
-      (do (handle-txs! [[:tx/apply-effects effect-ctx (:skill/effects skill)]])
+      (do (handle-txs! (applicable-effect-txs effect-ctx 
+                                              (:skill/effects skill)
+                                              active-entities
+                                              @*raycaster*
+                                              game-db))
           (handle-txs! (handle-fsm-event! eid :action-done))
           nil))))
 
@@ -4258,7 +4284,7 @@
           nil)))))
 
 (defn tick-component
-  [delta-time handle-txs! eid [k v]]
+  [delta-time handle-txs! eid [k v] active-entities raycaster game-db]
   (case k
     :entity/animation
     (animation-tick v eid delta-time handle-txs!)
@@ -4276,10 +4302,10 @@
     (temp-modifier-tick v eid delta-time handle-txs!)
 
     :entity/projectile-collision
-    (projectile-collision-tick v eid delta-time handle-txs!)
+    (projectile-collision-tick v eid delta-time handle-txs! active-entities raycaster game-db)
 
     :active-skill
-    (active-skill-tick v eid delta-time handle-txs!)
+    (active-skill-tick v eid delta-time handle-txs! active-entities game-db)
 
     :entity/delete-after-duration
     (delete-after-duration-tick v eid delta-time handle-txs!)
@@ -4570,13 +4596,18 @@
   [db 
    delta-time 
    active-entities
+   raycaster
+   game-db
    handle-txs!]
   (doseq [eid active-entities
           component @eid]
     (tick-component delta-time 
                     handle-txs!
                     eid 
-                    component)))
+                    component
+                    active-entities
+                    raycaster
+                    db)))
 
 (defn get-delta-time [graphics]
   (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
@@ -4595,6 +4626,8 @@
       (tick-entities! db 
                       delta-time 
                       @active-entities 
+                      @*raycaster*
+                      db
                       handle-txs!))))
 
 (defn selected-skill [action-bar]
@@ -4675,6 +4708,8 @@
                (spawn-entity! entity-decl))
              :tx/event
              (fn [& params]
+               ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
+               ; maybe no exit/enter events at all ? 
                (handle-txs! (apply handle-fsm-event! params)))
              :tx/modal
              (fn [opts]
@@ -4691,14 +4726,6 @@
              :tx/show-message
              (fn [message]
                (show-message! @stage message))
-             :tx/apply-effects
-             (fn [effect-ctx effects]
-               (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                 (handle-txs! (effect-transactions effect
-                                                   effect-ctx 
-                                                   @active-entities
-                                                   @*raycaster*
-                                                   game-db))))
              })
 
 (defn handle-txs! [txs]
