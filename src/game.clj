@@ -3199,7 +3199,8 @@
 (import '(com.badlogic.gdx Gdx))
 (defn item-place-position* [position click-distance]
   (item-place-position @*viewport* Gdx/input position click-distance))
-(defn- handle-fsm-event! [eid event & [params]]
+; FIXME PLAYER ITEM ON CURSOR ENTER/EXIT MSUHDFN
+(defn- fsm-event-txs [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
         old-state-k (:state fsm)
@@ -3894,7 +3895,7 @@
       (doseq [friendly-eid (get-friendlies-for-alert eid faction)
               ; TODO called on projectiles
               :when (:entity/fsm @friendly-eid)]
-        (handle-txs! (handle-fsm-event! friendly-eid :alert))))
+        (handle-txs! (fsm-event-txs friendly-eid :alert))))
     nil))
 
 (defn string-effect-tick
@@ -3955,7 +3956,7 @@
     (cond
       (not (seq (filter #(effect-applicable? % effect-ctx)
                         (:skill/effects skill))))
-      (handle-txs! (handle-fsm-event! eid :action-done))
+      (handle-txs! (fsm-event-txs eid :action-done))
 
       (timer-stopped? counter)
       (do (handle-txs! (applicable-effect-txs effect-ctx 
@@ -3963,7 +3964,7 @@
                                               active-entities
                                               @*raycaster*
                                               game-db))
-          (handle-txs! (handle-fsm-event! eid :action-done))
+          (handle-txs! (fsm-event-txs eid :action-done))
           nil))))
 
 (defn delete-after-duration-tick
@@ -3976,28 +3977,28 @@
   [v eid _delta-time handle-txs!]
   (let [{:keys [counter]} v]
     (when (timer-stopped? counter)
-      (handle-txs! (handle-fsm-event! eid :effect-wears-off)))))
+      (handle-txs! (fsm-event-txs eid :effect-wears-off)))))
 
 (defn npc-moving-tick
   [v eid _delta-time handle-txs!]
   (let [{:keys [timer]} v]
     (when (timer-stopped? timer)
-      (handle-txs! (handle-fsm-event! eid :timer-finished)))))
+      (handle-txs! (fsm-event-txs eid :timer-finished)))))
 
 (defn npc-sleeping-tick
   [_v eid _delta-time handle-txs!]
   (let [entity @eid]
     (when-let [distance (nearest-enemy-distance @*grid* entity)]
       (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
-        (handle-txs! (handle-fsm-event! eid :alert))))))
+        (handle-txs! (fsm-event-txs eid :alert))))))
 
 (defn npc-idle-tick
   [_v eid _delta-time handle-txs!]
   (let [raycaster @*raycaster*
         effect-ctx (create-effect-ctx eid)]
     (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
-      (handle-txs! (handle-fsm-event! eid :start-action [skill effect-ctx]))
-      (handle-txs! (handle-fsm-event! eid :movement-direction (or (find-direction @*grid* eid)
+      (handle-txs! (fsm-event-txs eid :start-action [skill effect-ctx]))
+      (handle-txs! (fsm-event-txs eid :movement-direction (or (find-direction @*grid* eid)
                                                                  [0 0]))))))
 
 (defn movement-tick
@@ -4202,7 +4203,7 @@
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (if-let [move-v (movement-vector key-pressed?)]
-      (handle-txs! (handle-fsm-event! player-eid :movement-input move-v))
+      (handle-txs! (fsm-event-txs player-eid :movement-input move-v))
       (when (button-just-pressed? Input$Buttons/LEFT)
         (handle-txs! (interaction-state->txs interaction-state stage player-eid))))
 
@@ -4212,13 +4213,13 @@
                                                       :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
                                                                  0)})
           nil)
-      (handle-txs! (handle-fsm-event! player-eid :no-movement-input)))
+      (handle-txs! (fsm-event-txs player-eid :no-movement-input)))
 
     :player-item-on-cursor
     (let [[x y] (ui-mouse-position stage Gdx/input)]
       (when (and (button-just-pressed? Input$Buttons/LEFT)
                  (not (mouseover-actor stage x y)))
-        (handle-txs! (handle-fsm-event! player-eid :drop-item))))
+        (handle-txs! (fsm-event-txs player-eid :drop-item))))
 
     nil))
 
@@ -4395,7 +4396,7 @@
                                     (fn [& params]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
                                       ; maybe no exit/enter events at all ? 
-                                      (handle-txs! (apply handle-fsm-event! params)))
+                                      (handle-txs! (apply fsm-event-txs params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
