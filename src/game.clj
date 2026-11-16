@@ -5546,7 +5546,7 @@
   (row! table))
 
 (defn- add-component-window 
-  [schemas schema map-widget-table build-widget widget-value skin rebuild-editor-window!]
+  [skin columns]
   (let [window (create-window "Choose" skin)]
     (pad! (defaults window) 5)
     (add! (get-title-table window)
@@ -5555,26 +5555,12 @@
                              (fn [_event _actor]
                                (remove! window))))))
     (set-modal! window true)
-    (doseq [k (sort (remove (set (keys (widget-value schema map-widget-table)))
-                            (map-keys (malli-form schemas schema))))]
-      (add! window (doto (create-text-button (name k) skin)
+    (doseq [{:keys [text f]} columns]
+      (add! window (doto (create-text-button text skin)
                      (add-listener! (create-change-listener
                                       (fn [event _actor]
                                         (remove! window)
-                                        (add-component-row!
-                                          map-widget-table
-                                          {:rebuild-editor-window! rebuild-editor-window! 
-                                           :editor-widget (build-widget (get schemas k)
-                                                                        k
-                                                                        (let [schema (get schemas k)]
-                                                                          (cond
-                                                                            (#{:s/map} (schema 0)) {}
-                                                                            :else nil)))
-                                           :k k
-                                           :display-remove-component-button? (optional? (malli-form schemas schema) k)
-                                           :table map-widget-table
-                                           :skin skin})
-                                        (rebuild-editor-window!))))))
+                                        (f))))))
       (row! window))
     (pack! window)
     window))
@@ -5600,13 +5586,26 @@
                           (add-listener! (create-change-listener
                                            (fn [event actor]
                                              ((:editor/add-actor! editor)
-                                              (add-component-window schemas 
-                                                                    schema 
-                                                                    table 
-                                                                    build-widget 
-                                                                    widget-value 
-                                                                    skin 
-                                                                    rebuild-editor-window!)))))))
+                                              (let [columns (sort (remove (set (keys (widget-value schema table)))
+                                                                          (map-keys (malli-form schemas schema))))
+                                                    columns (for [k columns]
+                                                              {:text (name k)
+                                                               :f (fn []
+                                                                    (add-component-row!
+                                                                      table
+                                                                      {:rebuild-editor-window! rebuild-editor-window! 
+                                                                       :editor-widget (build-widget (get schemas k)
+                                                                                                    k
+                                                                                                    (let [schema (get schemas k)]
+                                                                                                      (cond
+                                                                                                        (#{:s/map} (schema 0)) {}
+                                                                                                        :else nil)))
+                                                                       :k k
+                                                                       :display-remove-component-button? (optional? (malli-form schemas schema) k)
+                                                                       :table table
+                                                                       :skin skin})
+                                                                    (rebuild-editor-window!))})]
+                                                (add-component-window skin columns))))))))
         (colspan! colspan))
       (row! table)
       (add-horiz-sep! table colspan))
