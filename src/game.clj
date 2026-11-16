@@ -652,12 +652,11 @@
 
 (require '[malli.error :as me])
 
-(defn validate-property [schemas property k]
-  (let [schema (malli-schema schemas k)]
-    (when-not (m/validate schema property)
-      (throw (ex-info (str (me/humanize (m/explain schema property)))
-                      {:value property
-                       :schema (m/form schema)})))))
+(defn validate-hum [schema value]
+  (when-not (m/validate schema value)
+    (throw (ex-info (str (me/humanize (m/explain schema value)))
+                    {:value value
+                     :schema (m/form schema)}))))
 
 (defn touched-tiles*
   "x is leftmost point and y bottom most point in the rectangle."
@@ -1043,8 +1042,9 @@
 (defn create-db [schemas properties]
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
-  (doseq [property properties]
-    (validate-property schemas property (keyword "properties" (namespace (:property/id property)))))
+  (doseq [property properties
+          :let [k (keyword "properties" (namespace (:property/id property)))]]
+    (validate-hum (malli-schema schemas k) property))
   (zipmap (map :property/id properties) properties))
 
 (require '[clojure.pprint :as pprint])
@@ -5839,7 +5839,8 @@
                                                          id (:property/id property)]
                                                      (assert (contains? property :property/id))
                                                      (assert (contains? db id))
-                                                     (validate-property schemas property (keyword "properties" (namespace (:property/id property))))
+                                                     (let [k (keyword "properties" (namespace (:property/id property)))]
+                                                       (validate-hum (malli-schema schemas k) property)
                                                      (let [new-db (assoc db id property)]
                                                        (save! new-db properties-file)
                                                        new-db))))
