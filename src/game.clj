@@ -4667,22 +4667,15 @@
              :tx/swap 
              (fn [eid f & params]
                (apply swap! eid f params))
-
              :tx/sound 
              (fn [sound-name]
                (Sound/.play (safe-get @sounds sound-name)))
-
              :tx/spawn-entity 
              (fn [entity-decl]
                (spawn-entity! entity-decl))
-
-             ;; Can just return handle-fsm-event! and concat with txs?
-             ; or recursive events? (no generic spawn-entity?)
              :tx/event
              (fn [& params]
                (handle-txs! (apply handle-fsm-event! params)))
-
-             ;; Stage txs
              :tx/modal
              (fn [opts]
                (show-modal! @skin @stage opts))
@@ -4698,20 +4691,14 @@
              :tx/show-message
              (fn [message]
                (show-message! @stage message))
-             ;;
-
-             ; TODO just returns the applicable effect txs and concat them to txs
              :tx/apply-effects
              (fn [effect-ctx effects]
                (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
                  (handle-txs! (handle-effect! e 
                                               effect-ctx 
-
-                                              ; those 2 should be 1 param?
                                               @active-entities
                                               @*raycaster*
-                                              game-db
-                                              ))))
+                                              game-db))))
              })
 
 (defn handle-txs! [txs]
