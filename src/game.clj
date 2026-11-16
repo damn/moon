@@ -4505,14 +4505,14 @@
 (require '[clojure.java.io :as io])
 (defn game-listener 
   [{:keys [game-schemas
+           game-db
            pausing?
            state->pause-game?
            level-fn
            controls
            world-unit-scale]
     :as game-config}]
-  (let [game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string))
-        k->info-fn {:creature/level (fn [v]
+  (let [k->info-fn {:creature/level (fn [v]
                                       (str "Level: " v))
                     :entity/stats (fn [entity-stats]
                                     (stats-format-text entity-stats))
@@ -5909,9 +5909,11 @@
 
 (defn game! []
   (let [game-schemas (-> "schema.edn" io/resource slurp edn/read-string)
+        game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string))
         listener (game-listener
                    {
                     :game-schemas game-schemas
+                    :game-db game-db
                     :level-fn ;create-vampire-level
                     ;create-uf-caves
                     create-modules-level
