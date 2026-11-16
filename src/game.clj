@@ -1,5 +1,281 @@
 (ns game)
 
+; FIXME k->info-fn ???? let bind over game param ... just k->f matching.... edn?
+; k-order-index
+; k->colors
+; diagonal-check-indizes ?
+; rgba8888 (is also data??)
+; effect-applicable?
+; effects-behaviour (config!)
+; spiderweb-modifiers
+; spiderweb-duration
+; *viewport*
+
+(def *raycaster* (atom nil))
+(def show-potential-field-colors? (atom nil))
+(def show-cell-entities? (atom false))
+(def show-cell-occupied? (atom false))
+(def show-body-bounds? (atom false))
+(def show-tile-grid? (atom false))
+(def *elapsed-time* (atom nil))
+(def *id-counter* (atom nil))
+(def *entity-ids* (atom nil))
+(def *grid* (atom nil))
+(def *content-grid* (atom nil))
+
+(def factions-iterations {:good 15 :evil 5})
+(def ^:private float-rounding-error (double 0.000001))
+(def ^:private active-skill-radius
+  (let [tile-size 48
+        image-width 32]
+    (/ (/ image-width tile-size) 2)))
+(def ^:private transition-idxvalues [2 8 1 4])
+(def minimum-size 0.39)
+(def z-orders [:z-order/on-ground
+               :z-order/ground
+               :z-order/flying
+               :z-order/effect])
+(def ^:private render-layers
+  [#{:entity/mouseover?
+     :stunned
+     :player-item-on-cursor}
+   #{:entity/clickable
+     :entity/animation
+     :entity/image
+     :entity/line-render}
+   #{:npc-sleeping
+     :entity/temp-modifier
+     :entity/string-effect}
+   #{:entity/stats
+     :active-skill}])
+(def render-z-order (apply hash-map (interleave z-orders (range))))
+(def slots
+  #{:inventory.slot/bag
+    :inventory.slot/weapon
+    :inventory.slot/shield
+    :inventory.slot/helm
+    :inventory.slot/chest
+    :inventory.slot/leg
+    :inventory.slot/glove
+    :inventory.slot/boot
+    :inventory.slot/cloak
+    :inventory.slot/necklace
+    :inventory.slot/rings})
+(def max-delta 0.04)
+(def max-speed (/ minimum-size max-delta))
+(def skin (atom nil))
+(def stage (atom nil))
+(def textures (atom nil))
+(def active-entities (atom nil))
+(def sounds (atom nil))
+
+; FIXME k->txs !!!
+(def *start-position* (atom nil))
+(def sounds (atom nil)) ; EDITOR!
+
+(require '[clojure.string :as str])
+
+(def ^:private controls-info
+  (str/join "\n"
+            ["[W][A][S][D] - Move"
+             "[ESCAPE] - Close windows"
+             "[I] - Inventory window"
+             "[E] - Entity Info window"
+             "[-]/[=] - Zoom"
+             "[P]/[SPACE] - Unpause"
+             "Leftmouse click - use skill/drop item on cursor"]))
+
+(require '[malli.core :as m])
+
+(def val-max-schema
+  (m/schema
+   [:and
+    [:vector {:min 2 :max 2} [:int {:min 0}]]
+    [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
+                      (when (< mx v)
+                        (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
+     (fn [[^int a ^int b]] (<= a b))]]))
+
+(defn malli-form [schemas schema]
+  (case (first schema)
+    :s/animation
+    [:map {:closed true}
+     [:animation/frames :some]
+     [:animation/frame-duration pos?]
+     [:animation/looping? :boolean]]
+
+    :s/boolean
+    :boolean
+
+    :s/enum
+    (apply vector :enum (rest schema))
+
+    :s/image
+    [:map {:closed true}
+     [:image/file :string]
+     [:image/bounds {:optional true} [:vector {:size 4} nat-int?]]]
+
+    :s/map
+    (let [ks (second schema)] 
+      (apply vector :map {:closed true}
+             (for [k ks
+                   :let [k? (keyword? k)
+                         schema-props (if k? nil (k 1))
+                         k (if k? k (k 0))]]
+               (do
+                 (assert (keyword? k))
+                 (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
+                 [k schema-props (malli-form schemas (get schemas k))]))))
+
+    :s/number
+    (case (second schema)
+      :int     int?
+      :nat-int nat-int?
+      :any     number?
+      :pos     pos?
+      :pos-int pos-int?)
+
+    :s/one-to-many
+    [:set [:qualified-keyword {:namespace (keyword (name (second schema)))}]]
+
+    :s/one-to-one
+    [:qualified-keyword {:namespace (keyword (name (second schema)))}]
+
+    :s/qualified-keyword
+    (apply vector :qualified-keyword (rest schema))
+
+    :s/some
+    :some
+
+    :s/sound
+    :string
+
+    :s/string
+    :string
+
+    :s/val-max
+    val-max-schema
+    ))
+
+(require '[clojure.edn :as edn])
+(require '[clojure.java.io :as io])
+
+(def game-schemas (-> "schema.edn" io/resource slurp edn/read-string))
+
+(defn malli-schema [schemas k]
+  (m/schema (malli-form schemas (get schemas k))))
+
+(require '[malli.error :as me])
+
+(defn validate-hum [schema value]
+  (when-not (m/validate schema value)
+    (throw (ex-info (str (me/humanize (m/explain schema value)))
+                    {:value value
+                     :schema (m/form schema)}))))
+
+(defn create-db [schemas properties]
+  (assert (or (empty? properties)
+              (apply distinct? (map :property/id properties))))
+  (doseq [property properties
+          :let [k (keyword "properties" (namespace (:property/id property)))]]
+    (validate-hum (malli-schema schemas k) property))
+  (zipmap (map :property/id properties) properties))
+
+(def game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+
+(require '[reduce-fsm :as fsm])
+
+(def ^:private fsms
+  {:npc (fsm/fsm-inc
+          [[:npc-sleeping
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :alert -> :npc-idle]
+           [:npc-idle
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :start-action -> :active-skill
+            :movement-direction -> :npc-moving]
+           [:npc-moving
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :timer-finished -> :npc-idle]
+           [:active-skill
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :action-done -> :npc-idle]
+           [:stunned
+            :kill -> :npc-dead
+            :effect-wears-off -> :npc-idle]
+           [:npc-dead]])
+   :player (fsm/fsm-inc
+            [[:player-idle
+              :kill -> :player-dead
+              :stun -> :stunned
+              :start-action -> :active-skill
+              :pickup-item -> :player-item-on-cursor
+              :movement-input -> :player-moving]
+             [:player-moving
+              :kill -> :player-dead
+              :stun -> :stunned
+              :no-movement-input -> :player-idle]
+             [:active-skill
+              :kill -> :player-dead
+              :stun -> :stunned
+              :action-done -> :player-idle]
+             [:stunned
+              :kill -> :player-dead
+              :effect-wears-off -> :player-idle]
+             [:player-item-on-cursor
+              :kill -> :player-dead
+              :stun -> :stunned
+              :drop-item -> :player-idle
+              :dropped-item -> :player-idle]
+             [:player-dead]])})
+
+(import '(java.util Random))
+
+(def k->adj-num
+  {:wide
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       (case (int (* 3 (.nextFloat ^Random random)))
+         0 1
+         2)
+       (case (int (* 4 (.nextFloat ^Random random)))
+         0 1
+         1 2
+         2 3
+         3 4
+         1)))
+
+   :thin
+   ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       1
+       (case (int (* 7 (.nextFloat ^Random random)))
+         0 0
+         1 2
+         1)))
+
+   :default
+   ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       (case (int (* 4 (.nextFloat ^Random random)))
+         0 1
+         1 1
+         2 1
+         3 2
+         1)
+       (case (int (* 4 (.nextFloat ^Random random)))
+         0 0
+         1 1
+         2 1
+         3 2
+         1)))})
+
 (defn safe-get [m k]
   {:pre [(contains? m k)]}
   (get m k))
@@ -25,7 +301,6 @@
              base-value))
 
 (require '[clojure.math :as math])
-(require '[clojure.string :as str])
 
 (defn mods-format-text
   [mods]
@@ -46,17 +321,6 @@
                                                (str/capitalize (name k)))))
                                       (sort-ops modifier-ops))))
                     mods))))
-
-(require '[malli.core :as m])
-
-(def val-max-schema
-  (m/schema
-   [:and
-    [:vector {:min 2 :max 2} [:int {:min 0}]]
-    [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
-                      (when (< mx v)
-                        (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
-     (fn [[^int a ^int b]] (<= a b))]]))
 
 (defn- valid-val-max? [val-max]
   (m/validate val-max-schema val-max))
@@ -582,87 +846,6 @@
   (.setColor shape-drawer (float color-float-bits))
   (.sector shape-drawer center-x center-y radius start-radians radians))
 
-(require '[clojure.edn :as edn])
-(require '[clojure.java.io :as io])
-
-; pass malli-form itself ? closing over schemas?
-(defn malli-form [schemas schema]
-  (case (first schema)
-    :s/animation
-    [:map {:closed true}
-     [:animation/frames :some]
-     [:animation/frame-duration pos?]
-     [:animation/looping? :boolean]]
-
-    :s/boolean
-    :boolean
-
-    :s/enum
-    (apply vector :enum (rest schema))
-
-    :s/image
-    [:map {:closed true}
-     [:image/file :string]
-     [:image/bounds {:optional true} [:vector {:size 4} nat-int?]]]
-
-    :s/map
-    (let [ks (second schema)] 
-      (apply vector :map {:closed true}
-             (for [k ks
-                   :let [k? (keyword? k)
-                         schema-props (if k? nil (k 1))
-                         k (if k? k (k 0))]]
-               (do
-                 (assert (keyword? k))
-                 (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
-                 [k schema-props (malli-form schemas (get schemas k))]))))
-
-    :s/number
-    (case (second schema)
-      :int     int?
-      :nat-int nat-int?
-      :any     number?
-      :pos     pos?
-      :pos-int pos-int?)
-
-    :s/one-to-many
-    [:set [:qualified-keyword {:namespace (keyword (name (second schema)))}]]
-
-    :s/one-to-one
-    [:qualified-keyword {:namespace (keyword (name (second schema)))}]
-
-    :s/qualified-keyword
-    (apply vector :qualified-keyword (rest schema))
-
-    :s/some
-    :some
-
-    :s/sound
-    :string
-
-    :s/string
-    :string
-
-    :s/val-max
-    val-max-schema
-    ))
-
-; pass malli-schema instead of schemas too?
-; but onlyused for validate? schemas better as vars?? 
-; otherwise malli-form:
-; map-keys
-; optional?
-(defn malli-schema [schemas k]
-  (m/schema (malli-form schemas (get schemas k))))
-
-(require '[malli.error :as me])
-
-(defn validate-hum [schema value]
-  (when-not (m/validate schema value)
-    (throw (ex-info (str (me/humanize (m/explain schema value)))
-                    {:value value
-                     :schema (m/form schema)}))))
-
 (defn touched-tiles*
   "x is leftmost point and y bottom most point in the rectangle."
   [{:keys [x y width height]}]
@@ -703,8 +886,6 @@
   (not (raycaster-blocked? raycaster
                            (:entity/position source)
                            (:entity/position target))))
-
-(def ^:private float-rounding-error (double 0.000001))
 
 (defn nearly-equal?
   ([x y]
@@ -1044,14 +1225,6 @@
                         %)
                      (vals m)))))
 
-(defn create-db [schemas properties]
-  (assert (or (empty? properties)
-              (apply distinct? (map :property/id properties))))
-  (doseq [property properties
-          :let [k (keyword "properties" (namespace (:property/id property)))]]
-    (validate-hum (malli-schema schemas k) property))
-  (zipmap (map :property/id properties) properties))
-
 (require '[clojure.pprint :as pprint])
 
 (defn save! [db file]
@@ -1350,8 +1523,6 @@
        (keep #(get-in grid %))
        (mapcat (comp :entities deref))))
 
-(import '(java.util Random))
-
 (defn- sshuffle
   "Return a random permutation of coll"
   [coll random]
@@ -1433,47 +1604,6 @@
             ; TODO here min-cells check ?
             (finished grid (last posi-seq) cell-cnt)))))))
 
-(def k->adj-num
-  {:wide
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       (case (int (* 3 (.nextFloat ^Random random)))
-         0 1
-         2)
-       (case (int (* 4 (.nextFloat ^Random random)))
-         0 1
-         1 2
-         2 3
-         3 4
-         1)))
-
-   :thin
-   ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       1
-       (case (int (* 7 (.nextFloat ^Random random)))
-         0 0
-         1 2
-         1)))
-
-   :default
-   ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       (case (int (* 4 (.nextFloat ^Random random)))
-         0 1
-         1 1
-         2 1
-         3 2
-         1)
-       (case (int (* 4 (.nextFloat ^Random random)))
-         0 0
-         1 1
-         2 1
-         3 2
-         1)))})
-
 (defn create-caves [random min-cells max-cells adjnum-type]
   (generate-caves random min-cells max-cells (k->adj-num adjnum-type)))
 
@@ -1486,8 +1616,6 @@
     (for [x (range start-x (+ start-x modules-width))
           y (range start-y (+ start-y modules-height))]
       [x y])))
-
-(def ^:private transition-idxvalues [2 8 1 4])
 
 (defn- transition-idx-value [position position->transition?]
   (->> position
@@ -1836,19 +1964,6 @@
     {:tiled-map tiled-map
      :start-position start-position}))
 
-(def slots
-  #{:inventory.slot/bag
-    :inventory.slot/weapon
-    :inventory.slot/shield
-    :inventory.slot/helm
-    :inventory.slot/chest
-    :inventory.slot/leg
-    :inventory.slot/glove
-    :inventory.slot/boot
-    :inventory.slot/cloak
-    :inventory.slot/necklace
-    :inventory.slot/rings})
-
 (defn- known-slot? [slot]
   (slots slot))
 
@@ -1897,8 +2012,6 @@
   (case faction
     :evil :good
     :good :evil))
-
-(def *elapsed-time* (atom nil))
 
 (defn timer-stopped? [{:keys [stop-time]}]
   (>= @*elapsed-time* stop-time))
@@ -2586,14 +2699,6 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
-(def *id-counter* (atom nil))
-
-(def *entity-ids* (atom nil))
-
-(def *grid* (atom nil))
-
-(def *content-grid* (atom nil))
-
 (defn register-eid!
   [eid]
   (assert (and (not (contains? @eid :entity/id))))
@@ -2670,16 +2775,6 @@
       (let [[x y] (:position cell)]
         (aset arr x y (boolean (blocks-vision? cell)))))
     [arr width height]))
-
-(def ^:private controls-info
-  (str/join "\n"
-            ["[W][A][S][D] - Move"
-             "[ESCAPE] - Close windows"
-             "[I] - Inventory window"
-             "[E] - Entity Info window"
-             "[-]/[=] - Zoom"
-             "[P]/[SPACE] - Unpause"
-             "Leftmouse click - use skill/drop item on cursor"]))
 
 (defn- button?
   [actor]
@@ -2923,56 +3018,6 @@
 
     v))
 
-(require '[reduce-fsm :as fsm])
-
-(def ^:private fsms
-  {:npc (fsm/fsm-inc
-          [[:npc-sleeping
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :alert -> :npc-idle]
-           [:npc-idle
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :start-action -> :active-skill
-            :movement-direction -> :npc-moving]
-           [:npc-moving
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :timer-finished -> :npc-idle]
-           [:active-skill
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :action-done -> :npc-idle]
-           [:stunned
-            :kill -> :npc-dead
-            :effect-wears-off -> :npc-idle]
-           [:npc-dead]])
-   :player (fsm/fsm-inc
-            [[:player-idle
-              :kill -> :player-dead
-              :stun -> :stunned
-              :start-action -> :active-skill
-              :pickup-item -> :player-item-on-cursor
-              :movement-input -> :player-moving]
-             [:player-moving
-              :kill -> :player-dead
-              :stun -> :stunned
-              :no-movement-input -> :player-idle]
-             [:active-skill
-              :kill -> :player-dead
-              :stun -> :stunned
-              :action-done -> :player-idle]
-             [:stunned
-              :kill -> :player-dead
-              :effect-wears-off -> :player-idle]
-             [:player-item-on-cursor
-              :kill -> :player-dead
-              :stun -> :stunned
-              :drop-item -> :player-idle
-              :dropped-item -> :player-idle]
-             [:player-dead]])})
-
 (defn- create-fsm
   [fsm initial-state]
   (assoc ((case fsm
@@ -3026,12 +3071,6 @@
       nil)
 
     nil))
-
-(def minimum-size 0.39)
-(def z-orders [:z-order/on-ground
-               :z-order/ground
-               :z-order/flying
-               :z-order/effect])
 
 (defn- spawn-entity! [entity]
   (let [entity (reduce (fn [m [k v]]
@@ -3711,13 +3750,6 @@
     (add-actors! actors)
     (set-name! "moon.ui.windows")))
 
-(def show-potential-field-colors? (atom nil))
-(def show-cell-entities? (atom false))
-(def show-cell-occupied? (atom false))
-(def show-body-bounds? (atom false))
-
-(def factions-iterations {:good 15 :evil 5})
-
 (import '(com.badlogic.gdx.math Vector3))
 
 (defn get-camera [^Viewport viewport]
@@ -3760,8 +3792,6 @@
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
       (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
-(def show-tile-grid? (atom false))
-
 (defn draw-tile-grid
   [shape-drawer]
   (when @show-tile-grid?
@@ -3790,11 +3820,6 @@
                          (case (:movement cell)
                            :air (float-bits 1 1 0 0.5)
                            :none (float-bits 1 0 0 0.5))))))
-
-(def ^:private active-skill-radius
-  (let [tile-size 48
-        image-width 32]
-    (/ (/ image-width tile-size) 2)))
 
 (defn- effect-render
   [[k v] effect-ctx shape-drawer active-entities raycaster]
@@ -4015,28 +4040,12 @@
     :stunned
     (stunned-draw entity shape-drawer)))
 
-(def ^:private render-layers
-  [#{:entity/mouseover?
-     :stunned
-     :player-item-on-cursor}
-   #{:entity/clickable
-     :entity/animation
-     :entity/image
-     :entity/line-render}
-   #{:npc-sleeping
-     :entity/temp-modifier
-     :entity/string-effect}
-   #{:entity/stats
-     :active-skill}])
-
 (defn- draw-entity-rectangle!
   [shape-drawer entity color-float-bits]
   (let [{:keys [entity/position entity/width entity/height]} entity
         [x y] [(- (position 0) (/ width 2))
                (- (position 1) (/ height 2))]]
     (rectangle! shape-drawer x y width height color-float-bits)))
-
-(def render-z-order (apply hash-map (interleave z-orders (range))))
 
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor 
@@ -4076,8 +4085,6 @@
                           (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
        first))
 
-(def *raycaster* (atom nil))
-
 (defn- create-effect-ctx
   [eid]
   (let [entity @eid
@@ -4109,9 +4116,6 @@
      :y (- (float y) radius)
      :width  size
      :height size}))
-
-(def max-delta 0.04)
-(def max-speed (/ minimum-size max-delta))
 
 (defn animation-tick
   [v eid delta-time handle-txs!]
@@ -4689,13 +4693,6 @@
 
 (declare handle-txs!)
 
-(def skin (atom nil))
-(def stage (atom nil))
-(def textures (atom nil))
-(def active-entities (atom nil))
-(def sounds (atom nil))
-(def game-schemas (-> "schema.edn" io/resource slurp edn/read-string))
-(def game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string)))
 (def k->txs {
              :tx/swap 
              (fn [eid f & params]
@@ -4760,7 +4757,6 @@
 (defn set-cursor! [graphics cursor]
   (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
 
-(def *start-position* (atom nil))
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -5665,8 +5661,6 @@
 
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
-
-(def sounds (atom nil))
 
 (defn create-widget
   [schemas [schema-k :as schema] v skin editor rebuild-editor-window! property-k-order-index]
