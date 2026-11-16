@@ -5416,8 +5416,6 @@
        (keep get-user-object)
        first))
 
-(def editor-textures (atom nil))
-
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
                              :image-scale 2
@@ -5443,17 +5441,17 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-(defn- create-one-to-one-widget [[_ property-type] property-id skin editor]
+(defn- create-one-to-one-widget [[_ property-type] property-id editor]
   (let [table (table-create)]
     (pad! (defaults table) 5)
-    (letfn [(add-one-to-one-rows [table property-type property-id skin editor]
+    (letfn [(add-one-to-one-rows [table property-type property-id editor]
               (let [redo-rows (fn [id]
                                 (clear-children! table)
-                                (add-one-to-one-rows table property-type id skin editor)
+                                (add-one-to-one-rows table property-type id editor)
                                 (pack! (first-ascendant table Window)))]
                 (doseq [row (cond-> []
                               (not property-id)
-                              (conj [{:actor (doto (create-text-button "+" skin)
+                              (conj [{:actor (doto ((:editor/new-text-button editor) "+")
                                                (add-listener! (create-change-listener
                                                                 (fn [event _actor]
                                                                   (add-actor! @editor-stage
@@ -5465,21 +5463,22 @@
                                                                                 editor))))))}])
                               property-id
                               (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
-                                               (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
-                                                                                                                    (first (:animation/frames (:entity/animation property))))))
-                                                 (add-listener! (text-tooltip (binding [*print-level* 2]
-                                                                                (with-out-str
-                                                                                  (pprint/pprint property)))
-                                                                              skin))
+                                               (doto (texture-region-image ((:editor/get-texture-region editor) 
+                                                                            (or (:entity/image property)
+                                                                                (first (:animation/frames (:entity/animation property))))))
+                                                 (add-listener! ((:editor/text-tooltip editor) 
+                                                                 (binding [*print-level* 2]
+                                                                   (with-out-str
+                                                                     (pprint/pprint property)))))
                                                  (set-user-object! property-id)))}]
-                                    [{:actor (doto (create-text-button "-" skin)
+                                    [{:actor (doto ((:editor/new-text-button editor) "-")
                                                (add-listener! (create-change-listener
                                                                 (fn [event _actor]
                                                                   (redo-rows nil)))))}]))]
                   (doseq [cell row]
                     (add! table (:actor cell)))
                   (row! table))))]
-      (add-one-to-one-rows table property-type property-id skin editor))
+      (add-one-to-one-rows table property-type property-id editor))
     table))
 
 (defn- one-to-many-widget-value [widget]
@@ -5505,8 +5504,9 @@
                                                         editor))))))}]
              (for [property-id property-ids]
                (let [property ((:editor/get-property editor) property-id)]
-                 {:actor (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
-                                                                                  (first (:animation/frames (:entity/animation property))))))
+                 {:actor (doto (texture-region-image ((:editor/get-texture-region editor) 
+                                                      (or (:entity/image property)
+                                                          (first (:animation/frames (:entity/animation property))))))
                            (add-listener! (text-tooltip (binding [*print-level* 2]
                                                           (with-out-str
                                                             (pprint/pprint property)))
@@ -5732,10 +5732,9 @@
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
+(def editor-textures (atom nil))
 (def sounds (atom nil))
 
-; toDO make as map ? pass as configuration?
-; use symbols for keywords so we can have all behaviour there? idk . 
 (defn create-widget
   [schemas [schema-k :as schema] v skin editor]
   (case schema-k
@@ -5750,7 +5749,7 @@
                               editor)
     :s/number (create-number-widget schema v skin)
     :s/one-to-many (create-one-to-many-widget schema v skin editor)
-    :s/one-to-one (create-one-to-one-widget schema v skin editor)
+    :s/one-to-one (create-one-to-one-widget schema v editor)
     :s/sound (create-sound-widget (keys @sounds) v (fn [sound-name] (play-sound!* @sounds sound-name)) skin)
     :s/string (create-string-widget schema v skin)
     :s/val-max (create-val-max-widget schema v skin)
