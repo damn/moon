@@ -8,7 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def *raycaster* (atom nil))
 (def show-potential-field-colors? (atom nil))
 (def show-cell-entities? (atom false))
 (def show-cell-occupied? (atom false))
@@ -3924,13 +3923,13 @@
     nil))
 
 (defn active-skill-tick
-  [v eid _delta-time handle-txs! active-entities game-db]
+  [v eid _delta-time handle-txs! line-of-sight? applicable-effect-txs]
   (let [{:keys [skill effect-ctx counter]} v
         source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         effect-ctx (if (and target
                             (not (:entity/destroyed? @target))
-                            (line-of-sight? @*raycaster* @source @target))
+                            (line-of-sight? @source @target))
                      effect-ctx
                      (dissoc effect-ctx :effect/target))]
     (cond
@@ -3939,11 +3938,7 @@
       (handle-txs! [[:tx/event eid :action-done]])
 
       (timer-stopped? counter)
-      (do (handle-txs! (applicable-effect-txs effect-ctx 
-                                              (:skill/effects skill)
-                                              active-entities
-                                              @*raycaster*
-                                              game-db))
+      (do (handle-txs! (applicable-effect-txs effect-ctx (:skill/effects skill)))
           (handle-txs! [[:tx/event eid :action-done]])
           nil))))
 
@@ -3973,18 +3968,17 @@
         (handle-txs! [[:tx/event eid :alert]])))))
 
 (defn npc-idle-tick
-  [_v eid _delta-time handle-txs!]
-  (let [raycaster @*raycaster*
-        entity @eid
+  [_v eid _delta-time handle-txs! line-of-sight? raycaster-blocked?]
+  (let [entity @eid
         target (nearest-enemy @*grid* entity)
         target (when (and target
-                          (line-of-sight? raycaster entity @target))
+                          (line-of-sight? entity @target))
                  target)
         effect-ctx {:effect/source eid
                     :effect/target target
                     :effect/target-direction (when target
                                                (direction entity @target))}]
-    (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) entity effect-ctx)]
+    (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx)]
       (handle-txs! [[:tx/event eid :start-action [skill effect-ctx]]])
       (handle-txs! [[:tx/event eid :movement-direction (or (find-direction @*grid* eid)
                                                            [0 0])]]))))
@@ -4363,6 +4357,7 @@
         skin (atom nil)
         textures (atom nil)
         viewport (atom nil)
+        raycaster (atom nil)
         item-place-position* (fn [position click-distance]
                                (item-place-position @viewport Gdx/input position click-distance))
         set-item! (fn [cell item]
@@ -4487,10 +4482,17 @@
                            (temp-modifier-tick v eid delta-time handle-txs!)
 
                            :entity/projectile-collision
-                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @*raycaster* game-db)
+                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @raycaster game-db)
 
                            :active-skill
-                           (active-skill-tick v eid delta-time handle-txs! active-entities game-db)
+                           (active-skill-tick v eid delta-time handle-txs!
+                                              (partial line-of-sight? @raycaster)
+                                              (fn [effect-ctx effects]
+                                                (applicable-effect-txs effect-ctx
+                                                                       effects
+                                                                       active-entities
+                                                                       @raycaster
+                                                                       game-db)))
 
                            :entity/delete-after-duration
                            (delete-after-duration-tick v eid delta-time handle-txs!)
@@ -4505,7 +4507,9 @@
                            (npc-sleeping-tick v eid delta-time handle-txs!)
 
                            :npc-idle
-                           (npc-idle-tick v eid delta-time handle-txs!)
+                           (npc-idle-tick v eid delta-time handle-txs!
+                                          (partial line-of-sight? @raycaster)
+                                          (partial raycaster-blocked? @raycaster))
 
                            :entity/movement
                            (movement-tick v eid delta-time handle-txs!)
@@ -4626,7 +4630,7 @@
                                              @unit-scale 
                                              (let [[x y] (ui-mouse-position @stage Gdx/input)]
                                                (mouseover-actor @stage x y))
-                                             @*raycaster*
+                                             @raycaster
                                              active-entities
                                              @player-eid
                                              @viewport)
@@ -4637,7 +4641,7 @@
                                             @batch
                                             (get-camera @viewport)
                                             (tile-color-setter*
-                                              {:ray-blocked? (partial raycaster-blocked? @*raycaster*)
+                                              {:ray-blocked? (partial raycaster-blocked? @raycaster)
                                                :explored-tile-corners explored-tile-corners
                                                :light-position (let [pos (.position (get-camera @viewport))]
                                                                  [(.x pos) (.y pos) (.z pos)])
@@ -4668,7 +4672,7 @@
                                                    (->> hits
                                                         (sort-by #((:entity/z-order @%) render-z-order) <)
                                                         reverse
-                                                        (filter #(line-of-sight? @*raycaster* player @%))
+                                                        (filter #(line-of-sight? @raycaster player @%))
                                                         first)))]
                                    (when old-mouseover-eid
                                      (swap! old-mouseover-eid dissoc :entity/mouseover?))
@@ -4720,7 +4724,7 @@
            (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
                                                              (range height)))
                                                (range width)))
-           (reset! *raycaster* (create-raycaster grid)))
+           (reset! raycaster (create-raycaster grid)))
          (reset! *elapsed-time* 0))
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build game-schemas game-db :creatures/vampire)
