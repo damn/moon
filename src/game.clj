@@ -5639,8 +5639,8 @@
       (doto (add! table (doto (create-text-button "Add component" skin)
                           (add-listener! (create-change-listener
                                            (fn [event actor]
-                                             (add-actor! @editor-stage
-                                                         (add-component-window schemas schema table build-widget widget-value skin editor rebuild-editor-window!)))))))
+                                             ((:editor/add-actor! editor)
+                                              (add-component-window schemas schema table build-widget widget-value skin editor rebuild-editor-window!)))))))
         (colspan! colspan))
       (row! table)
       (add-horiz-sep! table colspan))
@@ -5889,7 +5889,7 @@
                                                                           property-type
                                                                           (fn [_actor id]
                                                                             (add-actor! @editor-stage
-                                                                                        (property-editor-window schemas ((:editor/get-property editor) id) skin editor)))
+                                                                                        (property-editor-window schemas ((:editor/get-property editor) id) @skin editor)))
                                                                           editor)))))))
                           (row! window))
                         (pack! window)
