@@ -2746,14 +2746,14 @@
 
 (defn pixmap 
   ([file-handle]
-   (Pixmap. file-handle))
+   (Pixmap. ^FileHandle file-handle))
   ([width height pixmap-format]
-   (Pixmap. width height pixmap-format)))
+   (Pixmap. (int width) (int height) ^Pixmap$Format pixmap-format)))
 
 (defn- white-pixel-texture []
   (let [pixmap (doto (pixmap 1 1 rgba8888)
-                 (.setColor 1 1 1 1)
-                 (.drawPixel 0 0))
+                 (Pixmap/.setColor 1 1 1 1)
+                 (Pixmap/.drawPixel 0 0))
         texture (pixmap->texture! pixmap)]
     (dispose! pixmap)
     texture))
@@ -3474,7 +3474,7 @@
     s))
 
 (defn new-cursor [graphics pixmap hotspot-x hotspot-y]
-  (.newCursor graphics pixmap hotspot-x hotspot-y))
+  (com.badlogic.gdx.Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
 
 (import '(com.badlogic.gdx.utils.viewport FitViewport))
 
@@ -4310,9 +4310,12 @@
 
     nil))
 
+(defn defaults [^Table table]
+  (.defaults table)
+
 (defn create-action-bar []
-  (let [table (doto (table-create)
-                (#(pad! (.defaults ^Table %) 2)))]
+  (let [table (table-create)]
+    (pad! (defaults table) 2)
     (doto (add! table (doto (HorizontalGroup.)
                         (.space (float 2))
                         (.pad 2) ; horizontal group pad not 'pad!' from cell
@@ -4389,7 +4392,7 @@
   (reset! active-entities (active-entities* @*content-grid* @player-eid)))
 
 (defn set-camera-to-player! [player-eid]
-  (let [camera (get-camera @*viewport*)
+  (let [^OrthographicCamera camera (get-camera @*viewport*)
         pos (.position camera)
         [x y] (:entity/position @player-eid)]
     (set! (.x pos) x)
@@ -5253,8 +5256,8 @@
   (scaled-image-button (get-texture-region textures image) 2))
 
 (defn create-animation-widget [animation textures]
-  (let [table (doto (table-create)
-                (#(pad! (.defaults ^Table %) 1)))]
+  (let [table (table-create)]
+    (pad! (defaults table) 1)
     (doseq [image (:animation/frames animation)]
       (add! table (scaled-image-button
                     (get-texture-region textures image)
@@ -5265,7 +5268,6 @@
 
 (defn- boolean-widget-value [widget]
   (.isChecked ^CheckBox widget))
-
 
 (defn- create-boolean-widget [checked? skin]
   (doto (CheckBox. "" skin)
@@ -5330,8 +5332,8 @@
   (.firstAscendant actor class))
 
 (defn- list-sounds-table [pad rows]
-  (let [^Table table (table-create)]
-    (pad! (.defaults table) pad)
+  (let [table (table-create)]
+    (pad! (defaults table) pad)
     (doseq [columns rows]
       (doseq [actor columns]
         (add! table actor))
@@ -5351,8 +5353,8 @@
 (def editor-stage (atom nil))
 
 (defn- create-sound-widget [sound-names sound-name play-sound! skin]
-  (let [table (doto (table-create)
-                (#(pad! (.defaults %) 5)))]
+  (let [table (table-create)]
+    (pad! (defaults table) 5)
     (letfn [(play-sound-button [sound-name]
               (doto (create-text-button "play!" skin)
                 (add-listener! (create-change-listener
@@ -5478,8 +5480,8 @@
       (row! table))))
 
 (defn- create-one-to-one-widget [[_ property-type] property-id skin editor]
-  (let [table (doto (table-create)
-                (#(pad! (.defaults ^Table %) 5)))]
+  (let [table (table-create)]
+    (pad! (defaults table) 5)
     (add-one-to-one-rows table property-type property-id skin editor)
     table))
 
@@ -5523,9 +5525,8 @@
       (row! table))))
 
 (defn- create-one-to-many-widget [[_ property-type] property-ids skin editor]
-  ; TODO often this pattern remove the lambda
-  (let [table (doto (table-create)
-                (#(pad! (.defaults ^Table %) 5)))]
+  (let [table (table-create)]
+    (pad! (defaults table) 5)
     (add-one-to-many-rows table property-type property-ids skin editor)
     table))
 
@@ -5580,8 +5581,8 @@
            schemas
            skin
            editor]}]
-  (let [row-table (doto (table-create)
-                    (#(pad! (.defaults ^Table %) 2)))]
+  (let [row-table (table-create)]
+    (pad! (defaults table) 2)
     (doto (add! row-table (when display-remove-component-button?
                             (doto (create-text-button "-" skin)
                               (add-listener! (create-change-listener
@@ -5625,7 +5626,7 @@
   (let [window (create-window "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (malli-form schemas schema))))]
-    (pad! (.defaults window) 5)
+    (pad! (defaults window) 5)
     (add! (get-title-table window)
           (doto (create-text-button "X" skin)
             (add-listener! (create-change-listener
@@ -5668,9 +5669,9 @@
            skin
            editor]}]
   (let [table (doto (table-create)
-                (#(pad! (.defaults ^Table %) 5))
                 (set-name! "moon.db.schema.map.ui.widget"))
         colspan 3]
+    (pad! (defaults table) 5)
     (when opt?
       (doto (add! table (doto (create-text-button "Add component" skin)
                           (add-listener! (create-change-listener
@@ -5762,8 +5763,8 @@
   (.center ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
 
 (defn- property-editor-table [widget on-save on-delete skin]
-  (let [table (doto (table-create)
-                (#(pad! (.defaults ^Table %) 5)))]
+  (let [table (table-create)]
+    (pad! (defaults table) 5)
     (doto (add! table widget)
       (colspan! 2))
     (row! table)
@@ -5815,9 +5816,9 @@
                       (let [new-db (assoc db id property)]
                         (save! new-db properties-file)
                         new-db))))
-        ^Table table (property-editor-table widget on-save on-delete skin)
+        table (property-editor-table widget on-save on-delete skin)
         window (create-window "[SKY]Property[]" skin)]
-    (pad! (.defaults window) 5)
+    (pad! (defaults window) 5)
     (let [c (add! window (scroll-pane table skin))]
       (width! c (+ (get-width table) 50))
       (height! c (min (- scroll-pane-height 50)
