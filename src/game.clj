@@ -3311,16 +3311,6 @@
   {:tiled-map (.load (TmxMapLoader.) "maps/vampire.tmx")
    :start-position [32 71]})
 
-(defn create-level! [db* textures* level-fn]
-  (let [{level-tiled-map :tiled-map
-         level-start :start-position}
-        (level-fn {:level/creature-properties (prepare-creature-tiles
-                                               (all-raw db* :properties/creatures)
-                                               #(get-texture-region textures* %))
-                   :textures textures*})]
-    {:tiled-map level-tiled-map
-     :start-position level-start}))
-
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -4609,6 +4599,15 @@
                                     @active-entities
                                     max-iterations))
                          (tick-entities! delta-time))))
+        create-level! (fn []
+                        (let [{level-tiled-map :tiled-map
+                               level-start :start-position}
+                              (level-fn {:level/creature-properties (prepare-creature-tiles
+                                                                      (all-raw game-db :properties/creatures)
+                                                                      #(get-texture-region @textures %))
+                                         :textures textures*})]
+                          {:tiled-map level-tiled-map
+                           :start-position level-start}))
         ]
     {
      :create!
@@ -4640,7 +4639,7 @@
        (reset! textures (create-textures files (:textures game-config)))
        (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
-                     start-position]} (create-level! game-db @textures level-fn)]
+                     start-position]} (create-level!)]
          (reset! tiled-map* tiled-map)
          (reset! *start-position* start-position)
          (reset! *id-counter* 0)
