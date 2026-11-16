@@ -5619,18 +5619,9 @@
     (pack! window)
     window))
 
-(def editor-stage (atom nil))
-(declare property-editor-window)
-(defn- rebuild-editor-window! [schemas skin editor]
-  (let [window (-> (get-root @editor-stage)
-                   (find-actor "moon.ui.clojure.editor-window"))
-        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-        property (map-widget-value schemas map-widget-table)]
-    (remove! window)
-    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-
 (defn- map-widget-table-create
   [{:keys [schemas
+           rebuild-editor-window!
            schema
            k->widget
            k->optional?
@@ -5669,9 +5660,10 @@
 
 (require '[clojure.set :as set])
 
-(defn- create-map-widget [schemas schema m build-widget widget-value skin editor]
+(defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window!]
   (map-widget-table-create
-   {:schemas schemas
+   {:rebuild-editor-window! rebuild-editor-window!
+    :schemas schemas
     :schema schema
     :build-widget build-widget
     :widget-value widget-value
@@ -5684,9 +5676,6 @@
     :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
     :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
-
-; TODO unify with other one ?
-; user object is fn which gets value or sth other idea we had
 
 (defn widget-value [schemas [schema-k] widget]
   (case schema-k
@@ -5709,6 +5698,15 @@
   (play! (safe-get sounds sound-name)))
 
 (def sounds (atom nil))
+(def editor-stage (atom nil))
+(declare property-editor-window)
+(defn- rebuild-editor-window! [schemas skin editor]
+  (let [window (-> (get-root @editor-stage)
+                   (find-actor "moon.ui.clojure.editor-window"))
+        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+        property (map-widget-value schemas map-widget-table)]
+    (remove! window)
+    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
 
 (defn create-widget
   [schemas [schema-k :as schema] v skin editor]
@@ -5721,7 +5719,8 @@
                               (fn [schema k v] (build-widget schemas schema k v skin editor))
                               (fn [schema widget] (widget-value schemas schema widget))
                               skin
-                              editor)
+                              editor
+                              rebuild-editor-window!)
     :s/number (create-number-widget schema v skin)
     :s/one-to-many (create-one-to-many-widget schema v skin editor)
     :s/one-to-one (create-one-to-one-widget schema v editor)
