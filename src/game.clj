@@ -4504,14 +4504,14 @@
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 (defn game-listener 
-  [{:keys [pausing?
+  [{:keys [game-schemas
+           pausing?
            state->pause-game?
            level-fn
            controls
            world-unit-scale]
     :as game-config}]
-  (let [game-schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string))
+  (let [game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string))
         k->info-fn {:creature/level (fn [v]
                                       (str "Level: " v))
                     :entity/stats (fn [entity-stats]
@@ -5908,35 +5908,38 @@
                         :fps 60}))
 
 (defn game! []
-  (lwjgl3-application! (game-listener
-                         {
-                          :level-fn ;create-vampire-level
-                          ;create-uf-caves
-                          create-modules-level
-                          :pausing? true
-                          :state->pause-game? {:active-skill false
-                                               :stunned false
-                                               :player-moving false
-                                               :player-idle true
-                                               :player-dead true
-                                               :player-item-on-cursor true}
-                          :controls {:zoom-in Input$Keys/MINUS
-                                     :zoom-out Input$Keys/EQUALS
-                                     :unpause-once Input$Keys/P
-                                     :unpause-continously Input$Keys/SPACE
-                                     :close-windows-key Input$Keys/ESCAPE
-                                     :toggle-inventory Input$Keys/I
-                                     :toggle-entity-info Input$Keys/E}
-                          :cursors (-> "cursors.edn" io/resource slurp edn/read-string)
-                          :sounds (-> "sounds.edn" io/resource slurp edn/read-string)
-                          :skin "skin/uiskin.json"
-                          :stage {:width 1440 
-                                  :height 900}
-                          :textures {:folder "resources/"
-                                     :extensions #{"png" "bmp"}}
-                          :world-unit-scale (/ 48)
-                          })
-                       {:title "Moon"
-                        :width 1440 
-                        :height 900 
-                        :fps 60}))
+  (let [game-schemas (-> "schema.edn" io/resource slurp edn/read-string)
+        listener (game-listener
+                   {
+                    :game-schemas game-schemas
+                    :level-fn ;create-vampire-level
+                    ;create-uf-caves
+                    create-modules-level
+                    :pausing? true
+                    :state->pause-game? {:active-skill false
+                                         :stunned false
+                                         :player-moving false
+                                         :player-idle true
+                                         :player-dead true
+                                         :player-item-on-cursor true}
+                    :controls {:zoom-in Input$Keys/MINUS
+                               :zoom-out Input$Keys/EQUALS
+                               :unpause-once Input$Keys/P
+                               :unpause-continously Input$Keys/SPACE
+                               :close-windows-key Input$Keys/ESCAPE
+                               :toggle-inventory Input$Keys/I
+                               :toggle-entity-info Input$Keys/E}
+                    :cursors (-> "cursors.edn" io/resource slurp edn/read-string)
+                    :sounds (-> "sounds.edn" io/resource slurp edn/read-string)
+                    :skin "skin/uiskin.json"
+                    :stage {:width 1440 
+                            :height 900}
+                    :textures {:folder "resources/"
+                               :extensions #{"png" "bmp"}}
+                    :world-unit-scale (/ 48)
+                    })
+        config {:title "Moon"
+                :width 1440 
+                :height 900 
+                :fps 60}]
+    (lwjgl3-application! listener config)))
