@@ -5252,15 +5252,15 @@
      (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
                   (* scale (.getRegionHeight ^TextureRegion texture-region))))))
 
-(defn create-image-widget [image textures]
-  (scaled-image-button (get-texture-region textures image) 2))
+(defn create-image-widget [image get-texture-region]
+  (scaled-image-button (get-texture-region image) 2))
 
-(defn create-animation-widget [animation textures]
+(defn create-animation-widget [animation get-texture-region]
   (let [table (table-create)]
     (pad! (defaults table) 1)
     (doseq [image (:animation/frames animation)]
       (add! table (scaled-image-button
-                    (get-texture-region textures image)
+                    (get-texture-region image)
                     2)))
     (row! table)
     (pack! table)
@@ -5732,16 +5732,15 @@
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
-(def editor-textures (atom nil))
 (def sounds (atom nil))
 
 (defn create-widget
   [schemas [schema-k :as schema] v skin editor]
   (case schema-k
-    :s/animation (create-animation-widget v @editor-textures)
+    :s/animation (create-animation-widget v (:editor/get-texture-region editor))
     :s/boolean (create-boolean-widget v skin)
     :s/enum (create-enum-widget schema v skin)
-    :s/image (create-image-widget v @editor-textures)
+    :s/image (create-image-widget v (:editor/get-texture-region editor))
     :s/map (create-map-widget schemas schema v
                               (fn [schema k v] (build-widget schemas schema k v skin editor))
                               (fn [schema widget] (widget-value schemas schema widget))
@@ -5859,14 +5858,10 @@
     (pack! window)
     window))
 
-; FIXME erstmal java classes fixen...!
-; TODO state remove 'def 's and data literals -> pass capabilities only ... symbolic programming...
-; _language_ == data RAUS 
-; editor choose lvl (?) and start that game ? new window?
-
 (defn editor-application-listener 
   [editor-config]
   (let [batch (atom nil)
+        textures (atom nil)
         skin (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         editor {:editor/all-raw
@@ -5877,7 +5872,7 @@
                   (safe-get @editor-db property-id))
                 :editor/get-texture-region
                 (fn [image]
-                  (get-texture-region @editor-textures image))
+                  (get-texture-region @textures image))
                 :editor/property-type->overview-table-props
                 property-type->overview-table-props
                 :editor/text-tooltip
@@ -5897,13 +5892,12 @@
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
-
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (new-sound audio (internal files path))])))
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
-       (reset! editor-textures (create-textures files (:textures editor-config)))
+       (reset! textures (create-textures files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
        (add-actor! @editor-stage (main-window schemas @skin editor)))
      :dispose!
@@ -5911,7 +5905,7 @@
        (run! dispose! (vals @sounds))
        (dispose! @batch)
        (dispose! @skin)
-       (run! dispose! (vals @editor-textures)))
+       (run! dispose! (vals @textures)))
      :render!
      (fn [_]
        (clear-screen! 0 0 0 0)
