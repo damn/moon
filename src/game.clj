@@ -1275,8 +1275,11 @@
   (set-visible! [this visible?]
     (.setVisible this visible?)))
 
-(defn set-position! [actor x y]
-  (Actor/.setPosition actor (float x) (float y)))
+(defn set-position! 
+  ([actor x y]
+   (Actor/.setPosition actor (float x) (float y)))
+  ([actor x y align]
+   (Actor/.setPosition actor (float x) (float y) align)))
 
 (defn- build-inventory-window
   [{:keys [player-eid
@@ -2007,14 +2010,6 @@
 (defn get-root [^Stage stage]
   (.getRoot stage))
 
-(defn set-item! [skin stage textures cell item]
-  (-> (get-root stage)
-      (find-actor "moon.ui.windows.inventory")
-      (set-item!* cell
-                  {:texture-region (get-texture-region textures (:entity/image item))
-                   :tooltip-text (item-info-text item)}
-                  skin)))
-
 (import '(com.badlogic.gdx.scenes.scene2d.ui ButtonGroup))
 
 (defn add-skill!
@@ -2045,14 +2040,6 @@
     (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
-(defn set-skill! [k->info-fn skin stage textures skill]
-  (-> (get-root stage)
-      (find-actor "moon.ui.action-bar")
-      (add-skill! {:skill-id (:property/id skill)
-                   :texture-region (get-texture-region textures (:entity/image skill))
-                   :tooltip-text (info-text k->info-fn skill)}
-                  skin)))
-
 (defn remove-item!* [inventory-window cell]
   (let [cell-widget (inv-get-cell inventory-window cell)
         image-widget (find-actor cell-widget "image-widget")]
@@ -2067,17 +2054,6 @@
   (-> (get-root stage)
       (find-actor "moon.ui.windows.inventory")
       (remove-item!* cell)))
-
-(defn sync-player-ui! [k->info-fn skin stage textures eid]
-  (doseq [skill (vals (:entity/skills @eid))]
-    (set-skill! k->info-fn skin stage textures skill))
-  (doseq [[slot grid] (:entity/inventory @eid)
-          x (range (count grid))
-          y (range (count (grid 0)))
-          :let [position [x y]
-                item (get-in grid position)]
-          :when item]
-    (set-item! skin stage textures [slot position] item)))
 
 (defn toggle-inventory-visible! [stage]
   (let [inventory (-> (get-root stage)
@@ -3294,7 +3270,7 @@
   (item-place-position @*viewport* Gdx/input position click-distance))
 (defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
-        _ (assert fsm)
+        _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
         old-state-k (:state fsm)
         new-fsm (fsm/fsm-event fsm event)
         new-state-k (:state new-fsm)]
@@ -3994,7 +3970,9 @@
   (let [{:keys [counter faction]} v]
     (when (timer-stopped? counter)
       (swap! eid assoc :entity/destroyed? true)
-      (doseq [friendly-eid (get-friendlies-for-alert eid faction)]
+      (doseq [friendly-eid (get-friendlies-for-alert eid faction)
+              ; TODO called on projectiles
+              :when (:entity/fsm @friendly-eid)]
         (handle-txs! (handle-fsm-event! friendly-eid :alert))))
     nil))
 
@@ -4711,6 +4689,13 @@
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
+        set-item! (fn [cell item]
+                    (-> (get-root @stage)
+                        (find-actor "moon.ui.windows.inventory")
+                        (set-item!* cell
+                                    {:texture-region (get-texture-region @textures (:entity/image item))
+                                     :tooltip-text (item-info-text item)}
+                                    @skin)))
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -4730,9 +4715,7 @@
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
-                                    :tx/set-item
-                                    (fn [cell item] 
-                                      (set-item! @skin @stage @textures cell item))
+                                    :tx/set-item set-item!
                                     :tx/remove-item
                                     (fn [cell] 
                                       (remove-item! @stage cell))
@@ -4749,6 +4732,23 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
+        set-skill! (fn [skill]
+                     (-> (get-root @stage)
+                         (find-actor "moon.ui.action-bar")
+                         (add-skill! {:skill-id (:property/id skill)
+                                      :texture-region (get-texture-region @textures (:entity/image skill))
+                                      :tooltip-text (info-text k->info-fn skill)}
+                                     @skin)))
+        sync-player-ui! (fn []
+                          (doseq [skill (vals (:entity/skills @@player-eid))]
+                            (set-skill! skill))
+                          (doseq [[slot grid] (:entity/inventory @@player-eid)
+                                  x (range (count grid))
+                                  y (range (count (grid 0)))
+                                  :let [position [x y]
+                                        item (get-in grid position)]
+                                  :when item]
+                            (set-item! [slot position] item)))
         ]
     {
      :create!
@@ -4866,7 +4866,7 @@
                                                :skin @skin}
                                               Gdx/input)]
          (add-actor! @stage actor))
-       (sync-player-ui! k->info-fn @skin @stage @textures @player-eid)
+       (sync-player-ui!)
        (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* @*start-position*))
        )
 
