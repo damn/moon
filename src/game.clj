@@ -3276,24 +3276,17 @@
                           :faction (:entity/faction source*)}
                          v)]]))
 
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-
-(def game-db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
-
-(defn build [db property-id]
-  (build-values schemas (safe-get db property-id) db))
-
-(defn animation-entity [position animation-k]
+(defn animation-entity [game-db position animation-k]
   (assert (keyword? animation-k))
   (let [{:keys [entity/animation]} (safe-get game-db animation-k)]
     (spawn-effect position
                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
 
-(defn spawn-effect* [v effect-ctx]
+(defn spawn-effect* [v effect-ctx game-db]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
     [[:tx/sound "bfxr_curse.wav"]
-     [:tx/spawn-entity (animation-entity position :audiovisuals/spawn)]
+     [:tx/spawn-entity (animation-entity game-db position :audiovisuals/spawn)]
      [:tx/spawn-entity (spawn-creature {:position position
                                         :creature-property v
                                         :components {:entity/fsm {:fsm :fsms/npc
@@ -3316,14 +3309,14 @@
                 (:entity-effects v)]])
             (affected-targets active-entities raycaster source*))))
 
-(defn convert-effect [_v effect-ctx]
+(defn convert-effect [_v effect-ctx game-db]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)]
     [[:tx/sound "bfxr_burrow.wav"]
-     [:tx/spawn-entity (animation-entity (:entity/position @target) :audiovisuals/convert)]
+     [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx]
+(defn target-entity-effect [v effect-ctx game-db]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
@@ -3339,9 +3332,9 @@
            :thick? true})]
        [:tx/apply-effects effect-ctx entity-effects]]
       [[:tx/sound "bfxr_fisthit.wav"]
-       [:tx/spawn-entity (animation-entity (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
+       [:tx/spawn-entity (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
 
-(defn damage-effect [v effect-ctx]
+(defn damage-effect [v effect-ctx game-db]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -3375,7 +3368,7 @@
          [:tx/swap target add-text-effect dmg-text 0.3 timer-create]
          [:tx/event target (if (zero? new-hp-val) :kill :alert)]
          [:tx/sound "bfxr_normalhit.wav"]
-         [:tx/spawn-entity (animation-entity (:entity/position target*) :audiovisuals/damage)]]))))
+         [:tx/spawn-entity (animation-entity game-db (:entity/position target*) :audiovisuals/damage)]]))))
 
 (defn kill-effect [_v effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :kill]])
@@ -3416,25 +3409,25 @@
                 (entity-state-enter! eid new-state-obj))))))
 
 (defn- handle-effect!
-  [[k v] effect-ctx active-entities raycaster]
+  [[k v] effect-ctx active-entities raycaster game-db]
   (case k
     :effects/projectile
     (projectile-effect v effect-ctx)
 
     :effects/spawn
-    (spawn-effect* v effect-ctx)
+    (spawn-effect* v effect-ctx game-db)
 
     :effects/target-all
     (target-all-effect v effect-ctx active-entities raycaster)
 
     :effects/target-entity
-    (target-entity-effect v effect-ctx)
+    (target-entity-effect v effect-ctx game-db)
 
     :effects.target/convert
-    (convert-effect v effect-ctx)
+    (convert-effect v effect-ctx game-db)
 
     :effects.target/damage
-    (damage-effect v effect-ctx)
+    (damage-effect v effect-ctx game-db)
 
     :effects.target/kill
     (kill-effect v effect-ctx)
@@ -3518,17 +3511,6 @@
     {:tiled-map level-tiled-map
      :start-position level-start}))
 
-
-
-
-
-
-
-
-
-
-
-
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -3542,6 +3524,9 @@
       [[x y] value])))
 
 (def *start-position* (atom nil))
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
+(defn build [db property-id]
+  (build-values schemas (safe-get db property-id) db))
 
 (defn spawn-map-creatures [db* tiled-map]
   (mapcat (fn [[position creature-id]] 
@@ -4459,7 +4444,7 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn destroy-entities! [handle-txs!]
+(defn destroy-entities! [handle-txs! game-db]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @*entity-ids*))]
     (unregister-eid! eid)
     (doseq [[k v] @eid]
@@ -4470,7 +4455,7 @@
             (case v
               :audiovisuals/creature-die "bfxr_defaultmonsterdeath.wav"
               :audiovisuals/hit-wall "bfxr_projectile_wallhit.wav")]
-           [:tx/spawn-entity (animation-entity (:entity/position @eid) v)]]
+           [:tx/spawn-entity (animation-entity game-db (:entity/position @eid) v)]]
 
           nil)))))
 
@@ -4670,6 +4655,7 @@
 (def sounds (atom nil))
 (import '(com.badlogic.gdx.audio Sound))
 
+(def game-db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
 (def k->txs {
              :tx/swap 
              (fn [eid f & params]
@@ -4717,6 +4703,7 @@
                                               ; those 2 should be 1 param?
                                               @active-entities
                                               @*raycaster*
+                                              game-db
                                               ))))
              })
 
@@ -4960,7 +4947,7 @@
                    paused? 
                    potential-field-cache
                    graphics)
-       (destroy-entities! handle-txs!)
+       (destroy-entities! handle-txs! game-db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (get-camera @*viewport*)]
                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
@@ -5668,6 +5655,11 @@
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
+; TODO from here declare/def editor state
+; * schemas too ! 
+; widget-value ( KEYWORDS )
+; sounds
+; (create-widget also k->v match)
 (def sounds (atom nil))
 
 (defn create-widget
