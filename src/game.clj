@@ -8,11 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def show-potential-field-colors? (atom nil))
-(def show-cell-entities? (atom false))
-(def show-cell-occupied? (atom false))
-(def show-body-bounds? (atom false))
-(def show-tile-grid? (atom false))
 (def *elapsed-time* (atom nil))
 (def *id-counter* (atom nil))
 (def *entity-ids* (atom nil))
@@ -3489,7 +3484,7 @@
   (.getCamera viewport))
 
 (defn draw-cell-debug
-  [shape-drawer viewport]
+  [shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors?]
   (let [^OrthographicCamera camera (get-camera viewport)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
@@ -3503,11 +3498,11 @@
                              y (range (int bottom-y) (+ 2 (int top-y)))]
                          [x y])]
     (doseq [[[x y] cell*] (cells-at tile-positions)]
-      (when (and @show-cell-entities? (seq (:entities cell*)))
+      (when (and show-cell-entities? (seq (:entities cell*)))
         (filled-rectangle! shape-drawer x y 1 1 (float-bits 1 0 0 0.6)))
-      (when (and @show-cell-occupied? (seq (:occupied cell*)))
+      (when (and show-cell-occupied? (seq (:occupied cell*)))
         (filled-rectangle! shape-drawer x y 1 1 (float-bits 0 0 1 0.6)))
-      (when-let [faction @show-potential-field-colors?]
+      (when-let [faction show-potential-field-colors?]
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
@@ -3526,8 +3521,8 @@
       (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
 (defn draw-tile-grid
-  [shape-drawer viewport]
-  (when @show-tile-grid?
+  [shape-drawer viewport show-tile-grid?]
+  (when show-tile-grid?
     (let [^OrthographicCamera camera (get-camera viewport)
           plane-points (mapv (fn [^Vector3 v3]
                                [(.x v3) (.y v3) (.z v3)])
@@ -3782,7 +3777,7 @@
 
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor 
-   raycaster active-entities player-eid viewport]
+   raycaster active-entities player-eid viewport show-body-bounds?]
   (let [active-entities @active-entities
         entities (map deref active-entities)
         player @player-eid
@@ -3794,7 +3789,7 @@
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]
-      (when @show-body-bounds?
+      (when show-body-bounds?
         (draw-entity-rectangle! shape-drawer
                                 entity
                                 (if (:entity/collides? entity)
@@ -4358,6 +4353,11 @@
         textures (atom nil)
         viewport (atom nil)
         raycaster (atom nil)
+        show-potential-field-colors? (atom nil)
+        show-cell-entities? (atom false)
+        show-cell-occupied? (atom false)
+        show-body-bounds? (atom false)
+        show-tile-grid? (atom false)
         item-place-position* (fn [position click-distance]
                                (item-place-position @viewport Gdx/input position click-distance))
         set-item! (fn [cell item]
@@ -4621,8 +4621,11 @@
         batch-end! #(.end ^Batch @batch)
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
-                             (draw-tile-grid @shape-drawer @viewport)
-                             (draw-cell-debug @shape-drawer @viewport)
+                             (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
+                             (draw-cell-debug @shape-drawer @viewport
+                                              @show-cell-entities?
+                                              @show-cell-occupied?
+                                              @show-potential-field-colors?)
                              (draw-entities! @shape-drawer
                                              @batch 
                                              @default-font 
@@ -4633,7 +4636,8 @@
                                              @raycaster
                                              active-entities
                                              @player-eid
-                                             @viewport)
+                                             @viewport
+                                             @show-body-bounds?)
                              (highlight-mouseover-tile @shape-drawer Gdx/input @viewport)
                              (reset! unit-scale 1))
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
