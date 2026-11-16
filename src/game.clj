@@ -4046,36 +4046,6 @@
       (set-fill-parent! true)
       (set-name! "moon.ui.action-bar"))))
 
-(defn update-mouseover-eid! [player-eid mouseover-eid stage input]
-  (let [old-mouseover-eid @mouseover-eid
-        [x y] (ui-mouse-position stage Gdx/input)
-        new-eid (if (mouseover-actor stage x y)
-                  nil
-                  (let [player @player-eid
-                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (point->entities @*grid* (unproject @*viewport* [(get-x input) (get-y input)])))]
-                    (->> hits
-                         (sort-by #((:entity/z-order @%) render-z-order) <)
-                         reverse
-                         (filter #(line-of-sight? @*raycaster* player @%))
-                         first)))]
-    (when old-mouseover-eid
-      (swap! old-mouseover-eid dissoc :entity/mouseover?))
-    (when new-eid
-      (swap! new-eid assoc :entity/mouseover? true))
-    (reset! mouseover-eid new-eid)))
-
-(defn update-active-entities! [active-entities player-eid]
-  (reset! active-entities (active-entities* @*content-grid* @player-eid)))
-
-(defn set-camera-to-player! [player-eid]
-  (let [^OrthographicCamera camera (get-camera @*viewport*)
-        pos (.position camera)
-        [x y] (:entity/position @player-eid)]
-    (set! (.x pos) x)
-    (set! (.y pos) y)
-    (.update camera)))
-
 (defn current-mouseover-actor [stage]
   (let [[x y] (ui-mouse-position stage Gdx/input)]
     (mouseover-actor stage x y)))
@@ -4609,6 +4579,109 @@
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
+        mouse-interaction! (fn []
+                             (let [interaction-state (create-interaction-state Gdx/input)]
+                               (set-cursor! Gdx/graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
+                               (handle-player-input! @player-eid
+                                                     handle-txs!
+                                                     interaction-state
+                                                     @stage 
+                                                     #(key-pressed? Gdx/input (int %))
+                                                     #(.isButtonJustPressed Gdx/input (int %)))))
+        update-paused-state! (fn []
+                               (reset! paused?
+                                       (or #_error
+                                           (and pausing?
+                                                (state->pause-game? (:state (:entity/fsm @@player-eid)))
+                                                (not (or (key-just-pressed? Gdx/input (int (:unpause-once controls)))
+                                                         (key-pressed? Gdx/input (int (:unpause-continously controls)))))))))
+        remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db))
+        key-pressed-checks! (fn []
+                              (doseq [[k f] {(:zoom-in controls) (fn []
+                                                                   (let [^OrthographicCamera camera (get-camera @*viewport*)]
+                                                                     (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
+                                                                     (.update camera)))
+                                             (:zoom-out controls) (fn []
+                                                                    (let [^OrthographicCamera camera (get-camera @*viewport*)]
+                                                                      (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
+                                                                      (.update camera)))}]
+                                (when (key-pressed? Gdx/input (int k))
+                                  (f))))
+        key-just-pressed-checks! (fn []
+                                   (doseq [[k f] {(:close-windows-key controls) (fn []
+                                                                                  (close-windows! @stage))
+                                                  (:toggle-inventory controls) (fn []
+                                                                                 (toggle-inventory-visible! @stage))
+                                                  (:toggle-entity-info controls) (fn []
+                                                                                   (toggle-entity-info! @stage))}]
+                                     (when (key-just-pressed? Gdx/input (int k))
+                                       (f))))
+        update-stage! #(act! @stage)
+        draw-stage! #(draw! @stage)
+        resize-stage! (fn [width height]
+                        (resize! (get-viewport @stage) width height true))
+        resize-viewport! (fn [width height]
+                           (resize! @*viewport* width height false))
+        batch-end! #(.end ^Batch @batch)
+        draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
+                             (reset! unit-scale world-unit-scale)
+                             (draw-tile-grid @shape-drawer)
+                             (draw-cell-debug @shape-drawer)
+                             (draw-entities! @shape-drawer
+                                             @batch 
+                                             @default-font 
+                                             @textures 
+                                             @unit-scale 
+                                             (let [[x y] (ui-mouse-position @stage Gdx/input)]
+                                               (mouseover-actor @stage x y))
+                                             @*raycaster*
+                                             active-entities
+                                             @player-eid)
+                             (highlight-mouseover-tile @shape-drawer Gdx/input)
+                             (reset! unit-scale 1))
+        set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
+        render-tiled-map! #(draw-tiled-map! @tiled-map*
+                                            @batch
+                                            (get-camera @*viewport*)
+                                            (tile-color-setter*
+                                              {:ray-blocked? (partial raycaster-blocked? @*raycaster*)
+                                               :explored-tile-corners explored-tile-corners
+                                               :light-position (let [pos (.position (get-camera @*viewport*))]
+                                                                 [(.x pos) (.y pos) (.z pos)])
+                                               :see-all-tiles? false
+                                               :explored-tile-color (float-bits 0.5 0.5 0.5 1)
+                                               :visible-tile-color (float-bits 1 1 1 1)
+                                               :invisible-tile-color (float-bits 0 0 0 1)})
+                                            world-unit-scale)
+        batch-begin! #(.begin ^Batch @batch)
+        set-proj-matrix! #(set-projection-matrix! @batch (.combined (get-camera @*viewport*)))
+        set-camera-to-player! (fn []
+                                (let [^OrthographicCamera camera (get-camera @*viewport*)
+                                      pos (.position camera)
+                                      [x y] (:entity/position @@player-eid)]
+                                  (set! (.x pos) x)
+                                  (set! (.y pos) y)
+                                  (.update camera)))
+         update-active-entities! (fn []
+                                   (reset! active-entities (active-entities* @*content-grid* @@player-eid)))
+         update-mouseover-eid! (fn []
+                                 (let [old-mouseover-eid @mouseover-eid
+                                       [x y] (ui-mouse-position @stage Gdx/input)
+                                       new-eid (if (mouseover-actor @stage x y)
+                                                 nil
+                                                 (let [player @@player-eid
+                                                       hits (remove #(= (:entity/z-order @%) :z-order/effect)
+                                                                    (point->entities @*grid* (unproject @*viewport* [(get-x Gdx/input) (get-y Gdx/input)])))]
+                                                   (->> hits
+                                                        (sort-by #((:entity/z-order @%) render-z-order) <)
+                                                        reverse
+                                                        (filter #(line-of-sight? @*raycaster* player @%))
+                                                        first)))]
+                                   (when old-mouseover-eid
+                                     (swap! old-mouseover-eid dissoc :entity/mouseover?))
+                                   (when new-eid
+                                     (swap! new-eid assoc :entity/mouseover? true))
+                                   (reset! mouseover-eid new-eid)))
         ]
     {
      :create!
@@ -4722,83 +4795,37 @@
      :render!
      (fn [graphics]
        (clear-screen! 0 0 0 0)
-       (update-mouseover-eid! @player-eid mouseover-eid @stage Gdx/input)
-       (update-active-entities! active-entities @player-eid)
-       (set-camera-to-player! @player-eid)
-       (set-projection-matrix! @batch (.combined (get-camera @*viewport*)))
-       (.begin ^Batch @batch)
-       (draw-tiled-map! @tiled-map*
-                        @batch
-                        (get-camera @*viewport*)
-                        (tile-color-setter*
-                          {:ray-blocked? (partial raycaster-blocked? @*raycaster*)
-                           :explored-tile-corners explored-tile-corners
-                           :light-position (let [pos (.position (get-camera @*viewport*))]
-                                             [(.x pos) (.y pos) (.z pos)])
-                           :see-all-tiles? false
-                           :explored-tile-color (float-bits 0.5 0.5 0.5 1)
-                           :visible-tile-color (float-bits 1 1 1 1)
-                           :invisible-tile-color (float-bits 0 0 0 1)})
-                        world-unit-scale)
-       (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
-       (with-line-width @shape-drawer world-unit-scale
-         (reset! unit-scale world-unit-scale)
-         (draw-tile-grid @shape-drawer)
-         (draw-cell-debug @shape-drawer)
-         (draw-entities! @shape-drawer
-                         @batch 
-                         @default-font 
-                         @textures 
-                         @unit-scale 
-                         (let [[x y] (ui-mouse-position @stage Gdx/input)]
-                           (mouseover-actor @stage x y))
-                         @*raycaster*
-                         active-entities
-                         @player-eid)
-         (highlight-mouseover-tile @shape-drawer Gdx/input)
-         (reset! unit-scale 1))
-       (.end ^Batch @batch)
-       (let [interaction-state (create-interaction-state Gdx/input)]
-         (set-cursor! graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
-         (handle-player-input! @player-eid
-                               handle-txs!
-                               interaction-state
-                               @stage 
-                               #(key-pressed? Gdx/input (int %))
-                               #(.isButtonJustPressed Gdx/input (int %))))
-       (reset! paused?
-               (or #_error
-                   (and pausing?
-                        (state->pause-game? (:state (:entity/fsm @@player-eid)))
-                        (not (or (key-just-pressed? Gdx/input (int (:unpause-once controls)))
-                                 (key-pressed? Gdx/input (int (:unpause-continously controls))))))))
+
+       (update-mouseover-eid!)
+       (update-active-entities!)
+
+       (set-camera-to-player!)
+
+       (set-proj-matrix!)
+
+       (batch-begin!)
+       (render-tiled-map!)
+       (set-batch-color!)
+       (draw-world-layer!)
+       (batch-end!)
+
+       (mouse-interaction!)
+       (update-paused-state!)
+
        (tick-game! (get-delta-time graphics))
-       (destroy-entities! handle-txs! game-db)
-       (doseq [[k f] {(:zoom-in controls) (fn []
-                                            (let [^OrthographicCamera camera (get-camera @*viewport*)]
-                                              (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-                                              (.update camera)))
-                      (:zoom-out controls) (fn []
-                                             (let [^OrthographicCamera camera (get-camera @*viewport*)]
-                                               (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-                                               (.update camera)))}]
-         (when (key-pressed? Gdx/input (int k))
-           (f)))
-       (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                      (close-windows! @stage))
-                      (:toggle-inventory controls) (fn []
-                                                     (toggle-inventory-visible! @stage))
-                      (:toggle-entity-info controls) (fn []
-                                                       (toggle-entity-info! @stage))}]
-         (when (key-just-pressed? Gdx/input (int k))
-           (f)))
-       (act! @stage)
-       (draw! @stage))
+
+       (remove-destroyed-entities!)
+       (key-pressed-checks!)
+       (key-just-pressed-checks!)
+       (update-stage!)
+
+       (draw-stage!)
+       )
 
      :resize!
      (fn [width height]
-       (resize! (get-viewport @stage) width height true)
-       (resize! @*viewport* width height false))
+       (resize-stage! width height)
+       (resize-viewport! width height))
      }))
 
 (defn- text-button [skin label on-click!]
