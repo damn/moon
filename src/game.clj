@@ -5547,9 +5547,7 @@
 
 (defn- add-component-window 
   [schemas schema map-widget-table build-widget widget-value skin rebuild-editor-window!]
-  (let [window (create-window "Choose" skin)
-        remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
-                                   (map-keys (malli-form schemas schema))))]
+  (let [window (create-window "Choose" skin)]
     (pad! (defaults window) 5)
     (add! (get-title-table window)
           (doto (create-text-button "X" skin)
@@ -5557,7 +5555,8 @@
                              (fn [_event _actor]
                                (remove! window))))))
     (set-modal! window true)
-    (doseq [k remaining-ks]
+    (doseq [k (sort (remove (set (keys (widget-value schema map-widget-table)))
+                            (map-keys (malli-form schemas schema))))]
       (add! window (doto (create-text-button (name k) skin)
                      (add-listener! (create-change-listener
                                       (fn [event _actor]
