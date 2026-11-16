@@ -5840,7 +5840,7 @@
                                                      (assert (contains? property :property/id))
                                                      (assert (contains? db id))
                                                      (let [k (keyword "properties" (namespace (:property/id property)))]
-                                                       (validate-hum (malli-schema schemas k) property)
+                                                       (validate-hum (malli-schema schemas k) property))
                                                      (let [new-db (assoc db id property)]
                                                        (save! new-db properties-file)
                                                        new-db))))
