@@ -585,6 +585,7 @@
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 
+; pass malli-form itself ? closing over schemas?
 (defn malli-form [schemas schema]
   (case (first schema)
     :s/animation
@@ -649,6 +650,7 @@
 (require '[malli.error :as me])
 
 (defn validate-property [schemas property]
+  ; wtf
   (let [schema (m/schema (malli-form schemas (get schemas (keyword "properties" (namespace (:property/id property))))))]
     (when-not (m/validate schema property)
       (throw (ex-info (str (me/humanize (m/explain schema property)))
@@ -3523,17 +3525,15 @@
           :when value]
       [[x y] value])))
 
-(def *start-position* (atom nil))
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-(defn build [db property-id]
+(defn build [schemas db property-id]
   (build-values schemas (safe-get db property-id) db))
 
-(defn spawn-map-creatures [db* tiled-map]
+(defn spawn-map-creatures [schemas db tiled-map start-position]
   (mapcat (fn [[position creature-id]] 
-            (when (not= position @*start-position*)
+            (when (not= position start-position)
               [[:tx/spawn-entity 
                (spawn-creature {:position (mapv (partial + 0.5) position)
-                                :creature-property (build db* (keyword creature-id))
+                                :creature-property (build schemas db (keyword creature-id))
                                 :components {:entity/fsm {:fsm :fsms/npc
                                                           :initial-state :npc-sleeping}
                                              :entity/faction :evil}})]]))
@@ -4646,6 +4646,8 @@
 (defn sprite-batch! []
   (SpriteBatch.))
 
+(import '(com.badlogic.gdx.audio Sound))
+
 (declare handle-txs!)
 
 (def skin (atom nil))
@@ -4653,8 +4655,7 @@
 (def textures (atom nil))
 (def active-entities (atom nil))
 (def sounds (atom nil))
-(import '(com.badlogic.gdx.audio Sound))
-
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 (def game-db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
 (def k->txs {
              :tx/swap 
@@ -4739,6 +4740,7 @@
 (defn set-cursor! [graphics cursor]
   (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
 
+(def *start-position* (atom nil))
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -4805,7 +4807,7 @@
            (reset! *raycaster* (create-raycaster grid)))
          (reset! *elapsed-time* 0))
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
-                                                 :creature-property (build game-db :creatures/vampire)
+                                                 :creature-property (build schemas game-db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
                                                                            :initial-state :player-idle}
                                                               :entity/faction :good
@@ -4874,7 +4876,7 @@
                                               Gdx/input)]
          (add-actor! @stage actor))
        (sync-player-ui! @skin @stage @textures @player-eid)
-       (handle-txs! (spawn-map-creatures game-db @tiled-map*))
+       (handle-txs! (spawn-map-creatures schemas game-db @tiled-map* @*start-position*))
        )
 
      :dispose!
