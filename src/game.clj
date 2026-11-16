@@ -4311,7 +4311,7 @@
     nil))
 
 (defn defaults [^Table table]
-  (.defaults table)
+  (.defaults table))
 
 (defn create-action-bar []
   (let [table (table-create)]
