@@ -3416,7 +3416,7 @@
                 (entity-state-exit! eid old-state-obj item-place-position*)
                 (entity-state-enter! eid new-state-obj))))))
 
-(defn- handle-effect!
+(defn- effect-transactions
   [[k v] effect-ctx active-entities raycaster game-db]
   (case k
     :effects/projectile
@@ -4693,12 +4693,12 @@
                (show-message! @stage message))
              :tx/apply-effects
              (fn [effect-ctx effects]
-               (doseq [e (filter #(effect-applicable? % effect-ctx) effects)]
-                 (handle-txs! (handle-effect! e 
-                                              effect-ctx 
-                                              @active-entities
-                                              @*raycaster*
-                                              game-db))))
+               (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+                 (handle-txs! (effect-transactions effect
+                                                   effect-ctx 
+                                                   @active-entities
+                                                   @*raycaster*
+                                                   game-db))))
              })
 
 (defn handle-txs! [txs]
