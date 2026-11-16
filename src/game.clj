@@ -8,7 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def *viewport* (atom nil))
 (def *raycaster* (atom nil))
 (def show-potential-field-colors? (atom nil))
 (def show-cell-entities? (atom false))
@@ -3197,10 +3196,8 @@
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
 (import '(com.badlogic.gdx Gdx))
-(defn item-place-position* [position click-distance]
-  (item-place-position @*viewport* Gdx/input position click-distance))
 ; FIXME PLAYER ITEM ON CURSOR ENTER/EXIT MSUHDFN
-(defn- fsm-event-txs [eid event & [params]]
+(defn- fsm-event-txs [eid event item-place-position & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
         old-state-k (:state fsm)
@@ -3216,7 +3213,7 @@
         (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                  [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                  [:tx/swap eid dissoc old-state-k]]
-                (entity-state-exit! eid old-state-obj item-place-position*)
+                (entity-state-exit! eid old-state-obj item-place-position)
                 (entity-state-enter! eid new-state-obj))))))
 
 (defn- effect-transactions
@@ -3493,8 +3490,8 @@
   (.getCamera viewport))
 
 (defn draw-cell-debug
-  [shape-drawer]
-  (let [^OrthographicCamera camera (get-camera @*viewport*)
+  [shape-drawer viewport]
+  (let [^OrthographicCamera camera (get-camera viewport)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
                            (.planePoints (.frustum camera)))
@@ -3530,9 +3527,9 @@
       (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
 (defn draw-tile-grid
-  [shape-drawer]
+  [shape-drawer viewport]
   (when @show-tile-grid?
-    (let [^OrthographicCamera camera (get-camera @*viewport*)
+    (let [^OrthographicCamera camera (get-camera viewport)
           plane-points (mapv (fn [^Vector3 v3]
                                [(.x v3) (.y v3) (.z v3)])
                              (.planePoints (.frustum camera)))
@@ -3542,15 +3539,15 @@
       (draw-fn-grid shape-drawer
                     (int left-x)
                     (int bottom-y)
-                    (inc (int (get-world-width @*viewport*)))
-                    (+ 2 (int (get-world-height @*viewport*)))
+                    (inc (int (get-world-width viewport)))
+                    (+ 2 (int (get-world-height viewport)))
                     1
                     1
                     (float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
-  [shape-drawer input]
-  (let [[x y] (mapv int (unproject @*viewport* [(get-x input) (get-y input)]))
+  [shape-drawer input viewport]
+  (let [[x y] (mapv int (unproject viewport [(get-x input) (get-y input)]))
         cell (cell-at [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
       (rectangle! shape-drawer x y 1 1
@@ -3600,12 +3597,12 @@
                      :up? true})))))
 
 (defn player-item-on-cursor-draw
-  [v entity batch unit-scale mouseover-actor textures]
+  [v entity batch unit-scale mouseover-actor textures viewport]
   (let [{:keys [item]} v]
     (when-not mouseover-actor
       (draw-texture-region! batch unit-scale
                             (get-texture-region textures (:entity/image item))
-                            (item-place-position @*viewport*
+                            (item-place-position viewport
                                                  Gdx/input
                                                  (:entity/position entity)
                                                  (- (:entity/click-distance-tiles entity) 0.1))
@@ -3738,14 +3735,14 @@
 
 (defn- draw-component
   [shape-drawer batch default-font unit-scale mouseover-actor
-   textures player active-entities raycaster
+   textures player active-entities raycaster viewport
    entity k v]
   (case k
     :entity/clickable
     (clickable-draw v entity batch default-font unit-scale)
 
     :player-item-on-cursor
-    (player-item-on-cursor-draw v entity batch unit-scale mouseover-actor textures)
+    (player-item-on-cursor-draw v entity batch unit-scale mouseover-actor textures viewport)
 
     :entity/animation
     (animation-draw v entity batch unit-scale textures)
@@ -3786,7 +3783,7 @@
 
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor 
-   raycaster active-entities player-eid]
+   raycaster active-entities player-eid viewport]
   (let [active-entities @active-entities
         entities (map deref active-entities)
         player @player-eid
@@ -3807,7 +3804,7 @@
       (doseq [[k v] entity
               :when (get render-layer k)]
         (draw-component shape-drawer batch default-font unit-scale mouseover-actor 
-                        textures player active-entities raycaster
+                        textures player active-entities raycaster viewport
                         entity k v)))))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
@@ -3895,7 +3892,7 @@
       (doseq [friendly-eid (get-friendlies-for-alert eid faction)
               ; TODO called on projectiles
               :when (:entity/fsm @friendly-eid)]
-        (handle-txs! (fsm-event-txs friendly-eid :alert))))
+        (handle-txs! [[:tx/event friendly-eid :alert]])))
     nil))
 
 (defn string-effect-tick
@@ -3956,7 +3953,7 @@
     (cond
       (not (seq (filter #(effect-applicable? % effect-ctx)
                         (:skill/effects skill))))
-      (handle-txs! (fsm-event-txs eid :action-done))
+      (handle-txs! [[:tx/event eid :action-done]])
 
       (timer-stopped? counter)
       (do (handle-txs! (applicable-effect-txs effect-ctx 
@@ -3964,7 +3961,7 @@
                                               active-entities
                                               @*raycaster*
                                               game-db))
-          (handle-txs! (fsm-event-txs eid :action-done))
+          (handle-txs! [[:tx/event eid :action-done]])
           nil))))
 
 (defn delete-after-duration-tick
@@ -3977,29 +3974,29 @@
   [v eid _delta-time handle-txs!]
   (let [{:keys [counter]} v]
     (when (timer-stopped? counter)
-      (handle-txs! (fsm-event-txs eid :effect-wears-off)))))
+      (handle-txs! [[:tx/event eid :effect-wears-off]]))))
 
 (defn npc-moving-tick
   [v eid _delta-time handle-txs!]
   (let [{:keys [timer]} v]
     (when (timer-stopped? timer)
-      (handle-txs! (fsm-event-txs eid :timer-finished)))))
+      (handle-txs! [[:tx/event eid :timer-finished]]))))
 
 (defn npc-sleeping-tick
   [_v eid _delta-time handle-txs!]
   (let [entity @eid]
     (when-let [distance (nearest-enemy-distance @*grid* entity)]
       (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
-        (handle-txs! (fsm-event-txs eid :alert))))))
+        (handle-txs! [[:tx/event eid :alert]])))))
 
 (defn npc-idle-tick
   [_v eid _delta-time handle-txs!]
   (let [raycaster @*raycaster*
         effect-ctx (create-effect-ctx eid)]
     (if-let [skill (choose-skill (partial raycaster-blocked? raycaster) @eid effect-ctx)]
-      (handle-txs! (fsm-event-txs eid :start-action [skill effect-ctx]))
-      (handle-txs! (fsm-event-txs eid :movement-direction (or (find-direction @*grid* eid)
-                                                                 [0 0]))))))
+      (handle-txs! [[:tx/event eid :start-action [skill effect-ctx]]])
+      (handle-txs! [[:tx/event eid :movement-direction (or (find-direction @*grid* eid)
+                                                           [0 0])]]))))
 
 (defn movement-tick
   [v eid delta-time _handle-txs!]
@@ -4203,7 +4200,7 @@
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (if-let [move-v (movement-vector key-pressed?)]
-      (handle-txs! (fsm-event-txs player-eid :movement-input move-v))
+      (handle-txs! [[:tx/event player-eid :movement-input move-v]])
       (when (button-just-pressed? Input$Buttons/LEFT)
         (handle-txs! (interaction-state->txs interaction-state stage player-eid))))
 
@@ -4213,13 +4210,13 @@
                                                       :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
                                                                  0)})
           nil)
-      (handle-txs! (fsm-event-txs player-eid :no-movement-input)))
+      (handle-txs! [[:tx/event player-eid :no-movement-input]]))
 
     :player-item-on-cursor
     (let [[x y] (ui-mouse-position stage Gdx/input)]
       (when (and (button-just-pressed? Input$Buttons/LEFT)
                  (not (mouseover-actor stage x y)))
-        (handle-txs! (fsm-event-txs player-eid :drop-item))))
+        (handle-txs! [[:tx/event player-eid :drop-item]])))
 
     nil))
 
@@ -4374,6 +4371,9 @@
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
+        viewport (atom nil)
+        item-place-position* (fn [position click-distance]
+                               (item-place-position @viewport Gdx/input position click-distance))
         set-item! (fn [cell item]
                     (-> (get-root @stage)
                         (find-actor "moon.ui.windows.inventory")
@@ -4393,10 +4393,10 @@
                                     (fn [entity-decl]
                                       (spawn-entity! entity-decl))
                                     :tx/event
-                                    (fn [& params]
+                                    (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
                                       ; maybe no exit/enter events at all ? 
-                                      (handle-txs! (apply fsm-event-txs params)))
+                                      (handle-txs! (fsm-event-txs eid event item-place-position* params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
@@ -4470,10 +4470,10 @@
                                                 (mapv int (ui-mouse-position @stage Gdx/input)))}
                                   {:label "World"
                                    :update-fn (fn []
-                                                (mapv int (unproject @*viewport* [(get-x Gdx/input) (get-y Gdx/input)])))}
+                                                (mapv int (unproject @viewport [(get-x Gdx/input) (get-y Gdx/input)])))}
                                   {:label "Zoom"
                                    :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (get-camera @*viewport*)))
+                                                (.zoom ^OrthographicCamera (get-camera @viewport)))
                                    :icon "images/zoom.png"}]]
                         (if (:icon item)
                           (update item :icon #(get @textures %))
@@ -4569,7 +4569,7 @@
                                                skill (skill-id (:entity/skills entity))
                                                target-position (or (and mouseover-eid
                                                                         (:entity/position @mouseover-eid))
-                                                                   (unproject @*viewport* [(get-x input) (get-y input)]))
+                                                                   (unproject @viewport [(get-x input) (get-y input)]))
                                                effect-ctx {:effect/source player-eid
                                                            :effect/target mouseover-eid
                                                            :effect/target-position target-position
@@ -4599,11 +4599,11 @@
         remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db))
         key-pressed-checks! (fn []
                               (doseq [[k f] {(:zoom-in controls) (fn []
-                                                                   (let [^OrthographicCamera camera (get-camera @*viewport*)]
+                                                                   (let [^OrthographicCamera camera (get-camera @viewport)]
                                                                      (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
                                                                      (.update camera)))
                                              (:zoom-out controls) (fn []
-                                                                    (let [^OrthographicCamera camera (get-camera @*viewport*)]
+                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
                                                                       (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                                       (.update camera)))}]
                                 (when (key-pressed? Gdx/input (int k))
@@ -4622,12 +4622,12 @@
         resize-stage! (fn [width height]
                         (resize! (get-viewport @stage) width height true))
         resize-viewport! (fn [width height]
-                           (resize! @*viewport* width height false))
+                           (resize! @viewport width height false))
         batch-end! #(.end ^Batch @batch)
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
-                             (draw-tile-grid @shape-drawer)
-                             (draw-cell-debug @shape-drawer)
+                             (draw-tile-grid @shape-drawer @viewport)
+                             (draw-cell-debug @shape-drawer @viewport)
                              (draw-entities! @shape-drawer
                                              @batch 
                                              @default-font 
@@ -4637,17 +4637,18 @@
                                                (mouseover-actor @stage x y))
                                              @*raycaster*
                                              active-entities
-                                             @player-eid)
-                             (highlight-mouseover-tile @shape-drawer Gdx/input)
+                                             @player-eid
+                                             @viewport)
+                             (highlight-mouseover-tile @shape-drawer Gdx/input @viewport)
                              (reset! unit-scale 1))
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
         render-tiled-map! #(draw-tiled-map! @tiled-map*
                                             @batch
-                                            (get-camera @*viewport*)
+                                            (get-camera @viewport)
                                             (tile-color-setter*
                                               {:ray-blocked? (partial raycaster-blocked? @*raycaster*)
                                                :explored-tile-corners explored-tile-corners
-                                               :light-position (let [pos (.position (get-camera @*viewport*))]
+                                               :light-position (let [pos (.position (get-camera @viewport))]
                                                                  [(.x pos) (.y pos) (.z pos)])
                                                :see-all-tiles? false
                                                :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4655,9 +4656,9 @@
                                                :invisible-tile-color (float-bits 0 0 0 1)})
                                             world-unit-scale)
         batch-begin! #(.begin ^Batch @batch)
-        set-proj-matrix! #(set-projection-matrix! @batch (.combined (get-camera @*viewport*)))
+        set-proj-matrix! #(set-projection-matrix! @batch (.combined (get-camera @viewport)))
         set-camera-to-player! (fn []
-                                (let [^OrthographicCamera camera (get-camera @*viewport*)
+                                (let [^OrthographicCamera camera (get-camera @viewport)
                                       pos (.position camera)
                                       [x y] (:entity/position @@player-eid)]
                                   (set! (.x pos) x)
@@ -4672,7 +4673,7 @@
                                                  nil
                                                  (let [player @@player-eid
                                                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                                                    (point->entities @*grid* (unproject @*viewport* [(get-x Gdx/input) (get-y Gdx/input)])))]
+                                                                    (point->entities @*grid* (unproject @viewport [(get-x Gdx/input) (get-y Gdx/input)])))]
                                                    (->> hits
                                                         (sort-by #((:entity/z-order @%) render-z-order) <)
                                                         reverse
@@ -4712,7 +4713,7 @@
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (reset! textures (create-textures files (:textures game-config)))
-       (reset! *viewport* (create-viewport! 1440 900 world-unit-scale))
+       (reset! viewport (create-viewport! 1440 900 world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level!)]
          (reset! tiled-map* tiled-map)
