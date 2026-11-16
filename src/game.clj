@@ -4306,22 +4306,6 @@
 
     nil))
 
-(defn- tick-entities!
-  [delta-time 
-   active-entities
-   raycaster
-   game-db
-   handle-txs!]
-  (doseq [eid active-entities
-          component @eid]
-    (tick-component delta-time 
-                    handle-txs!
-                    eid 
-                    component
-                    active-entities
-                    raycaster
-                    game-db)))
-
 (defn get-delta-time [graphics]
   (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
 
@@ -4612,6 +4596,16 @@
                         (if (:icon item)
                           (update item :icon #(get @textures %))
                           item))
+        tick-entities! (fn [delta-time]
+                         (doseq [eid @active-entities
+                                 component @eid]
+                           (tick-component delta-time 
+                                           handle-txs!
+                                           eid 
+                                           component
+                                           active-entities
+                                           @*raycaster*
+                                           game-db)))
         tick-game! (fn [delta-time]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
@@ -4622,11 +4616,7 @@
                                     faction
                                     @active-entities
                                     max-iterations))
-                         (tick-entities! delta-time 
-                                         @active-entities 
-                                         @*raycaster*
-                                         game-db
-                                         handle-txs!))))
+                         (tick-entities! delta-time))))
         ]
     {
      :create!
