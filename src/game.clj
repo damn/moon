@@ -2130,22 +2130,6 @@
                          (draw [batch parent-alpha])))
     window))
 
-(defn info-window-create
-  [k->info-fn skin stage mouseover-eid]
-  (create-info-window
-   {:title "Entity Info"
-    :actor-name "moon.ui.windows.entity-info"
-    :visible? false
-    :position [(get-world-width (get-viewport stage)) 0]
-    :set-label-text! (fn []
-                       (if-let [eid @mouseover-eid]
-                         (info-text k->info-fn
-                                    (apply dissoc @eid [:entity/skills
-                                                        :entity/faction
-                                                        :active-skill]))
-                         ""))
-    :skin skin}))
-
 (defn nearest-entity [cell faction]
   (-> cell faction :eid))
 
@@ -4186,7 +4170,19 @@
   [(create-action-bar)
    (create-dev-menu options)
    (hp-mana-bar-create player-eid default-font stage textures* unit-scale)
-   (windows-create [(info-window-create k->info-fn skin stage mouseover-eid)
+   (windows-create [(create-info-window
+                      {:title "Entity Info"
+                       :actor-name "moon.ui.windows.entity-info"
+                       :visible? false
+                       :position [(get-world-width (get-viewport stage)) 0]
+                       :set-label-text! (fn []
+                                          (if-let [eid @mouseover-eid]
+                                            (info-text k->info-fn
+                                                       (apply dissoc @eid [:entity/skills
+                                                                           :entity/faction
+                                                                           :active-skill]))
+                                            ""))
+                       :skin skin})
                     (let [cell-size 48]
                       (create-inventory-window
                         player-eid
