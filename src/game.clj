@@ -5350,9 +5350,7 @@
 (defn scroll-pane [actor skin]
   (ScrollPane. actor skin))
 
-(def editor-stage (atom nil))
-
-(defn- create-sound-widget [sound-names sound-name play-sound! skin]
+(defn- create-sound-widget [sound-names sound-name play-sound! skin stage-viewport stage-add-actor!]
   (let [table (table-create)]
     (pad! (defaults table) 5)
     (letfn [(play-sound-button [sound-name]
@@ -5381,7 +5379,7 @@
                     window (create-window "Choose" skin)]
                 (doto (add! window (scroll-pane list-table skin))
                   (width! (+ (get-width list-table) 50))
-                  (height! (min (- (get-world-height (get-viewport @editor-stage)) 50)
+                  (height! (min (- (get-world-height stage-viewport) 50)
                                 (get-height list-table))))
                 (row! window)
                 (pack! window)
@@ -5399,7 +5397,7 @@
                                             (open-select-fn)))))}
                {:actor (play-sound-button sound-name)}])
             (open-select-fn []
-              (add-actor! @editor-stage (choose-sound-window)))]
+              (stage-add-actor! (choose-sound-window)))]
       (doseq [cell (if sound-name
                      (sound-columns-fn sound-name)
                      [{:actor
@@ -5416,30 +5414,7 @@
        (keep get-user-object)
        first))
 
-(def ^:private property-type->overview-table-props
-  {:properties/audiovisuals {:columns 10
-                             :image-scale 2
-                             :sort-by-fn (comp name :property/id)
-                             :extra-info-text (constantly "")}
-   :properties/creatures    {:columns 15
-                             :image-scale 1.5
-                             :sort-by-fn #(vector (:creature/level %)
-                                                  (name (:entity/species %))
-                                                  (name (:property/id %)))
-                             :extra-info-text #(str (:creature/level %))}
-   :properties/items        {:columns 20
-                             :image-scale 1.1
-                             :sort-by-fn #(vector (name (:item/slot %))
-                                                  (name (:property/id %)))
-                             :extra-info-text (constantly "")}
-   :properties/projectiles  {:columns 16
-                             :image-scale 2
-                             :sort-by-fn (comp name :property/id)
-                             :extra-info-text (constantly "")}
-   :properties/skills       {:columns 16
-                             :image-scale 2
-                             :sort-by-fn (comp name :property/id)
-                             :extra-info-text (constantly "")}})
+(def editor-stage (atom nil))
 
 (defn- create-one-to-one-widget [[_ property-type] property-id editor]
   (let [table (table-create)]
@@ -5749,7 +5724,12 @@
     :s/number (create-number-widget schema v skin)
     :s/one-to-many (create-one-to-many-widget schema v skin editor)
     :s/one-to-one (create-one-to-one-widget schema v editor)
-    :s/sound (create-sound-widget (keys @sounds) v (fn [sound-name] (play-sound!* @sounds sound-name)) skin)
+    :s/sound (create-sound-widget (keys @sounds)
+                                  v 
+                                  (fn [sound-name] (play-sound!* @sounds sound-name))
+                                  skin
+                                  (get-viewport @editor-stage)
+                                  #(add-actor! @editor-stage %))
     :s/string (create-string-widget schema v skin)
     :s/val-max (create-val-max-widget schema v skin)
     (create-default-widget v skin)))
@@ -5860,7 +5840,30 @@
 
 (defn editor-application-listener 
   [editor-config]
-  (let [batch (atom nil)
+  (let [property-type->overview-table-props {:properties/audiovisuals {:columns 10
+                                                                       :image-scale 2
+                                                                       :sort-by-fn (comp name :property/id)
+                                                                       :extra-info-text (constantly "")}
+                                             :properties/creatures    {:columns 15
+                                                                       :image-scale 1.5
+                                                                       :sort-by-fn #(vector (:creature/level %)
+                                                                                            (name (:entity/species %))
+                                                                                            (name (:property/id %)))
+                                                                       :extra-info-text #(str (:creature/level %))}
+                                             :properties/items        {:columns 20
+                                                                       :image-scale 1.1
+                                                                       :sort-by-fn #(vector (name (:item/slot %))
+                                                                                            (name (:property/id %)))
+                                                                       :extra-info-text (constantly "")}
+                                             :properties/projectiles  {:columns 16
+                                                                       :image-scale 2
+                                                                       :sort-by-fn (comp name :property/id)
+                                                                       :extra-info-text (constantly "")}
+                                             :properties/skills       {:columns 16
+                                                                       :image-scale 2
+                                                                       :sort-by-fn (comp name :property/id)
+                                                                       :extra-info-text (constantly "")}}
+        batch (atom nil)
         textures (atom nil)
         skin (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
@@ -5892,6 +5895,7 @@
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
+       ; THOUGHT PROCESS
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
