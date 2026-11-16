@@ -4501,100 +4501,17 @@
     (validate-hum (malli-schema schemas k) property))
   (zipmap (map :property/id properties) properties))
 
-(require '[clojure.edn :as edn])
-(require '[clojure.java.io :as io])
 (defn game-listener 
   [{:keys [game-schemas
            game-db
+           info-text
            pausing?
            state->pause-game?
            level-fn
            controls
            world-unit-scale]
     :as game-config}]
-  (let [k->info-fn {:creature/level (fn [v]
-                                      (str "Level: " v))
-                    :entity/stats (fn [entity-stats]
-                                    (stats-format-text entity-stats))
-                    :effects.target/convert (fn [_]
-                                              "Converts target to your side.")
-                    :effects.target/damage (fn [{[min max] :damage/min-max}]
-                                             (str min "-" max " damage"))
-                    :effects.target/kill (fn [_]
-                                           "Kills target")
-                    :effects.target/melee-damage (fn [_]
-                                                   "Damage based on entity strength.")
-                    :effects.target/spiderweb (fn [_]
-                                                "Spiderweb slows 50% for 5 seconds.")
-                    :effects.target/stun (fn [duration]
-                                           (str "Stuns for " (readable duration) " seconds"))
-                    :effects/spawn (fn [{:keys [property/pretty-name]}]
-                                     (str "Spawns a " pretty-name))
-                    :effects/target-all (fn [_]
-                                          "All visible targets")
-                    :entity/delete-after-duration (fn [counter]
-                                                    (str "Remaining: " (readable (timer-ratio counter)) "/1"))
-                    :entity/faction (fn [faction]
-                                      (str "Faction: " (name faction)))
-                    :entity/fsm (fn [fsm]
-                                  (str "State: " (name (:state fsm))))
-                    :stats/modifiers (fn [mods]
-                                       (mods-format-text mods))
-                    :entity/skills (fn [skills]
-                                     (when (seq skills)
-                                       (str "Skills: " (str/join "," (map name (keys skills))))))
-                    :entity/species (fn [species]
-                                      (str "Creature - " (str/capitalize (name species))))
-                    :entity/temp-modifier (fn [{:keys [counter]}]
-                                            (str "Spiderweb - remaining: " (readable (timer-ratio counter)) "/1"))
-                    :projectile/piercing? (fn [_]
-                                            "Piercing")
-                    :property/pretty-name (fn [v]
-                                            v)
-                    :skill/cooling-down? (fn [counter]
-                                           (str "Cooldown: " (readable (timer-ratio counter)) "/1"))
-                    :skill/action-time (fn [v]
-                                         (str "Action-Time: " (readable v) " seconds"))
-                    :skill/action-time-modifier-key (fn [v]
-                                                      (case v
-                                                        :stats/cast-speed "Spell"
-                                                        :stats/attack-speed "Attack"))
-                    :skill/cooldown (fn [v]
-                                      (str "Cooldown: " (readable v) " seconds"))
-                    :skill/cost (fn [v]
-                                  (str "Cost: " v " Mana"))
-                    :maxrange (fn [v]
-                                (str "Range: " v " Meters."))}
-        k-order-index (zipmap [:property/pretty-name
-                               :skill/action-time-modifier-key
-                               :skill/action-time
-                               :skill/cooldown
-                               :skill/cost
-                               :skill/effects
-                               :entity/species
-                               :creature/level
-                               :entity/stats
-                               :entity/delete-after-duration
-                               :projectile/piercing?
-                               :entity/projectile-collision
-                               :maxrange
-                               :entity-effects]
-                              (range))
-        k->colors {:property/pretty-name "PRETTY_NAME"
-                   :stats/modifiers "CYAN"
-                   :maxrange "LIGHT_GRAY"
-                   :creature/level "GRAY"
-                   :projectile/piercing? "LIME"
-                   :skill/action-time-modifier-key "VIOLET"
-                   :skill/action-time "GOLD"
-                   :skill/cooldown "SKY"
-                   :skill/cost "CYAN"
-                   :entity/delete-after-duration "LIGHT_GRAY"
-                   :entity/faction "SLATE"
-                   :entity/fsm "YELLOW"
-                   :entity/species "LIGHT_GRAY"
-                   :entity/temp-modifier "LIGHT_GRAY"}
-        player-eid (atom nil)
+  (let [player-eid (atom nil)
         batch (atom nil)
         cursors (atom nil)
         default-font (atom nil)
@@ -4653,23 +4570,6 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
-        info-text (fn info-text [entity]
-                    (let [component-info (fn [[k v]]
-                                           (let [s (if-let [info-fn (k->info-fn k)]
-                                                     (str (info-fn v)))]
-                                             (if-let [color (k->colors k)]
-                                               (str "[" color "]" s "[]")
-                                               s)))]
-                      (->> entity
-                           (sort-by (fn [[k _]] (get k-order-index k Integer/MAX_VALUE)))
-                           (keep (fn [{k 0 v 1 :as component}]
-                                   (str (try (component-info component)
-                                             (catch Throwable _t
-                                               (str "*info-error* " k)))
-                                        (when (map? v)
-                                          (str "\n" (info-text v))))))
-                           (str/join "\n")
-                           remove-newlines)))
         set-skill! (fn [skill]
                      (-> (get-root @stage)
                          (find-actor "moon.ui.action-bar")
@@ -4934,6 +4834,8 @@
                      (fn [_event _actor]
                        (on-click!))))))
 
+(require '[clojure.edn :as edn])
+(require '[clojure.java.io :as io])
 (defn levelgen-listener []
   (let [world-unit-scale (/ 48)
         world-width (* 1440 world-unit-scale)
@@ -5910,10 +5812,110 @@
 (defn game! []
   (let [game-schemas (-> "schema.edn" io/resource slurp edn/read-string)
         game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string))
+        k->info-fn {:creature/level (fn [v]
+                                      (str "Level: " v))
+                    :entity/stats (fn [entity-stats]
+                                    (stats-format-text entity-stats))
+                    :effects.target/convert (fn [_]
+                                              "Converts target to your side.")
+                    :effects.target/damage (fn [{[min max] :damage/min-max}]
+                                             (str min "-" max " damage"))
+                    :effects.target/kill (fn [_]
+                                           "Kills target")
+                    :effects.target/melee-damage (fn [_]
+                                                   "Damage based on entity strength.")
+                    :effects.target/spiderweb (fn [_]
+                                                "Spiderweb slows 50% for 5 seconds.")
+                    :effects.target/stun (fn [duration]
+                                           (str "Stuns for " (readable duration) " seconds"))
+                    :effects/spawn (fn [{:keys [property/pretty-name]}]
+                                     (str "Spawns a " pretty-name))
+                    :effects/target-all (fn [_]
+                                          "All visible targets")
+                    :entity/delete-after-duration (fn [counter]
+                                                    (str "Remaining: " (readable (timer-ratio counter)) "/1"))
+                    :entity/faction (fn [faction]
+                                      (str "Faction: " (name faction)))
+                    :entity/fsm (fn [fsm]
+                                  (str "State: " (name (:state fsm))))
+                    :stats/modifiers (fn [mods]
+                                       (mods-format-text mods))
+                    :entity/skills (fn [skills]
+                                     (when (seq skills)
+                                       (str "Skills: " (str/join "," (map name (keys skills))))))
+                    :entity/species (fn [species]
+                                      (str "Creature - " (str/capitalize (name species))))
+                    :entity/temp-modifier (fn [{:keys [counter]}]
+                                            (str "Spiderweb - remaining: " (readable (timer-ratio counter)) "/1"))
+                    :projectile/piercing? (fn [_]
+                                            "Piercing")
+                    :property/pretty-name (fn [v]
+                                            v)
+                    :skill/cooling-down? (fn [counter]
+                                           (str "Cooldown: " (readable (timer-ratio counter)) "/1"))
+                    :skill/action-time (fn [v]
+                                         (str "Action-Time: " (readable v) " seconds"))
+                    :skill/action-time-modifier-key (fn [v]
+                                                      (case v
+                                                        :stats/cast-speed "Spell"
+                                                        :stats/attack-speed "Attack"))
+                    :skill/cooldown (fn [v]
+                                      (str "Cooldown: " (readable v) " seconds"))
+                    :skill/cost (fn [v]
+                                  (str "Cost: " v " Mana"))
+                    :maxrange (fn [v]
+                                (str "Range: " v " Meters."))}
+        k-order-index (zipmap [:property/pretty-name
+                               :skill/action-time-modifier-key
+                               :skill/action-time
+                               :skill/cooldown
+                               :skill/cost
+                               :skill/effects
+                               :entity/species
+                               :creature/level
+                               :entity/stats
+                               :entity/delete-after-duration
+                               :projectile/piercing?
+                               :entity/projectile-collision
+                               :maxrange
+                               :entity-effects]
+                              (range))
+        k->colors {:property/pretty-name "PRETTY_NAME"
+                   :stats/modifiers "CYAN"
+                   :maxrange "LIGHT_GRAY"
+                   :creature/level "GRAY"
+                   :projectile/piercing? "LIME"
+                   :skill/action-time-modifier-key "VIOLET"
+                   :skill/action-time "GOLD"
+                   :skill/cooldown "SKY"
+                   :skill/cost "CYAN"
+                   :entity/delete-after-duration "LIGHT_GRAY"
+                   :entity/faction "SLATE"
+                   :entity/fsm "YELLOW"
+                   :entity/species "LIGHT_GRAY"
+                   :entity/temp-modifier "LIGHT_GRAY"}
+        info-text (fn info-text [entity]
+                    (let [component-info (fn [[k v]]
+                                           (let [s (if-let [info-fn (k->info-fn k)]
+                                                     (str (info-fn v)))]
+                                             (if-let [color (k->colors k)]
+                                               (str "[" color "]" s "[]")
+                                               s)))]
+                      (->> entity
+                           (sort-by (fn [[k _]] (get k-order-index k Integer/MAX_VALUE)))
+                           (keep (fn [{k 0 v 1 :as component}]
+                                   (str (try (component-info component)
+                                             (catch Throwable _t
+                                               (str "*info-error* " k)))
+                                        (when (map? v)
+                                          (str "\n" (info-text v))))))
+                           (str/join "\n")
+                           remove-newlines)))
         listener (game-listener
                    {
                     :game-schemas game-schemas
                     :game-db game-db
+                    :info-text info-text
                     :level-fn ;create-vampire-level
                     ;create-uf-caves
                     create-modules-level
