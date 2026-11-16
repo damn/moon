@@ -5443,46 +5443,43 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-; TODO this is too big ....
-; also java mixup
-(defn- add-one-to-one-rows [table property-type property-id skin editor]
-  (let [redo-rows (fn [id]
-                    (clear-children! table)
-                    (add-one-to-one-rows table property-type id skin editor)
-                    (pack! (first-ascendant table Window)))]
-    (doseq [row (cond-> []
-                  (not property-id)
-                  (conj [{:actor (doto (create-text-button "+" skin)
-                                   (add-listener! (create-change-listener
-                                                    (fn [event _actor]
-                                                      (add-actor! @editor-stage
-                                                                 (property-overview-window
-                                                                   property-type
-                                                                   (fn [actor id]
-                                                                     (remove! (first-ascendant actor Window))
-                                                                     (redo-rows id))
-                                                                   editor))))))}])
-                  property-id
-                  (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
-                                   (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
-                                                                                            (first (:animation/frames (:entity/animation property))))))
-                                     (add-listener! (text-tooltip (binding [*print-level* 2]
-                                                                    (with-out-str
-                                                                      (pprint/pprint property)))
-                                                                  skin))
-                                     (set-user-object! property-id)))}]
-                        [{:actor (doto (create-text-button "-" skin)
-                                   (add-listener! (create-change-listener
-                                                    (fn [event _actor]
-                                                      (redo-rows nil)))))}]))]
-      (doseq [cell row]
-        (add! table (:actor cell)))
-      (row! table))))
-
 (defn- create-one-to-one-widget [[_ property-type] property-id skin editor]
   (let [table (table-create)]
     (pad! (defaults table) 5)
-    (add-one-to-one-rows table property-type property-id skin editor)
+    (letfn [(add-one-to-one-rows [table property-type property-id skin editor]
+              (let [redo-rows (fn [id]
+                                (clear-children! table)
+                                (add-one-to-one-rows table property-type id skin editor)
+                                (pack! (first-ascendant table Window)))]
+                (doseq [row (cond-> []
+                              (not property-id)
+                              (conj [{:actor (doto (create-text-button "+" skin)
+                                               (add-listener! (create-change-listener
+                                                                (fn [event _actor]
+                                                                  (add-actor! @editor-stage
+                                                                              (property-overview-window
+                                                                                property-type
+                                                                                (fn [actor id]
+                                                                                  (remove! (first-ascendant actor Window))
+                                                                                  (redo-rows id))
+                                                                                editor))))))}])
+                              property-id
+                              (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
+                                               (doto (texture-region-image (get-texture-region @editor-textures (or (:entity/image property)
+                                                                                                                    (first (:animation/frames (:entity/animation property))))))
+                                                 (add-listener! (text-tooltip (binding [*print-level* 2]
+                                                                                (with-out-str
+                                                                                  (pprint/pprint property)))
+                                                                              skin))
+                                                 (set-user-object! property-id)))}]
+                                    [{:actor (doto (create-text-button "-" skin)
+                                               (add-listener! (create-change-listener
+                                                                (fn [event _actor]
+                                                                  (redo-rows nil)))))}]))]
+                  (doseq [cell row]
+                    (add! table (:actor cell)))
+                  (row! table))))]
+      (add-one-to-one-rows table property-type property-id skin editor))
     table))
 
 (defn- one-to-many-widget-value [widget]
