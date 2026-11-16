@@ -5510,9 +5510,7 @@
   [{:keys [display-remove-component-button?
            k
            table
-           schemas
            skin
-           editor
            rebuild-editor-window!]}]
   (let [row-table (table-create)]
     (pad! (defaults table) 2)
@@ -5524,7 +5522,7 @@
                                                                            (and (get-user-object actor)
                                                                                 (= k ((get-user-object actor) 0))))
                                                                          (get-children table))))
-                                                 (rebuild-editor-window! schemas skin editor)))))
+                                                 (rebuild-editor-window!)))))
                             ; java.lang.IllegalStateException: Table must have a skin set to use this method.
                             ; (can be nil)
                             (label-create "." skin)))
@@ -5555,7 +5553,8 @@
     (expand-x!))
   (row! table))
 
-(defn- add-component-window [schemas schema map-widget-table build-widget widget-value skin editor rebuild-editor-window!]
+(defn- add-component-window 
+  [schemas schema map-widget-table build-widget widget-value skin rebuild-editor-window!]
   (let [window (create-window "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (malli-form schemas schema))))]
@@ -5583,10 +5582,8 @@
                                            :k k
                                            :display-remove-component-button? (optional? (malli-form schemas schema) k)
                                            :table map-widget-table
-                                           :schemas schemas
-                                           :skin skin
-                                           :editor editor})
-                                        (rebuild-editor-window! schemas skin editor))))))
+                                           :skin skin})
+                                        (rebuild-editor-window!))))))
       (row! window))
     (pack! window)
     window))
@@ -5612,7 +5609,13 @@
                           (add-listener! (create-change-listener
                                            (fn [event actor]
                                              ((:editor/add-actor! editor)
-                                              (add-component-window schemas schema table build-widget widget-value skin editor rebuild-editor-window!)))))))
+                                              (add-component-window schemas 
+                                                                    schema 
+                                                                    table 
+                                                                    build-widget 
+                                                                    widget-value 
+                                                                    skin 
+                                                                    rebuild-editor-window!)))))))
         (colspan! colspan))
       (row! table)
       (add-horiz-sep! table colspan))
@@ -5625,9 +5628,7 @@
                            :k k
                            :display-remove-component-button? (k->optional? k)
                            :table table
-                           :schemas schemas
-                           :skin skin
-                           :editor editor}))
+                           :skin skin}))
     table))
 
 (require '[clojure.set :as set])
@@ -5690,17 +5691,9 @@
   (play! (safe-get sounds sound-name)))
 
 (def sounds (atom nil))
-(def editor-stage (atom nil))
-(declare property-editor-window)
-(defn- rebuild-editor-window! [schemas skin editor]
-  (let [window (-> (get-root @editor-stage)
-                   (find-actor "moon.ui.clojure.editor-window"))
-        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-        property (map-widget-value schemas map-widget-table)]
-    (remove! window)
-    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
+
 (defn create-widget
-  [schemas [schema-k :as schema] v skin editor]
+  [schemas [schema-k :as schema] v skin editor rebuild-editor-window!]
   (case schema-k
     :s/animation (create-animation-widget v (:editor/get-texture-region editor))
     :s/boolean (create-boolean-widget v skin)
@@ -5708,7 +5701,7 @@
     :s/image (create-image-widget v (:editor/get-texture-region editor))
     :s/map (create-map-widget schemas schema v
                               (fn build-widget [schema k v] 
-                                (let [widget (create-widget schemas schema v skin editor)]
+                                (let [widget (create-widget schemas schema v skin editor rebuild-editor-window!)]
                                   (set-user-object! widget [k v])
                                   widget))
                               (fn [schema widget] (widget-value schemas schema widget))
@@ -5754,10 +5747,18 @@
 (require '[clj-commons.pretty.repl :as pretty-repl])
 (def properties-file (io/resource "properties.edn"))
 (def editor-db (atom nil))
+(def editor-stage (atom nil))
 
 (defn property-editor-window [schemas property skin editor]
   (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
-        widget (create-widget schemas schema property skin editor)
+        rebuild-editor-window! (fn []
+                                 (let [window (-> (get-root @editor-stage)
+                                                  (find-actor "moon.ui.clojure.editor-window"))
+                                       map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+                                       property (map-widget-value schemas map-widget-table)]
+                                   (remove! window)
+                                   (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
+        widget (create-widget schemas schema property skin editor rebuild-editor-window!)
         scroll-pane-height (get-world-height (get-viewport @editor-stage))
         get-widget-value #(widget-value schemas schema widget)
         property-id (:property/id property)
