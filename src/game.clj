@@ -63,11 +63,7 @@
     :inventory.slot/rings})
 (def max-delta 0.04)
 (def max-speed (/ minimum-size max-delta))
-(def skin (atom nil))
-(def stage (atom nil))
-(def textures (atom nil))
 (def active-entities (atom nil))
-(def sounds (atom nil))
 
 ; FIXME k->txs !!!
 (def *start-position* (atom nil))
@@ -4734,6 +4730,10 @@
         paused? (atom false)
         mouseover-eid (atom nil)
         potential-field-cache (atom nil)
+        sounds (atom nil)
+        stage (atom nil)
+        skin (atom nil)
+        textures (atom nil)
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
