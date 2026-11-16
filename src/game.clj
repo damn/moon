@@ -3458,7 +3458,7 @@
     (kill-effect v effect-ctx)
 
     :effects.target/melee-damage
-    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx)
+    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db)
 
     :effects.target/spiderweb
     (spiderweb-effect v effect-ctx)
