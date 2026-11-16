@@ -4327,9 +4327,9 @@
   (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
 
 (defn tick-game!
-  [handle-txs! db active-entities paused? potential-field-cache graphics]
+  [handle-txs! db active-entities paused? potential-field-cache delta-time]
   (when-not @paused?
-    (let [delta-time (min (get-delta-time graphics) max-delta)]
+    (let [delta-time (min delta-time max-delta)]
       (swap! *elapsed-time* + delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! @*grid*
@@ -4799,7 +4799,7 @@
                    active-entities 
                    paused? 
                    potential-field-cache
-                   graphics)
+                   (get-delta-time graphics))
        (destroy-entities! handle-txs! game-db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (get-camera @*viewport*)]
