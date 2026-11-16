@@ -5745,75 +5745,13 @@
     table))
 
 (require '[clj-commons.pretty.repl :as pretty-repl])
-(def properties-file (io/resource "properties.edn"))
-(def editor-db (atom nil))
-(def editor-stage (atom nil))
-
-(defn property-editor-window [schemas property skin editor]
-  (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
-        rebuild-editor-window! (fn []
-                                 (let [window (-> (get-root @editor-stage)
-                                                  (find-actor "moon.ui.clojure.editor-window"))
-                                       map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-                                       property (map-widget-value schemas map-widget-table)]
-                                   (remove! window)
-                                   (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-        widget (create-widget schemas schema property skin editor rebuild-editor-window!)
-        scroll-pane-height (get-world-height (get-viewport @editor-stage))
-        get-widget-value #(widget-value schemas schema widget)
-        property-id (:property/id property)
-        with-window-close (fn [f]
-                            (fn [actor]
-                              (try
-                                (swap! editor-db f)
-                                (remove! (first-ascendant actor Window))
-                                (catch Throwable t
-                                  (binding [*print-level* 3]
-                                    (pretty-repl/pretty-pst t 24))))))
-        on-delete (with-window-close 
-                    (fn [db]
-                      (assert (contains? db property-id))
-                      (let [new-db (dissoc db property-id)]
-                        (save! new-db properties-file)
-                        new-db)))
-        on-save (with-window-close 
-                  (fn [db]
-                    (let [property (get-widget-value)
-                          id (:property/id property)]
-                      (assert (contains? property :property/id))
-                      (assert (contains? db id))
-                      (validate-property schemas property)
-                      (let [new-db (assoc db id property)]
-                        (save! new-db properties-file)
-                        new-db))))
-        table (property-editor-table widget on-save on-delete skin)
-        window (create-window "[SKY]Property[]" skin)]
-    (pad! (defaults window) 5)
-    (let [c (add! window (scroll-pane table skin))]
-      (width! c (+ (get-width table) 50))
-      (height! c (min (- scroll-pane-height 50)
-                      (get-height table))))
-    (row! window)
-    (pack! window)
-    (add! (get-title-table window)
-          (doto (create-text-button "X" skin)
-            (add-listener! (create-change-listener
-                             (fn [_event _actor]
-                               (remove! window))))))
-    (set-modal! window true)
-    (add-actor! window (proxy [Actor] []
-                        (act [delta]
-                          (when (key-just-pressed? Gdx/input Input$Keys/ENTER)
-                            (on-save this))
-                          (let [^Actor this this]
-                            (proxy-super act delta)))
-                        (draw [batch parent-alpha])))
-    (set-name! window "moon.ui.clojure.editor-window")
-    window))
 
 (defn editor-application-listener 
   [editor-config]
-  (let [property-type->overview-table-props {:properties/audiovisuals {:columns 10
+  (let [properties-file (io/resource "properties.edn")
+        db (atom (create-db schemas (-> properties-file slurp edn/read-string)))
+        editor-stage (atom nil)
+        property-type->overview-table-props {:properties/audiovisuals {:columns 10
                                                                        :image-scale 2
                                                                        :sort-by-fn (comp name :property/id)
                                                                        :extra-info-text (constantly "")}
@@ -5842,10 +5780,10 @@
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         editor {:editor/all-raw
                 (fn [property-type]
-                  (all-raw @editor-db property-type))
+                  (all-raw @db property-type))
                 :editor/get-property
                 (fn [property-id]
-                  (safe-get @editor-db property-id))
+                  (safe-get @db property-id))
                 :editor/get-texture-region
                 (fn [image]
                   (get-texture-region @textures image))
@@ -5873,6 +5811,67 @@
                         :properties/items
                         :properties/projectiles
                         :properties/skills]
+        property-editor-window (fn property-editor-window [schemas property skin editor]
+                                 (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
+                                       rebuild-editor-window! (fn []
+                                                                (let [window (-> (get-root @editor-stage)
+                                                                                 (find-actor "moon.ui.clojure.editor-window"))
+                                                                      map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+                                                                      property (map-widget-value schemas map-widget-table)]
+                                                                  (remove! window)
+                                                                  (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
+                                       widget (create-widget schemas schema property skin editor rebuild-editor-window!)
+                                       scroll-pane-height (get-world-height (get-viewport @editor-stage))
+                                       get-widget-value #(widget-value schemas schema widget)
+                                       property-id (:property/id property)
+                                       with-window-close (fn [f]
+                                                           (fn [actor]
+                                                             (try
+                                                               (swap! db f)
+                                                               (remove! (first-ascendant actor Window))
+                                                               (catch Throwable t
+                                                                 (binding [*print-level* 3]
+                                                                   (pretty-repl/pretty-pst t 24))))))
+                                       on-delete (with-window-close 
+                                                   (fn [db]
+                                                     (assert (contains? db property-id))
+                                                     (let [new-db (dissoc db property-id)]
+                                                       (save! new-db properties-file)
+                                                       new-db)))
+                                       on-save (with-window-close 
+                                                 (fn [db]
+                                                   (let [property (get-widget-value)
+                                                         id (:property/id property)]
+                                                     (assert (contains? property :property/id))
+                                                     (assert (contains? db id))
+                                                     (validate-property schemas property)
+                                                     (let [new-db (assoc db id property)]
+                                                       (save! new-db properties-file)
+                                                       new-db))))
+                                       table (property-editor-table widget on-save on-delete skin)
+                                       window (create-window "[SKY]Property[]" skin)]
+                                   (pad! (defaults window) 5)
+                                   (let [c (add! window (scroll-pane table skin))]
+                                     (width! c (+ (get-width table) 50))
+                                     (height! c (min (- scroll-pane-height 50)
+                                                     (get-height table))))
+                                   (row! window)
+                                   (pack! window)
+                                   (add! (get-title-table window)
+                                         (doto (create-text-button "X" skin)
+                                           (add-listener! (create-change-listener
+                                                            (fn [_event _actor]
+                                                              (remove! window))))))
+                                   (set-modal! window true)
+                                   (add-actor! window (proxy [Actor] []
+                                                        (act [delta]
+                                                          (when (key-just-pressed? Gdx/input Input$Keys/ENTER)
+                                                            (on-save this))
+                                                          (let [^Actor this this]
+                                                            (proxy-super act delta)))
+                                                        (draw [batch parent-alpha])))
+                                   (set-name! window "moon.ui.clojure.editor-window")
+                                   window))
         main-window (fn []
                       (let [window (create-window "Edit" @skin)]
                         (doseq [property-type property-types]
@@ -5899,7 +5898,6 @@
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (new-sound audio (internal files path))])))
-       (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
        (reset! textures (create-textures files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
        (add-actor! @editor-stage (main-window)))
