@@ -5591,7 +5591,7 @@
                                                                                                 (#{:s/map} (schema 0)) {}
                                                                                                 :else nil)))
                                                                :k k
-                                                               :display-remove-component-button? (optional? (malli-form schemas schema) k)})
+                                                               :display-remove-component-button? (k->optional? k)})
                                                             (rebuild-editor-window!))})]
                                         (add-component-window skin columns))))
         colspan 3]
