@@ -5532,8 +5532,6 @@
     (pack! window)
     window))
 
-; schema itself also dont want to pass .. rather 'what'?
-; mixing layout & logic ...
 (defn- map-widget-table-create
   [{:keys [map-schema-keys
            rebuild-editor-window!
@@ -5564,8 +5562,6 @@
                                                                                                             (= k ((get-user-object actor) 0))))
                                                                                                      (get-children table))))
                                                                              (rebuild-editor-window!)))))
-                                                        ; java.lang.IllegalStateException: Table must have a skin set to use this method.
-                                                        ; (can be nil)
                                                         (label-create "." skin)))
                                   (left!))
                                 (add! row-table (label-create (k-label-text k) skin))
@@ -5617,7 +5613,6 @@
 (require '[clojure.set :as set])
 
 (defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window! property-k-order-index]
-  ; TODO calculate the map-schema-form once instead of always 'malli-form'
   (map-widget-table-create
    {:map-schema-keys (map-keys (malli-form schemas schema))
     :rebuild-editor-window! rebuild-editor-window!
@@ -5658,11 +5653,6 @@
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
-; TODO from here declare/def editor state
-; * schemas too ! 
-; widget-value ( KEYWORDS )
-; sounds
-; (create-widget also k->v match)
 (def sounds (atom nil))
 
 (defn create-widget
@@ -5887,7 +5877,6 @@
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
-       ; THOUGHT PROCESS
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
