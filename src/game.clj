@@ -4153,57 +4153,6 @@
       (set-fill-parent! true)
       (set-name! "moon.ui.action-bar"))))
 
-(defn create-ui-actors
-  [k->info-fn
-   player-eid 
-   handle-txs! 
-   mouseover-eid 
-   unit-scale 
-   default-font 
-   shape-drawer 
-   skin 
-   stage 
-   textures* 
-   db
-   options
-   input]
-  [(create-action-bar)
-   (create-dev-menu options)
-   (hp-mana-bar-create player-eid default-font stage textures* unit-scale)
-   (windows-create [(create-info-window
-                      {:title "Entity Info"
-                       :actor-name "moon.ui.windows.entity-info"
-                       :visible? false
-                       :position [(get-world-width (get-viewport stage)) 0]
-                       :set-label-text! (fn []
-                                          (if-let [eid @mouseover-eid]
-                                            (info-text k->info-fn
-                                                       (apply dissoc @eid [:entity/skills
-                                                                           :entity/faction
-                                                                           :active-skill]))
-                                            ""))
-                       :skin skin})
-                    (let [cell-size 48]
-                      (create-inventory-window
-                        player-eid
-                        Gdx/input
-                        (fn [_event cell]
-                          (handle-txs! (handle-clicked-inventory-cell player-eid cell)))
-                        (fn [player-entity x y mouseover? cell]
-                          (rectangle! shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
-                          (when (and mouseover?
-                                     (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                            (let [item (:entity/item-on-cursor player-entity)
-                                  color (if (valid-slot? cell item)
-                                          (float-bits 0 0.6 0 0.8)
-                                          (float-bits 0.6 0 0 0.8))]
-                              (filled-rectangle! shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
-                        skin
-                        stage
-                        textures*))])
-   (player-state-draw-create player-eid unit-scale textures* input)
-   (player-message-actor-create default-font unit-scale)])
-
 (defn update-mouseover-eid! [player-eid mouseover-eid stage input]
   (let [old-mouseover-eid @mouseover-eid
         [x y] (ui-mouse-position stage Gdx/input)
@@ -4767,7 +4716,7 @@
                                                 (str (readable @*elapsed-time*) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
-                                   :update-fn (fn [] (get-frames-per-second graphics))
+                                   :update-fn (fn [] (get-frames-per-second Gdx/graphics))
                                    :icon "images/fps.png"}
                                   {:label "Mouseover-entity id"
                                    :update-fn (fn []
@@ -4848,26 +4797,47 @@
          (let [eid (get @*entity-ids* 1)]
            (assert (:entity/player? @eid))
            (reset! player-eid eid)))
-       (doseq [       actor (create-ui-actors k->info-fn
-                                              @player-eid
-                                              handle-txs!
-                                              mouseover-eid
-                                              unit-scale
-                                              @default-font
-                                              @shape-drawer
-                                              @skin
-                                              @stage
-                                              @textures
-                                              game-db
-                                              {:menus menus
-                                               :update-labels update-labels
-                                               :skin @skin}
-                                              Gdx/input)]
+       (doseq [actor [(create-action-bar)
+                      (create-dev-menu {:menus menus
+                                        :update-labels update-labels
+                                        :skin @skin})
+                      (hp-mana-bar-create @player-eid @default-font @stage @textures unit-scale)
+                      (windows-create [(create-info-window
+                                         {:title "Entity Info"
+                                          :actor-name "moon.ui.windows.entity-info"
+                                          :visible? false
+                                          :position [(get-world-width (get-viewport @stage)) 0]
+                                          :set-label-text! (fn []
+                                                             (if-let [eid @mouseover-eid]
+                                                               (info-text k->info-fn
+                                                                          (apply dissoc @eid [:entity/skills
+                                                                                              :entity/faction
+                                                                                              :active-skill]))
+                                                               ""))
+                                          :skin @skin})
+                                       (let [cell-size 48]
+                                         (create-inventory-window
+                                           @player-eid
+                                           Gdx/input
+                                           (fn [_event cell]
+                                             (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
+                                           (fn [player-entity x y mouseover? cell]
+                                             (rectangle! @shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
+                                             (when (and mouseover?
+                                                        (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                                               (let [item (:entity/item-on-cursor player-entity)
+                                                     color (if (valid-slot? cell item)
+                                                             (float-bits 0 0.6 0 0.8)
+                                                             (float-bits 0.6 0 0 0.8))]
+                                                 (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+                                           @skin
+                                           @stage
+                                           @textures))])
+                      (player-state-draw-create @player-eid unit-scale @textures Gdx/input)
+                      (player-message-actor-create @default-font unit-scale)]]
          (add-actor! @stage actor))
        (sync-player-ui!)
-       (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* @*start-position*))
-       )
-
+       (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* @*start-position*)))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
