@@ -5583,18 +5583,7 @@
     (expand-x!))
   (row! table))
 
-(declare property-editor-window)
-(def editor-stage (atom nil))
-
-(defn- rebuild-editor-window! [schemas skin editor]
-  (let [window (-> (get-root @editor-stage)
-                   (find-actor "moon.ui.clojure.editor-window"))
-        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-        property (map-widget-value schemas map-widget-table)]
-    (remove! window)
-    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-
-(defn- add-component-window [schemas schema map-widget-table build-widget widget-value skin editor]
+(defn- add-component-window [schemas schema map-widget-table build-widget widget-value skin editor rebuild-editor-window!]
   (let [window (create-window "Choose" skin)
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table)))
                                    (map-keys (malli-form schemas schema))))]
@@ -5630,6 +5619,16 @@
     (pack! window)
     window))
 
+(def editor-stage (atom nil))
+(declare property-editor-window)
+(defn- rebuild-editor-window! [schemas skin editor]
+  (let [window (-> (get-root @editor-stage)
+                   (find-actor "moon.ui.clojure.editor-window"))
+        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+        property (map-widget-value schemas map-widget-table)]
+    (remove! window)
+    (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
+
 (defn- map-widget-table-create
   [{:keys [schemas
            schema
@@ -5650,7 +5649,7 @@
                           (add-listener! (create-change-listener
                                            (fn [event actor]
                                              (add-actor! @editor-stage
-                                                         (add-component-window schemas schema table build-widget widget-value skin editor)))))))
+                                                         (add-component-window schemas schema table build-widget widget-value skin editor rebuild-editor-window!)))))))
         (colspan! colspan))
       (row! table)
       (add-horiz-sep! table colspan))
