@@ -4307,8 +4307,7 @@
     nil))
 
 (defn- tick-entities!
-  [db 
-   delta-time 
+  [delta-time 
    active-entities
    raycaster
    game-db
@@ -4321,28 +4320,10 @@
                     component
                     active-entities
                     raycaster
-                    db)))
+                    game-db)))
 
 (defn get-delta-time [graphics]
   (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
-
-(defn tick-game!
-  [handle-txs! db active-entities paused? potential-field-cache delta-time]
-  (when-not @paused?
-    (let [delta-time (min delta-time max-delta)]
-      (swap! *elapsed-time* + delta-time)
-      (doseq [[faction max-iterations] factions-iterations]
-        (update! @*grid*
-                 potential-field-cache
-                 faction
-                 @active-entities
-                 max-iterations))
-      (tick-entities! db 
-                      delta-time 
-                      @active-entities 
-                      @*raycaster*
-                      db
-                      handle-txs!))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
@@ -4631,6 +4612,21 @@
                         (if (:icon item)
                           (update item :icon #(get @textures %))
                           item))
+        tick-game! (fn [delta-time]
+                     (when-not @paused?
+                       (let [delta-time (min delta-time max-delta)]
+                         (swap! *elapsed-time* + delta-time)
+                         (doseq [[faction max-iterations] factions-iterations]
+                           (update! @*grid*
+                                    potential-field-cache
+                                    faction
+                                    @active-entities
+                                    max-iterations))
+                         (tick-entities! delta-time 
+                                         @active-entities 
+                                         @*raycaster*
+                                         game-db
+                                         handle-txs!))))
         ]
     {
      :create!
@@ -4794,12 +4790,7 @@
                         (state->pause-game? (:state (:entity/fsm @@player-eid)))
                         (not (or (key-just-pressed? Gdx/input (int (:unpause-once controls)))
                                  (key-pressed? Gdx/input (int (:unpause-continously controls))))))))
-       (tick-game! handle-txs! 
-                   game-db 
-                   active-entities 
-                   paused? 
-                   potential-field-cache
-                   (get-delta-time graphics))
+       (tick-game! (get-delta-time graphics))
        (destroy-entities! handle-txs! game-db)
        (doseq [[k f] {(:zoom-in controls) (fn []
                                             (let [^OrthographicCamera camera (get-camera @*viewport*)]
