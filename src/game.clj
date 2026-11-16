@@ -5816,28 +5816,6 @@
     (set-name! window "moon.ui.clojure.editor-window")
     window))
 
-(defn main-window [schemas skin editor]
-  (let [window (create-window "Edit" skin)]
-    (doseq [property-type [:properties/audiovisuals
-                           :properties/creatures 
-                           :properties/items
-                           :properties/projectiles
-                           :properties/skills]]
-      (add! window (doto (create-text-button (str/capitalize (name property-type)) skin)
-                     (add-listener! (create-change-listener
-                                      (fn [_event _actor]
-                                        ; this is also weird .... why here defined let it do it?
-                                        (add-actor! @editor-stage
-                                                    (property-overview-window
-                                                      property-type
-                                                      (fn [_actor id]
-                                                        (add-actor! @editor-stage
-                                                                   (property-editor-window schemas ((:editor/get-property editor) id) skin editor)))
-                                                      editor)))))))
-      (row! window))
-    (pack! window)
-    window))
-
 (defn editor-application-listener 
   [editor-config]
   (let [property-type->overview-table-props {:properties/audiovisuals {:columns 10
@@ -5894,7 +5872,28 @@
                 #(get-viewport @editor-stage)
                 :editor/add-actor!
                 #(add-actor! @editor-stage %)
-                }]
+                }
+        property-types [:properties/audiovisuals
+                        :properties/creatures 
+                        :properties/items
+                        :properties/projectiles
+                        :properties/skills]
+        main-window (fn []
+                      (let [window (create-window "Edit" @skin)]
+                        (doseq [property-type property-types]
+                          (add! window (doto (create-text-button (str/capitalize (name property-type)) @skin)
+                                         (add-listener! (create-change-listener
+                                                          (fn [_event _actor]
+                                                            (add-actor! @editor-stage
+                                                                        (property-overview-window
+                                                                          property-type
+                                                                          (fn [_actor id]
+                                                                            (add-actor! @editor-stage
+                                                                                        (property-editor-window schemas ((:editor/get-property editor) id) skin editor)))
+                                                                          editor)))))))
+                          (row! window))
+                        (pack! window)
+                        window))]
     {:create!
      (fn [audio files _graphics] 
        (reset! batch (sprite-batch!))
@@ -5908,7 +5907,7 @@
        (reset! editor-db (create-db schemas (-> properties-file slurp edn/read-string)))
        (reset! textures (create-textures files (:textures editor-config)))
        (.setInputProcessor Gdx/input @editor-stage)
-       (add-actor! @editor-stage (main-window schemas @skin editor)))
+       (add-actor! @editor-stage (main-window)))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
