@@ -5650,17 +5650,14 @@
     :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
 
-(declare widget-value)
-(defn map-widget-value [schemas table]
-  (into {}
-        (for [widget (filter (comp vector? get-user-object) (get-children table))
-              :let [[k _] (get-user-object widget)]]
-          [k (widget-value schemas (get schemas k) widget)])))
 (defn widget-value [schemas [schema-k] widget]
   (case schema-k
     :s/boolean (boolean-widget-value widget)
     :s/enum (enum-widget-value widget)
-    :s/map (map-widget-value schemas widget)
+    :s/map (into {}
+                 (for [widget (filter (comp vector? get-user-object) (get-children widget))
+                       :let [[k _] (get-user-object widget)]]
+                   [k (widget-value schemas (get schemas k) widget)]))
     :s/number (number-widget-value widget)
     :s/one-to-many (one-to-many-widget-value widget)
     :s/one-to-one (one-to-one-widget-value widget)
@@ -5817,7 +5814,7 @@
                                                                 (let [window (-> (get-root @editor-stage)
                                                                                  (find-actor "moon.ui.clojure.editor-window"))
                                                                       map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-                                                                      property (map-widget-value schemas map-widget-table)]
+                                                                      property (widget-value schemas schema map-widget-table)]
                                                                   (remove! window)
                                                                   (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
                                        widget (create-widget schemas schema property skin editor rebuild-editor-window! property-k-order-index)
