@@ -3395,8 +3395,8 @@
 
 (import '(com.badlogic.gdx Gdx))
 (def *viewport* (atom nil))
-
-; * tick-component
+(defn item-place-position* [position click-distance]
+  (item-place-position @*viewport* Gdx/input position click-distance))
 (defn- handle-fsm-event! [eid event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -3413,8 +3413,7 @@
         (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                  [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                  [:tx/swap eid dissoc old-state-k]]
-                (entity-state-exit! eid old-state-obj (fn [input position click-distance]
-                                                        (item-place-position @*viewport* Gdx/input position click-distance)))
+                (entity-state-exit! eid old-state-obj item-place-position*)
                 (entity-state-enter! eid new-state-obj))))))
 
 (defn- handle-effect!
