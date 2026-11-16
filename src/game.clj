@@ -1090,11 +1090,6 @@
           property
           (keys property)))
 
-(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
-
-(defn build [db property-id]
-  (build-values schemas (safe-get db property-id) db))
-
 (import '(com.badlogic.gdx.math Vector2))
 
 (defn create-stack []
@@ -3281,7 +3276,10 @@
                           :faction (:entity/faction source*)}
                          v)]]))
 
+(def schemas (-> "schema.edn" io/resource slurp edn/read-string))
 (def db (create-db schemas (-> "properties.edn" io/resource slurp edn/read-string)))
+(defn build [db property-id]
+  (build-values schemas (safe-get db property-id) db))
 
 (defn animation-entity [position animation-k]
   (assert (keyword? animation-k))
