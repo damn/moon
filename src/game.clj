@@ -1,6 +1,6 @@
 (ns game)
 
-; FIXME k->info-fn ???? let bind over game param ... just k->f matching.... edn?
+; FIXME 
 ; k-order-index
 ; k->colors
 ; diagonal-check-indizes ?
@@ -22,56 +22,48 @@
 (def *entity-ids* (atom nil))
 (def *grid* (atom nil))
 (def *content-grid* (atom nil))
-
 (def factions-iterations {:good 15 :evil 5})
-(def ^:private float-rounding-error (double 0.000001))
-(def ^:private active-skill-radius
-  (let [tile-size 48
-        image-width 32]
-    (/ (/ image-width tile-size) 2)))
-(def ^:private transition-idxvalues [2 8 1 4])
+(def float-rounding-error (double 0.000001))
+(def active-skill-radius (let [tile-size 48
+                               image-width 32]
+                           (/ (/ image-width tile-size) 2)))
+(def transition-idxvalues [2 8 1 4])
 (def minimum-size 0.39)
 (def z-orders [:z-order/on-ground
                :z-order/ground
                :z-order/flying
                :z-order/effect])
-(def ^:private render-layers
-  [#{:entity/mouseover?
-     :stunned
-     :player-item-on-cursor}
-   #{:entity/clickable
-     :entity/animation
-     :entity/image
-     :entity/line-render}
-   #{:npc-sleeping
-     :entity/temp-modifier
-     :entity/string-effect}
-   #{:entity/stats
-     :active-skill}])
+(def render-layers [#{:entity/mouseover?
+                      :stunned
+                      :player-item-on-cursor}
+                    #{:entity/clickable
+                      :entity/animation
+                      :entity/image
+                      :entity/line-render}
+                    #{:npc-sleeping
+                      :entity/temp-modifier
+                      :entity/string-effect}
+                    #{:entity/stats
+                      :active-skill}])
 (def render-z-order (apply hash-map (interleave z-orders (range))))
-(def slots
-  #{:inventory.slot/bag
-    :inventory.slot/weapon
-    :inventory.slot/shield
-    :inventory.slot/helm
-    :inventory.slot/chest
-    :inventory.slot/leg
-    :inventory.slot/glove
-    :inventory.slot/boot
-    :inventory.slot/cloak
-    :inventory.slot/necklace
-    :inventory.slot/rings})
+(def slots #{:inventory.slot/bag
+             :inventory.slot/weapon
+             :inventory.slot/shield
+             :inventory.slot/helm
+             :inventory.slot/chest
+             :inventory.slot/leg
+             :inventory.slot/glove
+             :inventory.slot/boot
+             :inventory.slot/cloak
+             :inventory.slot/necklace
+             :inventory.slot/rings})
 (def max-delta 0.04)
 (def max-speed (/ minimum-size max-delta))
 (def active-entities (atom nil))
-
-; FIXME k->txs !!!
 (def *start-position* (atom nil))
-(def sounds (atom nil)) ; EDITOR!
-
+(def sounds (atom nil))
 (require '[clojure.string :as str])
-
-(def ^:private controls-info
+(def controls-info
   (str/join "\n"
             ["[W][A][S][D] - Move"
              "[ESCAPE] - Close windows"
@@ -80,9 +72,7 @@
              "[-]/[=] - Zoom"
              "[P]/[SPACE] - Unpause"
              "Leftmouse click - use skill/drop item on cursor"]))
-
 (require '[malli.core :as m])
-
 (def val-max-schema
   (m/schema
    [:and
@@ -91,97 +81,8 @@
                       (when (< mx v)
                         (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
      (fn [[^int a ^int b]] (<= a b))]]))
-
-(defn malli-form [schemas schema]
-  (case (first schema)
-    :s/animation
-    [:map {:closed true}
-     [:animation/frames :some]
-     [:animation/frame-duration pos?]
-     [:animation/looping? :boolean]]
-
-    :s/boolean
-    :boolean
-
-    :s/enum
-    (apply vector :enum (rest schema))
-
-    :s/image
-    [:map {:closed true}
-     [:image/file :string]
-     [:image/bounds {:optional true} [:vector {:size 4} nat-int?]]]
-
-    :s/map
-    (let [ks (second schema)] 
-      (apply vector :map {:closed true}
-             (for [k ks
-                   :let [k? (keyword? k)
-                         schema-props (if k? nil (k 1))
-                         k (if k? k (k 0))]]
-               (do
-                 (assert (keyword? k))
-                 (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
-                 [k schema-props (malli-form schemas (get schemas k))]))))
-
-    :s/number
-    (case (second schema)
-      :int     int?
-      :nat-int nat-int?
-      :any     number?
-      :pos     pos?
-      :pos-int pos-int?)
-
-    :s/one-to-many
-    [:set [:qualified-keyword {:namespace (keyword (name (second schema)))}]]
-
-    :s/one-to-one
-    [:qualified-keyword {:namespace (keyword (name (second schema)))}]
-
-    :s/qualified-keyword
-    (apply vector :qualified-keyword (rest schema))
-
-    :s/some
-    :some
-
-    :s/sound
-    :string
-
-    :s/string
-    :string
-
-    :s/val-max
-    val-max-schema
-    ))
-
-(require '[clojure.edn :as edn])
-(require '[clojure.java.io :as io])
-
-(def game-schemas (-> "schema.edn" io/resource slurp edn/read-string))
-
-(defn malli-schema [schemas k]
-  (m/schema (malli-form schemas (get schemas k))))
-
-(require '[malli.error :as me])
-
-(defn validate-hum [schema value]
-  (when-not (m/validate schema value)
-    (throw (ex-info (str (me/humanize (m/explain schema value)))
-                    {:value value
-                     :schema (m/form schema)}))))
-
-(defn create-db [schemas properties]
-  (assert (or (empty? properties)
-              (apply distinct? (map :property/id properties))))
-  (doseq [property properties
-          :let [k (keyword "properties" (namespace (:property/id property)))]]
-    (validate-hum (malli-schema schemas k) property))
-  (zipmap (map :property/id properties) properties))
-
-(def game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string)))
-
 (require '[reduce-fsm :as fsm])
-
-(def ^:private fsms
+(def fsms
   {:npc (fsm/fsm-inc
           [[:npc-sleeping
             :kill -> :npc-dead
@@ -228,9 +129,7 @@
               :drop-item -> :player-idle
               :dropped-item -> :player-idle]
              [:player-dead]])})
-
 (import '(java.util Random))
-
 (def k->adj-num
   {:wide
    (fn [open-paths random]
@@ -244,7 +143,6 @@
          2 3
          3 4
          1)))
-
    :thin
    ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
    (fn [open-paths random]
@@ -254,7 +152,6 @@
          0 0
          1 2
          1)))
-
    :default
    ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
    (fn [open-paths random]
@@ -4658,6 +4555,84 @@
 (defn set-cursor! [graphics cursor]
   (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
 
+(require '[malli.error :as me])
+(defn validate-hum [schema value]
+  (when-not (m/validate schema value)
+    (throw (ex-info (str (me/humanize (m/explain schema value)))
+                    {:value value
+                     :schema (m/form schema)}))))
+(defn malli-form [schemas schema]
+  (case (first schema)
+    :s/animation
+    [:map {:closed true}
+     [:animation/frames :some]
+     [:animation/frame-duration pos?]
+     [:animation/looping? :boolean]]
+
+    :s/boolean
+    :boolean
+
+    :s/enum
+    (apply vector :enum (rest schema))
+
+    :s/image
+    [:map {:closed true}
+     [:image/file :string]
+     [:image/bounds {:optional true} [:vector {:size 4} nat-int?]]]
+
+    :s/map
+    (let [ks (second schema)] 
+      (apply vector :map {:closed true}
+             (for [k ks
+                   :let [k? (keyword? k)
+                         schema-props (if k? nil (k 1))
+                         k (if k? k (k 0))]]
+               (do
+                 (assert (keyword? k))
+                 (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
+                 [k schema-props (malli-form schemas (get schemas k))]))))
+
+    :s/number
+    (case (second schema)
+      :int     int?
+      :nat-int nat-int?
+      :any     number?
+      :pos     pos?
+      :pos-int pos-int?)
+
+    :s/one-to-many
+    [:set [:qualified-keyword {:namespace (keyword (name (second schema)))}]]
+
+    :s/one-to-one
+    [:qualified-keyword {:namespace (keyword (name (second schema)))}]
+
+    :s/qualified-keyword
+    (apply vector :qualified-keyword (rest schema))
+
+    :s/some
+    :some
+
+    :s/sound
+    :string
+
+    :s/string
+    :string
+
+    :s/val-max
+    val-max-schema
+    ))
+(defn malli-schema [schemas k]
+  (m/schema (malli-form schemas (get schemas k))))
+(defn create-db [schemas properties]
+  (assert (or (empty? properties)
+              (apply distinct? (map :property/id properties))))
+  (doseq [property properties
+          :let [k (keyword "properties" (namespace (:property/id property)))]]
+    (validate-hum (malli-schema schemas k) property))
+  (zipmap (map :property/id properties) properties))
+
+(require '[clojure.edn :as edn])
+(require '[clojure.java.io :as io])
 (defn game-listener 
   [{:keys [pausing?
            state->pause-game?
@@ -4665,7 +4640,9 @@
            controls
            world-unit-scale]
     :as game-config}]
-  (let [k->info-fn {:creature/level (fn [v]
+  (let [game-schemas (-> "schema.edn" io/resource slurp edn/read-string)
+        game-db (create-db game-schemas (-> "properties.edn" io/resource slurp edn/read-string))
+        k->info-fn {:creature/level (fn [v]
                                       (str "Level: " v))
                     :entity/stats (fn [entity-stats]
                                     (stats-format-text entity-stats))
