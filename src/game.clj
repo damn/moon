@@ -649,9 +649,8 @@
 
 (require '[malli.error :as me])
 
-(defn validate-property [schemas property]
-  ; wtf
-  (let [schema (m/schema (malli-form schemas (get schemas (keyword "properties" (namespace (:property/id property))))))]
+(defn validate-property [schemas property k]
+  (let [schema (m/schema (malli-form schemas (get schemas k)))]
     (when-not (m/validate schema property)
       (throw (ex-info (str (me/humanize (m/explain schema property)))
                       {:value property
@@ -1042,7 +1041,7 @@
   (assert (or (empty? properties)
               (apply distinct? (map :property/id properties))))
   (doseq [property properties]
-    (validate-property schemas property))
+    (validate-property schemas property (keyword "properties" (namespace (:property/id property)))))
   (zipmap (map :property/id properties) properties))
 
 (require '[clojure.pprint :as pprint])
@@ -5837,7 +5836,7 @@
                                                          id (:property/id property)]
                                                      (assert (contains? property :property/id))
                                                      (assert (contains? db id))
-                                                     (validate-property schemas property)
+                                                     (validate-property schemas property (keyword "properties" (namespace (:property/id property))))
                                                      (let [new-db (assoc db id property)]
                                                        (save! new-db properties-file)
                                                        new-db))))
