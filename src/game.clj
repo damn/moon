@@ -5414,8 +5414,6 @@
        (keep get-user-object)
        first))
 
-(def editor-stage (atom nil))
-
 (defn- create-one-to-one-widget [[_ property-type] property-id editor]
   (let [table (table-create)]
     (pad! (defaults table) 5)
@@ -5429,13 +5427,13 @@
                               (conj [{:actor (doto ((:editor/new-text-button editor) "+")
                                                (add-listener! (create-change-listener
                                                                 (fn [event _actor]
-                                                                  (add-actor! @editor-stage
-                                                                              (property-overview-window
-                                                                                property-type
-                                                                                (fn [actor id]
-                                                                                  (remove! (first-ascendant actor Window))
-                                                                                  (redo-rows id))
-                                                                                editor))))))}])
+                                                                  ((:editor/add-actor! editor)
+                                                                   (property-overview-window
+                                                                     property-type
+                                                                     (fn [actor id]
+                                                                       (remove! (first-ascendant actor Window))
+                                                                       (redo-rows id))
+                                                                     editor))))))}])
                               property-id
                               (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
                                                (doto (texture-region-image ((:editor/get-texture-region editor) 
@@ -5470,13 +5468,13 @@
             [[{:actor (doto (create-text-button "+" skin)
                         (add-listener! (create-change-listener
                                          (fn [event _actor]
-                                           (add-actor! @editor-stage
-                                                      (property-overview-window
-                                                        property-type
-                                                        (fn [actor id]
-                                                          (remove! (first-ascendant actor Window))
-                                                          (redo-rows (conj property-ids id)))
-                                                        editor))))))}]
+                                           ((:editor/add-actor! editor)
+                                            (property-overview-window
+                                              property-type
+                                              (fn [actor id]
+                                                (remove! (first-ascendant actor Window))
+                                                (redo-rows (conj property-ids id)))
+                                              editor))))))}]
              (for [property-id property-ids]
                (let [property ((:editor/get-property editor) property-id)]
                  {:actor (doto (texture-region-image ((:editor/get-texture-region editor) 
@@ -5534,6 +5532,8 @@
           [k (widget-value schemas (get schemas k) widget)])))
 
 (declare property-editor-window)
+
+(def editor-stage (atom nil))
 
 (defn- rebuild-editor-window! [schemas skin editor]
   (let [window (-> (get-root @editor-stage)
@@ -5728,8 +5728,8 @@
                                   v 
                                   (fn [sound-name] (play-sound!* @sounds sound-name))
                                   skin
-                                  (get-viewport @editor-stage)
-                                  #(add-actor! @editor-stage %))
+                                  ((:editor/get-viewport editor))
+                                  (:editor/add-actor! editor))
     :s/string (create-string-widget schema v skin)
     :s/val-max (create-val-max-widget schema v skin)
     (create-default-widget v skin)))
@@ -5889,7 +5889,12 @@
                   (create-window title @skin))
                 :editor/new-text-button
                 (fn [title]
-                  (create-text-button title @skin))}]
+                  (create-text-button title @skin))
+                :editor/get-viewport
+                #(get-viewport @editor-stage)
+                :editor/add-actor!
+                #(add-actor! @editor-stage %)
+                }]
     {:create!
      (fn [audio files _graphics] 
        (reset! batch (sprite-batch!))
