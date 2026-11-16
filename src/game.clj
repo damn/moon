@@ -647,10 +647,13 @@
     val-max-schema
     ))
 
+(defn malli-schema [schemas k]
+  (m/schema (malli-form schemas (get schemas k))))
+
 (require '[malli.error :as me])
 
 (defn validate-property [schemas property k]
-  (let [schema (m/schema (malli-form schemas (get schemas k)))]
+  (let [schema (malli-schema schemas k)]
     (when-not (m/validate schema property)
       (throw (ex-info (str (me/humanize (m/explain schema property)))
                       {:value property
