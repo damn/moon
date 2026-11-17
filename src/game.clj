@@ -2445,10 +2445,6 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
-(defn cell-at [[x y]]
-  (when-let [cell-atom (get-in @*grid* [x y])]
-    @cell-atom))
-
 (defn- create-grid [^TiledMap tiled-map]
   (let [props (get-properties tiled-map)
         w (props-get props "width")
@@ -3473,8 +3469,9 @@
         top-y    (apply max (map second frustum-points))]
     (doseq [x (range (int left-x) (int right-x))
             y (range (int bottom-y) (+ 2 (int top-y)))
-            :let [cell* (cell-at [x y])]
-            :when cell*]
+            :let [cell-atom (get-in @*grid* [x y])]
+            :when cell-atom
+            :let [cell* @cell-atom]]
       (when (and show-cell-entities? (seq (:entities cell*)))
         (filled-rectangle! shape-drawer x y 1 1 (float-bits 1 0 0 0.6)))
       (when (and show-cell-occupied? (seq (:occupied cell*)))
@@ -3519,7 +3516,8 @@
 (defn highlight-mouseover-tile
   [shape-drawer input viewport]
   (let [[x y] (mapv int (unproject viewport [(get-x input) (get-y input)]))
-        cell (cell-at [x y])]
+        cell (when-let [cell-atom (get-in @*grid* [x y])]
+               @cell-atom)]
     (when (and cell (#{:air :none} (:movement cell)))
       (rectangle! shape-drawer x y 1 1
                          (case (:movement cell)
