@@ -312,11 +312,13 @@
 (defprotocol GetHeight
   (get-height [_]))
 
-(import '(com.badlogic.gdx.maps.tiled TiledMap
+(import '(com.badlogic.gdx.maps MapLayer MapLayers MapProperties)
+        '(com.badlogic.gdx.maps.tiled TiledMap
                                       TiledMapTile
                                       TiledMapTileLayer
                                       TiledMapTileLayer$Cell
-                                      TmxMapLoader))
+                                      TmxMapLoader)
+        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
 
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
@@ -345,8 +347,6 @@
   (get-height [this]
     (.getHeight this)))
 
-(import '(com.badlogic.gdx.maps MapLayers))
-
 (defn layers-get [^MapLayers map-layers ^String layer-name]
   (.get map-layers layer-name))
 
@@ -363,9 +363,11 @@
 (defn get-tile [^TiledMapTileLayer$Cell cell]
   (.getTile cell))
 
-(import '(com.badlogic.gdx.graphics.g2d TextureRegion)
-        '(com.badlogic.gdx.maps MapLayer MapProperties)
-        '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
+(import '(com.badlogic.gdx.graphics.g2d Batch
+                                        BitmapFont
+                                        BitmapFont$BitmapFontData
+                                        SpriteBatch
+                                        TextureRegion))
 
 (defn put! [^MapProperties map-properties k v]
   (.put map-properties k v))
@@ -462,8 +464,13 @@
       (set-cell! layer x y tile))
     (add-map-layer! (get-layers tiled-map) layer)))
 
-(import '(com.badlogic.gdx.graphics Texture))
-(import '(com.badlogic.gdx.graphics.g2d Batch))
+(import '(com.badlogic.gdx.graphics Color
+                                    Colors
+                                    Texture
+                                    Texture$TextureFilter
+                                    OrthographicCamera
+                                    Pixmap 
+                                    Pixmap$Format))
 
 (defn- draw-tile!
   [x
@@ -573,8 +580,6 @@
         (recur (dec row)
                (- y layer-tile-height))))))
 
-(import '(com.badlogic.gdx.graphics OrthographicCamera))
-
 (defn draw-tiled-map!
   [tiled-map
    batch
@@ -617,13 +622,20 @@
           :else
           (recur remaining result))))
 
+(import '(com.badlogic.gdx ApplicationListener
+                           Audio
+                           Files
+                           Gdx
+                           Graphics
+                           Input
+                           Input$Buttons
+                           Input$Keys))
+
 (defn internal [files path]
-  (com.badlogic.gdx.Files/.internal files path))
+  (Files/.internal files path))
 
 (defn texture! [^FileHandle file-handle]
   (Texture. file-handle))
-
-(import '(com.badlogic.gdx.graphics Pixmap Pixmap$Format))
 
 (defn pixmap->texture! [pixmap]
   (Texture. ^Pixmap pixmap))
@@ -803,6 +815,8 @@
        (not= y1 y2)))
 
 (import '(com.badlogic.gdx.scenes.scene2d.ui Button 
+                                             ButtonGroup
+                                             Cell
                                              CheckBox 
                                              HorizontalGroup 
                                              Image 
@@ -816,13 +830,24 @@
                                              TextButton 
                                              TextField
                                              TextTooltip 
+                                             TooltipManager
                                              Widget 
                                              Window))
 
 (defn text-tooltip [^String text ^Skin skin]
   (TextTooltip. text skin))
 
-(import '(com.badlogic.gdx.scenes.scene2d Actor))
+(import '(com.badlogic.gdx.scenes.scene2d Actor
+                                          Event
+                                          Group
+                                          Stage
+                                          Touchable))
+
+(import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener
+                                                ClickListener
+                                                Drawable
+                                                TextureRegionDrawable
+                                                Layout))
 
 (extend-type Actor
   GetWidth
@@ -854,9 +879,7 @@
          (set-text! label-widget (text-fn))))}))
 
 (defn pack! [layout]
-  (com.badlogic.gdx.scenes.scene2d.utils.Layout/.pack layout))
-
-(import '(com.badlogic.gdx.scenes.scene2d Group))
+  (Layout/.pack layout))
 
 (defprotocol AddActor
   (add-actor! [_ actor]))
@@ -866,9 +889,6 @@
   (add-actor! [this actor]
     (.addActor this actor)))
 
-(import '(com.badlogic.gdx.scenes.scene2d Event
-                                          Stage))
-
 (extend-type Stage
   AddActor
   (add-actor! [this actor]
@@ -877,9 +897,6 @@
 (defn texture-image
   [^Texture texture]
   (Image. texture))
-
-(import '(com.badlogic.gdx.scenes.scene2d.utils ClickListener
-                                                Drawable))
 
 (defn drawable-image
   [^Drawable drawable]
@@ -902,16 +919,16 @@
   (Table.))
 
 (defn bottom! [cell]
-  (.bottom ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.bottom ^Cell cell))
 
 (defn right! [cell]
-  (.right ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.right ^Cell cell))
 
 (defn expand! [cell]
-  (.expand ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.expand ^Cell cell))
 
 (defn expand-x! [cell]
-  (.expandX ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.expandX ^Cell cell))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
@@ -932,9 +949,6 @@
      (doto (add! table label)
        (right!)
        (expand-x!)))))
-
-
-(import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener))
 
 (defn create-window [^String title skin]
   (Window. title ^Skin skin))
@@ -989,19 +1003,17 @@
           (add-upd-label! skin table update-fn))))
     table))
 
-(import '(com.badlogic.gdx.scenes.scene2d Touchable))
-
 (defn set-touchable! [actor touchable]
   (Actor/.setTouchable actor touchable))
 
 (defn fill-x! [cell]
-  (.fillX ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.fillX ^Cell cell))
 
 (defn colspan! [cell n]
-  (.colspan ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (int n)))
+  (.colspan ^Cell cell (int n)))
 
 (defn fill-y! [cell]
-  (.fillY ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.fillY ^Cell cell))
 
 (defn set-fill-parent! [table flag?]
   (Table/.setFillParent table true))
@@ -1151,12 +1163,12 @@
           property
           (keys property)))
 
-(import '(com.badlogic.gdx.math Vector2))
+(import '(com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3))
 
 (defn create-stack []
   (Stack.))
 
-(import '(com.badlogic.gdx.utils.viewport Viewport))
+(import '(com.badlogic.gdx.utils.viewport FitViewport Viewport))
 
 (defn unproject [^Viewport viewport [x y]]
   (let [v2 (Vector2. x y)]
@@ -1176,8 +1188,6 @@
   GetX
   (get-x [this]
     (.getX this)))
-
-(import '(com.badlogic.gdx Input))
 
 (extend-type Input
   GetX
@@ -1241,20 +1251,17 @@
       (set-name! "inventory-cell")
       (set-user-object! cell))))
 
-(import '(com.badlogic.gdx.graphics Color))
-(import '(com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable))
-
 (defn pad! [cell fv]
-  (.pad ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
+  (.pad ^Cell cell (float fv)))
 
 (defn pad-top! [cell fv]
-  (.padTop ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
+  (.padTop ^Cell cell (float fv)))
 
 (defn pad-bottom! [cell fv]
-  (.padBottom ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
+  (.padBottom ^Cell cell (float fv)))
 
 (defn expand-y! [cell]
-  (.expandY ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.expandY ^Cell cell))
 
 (extend-type Actor
   Visible
@@ -1949,8 +1956,6 @@
 (defn get-root [^Stage stage]
   (.getRoot stage))
 
-(import '(com.badlogic.gdx.scenes.scene2d.ui ButtonGroup))
-
 (defn add-skill!
   [action-bar
    {:keys [skill-id
@@ -2015,7 +2020,9 @@
   (unproject (get-viewport stage) 
              [(get-x input) (get-y input)]))
 
-(import '(com.badlogic.gdx.utils Align))
+(import '(com.badlogic.gdx.utils Align
+                                 Disposable
+                                 ScreenUtils))
 
 (defn set-modal! [window modal?]
   (Window/.setModal window modal?))
@@ -2120,7 +2127,7 @@
 (defn float-bits [r g b a]
   (Color/toFloatBits (float r) (float g) (float b) (float a)))
 
-(defrecord Cell 
+(defrecord GridCell 
   [position
    middle
    adjacent-cells
@@ -2167,8 +2174,6 @@
         (float (/ (:entity/width entity)  2))
         (float (/ (:entity/width target-entity) 2)))
      (float maxrange)))
-
-(import '(com.badlogic.gdx.math Circle Rectangle Intersector))
 
 (defn rectangle
   [{:keys [entity/position
@@ -2444,7 +2449,7 @@
         h (props-get props "height")
         xyfn (fn [position]
                (atom
-                (map->Cell
+                (map->GridCell
                  {:position position
                   :middle (mapv (partial + 0.5) position)
                   :movement (case (movement-property tiled-map position)
@@ -2526,8 +2531,6 @@
                 (swap! explored-tile-corners assoc-in (mapv int position) true))
               visible-tile-color))))))
 
-(import '(com.badlogic.gdx.utils Disposable))
-
 (defn dispose! [disposable]
   (Disposable/.dispose disposable))
 
@@ -2546,8 +2549,6 @@
         texture (pixmap->texture! pixmap)]
     (dispose! pixmap)
     texture))
-
-(import '(com.badlogic.gdx.graphics.g2d BitmapFont BitmapFont$BitmapFontData))
 
 (defn- draw-text! 
   [batch 
@@ -3235,9 +3236,7 @@
     s))
 
 (defn new-cursor [graphics pixmap hotspot-x hotspot-y]
-  (com.badlogic.gdx.Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
-
-(import '(com.badlogic.gdx.utils.viewport FitViewport))
+  (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
 
 (defn create-viewport! [width height world-unit-scale]
   (let [world-width (* width world-unit-scale)
@@ -3247,8 +3246,7 @@
                   (doto (OrthographicCamera.)
                     (.setToOrtho false world-width world-height)))))
 
-(import '(com.badlogic.gdx.graphics Texture$TextureFilter)
-        '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
+(import '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
 
 (defn create-default-font! [files {:keys [path size quality-scaling use-integer-positions?]}]
   (let [generator (FreeTypeFontGenerator. (internal files path))
@@ -3443,8 +3441,6 @@
   (doto (Group.)
     (add-actors! actors)
     (set-name! "moon.ui.windows")))
-
-(import '(com.badlogic.gdx.math Vector3))
 
 (defn get-camera [^Viewport viewport]
   (.getCamera viewport))
@@ -4069,8 +4065,6 @@
 
           nil)))))
 
-(import '(com.badlogic.gdx Input$Keys))
-
 (defn- movement-vector [key-pressed?]
   (let [r (when (key-pressed? Input$Keys/D) [1  0])
         l (when (key-pressed? Input$Keys/A) [-1 0])
@@ -4143,8 +4137,6 @@
     [[:tx/sound "bfxr_denied.wav"]
      [:tx/show-message "No selected skill"]]))
 
-(import '(com.badlogic.gdx Input$Buttons))
-
 (defn handle-player-input!
   [player-eid handle-txs! interaction-state stage input key-pressed? button-just-pressed?]
   (case (:state (:entity/fsm @player-eid))
@@ -4171,7 +4163,7 @@
     nil))
 
 (defn get-delta-time [graphics]
-  (com.badlogic.gdx.Graphics/.getDeltaTime graphics))
+  (Graphics/.getDeltaTime graphics))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
@@ -4180,12 +4172,7 @@
       (get-user-object skill-button))))
 
 (defn new-sound [audio file-handle]
-  (com.badlogic.gdx.Audio/.newSound audio file-handle))
-
-(import '(com.badlogic.gdx.graphics Colors)
-        '(com.badlogic.gdx.graphics.g2d SpriteBatch)
-        '(com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
-        '(com.badlogic.gdx.utils ScreenUtils))
+  (Audio/.newSound audio file-handle))
 
 (defn clear-screen! [r g b a]
   (ScreenUtils/clear r g b a))
@@ -4214,10 +4201,10 @@
   (.draw stage))
 
 (defn get-frames-per-second [graphics]
-  (com.badlogic.gdx.Graphics/.getFramesPerSecond graphics))
+  (Graphics/.getFramesPerSecond graphics))
 
 (defn set-cursor! [graphics cursor]
-  (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
+  (Graphics/.setCursor graphics cursor))
 
 (defn set-input-processor! [input processor]
   (.setInputProcessor ^Input input processor))
@@ -5180,10 +5167,10 @@
     table))
 
 (defn width! [cell fv]
-  (.width ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
+  (.width ^Cell cell (float fv)))
 
 (defn height! [cell fv]
-  (.height ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
+  (.height ^Cell cell (float fv)))
 
 (defn scroll-pane [actor skin]
   (ScrollPane. ^Actor actor ^Skin skin))
@@ -5342,7 +5329,7 @@
   (name k))
 
 (defn left! [cell]
-  (.left ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.left ^Cell cell))
 
 (defn- add-horiz-sep! [table colspan]
   (doto (add! table nil)
@@ -5525,7 +5512,7 @@
     (create-default-widget v skin)))
 
 (defn center! [cell]
-  (.center ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
+  (.center ^Cell cell))
 
 (defn- property-editor-table [widget on-save on-delete skin]
   (let [table (table-create)]
@@ -5756,7 +5743,7 @@
   (get-name [this]
     (.getName this)))
 
-(import '(com.badlogic.gdx Gdx))
+(import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
 (defn lwjgl3-application! 
   [{:keys [create! 
@@ -5767,9 +5754,9 @@
            width 
            height 
            fps]}]
-  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application. 
-    (reify com.badlogic.gdx.ApplicationListener
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. 
+    (reify ApplicationListener
       (create [_]
         (create! Gdx/audio
                  Gdx/files
@@ -5789,7 +5776,7 @@
       (pause [_])
 
       (resume [_])) 
-    (doto (com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration.)
+    (doto (Lwjgl3ApplicationConfiguration.)
       (.setTitle title)
       (.setWindowedMode width height)
       (.setForegroundFPS fps))))
