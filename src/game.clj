@@ -576,8 +576,8 @@
 (import '(com.badlogic.gdx.graphics OrthographicCamera))
 
 (defn draw-tiled-map!
-  [^TiledMap tiled-map
-   ^Batch batch
+  [tiled-map
+   batch
    ^OrthographicCamera camera
    color-setter
    world-unit-scale]
