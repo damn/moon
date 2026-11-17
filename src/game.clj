@@ -2449,12 +2449,6 @@
   (when-let [cell-atom (get-in @*grid* [x y])]
     @cell-atom))
 
-(defn cells-at [tile-positions]
-  (for [[x y] tile-positions
-        :let [cell (cell-at [x y])]
-        :when cell]
-    [[x y] cell]))
-
 (defn- create-grid [^TiledMap tiled-map]
   (let [props (get-properties tiled-map)
         w (props-get props "width")
@@ -3476,11 +3470,11 @@
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
         bottom-y (apply min (map second frustum-points))
-        top-y    (apply max (map second frustum-points))
-        tile-positions (for [x (range (int left-x) (int right-x))
-                             y (range (int bottom-y) (+ 2 (int top-y)))]
-                         [x y])]
-    (doseq [[[x y] cell*] (cells-at tile-positions)]
+        top-y    (apply max (map second frustum-points))]
+    (doseq [x (range (int left-x) (int right-x))
+            y (range (int bottom-y) (+ 2 (int top-y)))
+            :let [cell* (cell-at [x y])]
+            :when cell*]
       (when (and show-cell-entities? (seq (:entities cell*)))
         (filled-rectangle! shape-drawer x y 1 1 (float-bits 1 0 0 0.6)))
       (when (and show-cell-occupied? (seq (:occupied cell*)))
