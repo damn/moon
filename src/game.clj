@@ -3736,7 +3736,7 @@
     (clickable-draw v entity batch default-font unit-scale)
 
     :player-item-on-cursor
-    (player-item-on-cursor-draw v entity batch unit-scale mouseover-actor textures viewport)
+    (player-item-on-cursor-draw v entity batch unit-scale (mouseover-actor) textures viewport)
 
     :entity/animation
     (animation-draw v entity batch unit-scale textures)
@@ -3776,8 +3776,7 @@
     (rectangle! shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [shape-drawer batch default-font textures unit-scale mouseover-actor 
-   raycaster active-entities player-entity viewport show-body-bounds?]
+  [draw-component! shape-drawer raycaster active-entities player-entity show-body-bounds?]
   (doseq [[z-order entities] (sort-by (comp render-z-order key) <
                                       (group-by :entity/z-order (map deref active-entities)))
           render-layer render-layers
@@ -3792,9 +3791,7 @@
                                 (float-bits 0.5 0.5 0.5 1))))
     (doseq [[k v] entity
             :when (get render-layer k)]
-      (draw-component shape-drawer batch default-font unit-scale mouseover-actor 
-                      textures player-entity active-entities raycaster viewport
-                      entity k v))))
+      (draw-component! k v entity))))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
   (->> entity
@@ -4614,6 +4611,19 @@
         resize-viewport! (fn [width height]
                            (resize! @viewport width height false))
         batch-end! #(.end ^Batch @batch)
+        draw-component! (fn [k v entity]
+                          (draw-component @shape-drawer 
+                                          @batch 
+                                          @default-font 
+                                          @unit-scale 
+                                          #(let [[x y] (ui-mouse-position @stage Gdx/input)]
+                                            (mouseover-actor @stage x y)) 
+                                          @textures 
+                                          @@player-eid 
+                                          @active-entities 
+                                          @raycaster 
+                                          @viewport
+                                          entity k v))
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
                              (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
@@ -4621,17 +4631,11 @@
                                               @show-cell-entities?
                                               @show-cell-occupied?
                                               @show-potential-field-colors?)
-                             (draw-entities! @shape-drawer
-                                             @batch 
-                                             @default-font 
-                                             @textures 
-                                             @unit-scale 
-                                             (let [[x y] (ui-mouse-position @stage Gdx/input)]
-                                               (mouseover-actor @stage x y))
+                             (draw-entities! draw-component!
+                                             @shape-drawer
                                              @raycaster
                                              @active-entities
                                              @@player-eid
-                                             @viewport
                                              @show-body-bounds?)
                              (highlight-mouseover-tile @shape-drawer Gdx/input @viewport)
                              (reset! unit-scale 1))
