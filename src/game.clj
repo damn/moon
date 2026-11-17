@@ -3198,7 +3198,6 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
-(import '(com.badlogic.gdx Gdx))
 ; FIXME PLAYER ITEM ON CURSOR ENTER/EXIT MSUHDFN
 (defn- fsm-event-txs [eid event item-place-position & [params]]
   (let [fsm (:entity/fsm @eid)
@@ -3600,13 +3599,13 @@
                      :up? true})))))
 
 (defn player-item-on-cursor-draw
-  [v entity batch unit-scale mouseover-actor textures viewport]
+  [v entity batch unit-scale mouseover-actor textures viewport input]
   (let [{:keys [item]} v]
     (when-not mouseover-actor
       (draw-texture-region! batch unit-scale
                             (get-texture-region textures (:entity/image item))
                             (item-place-position viewport
-                                                 Gdx/input
+                                                 input
                                                  (:entity/position entity)
                                                  (- (:entity/click-distance-tiles entity) 0.1))
                             {:center? true}))))
@@ -3738,14 +3737,14 @@
 
 (defn- draw-component
   [shape-drawer batch default-font unit-scale mouseover-actor
-   textures player active-entities raycaster viewport
+   textures player active-entities raycaster viewport input
    entity k v]
   (case k
     :entity/clickable
     (clickable-draw v entity batch default-font unit-scale)
 
     :player-item-on-cursor
-    (player-item-on-cursor-draw v entity batch unit-scale (mouseover-actor) textures viewport)
+    (player-item-on-cursor-draw v entity batch unit-scale (mouseover-actor) textures viewport input)
 
     :entity/animation
     (animation-draw v entity batch unit-scale textures)
@@ -4025,8 +4024,8 @@
       (set-fill-parent! true)
       (set-name! "moon.ui.action-bar"))))
 
-(defn current-mouseover-actor [stage]
-  (let [[x y] (ui-mouse-position stage Gdx/input)]
+(defn current-mouseover-actor [stage input]
+  (let [[x y] (ui-mouse-position stage input)]
     (mouseover-actor stage x y)))
 
 (defn- cursor-key [player-eid interaction-state]
@@ -4177,7 +4176,7 @@
 (import '(com.badlogic.gdx Input$Buttons))
 
 (defn handle-player-input!
-  [player-eid handle-txs! interaction-state stage key-pressed? button-just-pressed?]
+  [player-eid handle-txs! interaction-state stage input key-pressed? button-just-pressed?]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (if-let [move-v (movement-vector key-pressed?)]
@@ -4194,7 +4193,7 @@
       (handle-txs! [[:tx/event player-eid :no-movement-input]]))
 
     :player-item-on-cursor
-    (let [[x y] (ui-mouse-position stage Gdx/input)]
+    (let [[x y] (ui-mouse-position stage input)]
       (when (and (button-just-pressed? Input$Buttons/LEFT)
                  (not (mouseover-actor stage x y)))
         (handle-txs! [[:tx/event player-eid :drop-item]])))
@@ -4249,6 +4248,9 @@
 
 (defn set-cursor! [graphics cursor]
   (com.badlogic.gdx.Graphics/.setCursor graphics cursor))
+
+(defn set-input-processor! [input processor]
+  (.setInputProcessor ^Input input processor))
 
 (require '[malli.error :as me])
 (defn validate-hum [schema value]
@@ -4354,13 +4356,15 @@
         textures (atom nil)
         viewport (atom nil)
         raycaster (atom nil)
+        input (atom nil)
+        graphics (atom nil)
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
         item-place-position* (fn [position click-distance]
-                               (item-place-position @viewport Gdx/input position click-distance))
+                               (item-place-position @viewport @input position click-distance))
         set-item! (fn [cell item]
                     (-> (get-root @stage)
                         (find-actor "moon.ui.windows.inventory")
@@ -4443,7 +4447,7 @@
                                                 (str (readable @*elapsed-time*) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
-                                   :update-fn (fn [] (get-frames-per-second Gdx/graphics))
+                                   :update-fn (fn [] (get-frames-per-second @graphics))
                                    :icon "images/fps.png"}
                                   {:label "Mouseover-entity id"
                                    :update-fn (fn []
@@ -4454,10 +4458,10 @@
                                    :update-fn (fn [] @paused?)}
                                   {:label "GUI"
                                    :update-fn (fn []
-                                                (mapv int (ui-mouse-position @stage Gdx/input)))}
+                                                (mapv int (ui-mouse-position @stage @input)))}
                                   {:label "World"
                                    :update-fn (fn []
-                                                (mapv int (unproject @viewport [(get-x Gdx/input) (get-y Gdx/input)])))}
+                                                (mapv int (unproject @viewport [(get-x @input) (get-y @input)])))}
                                   {:label "Zoom"
                                    :update-fn (fn []
                                                 (.zoom ^OrthographicCamera (get-camera @viewport)))
@@ -4544,7 +4548,7 @@
                                    (let [player-eid @player-eid
                                          stage @stage
                                          mouseover-eid @mouseover-eid
-                                         mouseover-actor (current-mouseover-actor stage)]
+                                         mouseover-actor (current-mouseover-actor stage input)]
                                      (cond
                                        mouseover-actor
                                        [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -4577,21 +4581,22 @@
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
         mouse-interaction! (fn []
-                             (let [interaction-state (create-interaction-state Gdx/input)]
-                               (set-cursor! Gdx/graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
+                             (let [interaction-state (create-interaction-state @input)]
+                               (set-cursor! @graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
                                (handle-player-input! @player-eid
                                                      handle-txs!
                                                      interaction-state
-                                                     @stage 
-                                                     #(key-pressed? Gdx/input (int %))
-                                                     #(.isButtonJustPressed Gdx/input (int %)))))
+                                                     @stage
+                                                     @input
+                                                     #(key-pressed? @input (int %))
+                                                     #(.isButtonJustPressed ^Input @input (int %)))))
         update-paused-state! (fn []
                                (reset! paused?
                                        (or #_error
                                            (and pausing?
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
-                                                (not (or (key-just-pressed? Gdx/input (int (:unpause-once controls)))
-                                                         (key-pressed? Gdx/input (int (:unpause-continously controls)))))))))
+                                                (not (or (key-just-pressed? @input (int (:unpause-once controls)))
+                                                         (key-pressed? @input (int (:unpause-continously controls)))))))))
         remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db))
         key-pressed-checks! (fn []
                               (doseq [[k f] {(:zoom-in controls) (fn []
@@ -4602,7 +4607,7 @@
                                                                     (let [^OrthographicCamera camera (get-camera @viewport)]
                                                                       (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                                       (.update camera)))}]
-                                (when (key-pressed? Gdx/input (int k))
+                                (when (key-pressed? @input (int k))
                                   (f))))
         key-just-pressed-checks! (fn []
                                    (doseq [[k f] {(:close-windows-key controls) (fn []
@@ -4611,7 +4616,7 @@
                                                                                  (toggle-inventory-visible! @stage))
                                                   (:toggle-entity-info controls) (fn []
                                                                                    (toggle-entity-info! @stage))}]
-                                     (when (key-just-pressed? Gdx/input (int k))
+                                     (when (key-just-pressed? @input (int k))
                                        (f))))
         update-stage! #(act! @stage)
         draw-stage! #(draw! @stage)
@@ -4625,13 +4630,14 @@
                                           @batch 
                                           @default-font 
                                           @unit-scale 
-                                          #(let [[x y] (ui-mouse-position @stage Gdx/input)]
+                                          #(let [[x y] (ui-mouse-position @stage @input)]
                                             (mouseover-actor @stage x y)) 
                                           @textures 
                                           @@player-eid 
                                           @active-entities 
                                           @raycaster 
                                           @viewport
+                                          @input
                                           entity k v))
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
@@ -4646,7 +4652,7 @@
                                              @active-entities
                                              @@player-eid
                                              @show-body-bounds?)
-                             (highlight-mouseover-tile @shape-drawer Gdx/input @viewport)
+                             (highlight-mouseover-tile @shape-drawer @input @viewport)
                              (reset! unit-scale 1))
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
         render-tiled-map! #(draw-tiled-map! @tiled-map*
@@ -4675,12 +4681,12 @@
                                    (reset! active-entities (active-entities* @*content-grid* @@player-eid)))
          update-mouseover-eid! (fn []
                                  (let [old-mouseover-eid @mouseover-eid
-                                       [x y] (ui-mouse-position @stage Gdx/input)
+                                       [x y] (ui-mouse-position @stage @input)
                                        new-eid (if (mouseover-actor @stage x y)
                                                  nil
                                                  (let [player @@player-eid
                                                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                                                    (point->entities @*grid* (unproject @viewport [(get-x Gdx/input) (get-y Gdx/input)])))]
+                                                                    (point->entities @*grid* (unproject @viewport [(get-x @input) (get-y @input)])))]
                                                    (->> hits
                                                         (sort-by #((:entity/z-order @%) render-z-order) <)
                                                         reverse
@@ -4694,11 +4700,13 @@
         ]
     {
      :create!
-     (fn [audio files graphics]
+     (fn [audio files graphics-arg input-arg]
+       (reset! graphics graphics-arg)
+       (reset! input input-arg)
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
                                       (let [pixmap (pixmap (internal files path))
-                                            cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
+                                            cursor (new-cursor graphics-arg pixmap hotspot-x hotspot-y)]
                                         (dispose! pixmap)
                                         cursor))))
        (reset! sounds (into {}
@@ -4716,7 +4724,7 @@
        (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                            (float (:height (:stage game-config)))) 
                              @batch))
-       (.setInputProcessor Gdx/input @stage)
+       (set-input-processor! input-arg @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (reset! textures (create-textures files (:textures game-config)))
@@ -4770,7 +4778,7 @@
                                        (let [cell-size 48]
                                          (create-inventory-window
                                            @player-eid
-                                           Gdx/input
+                                           input-arg
                                            (fn [_event cell]
                                              (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
                                            (fn [player-entity x y mouseover? cell]
@@ -4785,7 +4793,7 @@
                                            @skin
                                            @stage
                                            @textures))])
-                      (player-state-draw-create @player-eid unit-scale @textures Gdx/input)
+                      (player-state-draw-create @player-eid unit-scale @textures input-arg)
                       (player-message-actor-create @default-font unit-scale)]]
          (add-actor! @stage actor))
        (sync-player-ui!)
@@ -4802,7 +4810,7 @@
        (dispose! @tiled-map*))
 
      :render!
-     (fn [graphics]
+     (fn [graphics-arg _input]
        (clear-screen! 0 0 0 0)
 
        (update-mouseover-eid!)
@@ -4821,7 +4829,7 @@
        (mouse-interaction!)
        (update-paused-state!)
 
-       (tick-game! (get-delta-time graphics))
+       (tick-game! (get-delta-time graphics-arg))
 
        (remove-destroyed-entities!)
        (key-pressed-checks!)
@@ -4889,7 +4897,7 @@
                      (dispose! @tiled-map)
                      (reset! tiled-map (generate-level! level-fn)))])]
     {:create!
-     (fn [_audio files _graphics]
+     (fn [_audio files _graphics input]
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files "skin/uiskin.json")))
        (reset! stage (let [stage (Stage. (FitViewport. 1440 900) @batch)
@@ -4900,7 +4908,7 @@
                        (pack! window)
                        (add-actor! stage window)
                        stage))
-       (.setInputProcessor Gdx/input @stage) 
+       (set-input-processor! input @stage) 
        (reset! viewport (FitViewport. (float world-width)
                                       (float world-height)
                                       (doto (OrthographicCamera.)
@@ -4923,7 +4931,7 @@
        (dispose! @tiled-map))
 
      :render!
-     (fn [_]
+     (fn [_graphics input]
        (clear-screen! 0 0 0 0) 
        (set-projection-matrix! @batch (.combined (get-camera @viewport)))
        (Batch/.begin @batch) 
@@ -4955,7 +4963,7 @@
                                         (let [pos (.position @camera)]
                                           (set! (.y pos) (- (.y pos) 1))
                                           (.update @camera)))}]
-         (when (key-pressed? Gdx/input k)
+         (when (key-pressed? input k)
            (f)))
        (act! @stage)
        (draw! @stage))
@@ -5595,6 +5603,7 @@
         batch (atom nil)
         textures (atom nil)
         skin (atom nil)
+        input (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         editor {:editor/all-raw
                 (fn [property-type]
@@ -5702,7 +5711,7 @@
                                    (set-modal! window true)
                                    (add-actor! window (proxy [Actor] []
                                                         (act [delta]
-                                                          (when (key-just-pressed? Gdx/input Input$Keys/ENTER)
+                                                          (when (key-just-pressed? @input Input$Keys/ENTER)
                                                             (on-save this))
                                                           (let [^Actor this this]
                                                             (proxy-super act delta)))
@@ -5726,7 +5735,8 @@
                         (pack! window)
                         window))]
     {:create!
-     (fn [audio files _graphics] 
+     (fn [audio files _graphics input-arg] 
+       (reset! input input-arg)
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
@@ -5735,7 +5745,7 @@
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (new-sound audio (internal files path))])))
        (reset! textures (create-textures files (:textures editor-config)))
-       (.setInputProcessor Gdx/input @editor-stage)
+       (set-input-processor! input-arg @editor-stage)
        (add-actor! @editor-stage (main-window)))
      :dispose!
      (fn []
@@ -5744,7 +5754,7 @@
        (dispose! @skin)
        (run! dispose! (vals @textures)))
      :render!
-     (fn [_]
+     (fn [_graphics _input]
        (clear-screen! 0 0 0 0)
        (act! @editor-stage)
        (draw! @editor-stage))
@@ -5763,6 +5773,8 @@
   (get-name [this]
     (.getName this)))
 
+(import '(com.badlogic.gdx Gdx))
+
 (defn lwjgl3-application! 
   [{:keys [create! 
            dispose! 
@@ -5778,13 +5790,15 @@
       (create [_]
         (create! Gdx/audio
                  Gdx/files
-                 Gdx/graphics))
+                 Gdx/graphics
+                 Gdx/input))
 
       (dispose [_]
         (dispose!))
 
       (render [_]
-        (render! Gdx/graphics))
+        (render! Gdx/graphics
+                 Gdx/input))
 
       (resize [_ width height]
         (resize! width height))
@@ -5836,7 +5850,7 @@
                          :scale 2
                          :up? true}}]]
     {:create!
-     (fn [_audio files _graphics]
+     (fn [_audio files _graphics _input]
        (reset! batch (sprite-batch!))
        (reset! font (create-default-font! files
                                           {:path "fonts/films.EXL_____.ttf"
@@ -5858,8 +5872,8 @@
        (dispose! @shape-drawer-texture))
 
      :render!
-     (fn [_]
-       (when (key-just-pressed? Gdx/input Input$Keys/U)
+     (fn [_graphics input]
+       (when (key-just-pressed? input Input$Keys/U)
          (swap! unit-scale #(if (== ^double % 1.0)
                               world-unit-scale
                               1.0)))
