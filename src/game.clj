@@ -3777,14 +3777,12 @@
 
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor 
-   raycaster active-entities player-eid viewport show-body-bounds?]
-  (let [entities (map deref active-entities)
-        player @player-eid
-        should-draw? (fn [entity z-order]
+   raycaster active-entities player-entity viewport show-body-bounds?]
+  (let [should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (line-of-sight? raycaster player entity)))]
+                           (line-of-sight? raycaster player-entity entity)))]
     (doseq [[z-order entities] (sort-by (comp render-z-order key) <
-                                        (group-by :entity/z-order entities))
+                                        (group-by :entity/z-order (map deref active-entities)))
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]
@@ -3797,7 +3795,7 @@
       (doseq [[k v] entity
               :when (get render-layer k)]
         (draw-component shape-drawer batch default-font unit-scale mouseover-actor 
-                        textures player active-entities raycaster viewport
+                        textures player-entity active-entities raycaster viewport
                         entity k v)))))
 
 (defn- choose-skill [ray-blocked? entity effect-ctx]
@@ -4634,7 +4632,7 @@
                                                (mouseover-actor @stage x y))
                                              @raycaster
                                              @active-entities
-                                             @player-eid
+                                             @@player-eid
                                              @viewport
                                              @show-body-bounds?)
                              (highlight-mouseover-tile @shape-drawer Gdx/input @viewport)
