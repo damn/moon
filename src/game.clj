@@ -8,7 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def *content-grid* (atom nil))
 (def factions-iterations {:good 15 :evil 5})
 (def float-rounding-error (double 0.000001))
 (def active-skill-radius (let [tile-size 48
@@ -46,9 +45,6 @@
              :inventory.slot/rings})
 (def max-delta 0.04)
 (def max-speed (/ minimum-size max-delta))
-(def active-entities (atom nil))
-(def *start-position* (atom nil))
-(def sounds (atom nil))
 (require '[clojure.string :as str])
 (def controls-info
   (str/join "\n"
@@ -2770,7 +2766,7 @@
 
     nil))
 
-(defn- spawn-entity! [entity elapsed-time id-counter entity-ids grid]
+(defn- spawn-entity! [entity elapsed-time id-counter entity-ids grid content-grid]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
@@ -2812,7 +2808,7 @@
       (swap! eid assoc :entity/id id)
       (swap! entity-ids assoc id eid))
     (assert (:entity/position @eid))
-    (update-entity! @*content-grid* eid)
+    (update-entity! content-grid eid)
     (assert (:entity/position @eid))
     (when (:entity/collides? @eid)
       (assert (valid-position? grid @eid (:entity/id @eid))))
@@ -3945,7 +3941,7 @@
                                                            [0 0])]]))))
 
 (defn movement-tick
-  [v eid delta-time _handle-txs! grid]
+  [v eid delta-time _handle-txs! grid content-grid]
   (let [{:keys [direction
                 speed]
          :as movement} v]
@@ -3966,7 +3962,7 @@
                             (update body :entity/position
                                     #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
           (swap! eid assoc :entity/position (:entity/position body))
-          (update-entity! @*content-grid* eid)
+          (update-entity! content-grid eid)
           (remove-from-touched-cells! grid eid)
           (set-touched-cells! grid eid)
           (when (:entity/collides? @eid)
@@ -4055,11 +4051,11 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn destroy-entities! [handle-txs! game-db entity-ids grid]
+(defn destroy-entities! [handle-txs! game-db entity-ids grid content-grid]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
     (let [id (:entity/id @eid)]
       (swap! entity-ids dissoc id)
-      (remove-entity! @*content-grid* eid)
+      (remove-entity! content-grid eid)
       (remove-from-touched-cells! grid eid)
       (when (:entity/collides? @eid)
         (remove-from-occupied-cells! grid eid)))
@@ -4338,6 +4334,8 @@
         id-counter (atom 0)
         entity-ids (atom {})
         grid (atom nil)
+        content-grid (atom nil)
+        active-entities (atom nil)
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -4362,7 +4360,7 @@
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
                                     (fn [entity-decl]
-                                      (spawn-entity! entity-decl @elapsed-time id-counter entity-ids @grid))
+                                      (spawn-entity! entity-decl @elapsed-time id-counter entity-ids @grid @content-grid))
                                     :tx/event
                                     (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
@@ -4500,7 +4498,7 @@
                                           @grid)
 
                            :entity/movement
-                           (movement-tick v eid delta-time handle-txs! @grid)
+                           (movement-tick v eid delta-time handle-txs! @grid @content-grid)
 
                            nil))
         tick-entities! (fn [delta-time elapsed-time]
@@ -4580,7 +4578,7 @@
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
                                                 (not (or (key-just-pressed? @input (int (:unpause-once controls)))
                                                          (key-pressed? @input (int (:unpause-continously controls)))))))))
-        remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db entity-ids @grid))
+        remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db entity-ids @grid @content-grid))
         key-pressed-checks! (fn []
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
@@ -4663,7 +4661,7 @@
                                   (set! (.y pos) y)
                                   (.update camera)))
          update-active-entities! (fn []
-                                   (reset! active-entities (active-entities* @*content-grid* @@player-eid)))
+                                   (reset! active-entities (active-entities* @content-grid @@player-eid)))
          update-mouseover-eid! (fn []
                                  (let [old-mouseover-eid @mouseover-eid
                                        [x y] (ui-mouse-position @stage @input)
@@ -4717,7 +4715,6 @@
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level!)]
          (reset! tiled-map* tiled-map)
-         (reset! *start-position* start-position)
          (reset! id-counter 0)
          (reset! entity-ids {})
          (let [props (get-properties tiled-map)
@@ -4725,69 +4722,70 @@
                height (props-get props "height")
                g (create-grid tiled-map)]
            (reset! grid g) 
-           (reset! *content-grid* (create-content-grid width height 16))
+           (reset! content-grid (create-content-grid width height 16))
            (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
                                                              (range height)))
                                                (range width)))
            (reset! raycaster (create-raycaster g)))
-         (reset! elapsed-time 0))
-       (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
-                                                 :creature-property (build game-schemas game-db :creatures/vampire)
-                                                 :components {:entity/fsm {:fsm :fsms/player
-                                                                           :initial-state :player-idle}
-                                                              :entity/faction :good
-                                                              :entity/player? true
-                                                              :entity/free-skill-points 3
-                                                              :entity/clickable {:type :clickable/player}
-                                                              :entity/click-distance-tiles 1.5}})
-                                @elapsed-time
-                                id-counter
-                                entity-ids
-                                @grid)]
-         (let [eid (get @entity-ids 1)]
-           (assert (:entity/player? @eid))
-           (reset! player-eid eid)))
-       (doseq [actor [(create-action-bar)
-                      (create-dev-menu {:menus menus
-                                        :update-labels update-labels
-                                        :skin @skin})
-                      (hp-mana-bar-create @player-eid @default-font @stage @textures unit-scale)
-                      (windows-create [(create-info-window
-                                         {:title "Entity Info"
-                                          :actor-name "moon.ui.windows.entity-info"
-                                          :visible? false
-                                          :position [(get-world-width (get-viewport @stage)) 0]
-                                          :set-label-text! (fn []
-                                                             (if-let [eid @mouseover-eid]
-                                                               (info-text (apply dissoc @eid [:entity/skills
-                                                                                              :entity/faction
-                                                                                              :active-skill])
-                                                                          @elapsed-time)
-                                                               ""))
+         (reset! elapsed-time 0)
+         (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                   :creature-property (build game-schemas game-db :creatures/vampire)
+                                                   :components {:entity/fsm {:fsm :fsms/player
+                                                                             :initial-state :player-idle}
+                                                                :entity/faction :good
+                                                                :entity/player? true
+                                                                :entity/free-skill-points 3
+                                                                :entity/clickable {:type :clickable/player}
+                                                                :entity/click-distance-tiles 1.5}})
+                                  @elapsed-time
+                                  id-counter
+                                  entity-ids
+                                  @grid
+                                  @content-grid)]
+           (let [eid (get @entity-ids 1)]
+             (assert (:entity/player? @eid))
+             (reset! player-eid eid)))
+         (doseq [actor [(create-action-bar)
+                        (create-dev-menu {:menus menus
+                                          :update-labels update-labels
                                           :skin @skin})
-                                       (let [cell-size 48]
-                                         (create-inventory-window
-                                           @player-eid
-                                           input-arg
-                                           (fn [_event cell]
-                                             (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
-                                           (fn [player-entity x y mouseover? cell]
-                                             (rectangle! @shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
-                                             (when (and mouseover?
-                                                        (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                                               (let [item (:entity/item-on-cursor player-entity)
-                                                     color (if (valid-slot? cell item)
-                                                             (float-bits 0 0.6 0 0.8)
-                                                             (float-bits 0.6 0 0 0.8))]
-                                                 (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
-                                           @skin
-                                           @stage
-                                           @textures))])
-                      (player-state-draw-create @player-eid unit-scale @textures input-arg)
-                      (player-message-actor-create @default-font unit-scale)]]
-         (add-actor! @stage actor))
-       (sync-player-ui!)
-       (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* @*start-position*)))
+                        (hp-mana-bar-create @player-eid @default-font @stage @textures unit-scale)
+                        (windows-create [(create-info-window
+                                           {:title "Entity Info"
+                                            :actor-name "moon.ui.windows.entity-info"
+                                            :visible? false
+                                            :position [(get-world-width (get-viewport @stage)) 0]
+                                            :set-label-text! (fn []
+                                                               (if-let [eid @mouseover-eid]
+                                                                 (info-text (apply dissoc @eid [:entity/skills
+                                                                                                :entity/faction
+                                                                                                :active-skill])
+                                                                            @elapsed-time)
+                                                                 ""))
+                                            :skin @skin})
+                                         (let [cell-size 48]
+                                           (create-inventory-window
+                                             @player-eid
+                                             input-arg
+                                             (fn [_event cell]
+                                               (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
+                                             (fn [player-entity x y mouseover? cell]
+                                               (rectangle! @shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
+                                               (when (and mouseover?
+                                                          (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                                                 (let [item (:entity/item-on-cursor player-entity)
+                                                       color (if (valid-slot? cell item)
+                                                               (float-bits 0 0.6 0 0.8)
+                                                               (float-bits 0.6 0 0 0.8))]
+                                                   (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+                                             @skin
+                                             @stage
+                                             @textures))])
+                        (player-state-draw-create @player-eid unit-scale @textures input-arg)
+                        (player-message-actor-create @default-font unit-scale)]]
+           (add-actor! @stage actor))
+         (sync-player-ui!)
+         (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* start-position))))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
@@ -5526,9 +5524,9 @@
     :s/number (create-number-widget schema v skin)
     :s/one-to-many (create-one-to-many-widget schema v skin editor)
     :s/one-to-one (create-one-to-one-widget schema v editor)
-    :s/sound (create-sound-widget (keys @sounds)
+    :s/sound (create-sound-widget ((:editor/sound-names editor))
                                   v 
-                                  (fn [sound-name] (play-sound!* @sounds sound-name))
+                                  (:editor/play-sound! editor)
                                   skin
                                   ((:editor/get-viewport editor))
                                   (:editor/add-actor! editor))
@@ -5594,6 +5592,7 @@
         textures (atom nil)
         skin (atom nil)
         input (atom nil)
+        sounds (atom nil)
         schemas (-> "schema.edn" io/resource slurp edn/read-string)
         editor {:editor/all-raw
                 (fn [property-type]
@@ -5622,6 +5621,10 @@
                 #(get-viewport @editor-stage)
                 :editor/add-actor!
                 #(add-actor! @editor-stage %)
+                :editor/sound-names
+                (fn [] (keys @sounds))
+                :editor/play-sound!
+                (fn [sound-name] (play-sound!* @sounds sound-name))
                 }
         property-k-order-index (zipmap [:property/id
                                         :property/pretty-name
