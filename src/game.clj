@@ -2447,45 +2447,6 @@
    :maxcnt (* (count frames) (float frame-duration))
    :delete-after-stopped? delete-after-stopped?})
 
-(defn register-eid!
-  [eid]
-  (assert (and (not (contains? @eid :entity/id))))
-  (let [id (swap! *id-counter* inc)]
-    (assert (number? id))
-    (swap! eid assoc :entity/id id)
-    (swap! *entity-ids* assoc id eid))
-
-  (assert (:entity/position @eid))
-  (update-entity! @*content-grid* eid)
-
-  (assert (:entity/position @eid))
-  (when (:entity/collides? @eid)
-    (assert (valid-position? @*grid* @eid (:entity/id @eid))))
-  (set-touched-cells! @*grid* eid)
-  (when (:entity/collides? @eid)
-    (set-occupied-cells! @*grid* eid))
-  nil)
-
-(defn relocate-eid!
-  [eid]
-  (update-entity! @*content-grid* eid)
-  (remove-from-touched-cells! @*grid* eid)
-  (set-touched-cells! @*grid* eid)
-  (when (:entity/collides? @eid)
-    (remove-from-occupied-cells! @*grid* eid)
-    (set-occupied-cells! @*grid* eid))
-  nil)
-
-(defn unregister-eid!
-  [eid]
-  (let [id (:entity/id @eid)]
-    (swap! *entity-ids* dissoc id)
-    (remove-entity! @*content-grid* eid)
-    (remove-from-touched-cells! @*grid* eid)
-    (when (:entity/collides? @eid)
-      (remove-from-occupied-cells! @*grid* eid)))
-  nil)
-
 (defn cell-at [[x y]]
   (when-let [cell-atom (get-in @*grid* [x y])]
     @cell-atom))
@@ -2858,7 +2819,19 @@
                         :entity/height (float height)
                         :entity/rotation-angle (or rotation-angle 0)))
         eid (atom entity)]
-    (register-eid! eid)
+    (assert (and (not (contains? @eid :entity/id))))
+    (let [id (swap! *id-counter* inc)]
+      (assert (number? id))
+      (swap! eid assoc :entity/id id)
+      (swap! *entity-ids* assoc id eid))
+    (assert (:entity/position @eid))
+    (update-entity! @*content-grid* eid)
+    (assert (:entity/position @eid))
+    (when (:entity/collides? @eid)
+      (assert (valid-position? @*grid* @eid (:entity/id @eid))))
+    (set-touched-cells! @*grid* eid)
+    (when (:entity/collides? @eid)
+      (set-occupied-cells! @*grid* eid))
     (doseq [component @eid]
       (after-create-component eid component elapsed-time))
     eid))
@@ -4005,7 +3978,12 @@
                             (update body :entity/position
                                     #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
           (swap! eid assoc :entity/position (:entity/position body))
-          (relocate-eid! eid)
+          (update-entity! @*content-grid* eid)
+          (remove-from-touched-cells! @*grid* eid)
+          (set-touched-cells! @*grid* eid)
+          (when (:entity/collides? @eid)
+            (remove-from-occupied-cells! @*grid* eid)
+            (set-occupied-cells! @*grid* eid))
           nil)))))
 
 (defn defaults [^Table table]
@@ -4091,7 +4069,12 @@
 
 (defn destroy-entities! [handle-txs! game-db]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @*entity-ids*))]
-    (unregister-eid! eid)
+    (let [id (:entity/id @eid)]
+      (swap! *entity-ids* dissoc id)
+      (remove-entity! @*content-grid* eid)
+      (remove-from-touched-cells! @*grid* eid)
+      (when (:entity/collides? @eid)
+        (remove-from-occupied-cells! @*grid* eid)))
     (doseq [[k v] @eid]
       (handle-txs!
         (case k
