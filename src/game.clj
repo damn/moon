@@ -3778,8 +3778,7 @@
 (defn draw-entities!
   [shape-drawer batch default-font textures unit-scale mouseover-actor 
    raycaster active-entities player-eid viewport show-body-bounds?]
-  (let [active-entities @active-entities
-        entities (map deref active-entities)
+  (let [entities (map deref active-entities)
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
@@ -4634,7 +4633,7 @@
                                              (let [[x y] (ui-mouse-position @stage Gdx/input)]
                                                (mouseover-actor @stage x y))
                                              @raycaster
-                                             active-entities
+                                             @active-entities
                                              @player-eid
                                              @viewport
                                              @show-body-bounds?)
