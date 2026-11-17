@@ -1908,12 +1908,12 @@
     :evil :good
     :good :evil))
 
-(defn timer-stopped? [{:keys [stop-time]}]
-  (>= @*elapsed-time* stop-time))
+(defn timer-stopped? [{:keys [stop-time]} elapsed-time]
+  (>= elapsed-time stop-time))
 
 (defn timer-ratio [{:keys [duration stop-time] :as timer}]
   {:post [(<= 0 % 1)]}
-  (if (timer-stopped? timer)
+  (if (timer-stopped? timer @*elapsed-time*)
     0
     ; min 1 because floating point math inaccuracies
     (min 1 (/ (- stop-time @*elapsed-time*) duration))))
@@ -3858,7 +3858,7 @@
 (defn alert-friendlies-after-duration-tick
   [v eid _delta-time handle-txs!]
   (let [{:keys [counter faction]} v]
-    (when (timer-stopped? counter)
+    (when (timer-stopped? counter @*elapsed-time*)
       (swap! eid assoc :entity/destroyed? true)
       (doseq [friendly-eid (get-friendlies-for-alert eid faction)
               ; TODO called on projectiles
@@ -3869,7 +3869,7 @@
 (defn string-effect-tick
   [v eid _delta-time _handle-txs!]
   (let [{:keys [counter]} v]
-    (when (timer-stopped? counter)
+    (when (timer-stopped? counter @*elapsed-time*)
       (swap! eid dissoc :entity/string-effect))
     nil))
 
@@ -3877,14 +3877,14 @@
   [v eid _delta-time _handle-txs!]
   (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
           :when (and cooling-down?
-                     (timer-stopped? cooling-down?))]
+                     (timer-stopped? cooling-down? @*elapsed-time*))]
     (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
   nil)
 
 (defn temp-modifier-tick
   [v eid _delta-time _handle-txs!]
   (let [{:keys [modifiers counter]} v]
-    (when (timer-stopped? counter)
+    (when (timer-stopped? counter @*elapsed-time*)
       (swap! eid dissoc :entity/temp-modifier)
       (swap! eid update :entity/stats remove-mods modifiers))
     nil))
@@ -3932,27 +3932,27 @@
                         (:skill/effects skill))))
       (handle-txs! [[:tx/event eid :action-done]])
 
-      (timer-stopped? counter)
+      (timer-stopped? counter @*elapsed-time*)
       (do (handle-txs! (applicable-effect-txs effect-ctx (:skill/effects skill)))
           (handle-txs! [[:tx/event eid :action-done]])
           nil))))
 
 (defn delete-after-duration-tick
   [v eid _delta-time _handle-txs!]
-  (when (timer-stopped? v)
+  (when (timer-stopped? v @*elapsed-time*)
     (swap! eid assoc :entity/destroyed? true))
   nil)
 
 (defn stunned-tick
   [v eid _delta-time handle-txs!]
   (let [{:keys [counter]} v]
-    (when (timer-stopped? counter)
+    (when (timer-stopped? counter @*elapsed-time*)
       (handle-txs! [[:tx/event eid :effect-wears-off]]))))
 
 (defn npc-moving-tick
   [v eid _delta-time handle-txs!]
   (let [{:keys [timer]} v]
-    (when (timer-stopped? timer)
+    (when (timer-stopped? timer @*elapsed-time*)
       (handle-txs! [[:tx/event eid :timer-finished]]))))
 
 (defn npc-sleeping-tick
