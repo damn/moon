@@ -4,6 +4,7 @@
 lein game
 lein levelgen
 lein editor
+lein draw-text
 ```
 
 # Screenshot

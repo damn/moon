@@ -20,9 +20,10 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "game"     ["run" "-m" "loop" "((requiring-resolve 'game/game!))"]
-            "levelgen" ["run" "-m" "loop" "((requiring-resolve 'game/levelgen!))"]
-            "editor"   ["run" "-m" "loop" "((requiring-resolve 'game/editor!))"]
+            "game"      ["run" "-m" "loop" "((requiring-resolve 'game/game!))"]
+            "levelgen"  ["run" "-m" "loop" "((requiring-resolve 'game/levelgen!))"]
+            "editor"    ["run" "-m" "loop" "((requiring-resolve 'game/editor!))"]
+            "draw-text" ["run" "-m" "loop" "((requiring-resolve 'game/draw-text-demo!))"]
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]

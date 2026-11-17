@@ -5788,6 +5788,111 @@
       (.setWindowedMode width height)
       (.setForegroundFPS fps))))
 
+(defn draw-text-demo-listener []
+  (let [batch (atom nil)
+        font (atom nil)
+        viewport (atom nil)
+        shape-drawer (atom nil)
+        shape-drawer-texture (atom nil)
+        unit-scale (atom 1.0)
+        world-unit-scale (float (/ 48))
+        samples [{:title "basic / up?"
+                  :x 220 :y 720
+                  :opts {:text "Hello draw-text!"
+                         :scale 1
+                         :up? true}}
+                 {:title "scale 2.5 / up?"
+                  :x 720 :y 720
+                  :opts {:text "Player message"
+                         :scale 2.5
+                         :up? true}}
+                 {:title "multiline / up?"
+                  :x 220 :y 480
+                  :opts {:text "line one\nline two\nline three"
+                         :scale 1
+                         :up? true}}
+                 {:title "multiline / down"
+                  :x 720 :y 480
+                  :opts {:text "line one\nline two\nline three"
+                         :scale 1
+                         :up? false}}
+                 {:title "markup colors"
+                  :x 220 :y 240
+                  :opts {:text "[RED]red[] [GREEN]green[] [GOLD]gold[]"
+                         :scale 1.25
+                         :up? true}}
+                 {:title "string-effect style"
+                  :x 720 :y 240
+                  :opts {:text "+12"
+                         :scale 2
+                         :up? true}}]]
+    {:create!
+     (fn [_audio files _graphics]
+       (reset! batch (sprite-batch!))
+       (reset! font (create-default-font! files
+                                          {:path "fonts/films.EXL_____.ttf"
+                                           :size 16
+                                           :quality-scaling 2
+                                           :use-integer-positions? false}))
+       (reset! shape-drawer-texture (white-pixel-texture))
+       (reset! shape-drawer (ShapeDrawer. @batch
+                                          (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
+       (reset! viewport (FitViewport. (float 1440)
+                                      (float 900)
+                                      (doto (OrthographicCamera.)
+                                        (.setToOrtho false 1440 900)))))
+
+     :dispose!
+     (fn []
+       (dispose! @batch)
+       (dispose! @font)
+       (dispose! @shape-drawer-texture))
+
+     :render!
+     (fn [_]
+       (when (key-just-pressed? Gdx/input Input$Keys/U)
+         (swap! unit-scale #(if (== ^double % 1.0)
+                              world-unit-scale
+                              1.0)))
+       (clear-screen! 0.08 0.08 0.1 1)
+       (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
+       (Batch/.begin @batch)
+       (let [b @batch
+             f @font
+             us @unit-scale
+             sd @shape-drawer
+             marker-color (float-bits 1 0.3 0.3 1)
+             guide-color (float-bits 0.35 0.35 0.45 1)]
+         (doseq [{:keys [title x y opts]} samples]
+           (line! sd [(- x 20) y] [(+ x 20) y] guide-color)
+           (line! sd [x (- y 20)] [x (+ y 20)] guide-color)
+           (filled-circle! sd [x y] 3 marker-color)
+           (draw-text! b f us (assoc opts :x x :y y))
+           (draw-text! b f us {:text title
+                               :x x
+                               :y (- y 40)
+                               :scale 0.75
+                               :up? false}))
+         (draw-text! b f 1 {:text (str "draw-text! demo\n"
+                                       "red cross = x/y anchor\n"
+                                       "unit-scale: " us "   [U] toggle 1 <-> world (" world-unit-scale ")")
+                            :x 720
+                            :y 880
+                            :scale 1.1
+                            :up? true}))
+       (Batch/.end @batch))
+
+     :resize!
+     (fn [width height]
+       (resize! @viewport width height true))}))
+
+(defn draw-text-demo! []
+  (lwjgl3-application! (draw-text-demo-listener)
+                       {:title "draw-text! demo"
+                        :width 1440
+                        :height 900
+                        :fps 60}))
+
 (defn levelgen! []
   (lwjgl3-application! (levelgen-listener)
                        {:title "Levelgen", 
