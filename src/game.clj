@@ -8,7 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def *elapsed-time* (atom nil))
 (def *id-counter* (atom nil))
 (def *entity-ids* (atom nil))
 (def *grid* (atom nil))
@@ -1911,12 +1910,12 @@
 (defn timer-stopped? [{:keys [stop-time]} elapsed-time]
   (>= elapsed-time stop-time))
 
-(defn timer-ratio [{:keys [duration stop-time] :as timer}]
+(defn timer-ratio [{:keys [duration stop-time] :as timer} elapsed-time]
   {:post [(<= 0 % 1)]}
-  (if (timer-stopped? timer @*elapsed-time*)
+  (if (timer-stopped? timer elapsed-time)
     0
     ; min 1 because floating point math inaccuracies
-    (min 1 (/ (- stop-time @*elapsed-time*) duration))))
+    (min 1 (/ (- stop-time elapsed-time) duration))))
 
 (defn- remove-newlines [s]
   (let [new-s (-> s
@@ -2688,15 +2687,15 @@
          :entity/z-order :z-order/effect
          :entity/position position))
 
-(defn timer-create [duration]
+(defn timer-create [duration elapsed-time]
   {:pre [(>= duration 0)]}
   {:duration duration
-   :stop-time (+ @*elapsed-time* duration)})
+   :stop-time (+ elapsed-time duration)})
 
-(defn- spawn-alert [position faction duration]
+(defn- spawn-alert [position faction duration elapsed-time]
   (spawn-effect position
                 {:entity/alert-friendlies-after-duration
-                 {:counter (timer-create duration)
+                 {:counter (timer-create duration elapsed-time)
                   :faction faction}}))
 
 (defn- spawn-item [position item]
@@ -2740,7 +2739,7 @@
    :entity/projectile-collision {:entity-effects entity-effects
                                  :piercing? piercing?}})
 
-(defn- create-entity-state [[k v] eid]
+(defn- create-entity-state [[k v] eid elapsed-time]
   (case k
     :active-skill
     (let [[skill effect-ctx] v]
@@ -2749,10 +2748,11 @@
        :counter (timer-create (/ (:skill/action-time skill)
                                  (or (get-value (:entity/stats @eid)
                                                 (:skill/action-time-modifier-key skill))
-                                     1)))})
+                                     1))
+                              elapsed-time)})
 
     :stunned
-    {:counter (timer-create v)}
+    {:counter (timer-create v elapsed-time)}
 
     :player-moving
     {:movement-vector v}
@@ -2760,7 +2760,8 @@
     :npc-moving
     {:movement-vector v
      :timer (timer-create (* (get-value (:entity/stats @eid) :stats/reaction-time)
-                             0.016))}
+                             0.016)
+                          elapsed-time)}
 
     :player-item-on-cursor
     {:item v}
@@ -2777,12 +2778,12 @@
          :state initial-state))
 
 (defn- after-create-component
-  [eid [k v]]
+  [eid [k v] elapsed-time]
   (case k
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
       (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
-      (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid))
+      (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid elapsed-time))
       nil)
 
     :entity/skills
@@ -2821,14 +2822,14 @@
 
     nil))
 
-(defn- spawn-entity! [entity]
+(defn- spawn-entity! [entity elapsed-time]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
                                       (create-animation v)
 
                                       :entity/delete-after-duration
-                                      (timer-create v)
+                                      (timer-create v elapsed-time)
 
                                       :entity/projectile-collision
                                       (assoc v :already-hit-bodies #{})
@@ -2859,11 +2860,11 @@
         eid (atom entity)]
     (register-eid! eid)
     (doseq [component @eid]
-      (after-create-component eid component))
+      (after-create-component eid component elapsed-time))
     eid))
 
 (defn- entity-state-exit!
-  [eid [state-k _state-v] item-place-position]
+  [eid [state-k _state-v] item-place-position elapsed-time]
   (case state-k
     :player-item-on-cursor
     (let [entity @eid
@@ -2879,8 +2880,8 @@
     [[:tx/swap eid dissoc :entity/movement]]
 
     :npc-sleeping
-    [[:tx/swap eid add-text-effect "[WHITE]!" 1 timer-create]
-     [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2)]]
+    [[:tx/swap eid add-text-effect "[WHITE]!" 1 #(timer-create % elapsed-time)]
+     [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 elapsed-time)]]
 
     :npc-moving
     [[:tx/swap eid dissoc :entity/movement]]
@@ -2888,7 +2889,7 @@
     nil))
 
 (defn- entity-state-enter!
-  [eid [state-k state-v]]
+  [eid [state-k state-v] elapsed-time]
   (case state-k
     :player-item-on-cursor
     (let [{:keys [item]} state-v]
@@ -2901,7 +2902,7 @@
                                             (let [mana-val ((get-mana stats) 0)]
                                               (assert (<= cost mana-val))
                                               (assoc-in stats [:stats/mana 0] (- mana-val cost))))]
-       [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (timer-create (:skill/cooldown skill))]
+       [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (timer-create (:skill/cooldown skill) elapsed-time)]
        [:tx/sound (:skill/start-action-sound skill)]])
 
     :npc-dead
@@ -3092,16 +3093,17 @@
 
 (declare effect-transactions)
 
-(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db]
+(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db elapsed-time]
   (mapcat (fn [effect] 
             (effect-transactions effect
                                  effect-ctx 
                                  active-entities
                                  raycaster
-                                 game-db))
+                                 game-db
+                                 elapsed-time))
           (filter #(effect-applicable? % effect-ctx) effects)))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster game-db]
+(defn target-all-effect [v effect-ctx active-entities raycaster game-db elapsed-time]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
@@ -3116,7 +3118,8 @@
                                            (:entity-effects v)
                                            active-entities
                                            raycaster
-                                           game-db)))
+                                           game-db
+                                           elapsed-time)))
             (affected-targets active-entities raycaster source*))))
 
 (defn convert-effect [_v effect-ctx game-db]
@@ -3126,7 +3129,7 @@
      [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx active-entities raycaster game-db]
+(defn target-entity-effect [v effect-ctx active-entities raycaster game-db elapsed-time]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
@@ -3144,11 +3147,12 @@
                                    entity-effects
                                    active-entities
                                    raycaster
-                                   game-db))
+                                   game-db
+                                   elapsed-time))
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
 
-(defn damage-effect [v effect-ctx game-db]
+(defn damage-effect [v effect-ctx game-db elapsed-time]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -3164,7 +3168,7 @@
       (and (:entity/stats source*)
            (:entity/stats target*)
            (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
-      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 timer-create]]
+      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 #(timer-create % elapsed-time)]]
 
       :else
       (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
@@ -3179,7 +3183,7 @@
                             0)
             dmg-text (str "[RED]" dmg-amount "[]")]
         [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
-         [:tx/swap target add-text-effect dmg-text 0.3 timer-create]
+         [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
          [:tx/event target (if (zero? new-hp-val) :kill :alert)]
          [:tx/sound "bfxr_normalhit.wav"]
          [:tx/spawn-entity (animation-entity game-db (:entity/position target*) :audiovisuals/damage)]]))))
@@ -3187,19 +3191,19 @@
 (defn kill-effect [_v effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :kill]])
 
-(defn spiderweb-effect [_v effect-ctx]
+(defn spiderweb-effect [_v effect-ctx elapsed-time]
   (let [target (:effect/target effect-ctx)]
     ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
     (when-not (:entity/temp-modifier @target)
       [[:tx/swap target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                     :counter (timer-create spiderweb-duration)}]
+                                                     :counter (timer-create spiderweb-duration elapsed-time)}]
        [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
 ; FIXME PLAYER ITEM ON CURSOR ENTER/EXIT MSUHDFN
-(defn- fsm-event-txs [eid event item-place-position & [params]]
+(defn- fsm-event-txs [eid event item-place-position elapsed-time & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
         old-state-k (:state fsm)
@@ -3211,15 +3215,15 @@
             state-args (if params 
                          [new-state-k params]
                          [new-state-k nil])
-            new-state-obj [new-state-k (create-entity-state state-args eid)]]
+            new-state-obj [new-state-k (create-entity-state state-args eid elapsed-time)]]
         (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                  [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                  [:tx/swap eid dissoc old-state-k]]
-                (entity-state-exit! eid old-state-obj item-place-position)
-                (entity-state-enter! eid new-state-obj))))))
+                (entity-state-exit! eid old-state-obj item-place-position elapsed-time)
+                (entity-state-enter! eid new-state-obj elapsed-time))))))
 
 (defn- effect-transactions
-  [[k v] effect-ctx active-entities raycaster game-db]
+  [[k v] effect-ctx active-entities raycaster game-db elapsed-time]
   (case k
     :effects/projectile
     (projectile-effect v effect-ctx)
@@ -3228,25 +3232,25 @@
     (spawn-effect* v effect-ctx game-db)
 
     :effects/target-all
-    (target-all-effect v effect-ctx active-entities raycaster game-db)
+    (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time)
 
     :effects/target-entity
-    (target-entity-effect v effect-ctx active-entities raycaster game-db)
+    (target-entity-effect v effect-ctx active-entities raycaster game-db elapsed-time)
 
     :effects.target/convert
     (convert-effect v effect-ctx game-db)
 
     :effects.target/damage
-    (damage-effect v effect-ctx game-db)
+    (damage-effect v effect-ctx game-db elapsed-time)
 
     :effects.target/kill
     (kill-effect v effect-ctx)
 
     :effects.target/melee-damage
-    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db)
+    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db elapsed-time)
 
     :effects.target/spiderweb
-    (spiderweb-effect v effect-ctx)
+    (spiderweb-effect v effect-ctx elapsed-time)
 
     :effects.target/stun
     (stun-effect v effect-ctx)))
@@ -3695,11 +3699,11 @@
   (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale textures active-entities raycaster]
+  [v entity shape-drawer batch unit-scale textures active-entities raycaster elapsed-time]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
-        action-counter-ratio (timer-ratio counter)
+        action-counter-ratio (timer-ratio counter elapsed-time)
         texture-region (get-texture-region textures image)
         [x y] (:entity/position entity)
         y (+ (float y)
@@ -3737,7 +3741,7 @@
 
 (defn- draw-component
   [shape-drawer batch default-font unit-scale mouseover-actor
-   textures player active-entities raycaster viewport input
+   textures player active-entities raycaster viewport input elapsed-time
    entity k v]
   (case k
     :entity/clickable
@@ -3768,7 +3772,7 @@
     (temp-modifier-draw entity shape-drawer)
 
     :active-skill
-    (active-skill-draw v entity shape-drawer batch unit-scale textures active-entities raycaster)
+    (active-skill-draw v entity shape-drawer batch unit-scale textures active-entities raycaster elapsed-time)
 
     :npc-sleeping
     (npc-sleeping-draw entity batch default-font unit-scale)
@@ -3856,9 +3860,9 @@
          (filter #(= (:entity/faction @%) faction)))))
 
 (defn alert-friendlies-after-duration-tick
-  [v eid _delta-time handle-txs!]
+  [v eid _delta-time handle-txs! elapsed-time]
   (let [{:keys [counter faction]} v]
-    (when (timer-stopped? counter @*elapsed-time*)
+    (when (timer-stopped? counter elapsed-time)
       (swap! eid assoc :entity/destroyed? true)
       (doseq [friendly-eid (get-friendlies-for-alert eid faction)
               ; TODO called on projectiles
@@ -3867,30 +3871,30 @@
     nil))
 
 (defn string-effect-tick
-  [v eid _delta-time _handle-txs!]
+  [v eid _delta-time _handle-txs! elapsed-time]
   (let [{:keys [counter]} v]
-    (when (timer-stopped? counter @*elapsed-time*)
+    (when (timer-stopped? counter elapsed-time)
       (swap! eid dissoc :entity/string-effect))
     nil))
 
 (defn skills-tick
-  [v eid _delta-time _handle-txs!]
+  [v eid _delta-time _handle-txs! elapsed-time]
   (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
           :when (and cooling-down?
-                     (timer-stopped? cooling-down? @*elapsed-time*))]
+                     (timer-stopped? cooling-down? elapsed-time))]
     (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
   nil)
 
 (defn temp-modifier-tick
-  [v eid _delta-time _handle-txs!]
+  [v eid _delta-time _handle-txs! elapsed-time]
   (let [{:keys [modifiers counter]} v]
-    (when (timer-stopped? counter @*elapsed-time*)
+    (when (timer-stopped? counter elapsed-time)
       (swap! eid dissoc :entity/temp-modifier)
       (swap! eid update :entity/stats remove-mods modifiers))
     nil))
 
 (defn projectile-collision-tick
-  [v eid _delta-time handle-txs! active-entities raycaster game-db]
+  [v eid _delta-time handle-txs! active-entities raycaster game-db elapsed-time]
   (let [{:keys [entity-effects already-hit-bodies piercing?]} v
         entity @eid
         touched-cells (map deref (keep #(get-in @*grid* %) (touched-tiles entity)))
@@ -3914,11 +3918,12 @@
                                           entity-effects
                                           active-entities
                                           raycaster
-                                          game-db)))
+                                          game-db
+                                          elapsed-time)))
     nil))
 
 (defn active-skill-tick
-  [v eid _delta-time handle-txs! line-of-sight? applicable-effect-txs]
+  [v eid _delta-time handle-txs! line-of-sight? applicable-effect-txs elapsed-time]
   (let [{:keys [skill effect-ctx counter]} v
         source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
@@ -3932,27 +3937,27 @@
                         (:skill/effects skill))))
       (handle-txs! [[:tx/event eid :action-done]])
 
-      (timer-stopped? counter @*elapsed-time*)
+      (timer-stopped? counter elapsed-time)
       (do (handle-txs! (applicable-effect-txs effect-ctx (:skill/effects skill)))
           (handle-txs! [[:tx/event eid :action-done]])
           nil))))
 
 (defn delete-after-duration-tick
-  [v eid _delta-time _handle-txs!]
-  (when (timer-stopped? v @*elapsed-time*)
+  [v eid _delta-time _handle-txs! elapsed-time]
+  (when (timer-stopped? v elapsed-time)
     (swap! eid assoc :entity/destroyed? true))
   nil)
 
 (defn stunned-tick
-  [v eid _delta-time handle-txs!]
+  [v eid _delta-time handle-txs! elapsed-time]
   (let [{:keys [counter]} v]
-    (when (timer-stopped? counter @*elapsed-time*)
+    (when (timer-stopped? counter elapsed-time)
       (handle-txs! [[:tx/event eid :effect-wears-off]]))))
 
 (defn npc-moving-tick
-  [v eid _delta-time handle-txs!]
+  [v eid _delta-time handle-txs! elapsed-time]
   (let [{:keys [timer]} v]
-    (when (timer-stopped? timer @*elapsed-time*)
+    (when (timer-stopped? timer elapsed-time)
       (handle-txs! [[:tx/event eid :timer-finished]]))))
 
 (defn npc-sleeping-tick
@@ -4358,6 +4363,7 @@
         raycaster (atom nil)
         input (atom nil)
         graphics (atom nil)
+        elapsed-time (atom 0)
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -4382,12 +4388,12 @@
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
                                     (fn [entity-decl]
-                                      (spawn-entity! entity-decl))
+                                      (spawn-entity! entity-decl @elapsed-time))
                                     :tx/event
                                     (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
                                       ; maybe no exit/enter events at all ? 
-                                      (handle-txs! (fsm-event-txs eid event item-place-position* params)))
+                                      (handle-txs! (fsm-event-txs eid event item-place-position* @elapsed-time params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
@@ -4413,7 +4419,7 @@
                          (find-actor "moon.ui.action-bar")
                          (add-skill! {:skill-id (:property/id skill)
                                       :texture-region (get-texture-region @textures (:entity/image skill))
-                                      :tooltip-text (info-text skill)}
+                                      :tooltip-text (info-text skill @elapsed-time)}
                                      @skin)))
         sync-player-ui! (fn []
                           (doseq [skill (vals (:entity/skills @@player-eid))]
@@ -4444,7 +4450,7 @@
                 :items [{:label controls-info}]}]
         update-labels (for [item [{:label "elapsed-time"
                                    :update-fn (fn [] 
-                                                (str (readable @*elapsed-time*) " seconds"))
+                                                (str (readable @elapsed-time) " seconds"))
                                    :icon "images/clock.png"}
                                   {:label "FPS"
                                    :update-fn (fn [] (get-frames-per-second @graphics))
@@ -4469,25 +4475,25 @@
                         (if (:icon item)
                           (update item :icon #(get @textures %))
                           item))
-        tick-component (fn [[k v] eid delta-time]
+        tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
                            (animation-tick v eid delta-time handle-txs!)
 
                            :entity/alert-friendlies-after-duration
-                           (alert-friendlies-after-duration-tick v eid delta-time handle-txs!)
+                           (alert-friendlies-after-duration-tick v eid delta-time handle-txs! elapsed-time)
 
                            :entity/string-effect
-                           (string-effect-tick v eid delta-time handle-txs!)
+                           (string-effect-tick v eid delta-time handle-txs! elapsed-time)
 
                            :entity/skills
-                           (skills-tick v eid delta-time handle-txs!)
+                           (skills-tick v eid delta-time handle-txs! elapsed-time)
 
                            :entity/temp-modifier
-                           (temp-modifier-tick v eid delta-time handle-txs!)
+                           (temp-modifier-tick v eid delta-time handle-txs! elapsed-time)
 
                            :entity/projectile-collision
-                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @raycaster game-db)
+                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @raycaster game-db elapsed-time)
 
                            :active-skill
                            (active-skill-tick v eid delta-time handle-txs!
@@ -4497,16 +4503,18 @@
                                                                        effects
                                                                        active-entities
                                                                        @raycaster
-                                                                       game-db)))
+                                                                       game-db
+                                                                       elapsed-time))
+                                              elapsed-time)
 
                            :entity/delete-after-duration
-                           (delete-after-duration-tick v eid delta-time handle-txs!)
+                           (delete-after-duration-tick v eid delta-time handle-txs! elapsed-time)
 
                            :stunned
-                           (stunned-tick v eid delta-time handle-txs!)
+                           (stunned-tick v eid delta-time handle-txs! elapsed-time)
 
                            :npc-moving
-                           (npc-moving-tick v eid delta-time handle-txs!)
+                           (npc-moving-tick v eid delta-time handle-txs! elapsed-time)
 
                            :npc-sleeping
                            (npc-sleeping-tick v eid delta-time handle-txs!)
@@ -4520,21 +4528,21 @@
                            (movement-tick v eid delta-time handle-txs!)
 
                            nil))
-        tick-entities! (fn [delta-time]
+        tick-entities! (fn [delta-time elapsed-time]
                          (doseq [eid @active-entities
                                  component @eid]
-                           (tick-component component eid delta-time)))
+                           (tick-component component eid delta-time elapsed-time)))
         tick-game! (fn [delta-time]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
-                         (swap! *elapsed-time* + delta-time)
+                         (swap! elapsed-time + delta-time)
                          (doseq [[faction max-iterations] factions-iterations]
                            (update! @*grid*
                                     potential-field-cache
                                     faction
                                     @active-entities
                                     max-iterations))
-                         (tick-entities! delta-time))))
+                         (tick-entities! delta-time @elapsed-time))))
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -4638,6 +4646,7 @@
                                           @raycaster 
                                           @viewport
                                           @input
+                                          @elapsed-time
                                           entity k v))
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
@@ -4745,7 +4754,7 @@
                                                              (range height)))
                                                (range width)))
            (reset! raycaster (create-raycaster grid)))
-         (reset! *elapsed-time* 0))
+         (reset! elapsed-time 0))
        (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) @*start-position*)
                                                  :creature-property (build game-schemas game-db :creatures/vampire)
                                                  :components {:entity/fsm {:fsm :fsms/player
@@ -4754,7 +4763,8 @@
                                                               :entity/player? true
                                                               :entity/free-skill-points 3
                                                               :entity/clickable {:type :clickable/player}
-                                                              :entity/click-distance-tiles 1.5}}))]
+                                                              :entity/click-distance-tiles 1.5}})
+                                @elapsed-time)]
          (let [eid (get @*entity-ids* 1)]
            (assert (:entity/player? @eid))
            (reset! player-eid eid)))
@@ -4772,7 +4782,8 @@
                                                              (if-let [eid @mouseover-eid]
                                                                (info-text (apply dissoc @eid [:entity/skills
                                                                                               :entity/faction
-                                                                                              :active-skill]))
+                                                                                              :active-skill])
+                                                                          @elapsed-time)
                                                                ""))
                                           :skin @skin})
                                        (let [cell-size 48]
@@ -5960,8 +5971,6 @@
                                      (str "Spawns a " pretty-name))
                     :effects/target-all (fn [_]
                                           "All visible targets")
-                    :entity/delete-after-duration (fn [counter]
-                                                    (str "Remaining: " (readable (timer-ratio counter)) "/1"))
                     :entity/faction (fn [faction]
                                       (str "Faction: " (name faction)))
                     :entity/fsm (fn [fsm]
@@ -5973,14 +5982,10 @@
                                        (str "Skills: " (str/join "," (map name (keys skills))))))
                     :entity/species (fn [species]
                                       (str "Creature - " (str/capitalize (name species))))
-                    :entity/temp-modifier (fn [{:keys [counter]}]
-                                            (str "Spiderweb - remaining: " (readable (timer-ratio counter)) "/1"))
                     :projectile/piercing? (fn [_]
                                             "Piercing")
                     :property/pretty-name (fn [v]
                                             v)
-                    :skill/cooling-down? (fn [counter]
-                                           (str "Cooldown: " (readable (timer-ratio counter)) "/1"))
                     :skill/action-time (fn [v]
                                          (str "Action-Time: " (readable v) " seconds"))
                     :skill/action-time-modifier-key (fn [v]
@@ -6022,10 +6027,20 @@
                    :entity/fsm "YELLOW"
                    :entity/species "LIGHT_GRAY"
                    :entity/temp-modifier "LIGHT_GRAY"}
-        info-text (fn info-text [entity]
+        info-text (fn info-text [entity elapsed-time]
                     (let [component-info (fn [[k v]]
-                                           (let [s (if-let [info-fn (k->info-fn k)]
-                                                     (str (info-fn v)))]
+                                           (let [s (case k
+                                                     :entity/delete-after-duration
+                                                     (str "Remaining: " (readable (timer-ratio v elapsed-time)) "/1")
+
+                                                     :entity/temp-modifier
+                                                     (str "Spiderweb - remaining: " (readable (timer-ratio (:counter v) elapsed-time)) "/1")
+
+                                                     :skill/cooling-down?
+                                                     (str "Cooldown: " (readable (timer-ratio v elapsed-time)) "/1")
+
+                                                     (when-let [info-fn (k->info-fn k)]
+                                                       (str (info-fn v))))]
                                              (if-let [color (k->colors k)]
                                                (str "[" color "]" s "[]")
                                                s)))]
@@ -6036,7 +6051,7 @@
                                              (catch Throwable _t
                                                (str "*info-error* " k)))
                                         (when (map? v)
-                                          (str "\n" (info-text v))))))
+                                          (str "\n" (info-text v elapsed-time))))))
                            (str/join "\n")
                            remove-newlines)))
         listener (game-listener
