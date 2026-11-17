@@ -8,7 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def *entity-ids* (atom nil))
 (def *grid* (atom nil))
 (def *content-grid* (atom nil))
 (def factions-iterations {:good 15 :evil 5})
@@ -2782,7 +2781,7 @@
 
     nil))
 
-(defn- spawn-entity! [entity elapsed-time id-counter]
+(defn- spawn-entity! [entity elapsed-time id-counter entity-ids]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
@@ -2822,7 +2821,7 @@
     (let [id (swap! id-counter inc)]
       (assert (number? id))
       (swap! eid assoc :entity/id id)
-      (swap! *entity-ids* assoc id eid))
+      (swap! entity-ids assoc id eid))
     (assert (:entity/position @eid))
     (update-entity! @*content-grid* eid)
     (assert (:entity/position @eid))
@@ -4066,10 +4065,10 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn destroy-entities! [handle-txs! game-db]
-  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @*entity-ids*))]
+(defn destroy-entities! [handle-txs! game-db entity-ids]
+  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
     (let [id (:entity/id @eid)]
-      (swap! *entity-ids* dissoc id)
+      (swap! entity-ids dissoc id)
       (remove-entity! @*content-grid* eid)
       (remove-from-touched-cells! @*grid* eid)
       (when (:entity/collides? @eid)
@@ -4347,6 +4346,7 @@
         graphics (atom nil)
         elapsed-time (atom 0)
         id-counter (atom 0)
+        entity-ids (atom {})
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -4371,7 +4371,7 @@
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
                                     (fn [entity-decl]
-                                      (spawn-entity! entity-decl @elapsed-time id-counter))
+                                      (spawn-entity! entity-decl @elapsed-time id-counter entity-ids))
                                     :tx/event
                                     (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
@@ -4588,7 +4588,7 @@
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
                                                 (not (or (key-just-pressed? @input (int (:unpause-once controls)))
                                                          (key-pressed? @input (int (:unpause-continously controls)))))))))
-        remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db))
+        remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db entity-ids))
         key-pressed-checks! (fn []
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
@@ -4726,7 +4726,7 @@
          (reset! tiled-map* tiled-map)
          (reset! *start-position* start-position)
          (reset! id-counter 0)
-         (reset! *entity-ids* {})
+         (reset! entity-ids {})
          (let [props (get-properties tiled-map)
                width (props-get props "width")
                height (props-get props "height")
@@ -4748,8 +4748,9 @@
                                                               :entity/clickable {:type :clickable/player}
                                                               :entity/click-distance-tiles 1.5}})
                                 @elapsed-time
-                                id-counter)]
-         (let [eid (get @*entity-ids* 1)]
+                                id-counter
+                                entity-ids)]
+         (let [eid (get @entity-ids 1)]
            (assert (:entity/player? @eid))
            (reset! player-eid eid)))
        (doseq [actor [(create-action-bar)
