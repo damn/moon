@@ -424,13 +424,16 @@
 (defn static-tiled-map-tile [texture-region]
   (StaticTiledMapTile. ^TextureRegion texture-region))
 
-(defprotocol SetVisible
-  (set-visible! [_ visible?]))
+(defprotocol Visible
+  (visible? [_])
+  (set-visible! [_ v]))
 
 (extend-type TiledMapTileLayer
-  SetVisible
-  (set-visible! [this visible?]
-    (.setVisible this visible?)))
+  Visible
+  (visible? [this]
+    (.isVisible this))
+  (set-visible! [this v]
+    (.setVisible this v)))
 
 (defn tiled-map-tile-layer [width height tilewidth tileheight name visible?]
   (doto (TiledMapTileLayer. (int width)
@@ -598,7 +601,7 @@
                      :y (- (.y pos) (/ h 2))
                      :width w
                      :height h}]
-    (doseq [layer (filter #(.isVisible ^TiledMapTileLayer %) (get-layers tiled-map))]
+    (doseq [layer (filter visible? (get-layers tiled-map))]
       (draw-tile-layer! layer
                         batch
                         view-bounds
@@ -1262,9 +1265,14 @@
   (.expandY ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell))
 
 (extend-type Actor
-  SetVisible
-  (set-visible! [this visible?]
-    (.setVisible this visible?)))
+  Visible
+  (visible? [this]
+    (.isVisible this))
+  (set-visible! [this v]
+    (.setVisible this v)))
+
+(defn toggle-visible! [obj]
+  (set-visible! obj (not (visible? obj))))
 
 (defn set-position! 
   ([actor x y]
@@ -1606,7 +1614,7 @@
                          "height" (count (grid 0))})
      :layers (for [layer (get-layers schema-tiled-map)]
                {:name (get-name layer)
-                :visible? (.isVisible ^TiledMapTileLayer layer)
+                :visible? (visible? layer)
                 :properties (let [^MapProperties props (get-properties layer)]
                               (zipmap (.getKeys props)
                                       (.getValues props)))
@@ -1997,17 +2005,18 @@
       (remove-item!* cell)))
 
 (defn toggle-inventory-visible! [stage]
-  (let [inventory (-> (get-root stage)
-                      (find-actor "moon.ui.windows.inventory"))]
-    (set-visible! inventory (not (.isVisible ^Actor inventory)))))
+  (-> (get-root stage)
+      (find-actor "moon.ui.windows.inventory")
+      toggle-visible!))
 
 (defn close-windows! [stage]
   (->> (get-children (find-actor (get-root stage) "moon.ui.windows"))
        (run! #(set-visible! % false))))
 
 (defn toggle-entity-info! [stage]
-  (let [entity-info (find-actor (get-root stage) "moon.ui.windows.entity-info")]
-    (set-visible! entity-info (not (.isVisible ^Actor entity-info)))))
+  (-> (get-root stage)
+      (find-actor "moon.ui.windows.entity-info")
+      toggle-visible!))
 
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
@@ -2065,7 +2074,7 @@
                          (act [delta]
                            (let [^Actor this this]
                              (when (.getStage this)
-                               (.setText label ^String (set-label-text!)))
+                               (set-text! label (set-label-text!)))
                              (pack! window)
                              (proxy-super act delta)))
                          (draw [batch parent-alpha])))
@@ -4126,7 +4135,7 @@
             (cond
               (-> (get-root stage)
                   (find-actor "moon.ui.windows.inventory")
-                  .isVisible)
+                  visible?)
               [[:tx/swap clicked-eid assoc :entity/destroyed? true]
                [:tx/sound "bfxr_takeit.wav"]
                [:tx/event player-eid :pickup-item item]]
