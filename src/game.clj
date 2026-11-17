@@ -4800,32 +4800,23 @@
      :render!
      (fn [graphics-arg _input]
        (clear-screen! 0 0 0 0)
-
        (update-mouseover-eid!)
        (update-active-entities!)
-
        (set-camera-to-player!)
-
        (set-proj-matrix!)
-
        (batch-begin!)
        (render-tiled-map!)
        (set-batch-color!)
        (draw-world-layer!)
        (batch-end!)
-
        (mouse-interaction!)
        (update-paused-state!)
-
        (tick-game! (get-delta-time graphics-arg))
-
        (remove-destroyed-entities!)
        (key-pressed-checks!)
        (key-just-pressed-checks!)
        (update-stage!)
-
-       (draw-stage!)
-       )
+       (draw-stage!))
 
      :resize!
      (fn [width height]
