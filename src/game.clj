@@ -312,9 +312,11 @@
 (defprotocol GetHeight
   (get-height [_]))
 
-(import '(com.badlogic.gdx.maps.tiled TiledMap))
-(import '(com.badlogic.gdx.maps.tiled TiledMapTile))
-(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer))
+(import '(com.badlogic.gdx.maps.tiled TiledMap
+                                      TiledMapTile
+                                      TiledMapTileLayer
+                                      TiledMapTileLayer$Cell
+                                      TmxMapLoader))
 
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
@@ -350,8 +352,6 @@
 
 (defn get-cell [^TiledMapTileLayer layer x y]
   (.getCell layer (int x) (int y)))
-
-(import '(com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell))
 
 (defn set-cell! [^TiledMapTileLayer layer x y tile]
   (.setCell layer 
@@ -1643,8 +1643,6 @@
           (set-cell! layer x y tile))
         (add-map-layer! (get-layers tiled-map) layer)))
     tiled-map))
-
-(import '(com.badlogic.gdx.maps.tiled TmxMapLoader))
 
 (defn create-modules-level
   [{:keys [level/creature-properties
