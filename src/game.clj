@@ -4644,7 +4644,7 @@
                                             (tile-color-setter*
                                               {:ray-blocked? (partial raycaster-blocked? @raycaster)
                                                :explored-tile-corners explored-tile-corners
-                                               :light-position (let [pos (.position (get-camera @viewport))]
+                                               :light-position (let [pos (.position ^OrthographicCamera (get-camera @viewport))]
                                                                  [(.x pos) (.y pos) (.z pos)])
                                                :see-all-tiles? false
                                                :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4652,7 +4652,7 @@
                                                :invisible-tile-color (float-bits 0 0 0 1)})
                                             world-unit-scale)
         batch-begin! #(.begin ^Batch @batch)
-        set-proj-matrix! #(set-projection-matrix! @batch (.combined (get-camera @viewport)))
+        set-proj-matrix! #(set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
         set-camera-to-player! (fn []
                                 (let [^OrthographicCamera camera (get-camera @viewport)
                                       pos (.position camera)
@@ -4856,17 +4856,18 @@
                                 height (props-get props "height")]
                             (assert tiled-map)
                             (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
-                            (let [pos (.position ^OrthographicCamera @camera)
+                            (let [^OrthographicCamera camera @camera
+                                  pos (.position camera)
                                   px (float (/ width 2))
                                   py (float (/ height 2))
                                   x-diff (max (- px (float 0)) (- (float width) px))
                                   y-diff (max (- (float height) py) (- py (float 0)))
-                                  vp-ratio-w (/ (* x-diff 2) (.viewportWidth @camera))
-                                  vp-ratio-h (/ (* y-diff 2) (.viewportHeight @camera))]
+                                  vp-ratio-w (/ (* x-diff 2) (.viewportWidth camera))
+                                  vp-ratio-h (/ (* y-diff 2) (.viewportHeight camera))]
                               (set! (.x pos) px)
                               (set! (.y pos) py)
-                              (set! (.zoom @camera) (max vp-ratio-w vp-ratio-h))
-                              (.update @camera))
+                              (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
+                              (.update camera))
                             tiled-map))
         buttons (for [[label level-fn] [["Vampire" create-vampire-level]
                                         ["UF Caves" create-uf-caves]
@@ -4912,7 +4913,7 @@
      :render!
      (fn [_graphics input]
        (clear-screen! 0 0 0 0) 
-       (set-projection-matrix! @batch (.combined (get-camera @viewport)))
+       (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
        (Batch/.begin @batch) 
        (draw-tiled-map! @tiled-map
                         @batch
@@ -4920,30 +4921,30 @@
                         (constantly (.toFloatBits Color/WHITE))
                         world-unit-scale)
        (Batch/.end @batch)
-       (doseq [[k f] {Input$Keys/MINUS (fn [] 
-                                         (set! (.zoom @camera) (max 0.1 (+ (.zoom @camera) 0.1)))
-                                         (.update @camera))
-                      Input$Keys/EQUALS (fn []
-                                          (set! (.zoom @camera) (max 0.1 (+ (.zoom @camera) -0.1)))
-                                          (.update @camera))
-                      Input$Keys/LEFT (fn []
-                                        (let [pos (.position @camera)]
+       (doseq [[k f] {Input$Keys/MINUS (fn [^OrthographicCamera camera] 
+                                         (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.1)))
+                                         (.update camera))
+                      Input$Keys/EQUALS (fn [^OrthographicCamera camera]
+                                          (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.1)))
+                                          (.update camera))
+                      Input$Keys/LEFT (fn [^OrthographicCamera camera]
+                                        (let [pos (.position camera)]
                                           (set! (.x pos) (- (.x pos) 1))
-                                          (.update @camera)))
-                      Input$Keys/RIGHT (fn []
-                                         (let [pos (.position @camera)]
+                                          (.update camera)))
+                      Input$Keys/RIGHT (fn [^OrthographicCamera camera]
+                                         (let [pos (.position camera)]
                                            (set! (.x pos) (+ (.x pos) 1))
-                                           (.update @camera)))
-                      Input$Keys/UP (fn []
-                                      (let [pos (.position @camera)]
+                                           (.update camera)))
+                      Input$Keys/UP (fn [^OrthographicCamera camera]
+                                      (let [pos (.position camera)]
                                         (set! (.y pos) (+ (.y pos) 1))
-                                        (.update @camera)))
-                      Input$Keys/DOWN (fn []
-                                        (let [pos (.position @camera)]
+                                        (.update camera)))
+                      Input$Keys/DOWN (fn [^OrthographicCamera camera]
+                                        (let [pos (.position camera)]
                                           (set! (.y pos) (- (.y pos) 1))
-                                          (.update @camera)))}]
+                                          (.update camera)))}]
          (when (key-pressed? input k)
-           (f)))
+           (f @camera)))
        (act! @stage)
        (draw! @stage))
 
@@ -5109,7 +5110,7 @@
   (.isChecked ^CheckBox widget))
 
 (defn- create-boolean-widget [checked? skin]
-  (doto (CheckBox. "" skin)
+  (doto (CheckBox. "" ^Skin skin)
     (.setChecked checked?)))
 
 (defn- default-widget-value [widget]
@@ -5130,12 +5131,12 @@
   (edn/read-string (.getSelected ^SelectBox widget)))
 
 (defn- create-enum-widget [schema v skin]
-  (doto ^SelectBox (SelectBox. skin)
+  (doto (SelectBox. ^Skin skin)
     (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
     (.setSelected (pr-str v))))
 
 (defn text-field [text skin]
-  (TextField. ^String text skin))
+  (TextField. ^String text ^Skin skin))
 
 (defn get-text [^TextField text-field]
   (.getText text-field))
@@ -5187,7 +5188,7 @@
   (.height ^com.badlogic.gdx.scenes.scene2d.ui.Cell cell (float fv)))
 
 (defn scroll-pane [actor skin]
-  (ScrollPane. actor skin))
+  (ScrollPane. ^Actor actor ^Skin skin))
 
 (defn- create-sound-widget [sound-names sound-name play-sound! skin stage-viewport stage-add-actor!]
   (let [table (table-create)]
