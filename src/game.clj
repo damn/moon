@@ -8,7 +8,6 @@
 ; spiderweb-modifiers
 ; spiderweb-duration
 
-(def *id-counter* (atom nil))
 (def *entity-ids* (atom nil))
 (def *grid* (atom nil))
 (def *content-grid* (atom nil))
@@ -2783,7 +2782,7 @@
 
     nil))
 
-(defn- spawn-entity! [entity elapsed-time]
+(defn- spawn-entity! [entity elapsed-time id-counter]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
@@ -2820,7 +2819,7 @@
                         :entity/rotation-angle (or rotation-angle 0)))
         eid (atom entity)]
     (assert (and (not (contains? @eid :entity/id))))
-    (let [id (swap! *id-counter* inc)]
+    (let [id (swap! id-counter inc)]
       (assert (number? id))
       (swap! eid assoc :entity/id id)
       (swap! *entity-ids* assoc id eid))
@@ -4347,6 +4346,7 @@
         input (atom nil)
         graphics (atom nil)
         elapsed-time (atom 0)
+        id-counter (atom 0)
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -4371,7 +4371,7 @@
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
                                     (fn [entity-decl]
-                                      (spawn-entity! entity-decl @elapsed-time))
+                                      (spawn-entity! entity-decl @elapsed-time id-counter))
                                     :tx/event
                                     (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
@@ -4725,7 +4725,7 @@
                      start-position]} (create-level!)]
          (reset! tiled-map* tiled-map)
          (reset! *start-position* start-position)
-         (reset! *id-counter* 0)
+         (reset! id-counter 0)
          (reset! *entity-ids* {})
          (let [props (get-properties tiled-map)
                width (props-get props "width")
@@ -4747,7 +4747,8 @@
                                                               :entity/free-skill-points 3
                                                               :entity/clickable {:type :clickable/player}
                                                               :entity/click-distance-tiles 1.5}})
-                                @elapsed-time)]
+                                @elapsed-time
+                                id-counter)]
          (let [eid (get @*entity-ids* 1)]
            (assert (:entity/player? @eid))
            (reset! player-eid eid)))
