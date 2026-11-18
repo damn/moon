@@ -5239,13 +5239,13 @@
 (defn- create-one-to-one-widget [[_ property-type] property-id editor]
   (let [table (table-create)]
     (pad! (defaults table) 5)
-    (letfn [(add-one-to-one-rows [table property-type property-id editor]
+    (letfn [(add-one-to-one-rows [property-id]
               (let [redo-rows (fn [id]
                                 (clear-children! table)
-                                (add-one-to-one-rows table property-type id editor)
+                                (add-one-to-one-rows id)
                                 (pack! (first-ascendant table Window)))]
                 (doseq [row (cond-> []
-                              (not property-id)
+                              (not property-id) ; can even be nil?
                               (conj [{:actor (doto ((:editor/new-text-button editor) "+")
                                                (add-listener! (create-change-listener
                                                                 (fn [event _actor]
@@ -5257,6 +5257,8 @@
                                                                        (redo-rows id))
                                                                      editor))))))}])
                               property-id
+                              ; duplicated property-display-widget for a property ...
+                              ; with one-to-many
                               (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
                                                (doto (texture-region-image ((:editor/get-texture-region editor) 
                                                                             (or (:entity/image property)
@@ -5271,9 +5273,10 @@
                                                                 (fn [event _actor]
                                                                   (redo-rows nil)))))}]))]
                   (doseq [cell row]
+                    ; actor not necessary
                     (add! table (:actor cell)))
                   (row! table))))]
-      (add-one-to-one-rows table property-type property-id editor))
+      (add-one-to-one-rows property-id))
     table))
 
 (defn- one-to-many-widget-value [widget]
