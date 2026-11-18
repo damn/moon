@@ -3413,7 +3413,7 @@
           (filter #(effect-applicable? % effect-ctx) effects)))
 
 (defn projectile-collision-tick
-  [v eid _delta-time handle-txs! active-entities raycaster game-db elapsed-time grid fsms]
+  [v eid _delta-time handle-txs! grid applicable-effect-txs]
   (let [{:keys [entity-effects already-hit-bodies piercing?]} v
         entity @eid
         touched-cells (map deref (keep #(get-in grid %) (touched-tiles entity)))
@@ -3434,12 +3434,7 @@
     (when hit-entity
       (handle-txs! (applicable-effect-txs {:effect/source eid 
                                            :effect/target hit-entity} 
-                                          entity-effects
-                                          active-entities
-                                          raycaster
-                                          game-db
-                                          elapsed-time
-                                          fsms)))
+                                          entity-effects)))
     nil))
 
 (defn active-skill-tick
@@ -4133,6 +4128,14 @@
                           :drop-item -> :player-idle
                           :dropped-item -> :player-idle]
                          [:player-dead]])}
+        mk-effect-txs (fn [effect-ctx effects]
+                        (applicable-effect-txs effect-ctx
+                                               effects
+                                               active-entities
+                                               @raycaster
+                                               game-db
+                                               @elapsed-time
+                                               fsms))
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
@@ -4151,20 +4154,10 @@
                            (temp-modifier-tick v eid delta-time handle-txs! elapsed-time)
 
                            :entity/projectile-collision
-                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @raycaster game-db elapsed-time @grid fsms)
+                           (projectile-collision-tick v eid delta-time handle-txs! @grid mk-effect-txs)
 
                            :active-skill
-                           (active-skill-tick v eid delta-time handle-txs!
-                                              (partial line-of-sight? @raycaster)
-                                              (fn [effect-ctx effects]
-                                                (applicable-effect-txs effect-ctx
-                                                                       effects
-                                                                       active-entities
-                                                                       @raycaster
-                                                                       game-db
-                                                                       elapsed-time
-                                                                       fsms))
-                                              elapsed-time)
+                           (active-skill-tick v eid delta-time handle-txs! (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time)
 
                            :entity/delete-after-duration
                            (delete-after-duration-tick v eid delta-time handle-txs! elapsed-time)
