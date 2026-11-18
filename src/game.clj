@@ -3104,7 +3104,6 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
-; FIXME PLAYER ITEM ON CURSOR ENTER/EXIT MSUHDFN
 (defn- fsm-event-txs [eid event item-place-position elapsed-time & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
