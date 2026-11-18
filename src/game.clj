@@ -3496,6 +3496,15 @@
 
 (require '[reduce-fsm :as fsm])
 
+(defn update-xy! [^OrthographicCamera camera [x y]]
+  (let [pos (.position camera)]
+    (set! (.x pos) x)
+    (set! (.y pos) y)
+    (.update camera)))
+
+(defn set-camera-position! [viewport xy]
+  (update-xy! (get-camera viewport) xy))
+
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -4369,13 +4378,6 @@
                                             world-unit-scale)
         batch-begin! #(.begin ^Batch @batch)
         set-proj-matrix! #(set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
-        set-camera-to-player! (fn []
-                                (let [^OrthographicCamera camera (get-camera @viewport)
-                                      pos (.position camera)
-                                      [x y] (:entity/position @@player-eid)]
-                                  (set! (.x pos) x)
-                                  (set! (.y pos) y)
-                                  (.update camera)))
          update-active-entities! (fn []
                                    (reset! active-entities (active-entities* @content-grid @@player-eid)))
          update-mouseover-eid! (fn [mouse-position]
@@ -4565,7 +4567,7 @@
        (clear-screen! 0 0 0 0)
        (update-mouseover-eid! (get-input-position))
        (update-active-entities!)
-       (set-camera-to-player!)
+       (set-camera-position! @viewport (:entity/position @@player-eid))
        (set-proj-matrix!)
        (batch-begin!)
        (render-tiled-map!)
