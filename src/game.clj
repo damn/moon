@@ -2590,43 +2590,7 @@
   [fsm initial-state]
   (assoc (fsm initial-state nil) :state initial-state))
 
-(defn construct-entity 
-  [entity elapsed-time z-orders minimum-size]
-  (let [entity (reduce (fn [m [k v]]
-                         (assoc m k (case k
-                                      :entity/animation
-                                      (create-animation v)
-
-                                      :entity/delete-after-duration
-                                      (timer-create v elapsed-time)
-
-                                      :entity/projectile-collision
-                                      (assoc v :already-hit-bodies #{})
-
-                                      :entity/stats
-                                      (-> v
-                                          (update :stats/mana (fn [v] [v v]))
-                                          (update :stats/hp   (fn [v] [v v])))
-
-                                      v)))
-                       {}
-                       entity)]
-    (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
-      (assert position)
-      (assert width)
-      (assert height)
-      (assert (>= width  (if collides? minimum-size 0)))
-      (assert (>= height (if collides? minimum-size 0)))
-      (assert (or (boolean? collides?) (nil? collides?)))
-      (assert ((set z-orders) z-order))
-      (assert (or (nil? rotation-angle)
-                  (<= 0 rotation-angle 360)))
-      (assoc entity
-             :entity/position (mapv float position)
-             :entity/width (float width)
-             :entity/height (float height)
-             :entity/rotation-angle (or rotation-angle 0)))))
-
+; TODO INLINE!
 (defn- entity-state-exit!
   [eid [state-k _state-v] item-place-position elapsed-time]
   (case state-k
@@ -3982,8 +3946,43 @@
                                      nil)
 
                                    nil))
+        construct-entity (fn [entity]
+                           (let [entity (reduce (fn [m [k v]]
+                                                  (assoc m k (case k
+                                                               :entity/animation
+                                                               (create-animation v)
+
+                                                               :entity/delete-after-duration
+                                                               (timer-create v @elapsed-time)
+
+                                                               :entity/projectile-collision
+                                                               (assoc v :already-hit-bodies #{})
+
+                                                               :entity/stats
+                                                               (-> v
+                                                                   (update :stats/mana (fn [v] [v v]))
+                                                                   (update :stats/hp   (fn [v] [v v])))
+
+                                                               v)))
+                                                {}
+                                                entity)]
+                             (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
+                               (assert position)
+                               (assert width)
+                               (assert height)
+                               (assert (>= width  (if collides? minimum-size 0)))
+                               (assert (>= height (if collides? minimum-size 0)))
+                               (assert (or (boolean? collides?) (nil? collides?)))
+                               (assert ((set z-orders) z-order))
+                               (assert (or (nil? rotation-angle)
+                                           (<= 0 rotation-angle 360)))
+                               (assoc entity
+                                      :entity/position (mapv float position)
+                                      :entity/width (float width)
+                                      :entity/height (float height)
+                                      :entity/rotation-angle (or rotation-angle 0)))))
         spawn-entity! (fn [entity]
-                        (let [eid (atom (construct-entity entity @elapsed-time z-orders minimum-size))]
+                        (let [eid (atom (construct-entity entity))]
                           (assert (and (not (contains? @eid :entity/id))))
                           (let [id (swap! id-counter inc)]
                             (assert (number? id))
