@@ -1,6 +1,5 @@
 (ns game)
 
-(def factions-iterations {:good 15 :evil 5})
 (def float-rounding-error (double 0.000001))
 (def active-skill-radius (let [tile-size 48
                                image-width 32]
@@ -3385,7 +3384,7 @@
   (.getCamera viewport))
 
 (defn draw-cell-debug
-  [shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
+  [factions-iterations shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
   (let [^OrthographicCamera camera (get-camera viewport)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
@@ -4391,6 +4390,7 @@
                          (doseq [eid @active-entities
                                  component @eid]
                            (tick-component component eid delta-time elapsed-time)))
+        factions-iterations {:good 15 :evil 5}
         tick-game! (fn [delta-time]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
@@ -4523,7 +4523,8 @@
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
                              (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
-                             (draw-cell-debug @shape-drawer @viewport
+                             (draw-cell-debug factions-iterations
+                                              @shape-drawer @viewport
                                               @show-cell-entities?
                                               @show-cell-occupied?
                                               @show-potential-field-colors?
