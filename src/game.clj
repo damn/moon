@@ -4023,12 +4023,10 @@
                                          :textures @textures})]
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
-        create-interaction-state (fn [mouse-position]
+        create-interaction-state (fn [mouseover-actor world-mouse-position]
                                    (let [player-eid @player-eid
                                          stage @stage
-                                         mouseover-eid @mouseover-eid
-                                         mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
-                                                           (stage-hit stage x y))]
+                                         mouseover-eid @mouseover-eid]
                                      (cond
                                        mouseover-actor
                                        [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -4049,7 +4047,7 @@
                                                skill (skill-id (:entity/skills entity))
                                                target-position (or (and mouseover-eid
                                                                         (:entity/position @mouseover-eid))
-                                                                   (unproject @viewport mouse-position))
+                                                                   world-mouse-position)
                                                effect-ctx {:effect/source player-eid
                                                            :effect/target mouseover-eid
                                                            :effect/target-position target-position
@@ -4170,7 +4168,7 @@
                        (if (keyword? cursor-fn)
                          cursor-fn
                          (cursor-fn eid))))
-        handle-player-input (fn [player-eid interaction-state stage mouse-position key-pressed? button-just-pressed?]
+        handle-player-input (fn [player-eid interaction-state stage mouseover-actor key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
@@ -4186,19 +4184,18 @@
                                   [[:tx/event player-eid :no-movement-input]])
 
                                 :player-item-on-cursor
-                                (let [[x y] (unproject (get-viewport stage) mouse-position)]
-                                  (when (and (button-just-pressed? Input$Buttons/LEFT)
-                                             (not (stage-hit stage x y)))
-                                    [[:tx/event player-eid :drop-item]]))
+                                (when (and (button-just-pressed? Input$Buttons/LEFT)
+                                           (not mouseover-actor))
+                                  [[:tx/event player-eid :drop-item]])
 
                                 nil))
-        mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouse-position]
-                             (let [interaction-state (create-interaction-state mouse-position)]
+        mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position]
+                             (let [interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
                                (set-cursor! (safe-get @cursors (cursor-key @player-eid interaction-state)))
                                (handle-txs! (handle-player-input @player-eid
                                                                  interaction-state
                                                                  @stage
-                                                                 mouse-position
+                                                                 mouseover-actor
                                                                  key-pressed?
                                                                  button-just-pressed?))))
         update-paused-state! (fn [key-just-pressed? key-pressed?]
@@ -4551,10 +4548,10 @@
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
          (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
          (.begin ^Batch batch)
-         (render-tiled-map!)
+         (render-tiled-map!) ; batch, viewport...
          (draw-world-layer! mouse-position)
          (.end ^Batch batch)
-         (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouse-position)
+         (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position)
          (update-paused-state! key-just-pressed? key-pressed?)
          (tick-game! delta-time)
          (remove-destroyed-entities!)
