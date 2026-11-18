@@ -3550,9 +3550,9 @@
                          :rotation (or (:entity/rotation-angle entity) 0)}))
 
 (defn image-draw
-  [v entity batch unit-scale textures]
+  [image entity batch unit-scale textures]
   (draw-texture-region! batch unit-scale
-                        (get-texture-region textures v)
+                        (get-texture-region textures image)
                         (:entity/position entity)
                         {:center? true
                          :rotation (or (:entity/rotation-angle entity) 0)}))
@@ -3628,7 +3628,6 @@
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
         action-counter-ratio (timer-ratio counter elapsed-time)
-        texture-region (get-texture-region textures image)
         [x y] (:entity/position entity)
         y (+ (float y)
              (float (/ (:entity/height entity) 2))
@@ -3641,7 +3640,7 @@
              (math/to-radians 90)
              (math/to-radians (* (float action-counter-ratio) 360))
              (float-bits 1 1 1 0.5))
-    (draw-texture-region! batch unit-scale texture-region [(- (float x) radius) y])
+    (draw-texture-region! batch unit-scale (get-texture-region textures image) [(- (float x) radius) y])
     (doseq [effect effects]
       (effect-render effect effect-ctx shape-drawer
                      active-entities
@@ -4284,6 +4283,7 @@
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         viewport (atom nil)
         raycaster (atom nil)
         input (atom nil)
@@ -4305,7 +4305,7 @@
                     (-> (get-root @stage)
                         (find-actor "moon.ui.windows.inventory")
                         (set-item!* cell
-                                    {:texture-region (get-texture-region @textures (:entity/image item))
+                                    {:texture-region (image->texture-region (:entity/image item))
                                      :tooltip-text (item-info-text item)}
                                     @skin)))
         handle-txs! (fn handle-txs! [txs]
@@ -4348,7 +4348,7 @@
                      (-> (get-root @stage)
                          (find-actor "moon.ui.action-bar")
                          (add-skill! {:skill-id (:property/id skill)
-                                      :texture-region (get-texture-region @textures (:entity/image skill))
+                                      :texture-region (image->texture-region (:entity/image skill))
                                       :tooltip-text (info-text skill @elapsed-time)}
                                      @skin)))
         sync-player-ui! (fn []
@@ -4479,7 +4479,7 @@
                                level-start :start-position}
                               (level-fn {:level/creature-properties (prepare-creature-tiles
                                                                       (all-raw game-db :properties/creatures)
-                                                                      #(get-texture-region @textures %))
+                                                                      image->texture-region)
                                          :textures @textures})]
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
@@ -4647,9 +4647,8 @@
                                              (* sprite-y height)
                                              width
                                              height]]
-                                 (get-texture-region @textures
-                                                     {:image/file "images/items.png"
-                                                      :image/bounds bounds})))
+                                 (image->texture-region {:image/file "images/items.png"
+                                                         :image/bounds bounds})))
         ]
     {
      :create!
@@ -4820,12 +4819,13 @@
         camera (atom nil)
         db (atom nil)
         textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         tiled-map (atom nil)
         generate-level! (fn [level-fn]
                           (let [level (level-fn {:level/creature-properties
                                                  (prepare-creature-tiles
                                                    (all-raw @db :properties/creatures)
-                                                   #(get-texture-region @textures %))
+                                                   image->texture-region)
                                                  :textures @textures})
                                 ^TiledMap tiled-map (:tiled-map level)
                                 props (get-properties tiled-map)
@@ -5559,6 +5559,7 @@
                                                                        :extra-info-text (constantly "")}}
         batch (atom nil)
         textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         skin (atom nil)
         input (atom nil)
         sounds (atom nil)
@@ -5570,8 +5571,7 @@
                 (fn [property-id]
                   (safe-get @db property-id))
                 :editor/get-texture-region
-                (fn [image]
-                  (get-texture-region @textures image))
+                image->texture-region
                 :editor/property-type->overview-table-props
                 property-type->overview-table-props
                 :editor/text-tooltip
