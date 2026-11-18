@@ -3347,10 +3347,6 @@
       (set-fill-parent! true)
       (set-name! "moon.ui.action-bar"))))
 
-(defn current-mouseover-actor [stage input]
-  (let [[x y] (unproject (get-viewport stage) [(get-x input) (get-y input)])]
-    (mouseover-actor stage x y)))
-
 ; FIXME make txs (destroy also part of?)
 (defn destroy-entities! [handle-txs! game-db entity-ids grid content-grid]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
@@ -3859,7 +3855,7 @@
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-        update-labels (fn [get-frames-per-second]
+        update-labels (fn [get-frames-per-second get-mouse-position]
                         (for [item [{:label "elapsed-time"
                                      :update-fn (fn [] 
                                                   (str (readable @elapsed-time) " seconds"))
@@ -3876,10 +3872,10 @@
                                      :update-fn (fn [] @paused?)}
                                     {:label "GUI"
                                      :update-fn (fn []
-                                                  (mapv int (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])))}
+                                                  (mapv int (unproject (get-viewport @stage) (get-mouse-position))))}
                                     {:label "World"
                                      :update-fn (fn []
-                                                  (mapv int (unproject @viewport [(get-x @input) (get-y @input)])))}
+                                                  (mapv int (unproject @viewport (get-mouse-position))))}
                                     {:label "Zoom"
                                      :update-fn (fn []
                                                   (.zoom ^OrthographicCamera (get-camera @viewport)))
@@ -4062,11 +4058,12 @@
                                          :textures @textures})]
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
-        create-interaction-state (fn [input]
+        create-interaction-state (fn [mouse-position]
                                    (let [player-eid @player-eid
                                          stage @stage
                                          mouseover-eid @mouseover-eid
-                                         mouseover-actor (current-mouseover-actor stage input)]
+                                         mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
+                                                           (mouseover-actor stage x y))]
                                      (cond
                                        mouseover-actor
                                        [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -4087,7 +4084,7 @@
                                                skill (skill-id (:entity/skills entity))
                                                target-position (or (and mouseover-eid
                                                                         (:entity/position @mouseover-eid))
-                                                                   (unproject @viewport [(get-x input) (get-y input)]))
+                                                                   (unproject @viewport mouse-position))
                                                effect-ctx {:effect/source player-eid
                                                            :effect/target mouseover-eid
                                                            :effect/target-position target-position
@@ -4208,7 +4205,7 @@
                        (if (keyword? cursor-fn)
                          cursor-fn
                          (cursor-fn eid))))
-        handle-player-input (fn [player-eid interaction-state stage input key-pressed? button-just-pressed?]
+        handle-player-input (fn [player-eid interaction-state stage mouse-position key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
@@ -4224,30 +4221,30 @@
                                   [[:tx/event player-eid :no-movement-input]])
 
                                 :player-item-on-cursor
-                                (let [[x y] (unproject (get-viewport stage) [(get-x input) (get-y input)])]
+                                (let [[x y] (unproject (get-viewport stage) mouse-position)]
                                   (when (and (button-just-pressed? Input$Buttons/LEFT)
                                              (not (mouseover-actor stage x y)))
                                     [[:tx/event player-eid :drop-item]]))
 
                                 nil))
-        mouse-interaction! (fn [set-cursor!]
-                             (let [interaction-state (create-interaction-state @input)]
+        mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouse-position]
+                             (let [interaction-state (create-interaction-state mouse-position)]
                                (set-cursor! (safe-get @cursors (cursor-key @player-eid interaction-state)))
                                (handle-txs! (handle-player-input @player-eid
                                                                  interaction-state
                                                                  @stage
-                                                                 @input
-                                                                 #(key-pressed? @input (int %))
-                                                                 #(.isButtonJustPressed ^Input @input (int %))))))
-        update-paused-state! (fn []
+                                                                 mouse-position
+                                                                 key-pressed?
+                                                                 button-just-pressed?))))
+        update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
                                        (or #_error
                                            (and pausing?
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
-                                                (not (or (key-just-pressed? @input (int (:unpause-once controls)))
-                                                         (key-pressed? @input (int (:unpause-continously controls)))))))))
+                                                (not (or (key-just-pressed? (:unpause-once controls))
+                                                         (key-pressed? (:unpause-continously controls))))))))
         remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db entity-ids @grid @content-grid))
-        key-pressed-checks! (fn []
+        key-pressed-checks! (fn [key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
                                                                      (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
@@ -4256,16 +4253,16 @@
                                                                     (let [^OrthographicCamera camera (get-camera @viewport)]
                                                                       (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                                       (.update camera)))}]
-                                (when (key-pressed? @input (int k))
+                                (when (key-pressed? k)
                                   (f))))
-        key-just-pressed-checks! (fn []
+        key-just-pressed-checks! (fn [key-just-pressed?]
                                    (doseq [[k f] {(:close-windows-key controls) (fn []
                                                                                   (close-windows! @stage))
                                                   (:toggle-inventory controls) (fn []
                                                                                  (toggle-inventory-visible! @stage))
                                                   (:toggle-entity-info controls) (fn []
                                                                                    (toggle-entity-info! @stage))}]
-                                     (when (key-just-pressed? @input (int k))
+                                     (when (key-just-pressed? k)
                                        (f))))
         update-stage! #(act! @stage)
         draw-stage! #(draw! @stage)
@@ -4487,7 +4484,8 @@
              (reset! player-eid eid)))
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
-                                          :update-labels (update-labels (fn [] (get-frames-per-second graphics)))
+                                          :update-labels (update-labels (fn [] (get-frames-per-second graphics))
+                                                                        (fn [] [(get-x @input) (get-y @input)]))
                                           :skin @skin})
                         (create-actor
                           (let [y-mana 80
@@ -4584,12 +4582,16 @@
        (set-batch-color!)
        (draw-world-layer!)
        (batch-end!)
-       (mouse-interaction! #(set-cursor! graphics %))
-       (update-paused-state!)
+       (mouse-interaction! #(set-cursor! graphics %)
+                           #(key-pressed? @input %)
+                           #(.isButtonJustPressed ^Input @input (int %))
+                           [(get-x @input) (get-y @input)])
+       (update-paused-state! #(key-just-pressed? @input %)
+                             #(key-pressed? @input %))
        (tick-game! (get-delta-time graphics))
        (remove-destroyed-entities!)
-       (key-pressed-checks!)
-       (key-just-pressed-checks!)
+       (key-pressed-checks! #(key-pressed? @input %))
+       (key-just-pressed-checks! #(key-just-pressed? @input %))
        (update-stage!)
        (draw-stage!))
 
