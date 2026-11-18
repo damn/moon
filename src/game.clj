@@ -3277,16 +3277,19 @@
            manacontent-file
            x
            y-mana]}
-   player-eid default-font textures unit-scale]
-  (let [rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
-        y-hp (+ y-mana rahmenh)
+   player-eid default-font image->texture-region unit-scale]
+  (let [y-hp (+ y-mana rahmenh)
         draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
-                           (draw-texture-region! batch @unit-scale rahmen-tex-reg [x y])
-                           (draw-texture-region! batch @unit-scale
-                                                   (get-texture-region textures
-                                                                            {:image/file content-file
-                                                                             :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
-                                                   [x y])
+                           (draw-texture-region! batch
+                                                 @unit-scale
+                                                 (image->texture-region {:image/file rahmen-file})
+                                                 [x y])
+                           (draw-texture-region! batch
+                                                 @unit-scale
+                                                 (image->texture-region
+                                                   {:image/file content-file
+                                                    :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
+                                                 [x y])
                            (draw-text! batch 
                                        default-font 
                                        @unit-scale 
@@ -4725,7 +4728,7 @@
                                              :manacontent-file "images/mana.png"
                                              :x (/ (get-world-width (get-viewport @stage)) 2)
                                              :y-mana 80}
-                                            @player-eid @default-font @textures unit-scale)
+                                            @player-eid @default-font image->texture-region unit-scale)
                         (windows-create [(create-info-window
                                            {:title "Entity Info"
                                             :actor-name "moon.ui.windows.entity-info"
