@@ -3197,18 +3197,6 @@
             :when (get render-layer k)]
       (draw-component! k v entity))))
 
-(defn- choose-skill [ray-blocked? entity effect-ctx effect-applicable? effect-useful?]
-  (->> entity
-       :entity/skills
-       vals
-       (sort-by :skill/cost)
-       reverse
-       (filter #(and (= :usable (usable-state % entity effect-ctx effect-applicable?))
-                     (->> (:skill/effects %)
-                          (filter (fn [e] (effect-applicable? e effect-ctx)))
-                          (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
-       first))
-
 (defn outer-rectangle
   [{[x y] :position :keys [radius]}]
   (let [radius (float radius)
@@ -3355,7 +3343,7 @@
         (handle-txs! [[:tx/event eid :alert]])))))
 
 (defn npc-idle-tick
-  [_v eid _delta-time line-of-sight? raycaster-blocked? grid effect-applicable? effect-useful?]
+  [_v eid _delta-time line-of-sight? grid choose-skill]
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
@@ -3365,7 +3353,7 @@
                     :effect/target target
                     :effect/target-direction (when target
                                                (direction entity @target))}]
-    (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx effect-applicable? effect-useful?)]
+    (if-let [skill (choose-skill entity effect-ctx)]
       [[:tx/event eid :start-action [skill effect-ctx]]]
       [[:tx/event eid :movement-direction (or (find-direction grid eid)
                                               [0 0])]])))
@@ -4060,6 +4048,17 @@
                                       (:maxrange v))
 
                            true))
+        choose-skill (fn [entity effect-ctx]
+                       (->> entity
+                            :entity/skills
+                            vals
+                            (sort-by :skill/cost)
+                            reverse
+                            (filter #(and (= :usable (usable-state % entity effect-ctx effect-applicable?))
+                                          (->> (:skill/effects %)
+                                               (filter (fn [e] (effect-applicable? e effect-ctx)))
+                                               (some (fn [e] (effect-useful? e effect-ctx (partial raycaster-blocked? @raycaster)))))))
+                            first))
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
@@ -4096,12 +4095,7 @@
                            (npc-sleeping-tick v eid delta-time handle-txs! @grid)
 
                            :npc-idle
-                           (handle-txs! (npc-idle-tick v eid delta-time 
-                                                       (partial line-of-sight? @raycaster)
-                                                       (partial raycaster-blocked? @raycaster)
-                                                       @grid
-                                                       effect-applicable?
-                                                       effect-useful?))
+                           (handle-txs! (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill))
 
                            :entity/movement
                            (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
