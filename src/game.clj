@@ -1892,7 +1892,7 @@
       (find-actor "moon.ui.windows.entity-info")
       toggle-visible!))
 
-(defn mouseover-actor [stage x y]
+(defn stage-hit [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
 
 (import '(com.badlogic.gdx.utils Align
@@ -2866,7 +2866,7 @@
                                    batch
                                    unit-scale
                                    image->texture-region
-                                   (mouseover-actor stage x y)
+                                   (stage-hit stage x y)
                                    mouse-pos)))))
 
 (defn windows-create [actors]
@@ -4028,7 +4028,7 @@
                                          stage @stage
                                          mouseover-eid @mouseover-eid
                                          mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
-                                                           (mouseover-actor stage x y))]
+                                                           (stage-hit stage x y))]
                                      (cond
                                        mouseover-actor
                                        [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -4188,7 +4188,7 @@
                                 :player-item-on-cursor
                                 (let [[x y] (unproject (get-viewport stage) mouse-position)]
                                   (when (and (button-just-pressed? Input$Buttons/LEFT)
-                                             (not (mouseover-actor stage x y)))
+                                             (not (stage-hit stage x y)))
                                     [[:tx/event player-eid :drop-item]]))
 
                                 nil))
@@ -4267,7 +4267,7 @@
                             :player-item-on-cursor
                             (let [{:keys [item]} v]
                               (when-not (let [[x y] (unproject (get-viewport @stage) mouse-position)]
-                                          (mouseover-actor @stage x y))
+                                          (stage-hit @stage x y))
                                 (draw-texture-region! @batch @unit-scale
                                                       (image->texture-region (:entity/image item))
                                                       (item-place-position (unproject @viewport mouse-position)
@@ -4343,14 +4343,13 @@
                                             world-unit-scale)
          update-active-entities! (fn []
                                    (reset! active-entities (active-entities* @content-grid @@player-eid)))
-         update-mouseover-eid! (fn [mouse-position]
+         update-mouseover-eid! (fn [mouseover-actor world-mouse-position]
                                  (let [old-mouseover-eid @mouseover-eid
-                                       [x y] (unproject (get-viewport @stage) mouse-position)
-                                       new-eid (if (mouseover-actor @stage x y)
+                                       new-eid (if mouseover-actor
                                                  nil
                                                  (let [player @@player-eid
                                                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                                                    (point->entities @grid (unproject @viewport mouse-position)))]
+                                                                    (point->entities @grid world-mouse-position))]
                                                    (->> hits
                                                         (sort-by #((:entity/z-order @%) render-z-order) <)
                                                         reverse
@@ -4540,9 +4539,13 @@
              viewport @viewport
              mouse-position (get-input-position)
              delta-time (get-delta-time)
-             camera-position (:entity/position @@player-eid)]
+             camera-position (:entity/position @@player-eid)
+             mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
+                               (stage-hit stage x y))
+             world-mouse-position (unproject viewport mouse-position)
+             ]
          (clear-screen! 0 0 0 0)
-         (update-mouseover-eid! mouse-position)
+         (update-mouseover-eid! mouseover-actor world-mouse-position)
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
