@@ -112,15 +112,23 @@
               :drop-item -> :player-idle
               :dropped-item -> :player-idle]
              [:player-dead]])})
+
 (import '(java.util Random))
+
+(defn create-random []
+  (Random.))
+
+(defn next-float [random]
+  (Random/.nextFloat random))
+
 (def k->adj-num
   {:wide
    (fn [open-paths random]
      (if (= open-paths 1)
-       (case (int (* 3 (.nextFloat ^Random random)))
+       (case (int (* 3 (next-float random)))
          0 1
          2)
-       (case (int (* 4 (.nextFloat ^Random random)))
+       (case (int (* 4 (next-float random)))
          0 1
          1 2
          2 3
@@ -131,7 +139,7 @@
    (fn [open-paths random]
      (if (= open-paths 1)
        1
-       (case (int (* 7 (.nextFloat ^Random random)))
+       (case (int (* 7 (next-float random)))
          0 0
          1 2
          1)))
@@ -139,13 +147,13 @@
    ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
    (fn [open-paths random]
      (if (= open-paths 1)
-       (case (int (* 4 (.nextFloat ^Random random)))
+       (case (int (* 4 (next-float random)))
          0 1
          1 1
          2 1
          3 2
          1)
-       (case (int (* 4 (.nextFloat ^Random random)))
+       (case (int (* 4 (next-float random)))
          0 0
          1 1
          2 1
@@ -320,6 +328,12 @@
                                       TmxMapLoader)
         '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
 
+(defn get-keys [map-properties]
+  (MapProperties/.getKeys map-properties))
+
+(defn get-values [map-properties]
+  (MapProperties/.getValues map-properties))
+
 (defn get-layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
 
@@ -475,22 +489,22 @@
 (defn- draw-tile!
   [x
    y
-   tile
+   ^TiledMapTile tile
    unit-scale
    color-setter
    batch-color
    verts
    batch
    num-vertices]
-  (let [region (.getTextureRegion ^TiledMapTile tile)
-        x1 (+ x (* (.getOffsetX ^TiledMapTile tile) unit-scale))
-        y1 (+ y (* (.getOffsetY ^TiledMapTile tile) unit-scale))
-        x2 (+ x1 (* (.getRegionWidth ^TextureRegion region) unit-scale))
-        y2 (+ y1 (* (.getRegionHeight ^TextureRegion region) unit-scale))
-        u1 (.getU ^TextureRegion region)
-        v1 (.getV2 ^TextureRegion region)
-        u2 (.getU2 ^TextureRegion region)
-        v2 (.getV ^TextureRegion region)
+  (let [region (.getTextureRegion tile)
+        x1 (+ x (* (.getOffsetX tile) unit-scale))
+        y1 (+ y (* (.getOffsetY tile) unit-scale))
+        x2 (+ x1 (* (.getRegionWidth region) unit-scale))
+        y2 (+ y1 (* (.getRegionHeight region) unit-scale))
+        u1 (.getU region)
+        v1 (.getV2 region)
+        u2 (.getU2 region)
+        v2 (.getV region)
         color11 (float (color-setter batch-color x1 y1))
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
@@ -1461,7 +1475,7 @@
         (finished grid
                   (last posi-seq)
                   cell-cnt)
-        (let [current-order (if (< (.nextFloat ^Random random) turn-ratio)
+        (let [current-order (if (< (next-float random) turn-ratio)
                               (create-order)
                               current-order)
               neighbours (get-4-neighbours (last posi-seq))
@@ -1578,24 +1592,24 @@
     scaled-grid))
 
 (defn- grid->tiled-map
-  [^TiledMap schema-tiled-map grid]
+  [schema-tiled-map grid]
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
                      (if (instance? StaticTiledMapTile tile)
                        (StaticTiledMapTile. ^StaticTiledMapTile tile)
                        (static-tiled-map-tile tile))))]
-    {:properties (merge (let [^MapProperties props (get-properties schema-tiled-map)]
-                          (zipmap (.getKeys props)
-                                  (.getValues props)))
+    {:properties (merge (let [props (get-properties schema-tiled-map)]
+                          (zipmap (get-keys props)
+                                  (get-values props)))
                         {"width" (count grid)
                          "height" (count (grid 0))})
      :layers (for [layer (get-layers schema-tiled-map)]
                {:name (get-name layer)
                 :visible? (visible? layer)
-                :properties (let [^MapProperties props (get-properties layer)]
-                              (zipmap (.getKeys props)
-                                      (.getValues props)))
+                :properties (let [props (get-properties layer)]
+                              (zipmap (get-keys props)
+                                      (get-values props)))
                 :tiles (for [x (range (count grid))
                              y (range (count (grid 0)))
                              :let [position [x y]
@@ -1637,7 +1651,7 @@
     :or {map-size 5
          spawn-rate 0.05}}]
   (let [scale [32 20]
-        {:keys [start grid]} (create-caves (Random.) map-size map-size :wide)
+        {:keys [start grid]} (create-caves (create-random) map-size map-size :wide)
         grid (fix-nads grid)
         grid (let [grid (reduce #(assoc-in %1 %2 :transition)
                                 grid
@@ -1792,7 +1806,7 @@
                 :cave-size 200
                 :cave-style :wide}
                world-fn-ctx)
-        {:keys [start grid]} (create-caves (Random.) cave-size cave-size cave-style)
+        {:keys [start grid]} (create-caves (create-random) cave-size cave-size cave-style)
         _ (assert (= #{:wall :ground} (set (apply concat grid))))
         grid (fix-nads grid)
         create-tile (let [texture (get textures texture-path)]
