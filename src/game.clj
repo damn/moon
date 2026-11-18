@@ -4607,10 +4607,6 @@
         world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
         tiled-map-color-setter (constantly (.toFloatBits Color/WHITE))
-        batch (atom nil)
-        skin (atom nil)
-        stage (atom nil)
-        viewport (atom nil)
         camera (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
@@ -4646,7 +4642,12 @@
                   [(str "Generate " label)
                    (fn []
                      (dispose! @tiled-map)
-                     (reset! tiled-map (generate-level! level-fn)))])]
+                     (reset! tiled-map (generate-level! level-fn)))])
+        batch (atom nil)
+        skin (atom nil)
+        stage (atom nil)
+        viewport (atom nil)
+        ]
     {:create!
      (fn [{:keys [files input set-input-processor!]}]
        (reset! batch (sprite-batch!))
