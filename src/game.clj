@@ -2547,12 +2547,6 @@
   {:duration duration
    :stop-time (+ elapsed-time duration)})
 
-(defn- spawn-alert [position faction duration elapsed-time]
-  (spawn-effect position
-                {:entity/alert-friendlies-after-duration
-                 {:counter (timer-create duration elapsed-time)
-                  :faction faction}}))
-
 (defn- spawn-item [position item]
   {:entity/position position
    :entity/width 0.75
@@ -3583,24 +3577,6 @@
                                       :entity/width (float width)
                                       :entity/height (float height)
                                       :entity/rotation-angle (or rotation-angle 0)))))
-        entity-ids (atom {})
-        grid (atom nil)
-        content-grid (atom nil)
-        spawn-entity! (fn [entity]
-                        (let [id (:entity/id entity)
-                              eid (atom entity)]
-                          (assert (number? id))
-                          (assert (not (contains? @entity-ids id)))
-                          (swap! entity-ids assoc id eid)
-                          (assert (:entity/position @eid))
-                          (update-entity! @content-grid eid)
-                          (assert (:entity/position @eid))
-                          (when (:entity/collides? @eid)
-                            (assert (valid-position? @grid @eid id)))
-                          (set-touched-cells! @grid eid)
-                          (when (:entity/collides? @eid)
-                            (set-occupied-cells! @grid eid))
-                          eid))
         entity-state-enter! (fn [eid [state-k state-v] create-timer]
                               (case state-k
                                 :player-item-on-cursor
@@ -3672,7 +3648,10 @@
 
                                :npc-sleeping
                                [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
-                                [:tx/spawn-entity (entity* (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 @elapsed-time))]]
+                                [:tx/spawn-entity (entity* (spawn-effect (:entity/position @eid) 
+                                                                         {:entity/alert-friendlies-after-duration
+                                                                          {:counter (create-timer 0.2)
+                                                                           :faction (:entity/faction @eid)}}))]]
 
                                :npc-moving
                                [[:tx/swap eid dissoc :entity/movement]]
@@ -3701,6 +3680,9 @@
         skin (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
+        entity-ids (atom {})
+        grid (atom nil)
+        content-grid (atom nil)
         handle-txs! (fn handle-txs! [world-mouse-position txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -3710,7 +3692,21 @@
                                     (fn [sound-name]
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
-                                    spawn-entity!
+                                    (fn [entity]
+                                      (let [id (:entity/id entity)
+                                            eid (atom entity)]
+                                        (assert (number? id))
+                                        (assert (not (contains? @entity-ids id)))
+                                        (swap! entity-ids assoc id eid)
+                                        (assert (:entity/position @eid))
+                                        (update-entity! @content-grid eid)
+                                        (assert (:entity/position @eid))
+                                        (when (:entity/collides? @eid)
+                                          (assert (valid-position? @grid @eid id)))
+                                        (set-touched-cells! @grid eid)
+                                        (when (:entity/collides? @eid)
+                                          (set-occupied-cells! @grid eid))
+                                        eid))
                                     :tx/event
                                     ; cant remove this because item on cursor triggers to :tx/event after another
                                     ; which are order dependent!
