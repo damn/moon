@@ -2977,33 +2977,6 @@
                            :air (float-bits 1 1 0 0.5)
                            :none (float-bits 1 0 0 0.5))))))
 
-(defn- effect-render
-  [[k v] effect-ctx shape-drawer active-entities raycaster]
-  (case k
-    :effects/target-all
-    (let [source (:effect/source effect-ctx)
-          source* @source]
-      (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
-        (line! shape-drawer
-                      (:entity/position source*)
-                      (:entity/position target*)
-                      (float-bits 1 0 0 0.5))))
-
-    :effects/target-entity
-    (when-let [target (:effect/target effect-ctx)]
-      (let [source (:effect/source effect-ctx)
-            body        @source
-            target-body @target
-            maxrange (:maxrange v)]
-        (line! shape-drawer
-                      (start-point body target-body)
-                      (end-point body target-body maxrange)
-                      (if (in-range? body target-body maxrange)
-                        (float-bits 1 0 0 0.5)
-                        (float-bits 1 1 0 0.5)))))
-
-    nil))
-
 (defn clickable-draw
   [v entity batch default-font unit-scale]
   (let [{:keys [text]} v
@@ -3115,7 +3088,7 @@
   (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius]
+  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius effect-render]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -4338,6 +4311,31 @@
         active-skill-radius (let [tile-size 48
                                   image-width 32]
                               (/ (/ image-width tile-size) 2))
+        effect-render (fn [[k v] effect-ctx shape-drawer active-entities raycaster]
+                        (case k
+                          :effects/target-all
+                          (let [source (:effect/source effect-ctx)
+                                source* @source]
+                            (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
+                              (line! shape-drawer
+                                     (:entity/position source*)
+                                     (:entity/position target*)
+                                     (float-bits 1 0 0 0.5))))
+
+                          :effects/target-entity
+                          (when-let [target (:effect/target effect-ctx)]
+                            (let [source (:effect/source effect-ctx)
+                                  body        @source
+                                  target-body @target
+                                  maxrange (:maxrange v)]
+                              (line! shape-drawer
+                                     (start-point body target-body)
+                                     (end-point body target-body maxrange)
+                                     (if (in-range? body target-body maxrange)
+                                       (float-bits 1 0 0 0.5)
+                                       (float-bits 1 1 0 0.5)))))
+
+                          nil))
         draw-component! (fn [k v entity]
                           (case k
                             :entity/clickable
@@ -4359,7 +4357,7 @@
                             :entity/temp-modifier
                             (temp-modifier-draw entity @shape-drawer)
                             :active-skill
-                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius)
+                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius effect-render)
                             :npc-sleeping
                             (npc-sleeping-draw entity @batch @default-font @unit-scale)
                             :stunned
