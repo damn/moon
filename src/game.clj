@@ -3805,62 +3805,6 @@
   (let [[x y] (ui-mouse-position stage input)]
     (mouseover-actor stage x y)))
 
-(defn- cursor-key [player-eid interaction-state]
-  (let [eid player-eid
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        cursor-fn (get {:player-item-on-cursor :cursors/hand-grab
-                        :player-dead :cursors/black-x
-                        :active-skill :cursors/sandclock
-                        :stunned :cursors/denied
-                        :player-moving :cursors/walking
-                        :player-idle (fn
-                                       [eid]
-                                       (let [[k params] interaction-state]
-                                         (case k
-                                           :interaction-state/mouseover-actor
-                                           (let [[actor-type params] params
-                                                 inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
-                                                                                (let [inventory-slot params]
-                                                                                  (item-at (:entity/inventory @eid) inventory-slot)))]
-                                             (cond
-                                               inventory-cell-with-item?
-                                               :cursors/hand-before-grab
-
-                                               (= actor-type :mouseover-actor/window-title-bar)
-                                               :cursors/move-window
-
-                                               (= actor-type :mouseover-actor/button)
-                                               :cursors/over-button
-
-                                               (= actor-type :mouseover-actor/unspecified)
-                                               :cursors/default
-
-                                               :else
-                                               :cursors/default))
-
-                                           :interaction-state/clickable-mouseover-eid
-                                           (let [{:keys [clicked-eid
-                                                         in-click-range?]} params]
-                                             (case (:type (:entity/clickable @clicked-eid))
-                                               :clickable/item (if in-click-range?
-                                                                 :cursors/hand-before-grab
-                                                                 :cursors/hand-before-grab-gray)
-                                               :clickable/player :cursors/bag))
-
-                                           :interaction-state.skill/usable
-                                           :cursors/use-skill
-
-                                           :interaction-state.skill/not-usable
-                                           :cursors/skill-not-usable
-
-                                           :interaction-state/no-skill-selected
-                                           :cursors/no-skill-selected)))}
-                       state-k)]
-    (if (keyword? cursor-fn)
-      cursor-fn
-      (cursor-fn eid))))
-
 (defn destroy-entities! [handle-txs! game-db entity-ids grid content-grid]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
     (let [id (:entity/id @eid)]
@@ -3895,63 +3839,6 @@
   (-> (get-root stage)
       (find-actor "player-message")
       (set-user-object! (atom {:text message :counter 0}))))
-
-(defn- interaction-state->txs 
-  [[k params] stage player-eid]
-  (case k
-    :interaction-state/mouseover-actor
-    nil
-
-    :interaction-state/clickable-mouseover-eid
-    (let [{:keys [clicked-eid in-click-range?]} params]
-      (if in-click-range?
-        (case (:type (:entity/clickable @clicked-eid))
-          :clickable/player
-          [[:tx/toggle-inventory-visible]]
-
-          :clickable/item
-          (let [item (:entity/item @clicked-eid)]
-            (cond
-              (-> (get-root stage)
-                  (find-actor "moon.ui.windows.inventory")
-                  visible?)
-              [[:tx/swap clicked-eid assoc :entity/destroyed? true]
-               [:tx/sound "bfxr_takeit.wav"]
-               [:tx/event player-eid :pickup-item item]]
-
-              (can-pickup-item? (:entity/inventory @player-eid) item)
-              (do
-                (assert (valid-item? item))
-                (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
-                  (assert cell)
-                  (assert (nil? cell-item))
-                  [[:tx/swap clicked-eid assoc :entity/destroyed? true]
-                   [:tx/sound "bfxr_pickup.wav"]
-                   [:tx/swap player-eid set-item cell item]
-                   [:tx/set-item cell item]]))
-               
-
-              :else
-              [[:tx/sound "bfxr_denied.wav"]
-               [:tx/show-message "Your Inventory is full"]])))
-        [[:tx/sound "bfxr_denied.wav"]
-         [:tx/show-message "Too far away"]]))
-
-    :interaction-state.skill/usable
-    (let [[skill effect-ctx] params]
-      [[:tx/event player-eid :start-action [skill effect-ctx]]])
-
-    :interaction-state.skill/not-usable
-    (let [state params]
-      [[:tx/sound "bfxr_denied.wav"]
-       [:tx/show-message (case state
-                           :cooldown "Skill is still on cooldown"
-                           :not-enough-mana "Not enough mana"
-                           :invalid-params "Cannot use this here")]])
-
-    :interaction-state/no-skill-selected
-    [[:tx/sound "bfxr_denied.wav"]
-     [:tx/show-message "No selected skill"]]))
 
 (defn get-delta-time [graphics]
   (Graphics/.getDeltaTime graphics))
@@ -4402,6 +4289,116 @@
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
+        interaction-state->txs (fn [[k params] stage player-eid]
+                                 (case k
+                                   :interaction-state/mouseover-actor
+                                   nil
+
+                                   :interaction-state/clickable-mouseover-eid
+                                   (let [{:keys [clicked-eid in-click-range?]} params]
+                                     (if in-click-range?
+                                       (case (:type (:entity/clickable @clicked-eid))
+                                         :clickable/player
+                                         [[:tx/toggle-inventory-visible]]
+
+                                         :clickable/item
+                                         (let [item (:entity/item @clicked-eid)]
+                                           (cond
+                                             (-> (get-root stage)
+                                                 (find-actor "moon.ui.windows.inventory")
+                                                 visible?)
+                                             [[:tx/swap clicked-eid assoc :entity/destroyed? true]
+                                              [:tx/sound "bfxr_takeit.wav"]
+                                              [:tx/event player-eid :pickup-item item]]
+
+                                             (can-pickup-item? (:entity/inventory @player-eid) item)
+                                             (do
+                                               (assert (valid-item? item))
+                                               (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
+                                                 (assert cell)
+                                                 (assert (nil? cell-item))
+                                                 [[:tx/swap clicked-eid assoc :entity/destroyed? true]
+                                                  [:tx/sound "bfxr_pickup.wav"]
+                                                  [:tx/swap player-eid set-item cell item]
+                                                  [:tx/set-item cell item]]))
+
+
+                                             :else
+                                             [[:tx/sound "bfxr_denied.wav"]
+                                              [:tx/show-message "Your Inventory is full"]])))
+                                       [[:tx/sound "bfxr_denied.wav"]
+                                        [:tx/show-message "Too far away"]]))
+
+                                   :interaction-state.skill/usable
+                                   (let [[skill effect-ctx] params]
+                                     [[:tx/event player-eid :start-action [skill effect-ctx]]])
+
+                                   :interaction-state.skill/not-usable
+                                   (let [state params]
+                                     [[:tx/sound "bfxr_denied.wav"]
+                                      [:tx/show-message (case state
+                                                          :cooldown "Skill is still on cooldown"
+                                                          :not-enough-mana "Not enough mana"
+                                                          :invalid-params "Cannot use this here")]])
+
+                                   :interaction-state/no-skill-selected
+                                   [[:tx/sound "bfxr_denied.wav"]
+                                    [:tx/show-message "No selected skill"]]))
+        cursor-key (fn [player-eid interaction-state]
+                     (let [eid player-eid
+                           entity @eid
+                           state-k (:state (:entity/fsm entity))
+                           cursor-fn (get {:player-item-on-cursor :cursors/hand-grab
+                                           :player-dead :cursors/black-x
+                                           :active-skill :cursors/sandclock
+                                           :stunned :cursors/denied
+                                           :player-moving :cursors/walking
+                                           :player-idle (fn
+                                                          [eid]
+                                                          (let [[k params] interaction-state]
+                                                            (case k
+                                                              :interaction-state/mouseover-actor
+                                                              (let [[actor-type params] params
+                                                                    inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
+                                                                                                   (let [inventory-slot params]
+                                                                                                     (item-at (:entity/inventory @eid) inventory-slot)))]
+                                                                (cond
+                                                                  inventory-cell-with-item?
+                                                                  :cursors/hand-before-grab
+
+                                                                  (= actor-type :mouseover-actor/window-title-bar)
+                                                                  :cursors/move-window
+
+                                                                  (= actor-type :mouseover-actor/button)
+                                                                  :cursors/over-button
+
+                                                                  (= actor-type :mouseover-actor/unspecified)
+                                                                  :cursors/default
+
+                                                                  :else
+                                                                  :cursors/default))
+
+                                                              :interaction-state/clickable-mouseover-eid
+                                                              (let [{:keys [clicked-eid
+                                                                            in-click-range?]} params]
+                                                                (case (:type (:entity/clickable @clicked-eid))
+                                                                  :clickable/item (if in-click-range?
+                                                                                    :cursors/hand-before-grab
+                                                                                    :cursors/hand-before-grab-gray)
+                                                                  :clickable/player :cursors/bag))
+
+                                                              :interaction-state.skill/usable
+                                                              :cursors/use-skill
+
+                                                              :interaction-state.skill/not-usable
+                                                              :cursors/skill-not-usable
+
+                                                              :interaction-state/no-skill-selected
+                                                              :cursors/no-skill-selected)))}
+                                          state-k)]
+                       (if (keyword? cursor-fn)
+                         cursor-fn
+                         (cursor-fn eid))))
         handle-player-input (fn [player-eid interaction-state stage input key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
