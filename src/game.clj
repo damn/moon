@@ -2998,27 +2998,6 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
-(require '[reduce-fsm :as fsm])
-
-(defn- fsm-event-txs [eid event item-place-position elapsed-time & [params]]
-  (let [fsm (:entity/fsm @eid)
-        _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
-        old-state-k (:state fsm)
-        new-fsm (fsm/fsm-event fsm event)
-        new-state-k (:state new-fsm)]
-    (when-not (= old-state-k new-state-k)
-      (let [old-state-obj (let [k (:state (:entity/fsm @eid))] 
-                             [k (k @eid)])
-            state-args (if params 
-                         [new-state-k params]
-                         [new-state-k nil])
-            new-state-obj [new-state-k (create-entity-state state-args @eid elapsed-time)]]
-        (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
-                 [:tx/swap eid assoc new-state-k (new-state-obj 1)]
-                 [:tx/swap eid dissoc old-state-k]]
-                (entity-state-exit! eid old-state-obj item-place-position elapsed-time)
-                (entity-state-enter! eid new-state-obj elapsed-time))))))
-
 (defn- effect-transactions
   [[k v] effect-ctx active-entities raycaster game-db elapsed-time fsms]
   (case k
@@ -3902,6 +3881,8 @@
     (validate-hum (malli-schema schemas k) property))
   (zipmap (map :property/id properties) properties))
 
+(require '[reduce-fsm :as fsm])
+
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -4020,6 +4001,24 @@
                           (doseq [component @eid]
                             (after-create-component eid component))
                           eid))
+        fsm-event-txs (fn [eid event & [params]]
+                        (let [fsm (:entity/fsm @eid)
+                              _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
+                              old-state-k (:state fsm)
+                              new-fsm (fsm/fsm-event fsm event)
+                              new-state-k (:state new-fsm)]
+                          (when-not (= old-state-k new-state-k)
+                            (let [old-state-obj (let [k (:state (:entity/fsm @eid))] 
+                                                  [k (k @eid)])
+                                  state-args (if params 
+                                               [new-state-k params]
+                                               [new-state-k nil])
+                                  new-state-obj [new-state-k (create-entity-state state-args @eid @elapsed-time)]]
+                              (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
+                                       [:tx/swap eid assoc new-state-k (new-state-obj 1)]
+                                       [:tx/swap eid dissoc old-state-k]]
+                                      (entity-state-exit! eid old-state-obj item-place-position* @elapsed-time)
+                                      (entity-state-enter! eid new-state-obj @elapsed-time))))))
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -4030,10 +4029,11 @@
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity spawn-entity!
                                     :tx/event
-                                    (fn [eid event & [params]]
-                                      ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
-                                      ; maybe no exit/enter events at all ? 
-                                      (handle-txs! (fsm-event-txs eid event item-place-position* @elapsed-time params)))
+                                    ; cant remove this because item on cursor triggers to :tx/event after another
+                                    ; which are order dependent!
+                                    ; at player-item-on-cursor inventory/world/ui magic.
+                                    (fn [& params]
+                                      (handle-txs! (apply fsm-event-txs params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
