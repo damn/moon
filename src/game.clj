@@ -2982,7 +2982,7 @@
     (spawn-effect position
                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
 
-(defn spawn-effect* [v effect-ctx game-db]
+(defn spawn-effect* [v effect-ctx game-db fsms]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
     [[:tx/sound "bfxr_curse.wav"]
@@ -3130,7 +3130,7 @@
     (projectile-effect v effect-ctx)
 
     :effects/spawn
-    (spawn-effect* v effect-ctx game-db)
+    (spawn-effect* v effect-ctx game-db fsms)
 
     :effects/target-all
     (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time)
@@ -3228,7 +3228,7 @@
 (defn build [schemas db property-id]
   (build-values schemas (safe-get db property-id) db))
 
-(defn spawn-map-creatures [schemas db tiled-map start-position]
+(defn spawn-map-creatures [schemas db tiled-map start-position fsms]
   (mapcat (fn [[position creature-id]] 
             (when (not= position start-position)
               [[:tx/spawn-entity 
@@ -4726,7 +4726,7 @@
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
          (sync-player-ui!)
-         (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* start-position))))
+         (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* start-position fsms))))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
