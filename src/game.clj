@@ -3294,19 +3294,14 @@
           (spawn-positions tiled-map)))
 
 (defn hp-mana-bar-create
-  [player-eid default-font stage textures unit-scale]
-  (let [{:keys [rahmen-file
-                rahmenw
-                rahmenh
-                hpcontent-file
-                manacontent-file
-                y-mana]} {:rahmen-file "images/rahmen.png"
-                          :rahmenw 150
-                          :rahmenh 26
-                          :hpcontent-file "images/hp.png"
-                          :manacontent-file "images/mana.png"
-                          :y-mana 80}
-        [x y-mana] [(/ (get-world-width (get-viewport stage)) 2)
+  [{:keys [rahmen-file
+           rahmenw
+           rahmenh
+           hpcontent-file
+           manacontent-file
+           y-mana]}
+   player-eid default-font stage textures unit-scale]
+  (let [[x y-mana] [(/ (get-world-width (get-viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -4734,7 +4729,13 @@
                         (create-dev-menu {:menus menus
                                           :update-labels update-labels
                                           :skin @skin})
-                        (hp-mana-bar-create @player-eid @default-font @stage @textures unit-scale)
+                        (hp-mana-bar-create {:rahmen-file "images/rahmen.png"
+                                             :rahmenw 150
+                                             :rahmenh 26
+                                             :hpcontent-file "images/hp.png"
+                                             :manacontent-file "images/mana.png"
+                                             :y-mana 80}
+                                            @player-eid @default-font @stage @textures unit-scale)
                         (windows-create [(create-info-window
                                            {:title "Entity Info"
                                             :actor-name "moon.ui.windows.entity-info"
