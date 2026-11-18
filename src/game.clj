@@ -4629,13 +4629,13 @@
         ]
     {
      :create!
-     (fn [audio files graphics-arg input-arg]
-       (reset! graphics graphics-arg)
-       (reset! input input-arg)
+     (fn [{:keys [audio files] :as capabilities}]
+       (reset! graphics (:graphics capabilities))
+       (reset! input (:input capabilities))
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
                                       (let [pixmap (pixmap (internal files path))
-                                            cursor (new-cursor graphics-arg pixmap hotspot-x hotspot-y)]
+                                            cursor (new-cursor (:graphics capabilities) pixmap hotspot-x hotspot-y)]
                                         (dispose! pixmap)
                                         cursor))))
        (reset! sounds (into {}
@@ -4653,7 +4653,7 @@
        (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                            (float (:height (:stage game-config)))) 
                              @batch))
-       (set-input-processor! input-arg @stage)
+       (set-input-processor! (:input capabilities) @stage)
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (reset! textures (create-textures files (:textures game-config)))
@@ -4748,7 +4748,7 @@
                                            (create-inventory-window
                                              slot->texture-region
                                              @player-eid
-                                             input-arg
+                                             (:input capabilities)
                                              (fn [_event cell]
                                                (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
                                              (fn [player-entity x y mouseover? cell]
@@ -4762,7 +4762,7 @@
                                                    (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                                              @skin
                                              @stage))])
-                        (player-state-draw-create @player-eid unit-scale image->texture-region input-arg)
+                        (player-state-draw-create @player-eid unit-scale image->texture-region (:input capabilities))
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
          (sync-player-ui!)
@@ -4779,7 +4779,7 @@
        (dispose! @tiled-map*))
 
      :render!
-     (fn [graphics-arg _input]
+     (fn [capabilities]
        (clear-screen! 0 0 0 0)
        (update-mouseover-eid!)
        (update-active-entities!)
@@ -4792,7 +4792,7 @@
        (batch-end!)
        (mouse-interaction!)
        (update-paused-state!)
-       (tick-game! (get-delta-time graphics-arg))
+       (tick-game! (get-delta-time (:graphics capabilities)))
        (remove-destroyed-entities!)
        (key-pressed-checks!)
        (key-just-pressed-checks!)
@@ -4859,7 +4859,7 @@
                      (dispose! @tiled-map)
                      (reset! tiled-map (generate-level! level-fn)))])]
     {:create!
-     (fn [_audio files _graphics input]
+     (fn [{:keys [files input]}]
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files "skin/uiskin.json")))
        (reset! stage (let [stage (Stage. (FitViewport. 1440 900) @batch)
@@ -4893,7 +4893,7 @@
        (dispose! @tiled-map))
 
      :render!
-     (fn [_graphics input]
+     (fn [{:keys [input]}]
        (clear-screen! 0 0 0 0) 
        (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
        (Batch/.begin @batch) 
@@ -5702,8 +5702,8 @@
                         (pack! window)
                         window))]
     {:create!
-     (fn [audio files _graphics input-arg] 
-       (reset! input input-arg)
+     (fn [{:keys [audio files] :as capabilities}] 
+       (reset! input (:input capabilities))
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files (:skin editor-config))))
        (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
@@ -5712,7 +5712,7 @@
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (new-sound audio (internal files path))])))
        (reset! textures (create-textures files (:textures editor-config)))
-       (set-input-processor! input-arg @editor-stage)
+       (set-input-processor! (:input capabilities) @editor-stage)
        (add-actor! @editor-stage (main-window)))
      :dispose!
      (fn []
@@ -5721,7 +5721,7 @@
        (dispose! @skin)
        (run! dispose! (vals @textures)))
      :render!
-     (fn [_graphics _input]
+     (fn [_capabilities]
        (clear-screen! 0 0 0 0)
        (act! @editor-stage)
        (draw! @editor-stage))
@@ -5742,6 +5742,14 @@
 
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
+(defn create-capabilities []
+  {
+   :audio    Gdx/audio
+   :files    Gdx/files
+   :graphics Gdx/graphics
+   :input    Gdx/input
+   })
+
 (defn lwjgl3-application! 
   [{:keys [create! 
            dispose! 
@@ -5755,17 +5763,13 @@
   (Lwjgl3Application. 
     (reify ApplicationListener
       (create [_]
-        (create! Gdx/audio
-                 Gdx/files
-                 Gdx/graphics
-                 Gdx/input))
+        (create! (create-capabilities)))
 
       (dispose [_]
         (dispose!))
 
       (render [_]
-        (render! Gdx/graphics
-                 Gdx/input))
+        (render! (create-capabilities)))
 
       (resize [_ width height]
         (resize! width height))
@@ -5817,7 +5821,7 @@
                          :scale 2
                          :up? true}}]]
     {:create!
-     (fn [_audio files _graphics _input]
+     (fn [{:keys [files]}]
        (reset! batch (sprite-batch!))
        (reset! font (create-default-font! files
                                           {:path "fonts/films.EXL_____.ttf"
@@ -5839,7 +5843,7 @@
        (dispose! @shape-drawer-texture))
 
      :render!
-     (fn [_graphics input]
+     (fn [{:keys [input]}]
        (when (key-just-pressed? input Input$Keys/U)
          (swap! unit-scale #(if (== ^double % 1.0)
                               world-unit-scale
