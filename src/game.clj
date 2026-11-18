@@ -1,8 +1,8 @@
 (ns game)
 
-(def float-rounding-error (double 0.000001)) ; cant inline as tests somewhere ... ? 
-(def transition-idxvalues [2 8 1 4]) ; ?  - duplicated in all 3 projects...
-(def slots #{:inventory.slot/bag ; used @ known-slot?
+(def float-rounding-error (double 0.000001))
+(def transition-idxvalues [2 8 1 4])
+(def slots #{:inventory.slot/bag
              :inventory.slot/weapon
              :inventory.slot/shield
              :inventory.slot/helm
