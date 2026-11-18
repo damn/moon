@@ -5284,45 +5284,44 @@
        (keep get-user-object)
        set))
 
-(defn- add-one-to-many-rows [table property-type property-ids skin editor]
-  (let [redo-rows (fn [property-ids]
-                    (clear-children! table)
-                    (add-one-to-many-rows table property-type property-ids skin editor)
-                    (pack! (first-ascendant table Window)))]
-    (doseq [row
-            [[{:actor (doto (create-text-button "+" skin)
-                        (add-listener! (create-change-listener
-                                         (fn [event _actor]
-                                           ((:editor/add-actor! editor)
-                                            (property-overview-window
-                                              property-type
-                                              (fn [actor id]
-                                                (remove! (first-ascendant actor Window))
-                                                (redo-rows (conj property-ids id)))
-                                              editor))))))}]
-             (for [property-id property-ids]
-               (let [property ((:editor/get-property editor) property-id)]
-                 {:actor (doto (texture-region-image ((:editor/get-texture-region editor) 
-                                                      (or (:entity/image property)
-                                                          (first (:animation/frames (:entity/animation property))))))
-                           (add-listener! (text-tooltip (binding [*print-level* 2]
-                                                          (with-out-str
-                                                            (pprint/pprint property)))
-                                                        skin))
-                           (set-user-object! property-id))}))
-             (for [id property-ids]
-               {:actor (doto (create-text-button "-" skin)
-                         (add-listener! (create-change-listener
-                                          (fn [event _actor]
-                                            (redo-rows (disj property-ids id))))))})]]
-      (doseq [cell row]
-        (add! table (:actor cell)))
-      (row! table))))
-
 (defn- create-one-to-many-widget [[_ property-type] property-ids skin editor]
   (let [table (table-create)]
     (pad! (defaults table) 5)
-    (add-one-to-many-rows table property-type property-ids skin editor)
+    (letfn [(add-one-to-many-rows [property-ids]
+              (let [redo-rows (fn [property-ids]
+                                (clear-children! table)
+                                (add-one-to-many-rows property-ids)
+                                (pack! (first-ascendant table Window)))]
+                (doseq [row
+                        [[{:actor (doto (create-text-button "+" skin)
+                                    (add-listener! (create-change-listener
+                                                     (fn [event _actor]
+                                                       ((:editor/add-actor! editor)
+                                                        (property-overview-window
+                                                          property-type
+                                                          (fn [actor id]
+                                                            (remove! (first-ascendant actor Window))
+                                                            (redo-rows (conj property-ids id)))
+                                                          editor))))))}]
+                         (for [property-id property-ids]
+                           (let [property ((:editor/get-property editor) property-id)]
+                             {:actor (doto (texture-region-image ((:editor/get-texture-region editor) 
+                                                                  (or (:entity/image property)
+                                                                      (first (:animation/frames (:entity/animation property))))))
+                                       (add-listener! (text-tooltip (binding [*print-level* 2]
+                                                                      (with-out-str
+                                                                        (pprint/pprint property)))
+                                                                    skin))
+                                       (set-user-object! property-id))}))
+                         (for [id property-ids]
+                           {:actor (doto (create-text-button "-" skin)
+                                     (add-listener! (create-change-listener
+                                                      (fn [event _actor]
+                                                        (redo-rows (disj property-ids id))))))})]]
+                  (doseq [cell row]
+                    (add! table (:actor cell)))
+                  (row! table))))]
+      (add-one-to-many-rows property-ids))
     table))
 
 (defn- k-label-text [k]
