@@ -3306,26 +3306,21 @@
       (set-fill-parent! true)
       (set-name! "moon.ui.action-bar"))))
 
-; FIXME make txs (destroy also part of?)
-(defn destroy-entities! [handle-txs! game-db entity-ids grid content-grid]
-  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
-    (let [id (:entity/id @eid)]
-      (swap! entity-ids dissoc id)
-      (remove-entity! content-grid eid)
-      (remove-from-touched-cells! grid eid)
-      (when (:entity/collides? @eid)
-        (remove-from-occupied-cells! grid eid)))
-    (doseq [[k v] @eid]
-      (handle-txs!
-        (case k
-          :entity/destroy-audiovisual
-          [[:tx/sound
-            (case v
-              :audiovisuals/creature-die "bfxr_defaultmonsterdeath.wav"
-              :audiovisuals/hit-wall "bfxr_projectile_wallhit.wav")]
-           [:tx/spawn-entity (animation-entity game-db (:entity/position @eid) v)]]
-
-          nil)))))
+(defn destroy-entities
+  [game-db entity-ids]
+  (mapcat (fn [eid]
+            (cons [:tx/remove-entity eid]
+                  (mapcat (fn [[k v]]
+                            (case k
+                              :entity/destroy-audiovisual
+                              [[:tx/sound
+                                (case v
+                                  :audiovisuals/creature-die "bfxr_defaultmonsterdeath.wav"
+                                  :audiovisuals/hit-wall "bfxr_projectile_wallhit.wav")]
+                               [:tx/spawn-entity (animation-entity game-db (:entity/position @eid) v)]]
+                              nil))
+                          @eid)))
+          (filter (comp :entity/destroyed? deref) (vals @entity-ids))))
 
 (defn- movement-vector [key-pressed?]
   (let [r (when (key-pressed? Input$Keys/D) [1  0])
@@ -3753,6 +3748,13 @@
                                       (when (:entity/collides? @eid)
                                         (remove-from-occupied-cells! @grid eid)
                                         (set-occupied-cells! @grid eid)))
+                                    :tx/remove-entity
+                                    (fn [eid]
+                                      (swap! entity-ids dissoc (:entity/id @eid))
+                                      (remove-entity! @content-grid eid)
+                                      (remove-from-touched-cells! @grid eid)
+                                      (when (:entity/collides? @eid)
+                                        (remove-from-occupied-cells! @grid eid)))
                                     }]
                         (doseq [[k & params] txs]
                           (try (apply (safe-get k->txs k) params)
@@ -4193,7 +4195,7 @@
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
                                                 (not (or (key-just-pressed? (:unpause-once controls))
                                                          (key-pressed? (:unpause-continously controls))))))))
-        remove-destroyed-entities! (fn [] (destroy-entities! handle-txs! game-db entity-ids @grid @content-grid))
+        remove-destroyed-entities! (fn [] (handle-txs! (destroy-entities game-db entity-ids)))
         key-pressed-checks! (fn [key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
