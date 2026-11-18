@@ -2991,16 +2991,6 @@
                      :y (+ y (/ height 2))
                      :up? true})))))
 
-(defn player-item-on-cursor-draw
-  [v entity batch unit-scale mouseover-actor image->texture-region item-place-position]
-  (let [{:keys [item]} v]
-    (when-not mouseover-actor
-      (draw-texture-region! batch unit-scale
-                            (image->texture-region (:entity/image item))
-                            (item-place-position (:entity/position entity)
-                                                 (- (:entity/click-distance-tiles entity) 0.1))
-                            {:center? true}))))
-
 (defn current-frame [{:keys [frames cnt frame-duration]}]
   (frames (min (int (/ (float cnt) (float frame-duration)))
                (dec (count frames)))))
@@ -3571,8 +3561,6 @@
         show-cell-occupied? (atom false)
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
-        item-place-position* (fn [position click-distance]
-                               (item-place-position (unproject @viewport [(get-x @input) (get-y @input)]) position click-distance))
         set-item! (fn [cell item]
                     (-> (get-root @stage)
                         (find-actor "moon.ui.windows.inventory")
@@ -3758,8 +3746,9 @@
                                  (when item
                                    [[:tx/swap eid dissoc :entity/item-on-cursor]
                                     [:tx/sound "bfxr_itemputground.wav"]
-                                    [:tx/spawn-entity (spawn-item (item-place-position* (:entity/position entity)
-                                                                                        (- (:entity/click-distance-tiles entity) 0.1))
+                                    [:tx/spawn-entity (spawn-item (item-place-position (unproject @viewport [(get-x @input) (get-y @input)])
+                                                                                       (:entity/position entity)
+                                                                                       (- (:entity/click-distance-tiles entity) 0.1))
                                                                   item)]]))
 
                                :player-moving
@@ -4345,7 +4334,14 @@
                             :entity/clickable
                             (clickable-draw v entity @batch @default-font @unit-scale)
                             :player-item-on-cursor
-                            (player-item-on-cursor-draw v entity @batch @unit-scale (get-mouseover-actor) image->texture-region item-place-position*)
+                            (let [{:keys [item]} v]
+                              (when-not (get-mouseover-actor)
+                                (draw-texture-region! @batch @unit-scale
+                                                      (image->texture-region (:entity/image item))
+                                                      (item-place-position (unproject @viewport [(get-x @input) (get-y @input)])
+                                                                           (:entity/position entity)
+                                                                           (- (:entity/click-distance-tiles entity) 0.1))
+                                                      {:center? true})))
                             :entity/animation
                             (animation-draw v entity @batch @unit-scale image->texture-region)
                             :entity/image
