@@ -4573,34 +4573,33 @@
        (dispose! @tiled-map*))
 
      :render!
-     (fn [{:keys [clear-screen! graphics]}]
-
+     (fn [{:keys [clear-screen! 
+                  set-cursor! 
+                  key-pressed? 
+                  key-just-pressed? 
+                  button-just-pressed? 
+                  get-delta-time 
+                  get-input-position]}]
        (clear-screen! 0 0 0 0)
-
-       (update-mouseover-eid! [(get-x @input) (get-y @input)])
+       (update-mouseover-eid! (get-input-position))
        (update-active-entities!)
        (set-camera-to-player!)
-
        (set-proj-matrix!)
        (batch-begin!)
        (render-tiled-map!)
-
        (set-batch-color!)
-
-       (draw-world-layer! [(get-x @input) (get-y @input)])
+       (draw-world-layer! (get-input-position))
        (batch-end!)
-
-       (mouse-interaction! #(set-cursor! graphics %)
-                           #(key-pressed? @input %)
-                           #(.isButtonJustPressed ^Input @input (int %))
-                           [(get-x @input) (get-y @input)])
-       (update-paused-state! #(key-just-pressed? @input %)
-                             #(key-pressed? @input %))
-       (tick-game! (get-delta-time graphics))
+       (mouse-interaction! set-cursor!
+                           key-pressed?
+                           button-just-pressed?
+                           (get-input-position))
+       (update-paused-state! key-just-pressed?
+                             key-pressed?)
+       (tick-game! (get-delta-time))
        (remove-destroyed-entities!)
-       (key-pressed-checks! #(key-pressed? @input %))
-       (key-just-pressed-checks! #(key-just-pressed? @input %))
-
+       (key-pressed-checks! key-pressed?)
+       (key-just-pressed-checks! key-just-pressed?)
        (update-stage!)
        (draw-stage!))
 
@@ -4698,7 +4697,7 @@
        (dispose! @tiled-map))
 
      :render!
-     (fn [{:keys [clear-screen! input]}]
+     (fn [{:keys [clear-screen! key-pressed?]}]
        (clear-screen! 0 0 0 0) 
        (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
        (Batch/.begin @batch) 
@@ -4730,7 +4729,7 @@
                                         (let [pos (.position camera)]
                                           (set! (.y pos) (- (.y pos) 1))
                                           (.update camera)))}]
-         (when (key-pressed? input k)
+         (when (key-pressed? k)
            (f @camera)))
        (act! @stage)
        (draw! @stage))
@@ -5548,14 +5547,25 @@
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
 (defn create-capabilities []
-  {
-   :clear-screen! (fn [r g b a]
-                    (ScreenUtils/clear r g b a))
-   :audio    Gdx/audio
-   :files    Gdx/files
-   :graphics Gdx/graphics
-   :input    Gdx/input
-   })
+  (let [input Gdx/input
+        graphics Gdx/graphics]
+    {
+     :clear-screen! (fn [r g b a]
+                      (ScreenUtils/clear r g b a))
+     :get-input-position (fn [] 
+                           [(get-x input) 
+                            (get-y input)])
+     :set-cursor! (fn [cursor]
+                    (set-cursor! graphics cursor))
+     :get-delta-time #(get-delta-time graphics)
+     :key-pressed? #(key-pressed? input %)
+     :key-just-pressed? #(key-just-pressed? input %)
+     :button-just-pressed? #(.isButtonJustPressed ^Input input (int %))
+     :audio    Gdx/audio
+     :files    Gdx/files
+     :graphics graphics
+     :input    input
+     }))
 
 (defn lwjgl3-application! 
   [{:keys [create! 
@@ -5650,8 +5660,8 @@
        (dispose! @shape-drawer-texture))
 
      :render!
-     (fn [{:keys [clear-screen! input]}]
-       (when (key-just-pressed? input Input$Keys/U)
+     (fn [{:keys [clear-screen! key-just-pressed?]}]
+       (when (key-just-pressed? Input$Keys/U)
          (swap! unit-scale #(if (== ^double % 1.0)
                               world-unit-scale
                               1.0)))
