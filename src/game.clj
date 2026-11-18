@@ -3785,7 +3785,8 @@
         ; TODO needs input -> first see why so many times used, can rebind and pass world-mouse-position inside the frame!?
         ; valid game data?
         handle-txs! (fn handle-txs! [txs]
-                      (let [k->txs {
+                      (let [world-mouse-position (unproject @viewport [(get-x @input) (get-y @input)])
+                            k->txs {
                                     :tx/swap 
                                     (fn [eid f & params]
                                       (apply swap! eid f params))
@@ -3799,7 +3800,7 @@
                                     ; at player-item-on-cursor inventory/world/ui magic.
                                     ; => handle-clicked-inventory-cell (player-item-on-cursor)
                                     (fn [& params]
-                                      (handle-txs! (apply fsm-event-txs (unproject @viewport [(get-x @input) (get-y @input)]) params)))
+                                      (handle-txs! (apply fsm-event-txs world-mouse-position params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
