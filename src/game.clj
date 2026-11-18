@@ -3536,16 +3536,18 @@
                                                  (- (:entity/click-distance-tiles entity) 0.1))
                             {:center? true}))))
 
+(defn current-frame [{:keys [frames cnt frame-duration]}]
+  (frames (min (int (/ (float cnt) (float frame-duration)))
+               (dec (count frames)))))
+
 (defn animation-draw
-  [v entity batch unit-scale textures]
-  (let [{:keys [frames cnt frame-duration]} v
-        image (frames (min (int (/ (float cnt) (float frame-duration)))
-                           (dec (count frames))))]
-    (draw-texture-region! batch unit-scale
-                          (get-texture-region textures image)
-                          (:entity/position entity)
-                          {:center? true
-                           :rotation (or (:entity/rotation-angle entity) 0)})))
+  [animation entity batch unit-scale textures]
+  (draw-texture-region! batch
+                        unit-scale
+                        (get-texture-region textures (current-frame animation))
+                        (:entity/position entity)
+                        {:center? true
+                         :rotation (or (:entity/rotation-angle entity) 0)}))
 
 (defn image-draw
   [v entity batch unit-scale textures]
