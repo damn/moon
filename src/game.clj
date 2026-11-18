@@ -2701,25 +2701,6 @@
              :entity/height (float height)
              :entity/rotation-angle (or rotation-angle 0)))))
 
-(defn- spawn-entity! [entity elapsed-time id-counter entity-ids grid content-grid minimum-size z-orders]
-  (let [eid (atom (construct-entity entity elapsed-time z-orders minimum-size))]
-    (assert (and (not (contains? @eid :entity/id))))
-    (let [id (swap! id-counter inc)]
-      (assert (number? id))
-      (swap! eid assoc :entity/id id)
-      (swap! entity-ids assoc id eid))
-    (assert (:entity/position @eid))
-    (update-entity! content-grid eid)
-    (assert (:entity/position @eid))
-    (when (:entity/collides? @eid)
-      (assert (valid-position? grid @eid (:entity/id @eid))))
-    (set-touched-cells! grid eid)
-    (when (:entity/collides? @eid)
-      (set-occupied-cells! grid eid))
-    (doseq [component @eid]
-      (after-create-component eid component elapsed-time))
-    eid))
-
 (defn- entity-state-exit!
   [eid [state-k _state-v] item-place-position elapsed-time]
   (case state-k
@@ -4023,6 +4004,24 @@
                   :z-order/flying
                   :z-order/effect]
         minimum-size 0.39
+        spawn-entity! (fn [entity]
+                        (let [eid (atom (construct-entity entity @elapsed-time z-orders minimum-size))]
+                          (assert (and (not (contains? @eid :entity/id))))
+                          (let [id (swap! id-counter inc)]
+                            (assert (number? id))
+                            (swap! eid assoc :entity/id id)
+                            (swap! entity-ids assoc id eid))
+                          (assert (:entity/position @eid))
+                          (update-entity! @content-grid eid)
+                          (assert (:entity/position @eid))
+                          (when (:entity/collides? @eid)
+                            (assert (valid-position? @grid @eid (:entity/id @eid))))
+                          (set-touched-cells! @grid eid)
+                          (when (:entity/collides? @eid)
+                            (set-occupied-cells! @grid eid))
+                          (doseq [component @eid]
+                            (after-create-component eid component @elapsed-time))
+                          eid))
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -4031,9 +4030,7 @@
                                     :tx/sound 
                                     (fn [sound-name]
                                       (Sound/.play (safe-get @sounds sound-name)))
-                                    :tx/spawn-entity 
-                                    (fn [entity-decl]
-                                      (spawn-entity! entity-decl @elapsed-time id-counter entity-ids @grid @content-grid minimum-size z-orders))
+                                    :tx/spawn-entity spawn-entity!
                                     :tx/event
                                     (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
@@ -4641,14 +4638,7 @@
                                                                 :entity/player? true
                                                                 :entity/free-skill-points 3
                                                                 :entity/clickable {:type :clickable/player}
-                                                                :entity/click-distance-tiles 1.5}})
-                                  @elapsed-time
-                                  id-counter
-                                  entity-ids
-                                  @grid
-                                  @content-grid
-                                  minimum-size
-                                  z-orders)]
+                                                                :entity/click-distance-tiles 1.5}}))]
            (let [eid (get @entity-ids 1)]
              (assert (:entity/player? @eid))
              (reset! player-eid eid)))
