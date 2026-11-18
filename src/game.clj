@@ -2619,51 +2619,6 @@
   [fsm initial-state]
   (assoc (fsm initial-state nil) :state initial-state))
 
-(defn- after-create-component
-  [eid [k v] elapsed-time]
-  (case k
-    :entity/fsm
-    (let [{:keys [fsm initial-state]} v]
-      (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
-      (swap! eid assoc initial-state (create-entity-state [initial-state nil] @eid elapsed-time))
-      nil)
-
-    :entity/skills
-    (do
-      (swap! eid assoc :entity/skills nil)
-      (doseq [{:keys [property/id] :as skill} v]
-        (assert (not (contains? (:entity/skills @eid) id)))
-        (swap! eid update :entity/skills assoc id skill))
-      nil)
-
-    :entity/inventory
-    (do
-      (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
-                                                              :weapon   [1 1]
-                                                              :shield   [1 1]
-                                                              :helm     [1 1]
-                                                              :chest    [1 1]
-                                                              :leg      [1 1]
-                                                              :glove    [1 1]
-                                                              :boot     [1 1]
-                                                              :cloak    [1 1]
-                                                              :necklace [1 1]
-                                                              :rings    [2 1]}
-                                                 (map (fn [[slot [width height]]]
-                                                        [slot (mapv (fn [x] (mapv (fn [y] nil)
-                                                                                  (range height)))
-                                                                    (range width))]))
-                                                 (into {})))
-      (doseq [item v]
-        (assert (valid-item? item))
-        (let [[cell cell-item] (can-pickup-item? (:entity/inventory @eid) item)]
-          (assert cell)
-          (assert (nil? cell-item))
-          (swap! eid set-item cell item)))
-      nil)
-
-    nil))
-
 (defn construct-entity 
   [entity elapsed-time z-orders minimum-size]
   (let [entity (reduce (fn [m [k v]]
@@ -4004,6 +3959,49 @@
                   :z-order/flying
                   :z-order/effect]
         minimum-size 0.39
+        after-create-component (fn [eid [k v]]
+                                 (case k
+                                   :entity/fsm
+                                   (let [{:keys [fsm initial-state]} v]
+                                     (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
+                                     (swap! eid assoc initial-state (create-entity-state [initial-state nil] @eid @elapsed-time))
+                                     nil)
+
+                                   :entity/skills
+                                   (do
+                                     (swap! eid assoc :entity/skills nil)
+                                     (doseq [{:keys [property/id] :as skill} v]
+                                       (assert (not (contains? (:entity/skills @eid) id)))
+                                       (swap! eid update :entity/skills assoc id skill))
+                                     nil)
+
+                                   :entity/inventory
+                                   (do
+                                     (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
+                                                                                              :weapon   [1 1]
+                                                                                              :shield   [1 1]
+                                                                                              :helm     [1 1]
+                                                                                              :chest    [1 1]
+                                                                                              :leg      [1 1]
+                                                                                              :glove    [1 1]
+                                                                                              :boot     [1 1]
+                                                                                              :cloak    [1 1]
+                                                                                              :necklace [1 1]
+                                                                                              :rings    [2 1]}
+                                                                             (map (fn [[slot [width height]]]
+                                                                                    [slot (mapv (fn [x] (mapv (fn [y] nil)
+                                                                                                              (range height)))
+                                                                                                (range width))]))
+                                                                             (into {})))
+                                     (doseq [item v]
+                                       (assert (valid-item? item))
+                                       (let [[cell cell-item] (can-pickup-item? (:entity/inventory @eid) item)]
+                                         (assert cell)
+                                         (assert (nil? cell-item))
+                                         (swap! eid set-item cell item)))
+                                     nil)
+
+                                   nil))
         spawn-entity! (fn [entity]
                         (let [eid (atom (construct-entity entity @elapsed-time z-orders minimum-size))]
                           (assert (and (not (contains? @eid :entity/id))))
@@ -4020,7 +4018,7 @@
                           (when (:entity/collides? @eid)
                             (set-occupied-cells! @grid eid))
                           (doseq [component @eid]
-                            (after-create-component eid component @elapsed-time))
+                            (after-create-component eid component))
                           eid))
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
