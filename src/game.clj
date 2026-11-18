@@ -3461,14 +3461,12 @@
                      :up? true})))))
 
 (defn player-item-on-cursor-draw
-  [v entity batch unit-scale mouseover-actor image->texture-region viewport input]
+  [v entity batch unit-scale mouseover-actor image->texture-region item-place-position]
   (let [{:keys [item]} v]
     (when-not mouseover-actor
       (draw-texture-region! batch unit-scale
                             (image->texture-region (:entity/image item))
-                            (item-place-position viewport
-                                                 input
-                                                 (:entity/position entity)
+                            (item-place-position (:entity/position entity)
                                                  (- (:entity/click-distance-tiles entity) 0.1))
                             {:center? true}))))
 
@@ -4485,7 +4483,7 @@
                             :entity/clickable
                             (clickable-draw v entity @batch @default-font @unit-scale)
                             :player-item-on-cursor
-                            (player-item-on-cursor-draw v entity @batch @unit-scale (get-mouseover-actor) image->texture-region @viewport @input)
+                            (player-item-on-cursor-draw v entity @batch @unit-scale (get-mouseover-actor) image->texture-region item-place-position*)
                             :entity/animation
                             (animation-draw v entity @batch @unit-scale image->texture-region)
                             :entity/image
