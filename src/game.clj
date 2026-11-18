@@ -5558,8 +5558,10 @@
                                  (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
                                        widget-value (fn widget-value [[schema-k] widget]
                                                       (case schema-k
+                                                        :s/animation (default-widget-value widget)
                                                         :s/boolean (boolean-widget-value widget)
                                                         :s/enum (enum-widget-value widget)
+                                                        :s/image (default-widget-value widget)
                                                         :s/map (into {}
                                                                      (for [widget (filter (comp vector? get-user-object) (get-children widget))
                                                                            :let [[k _] (get-user-object widget)]]
@@ -5567,9 +5569,11 @@
                                                         :s/number (number-widget-value widget)
                                                         :s/one-to-many (one-to-many-widget-value widget)
                                                         :s/one-to-one (one-to-one-widget-value widget)
+                                                        :s/qualified-keyword (default-widget-value widget) 
+                                                        :s/some (default-widget-value widget)
+                                                        :s/sound (default-widget-value widget)
                                                         :s/string (string-widget-value widget)
-                                                        :s/val-max (val-max-widget-value widget)
-                                                        (default-widget-value widget)))
+                                                        :s/val-max (val-max-widget-value widget)))
                                        rebuild-editor-window! (fn []
                                                                 (let [window (-> (get-root @editor-stage)
                                                                                  (find-actor "moon.ui.clojure.editor-window"))
@@ -5613,6 +5617,8 @@
                                                          :s/number (create-number-widget schema v @skin)
                                                          :s/one-to-many (create-one-to-many-widget schema v @skin editor)
                                                          :s/one-to-one (create-one-to-one-widget schema v editor)
+                                                         :s/qualified-keyword (create-default-widget v @skin)
+                                                         :s/some (create-default-widget v @skin)
                                                          :s/sound (create-sound-widget ((:editor/sound-names editor))
                                                                                        v 
                                                                                        (:editor/play-sound! editor)
@@ -5620,8 +5626,7 @@
                                                                                        ((:editor/get-viewport editor))
                                                                                        (:editor/add-actor! editor))
                                                          :s/string (create-string-widget schema v @skin)
-                                                         :s/val-max (create-val-max-widget schema v @skin)
-                                                         (create-default-widget v @skin)))
+                                                         :s/val-max (create-val-max-widget schema v @skin)))
                                        widget (create-widget schema property)
                                        scroll-pane-height (get-world-height (get-viewport @editor-stage))
                                        property-id (:property/id property)
