@@ -2750,7 +2750,7 @@
                                                                   :initial-state :npc-idle}
                                                      :entity/faction (:entity/faction @source)}})]]))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs]
+(defn target-all-effect [v effect-ctx active-entities raycaster applicable-effect-txs]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
@@ -2762,12 +2762,7 @@
                                   :thick? true})]
                     (applicable-effect-txs {:effect/source source
                                             :effect/target target}
-                                           (:entity-effects v)
-                                           active-entities
-                                           raycaster
-                                           game-db
-                                           elapsed-time
-                                           fsms)))
+                                           (:entity-effects v))))
             (affected-targets active-entities raycaster source*))))
 
 (defn convert-effect [_v effect-ctx game-db]
@@ -2777,7 +2772,7 @@
      [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs]
+(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
@@ -2791,13 +2786,7 @@
                 :duration 0.05
                 :color (float-bits 1 0 0 0.75)
                 :thick? true})]
-            (applicable-effect-txs effect-ctx 
-                                   entity-effects
-                                   active-entities
-                                   raycaster
-                                   game-db
-                                   elapsed-time
-                                   fsms))
+            (applicable-effect-txs effect-ctx entity-effects))
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
 
@@ -3396,21 +3385,6 @@
       (swap! eid dissoc :entity/temp-modifier)
       (swap! eid update :entity/stats remove-mods modifiers))
     nil))
-
-(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db elapsed-time fsms]
-  (mapcat (fn [[k v]] 
-            (case k
-              :effects/projectile (projectile-effect v effect-ctx)
-              :effects/spawn (spawn-effect* v effect-ctx game-db fsms)
-              :effects/target-all (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs)
-              :effects/target-entity (target-entity-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs)
-              :effects.target/convert (convert-effect v effect-ctx game-db)
-              :effects.target/damage (damage-effect v effect-ctx game-db elapsed-time)
-              :effects.target/kill (kill-effect v effect-ctx)
-              :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db elapsed-time)
-              :effects.target/spiderweb (spiderweb-effect v effect-ctx elapsed-time)
-              :effects.target/stun (stun-effect v effect-ctx)))
-          (filter #(effect-applicable? % effect-ctx) effects)))
 
 (defn projectile-collision-tick
   [v eid _delta-time handle-txs! grid applicable-effect-txs]
@@ -4128,14 +4102,20 @@
                           :drop-item -> :player-idle
                           :dropped-item -> :player-idle]
                          [:player-dead]])}
-        mk-effect-txs (fn [effect-ctx effects]
-                        (applicable-effect-txs effect-ctx
-                                               effects
-                                               active-entities
-                                               @raycaster
-                                               game-db
-                                               @elapsed-time
-                                               fsms))
+        mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
+                        (mapcat (fn [[k v]] 
+                                  (case k
+                                    :effects/projectile (projectile-effect v effect-ctx)
+                                    :effects/spawn (spawn-effect* v effect-ctx game-db fsms)
+                                    :effects/target-all (target-all-effect v effect-ctx @active-entities @raycaster applicable-effect-txs)
+                                    :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs)
+                                    :effects.target/convert (convert-effect v effect-ctx game-db)
+                                    :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time)
+                                    :effects.target/kill (kill-effect v effect-ctx)
+                                    :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db @elapsed-time)
+                                    :effects.target/spiderweb (spiderweb-effect v effect-ctx @elapsed-time)
+                                    :effects.target/stun (stun-effect v effect-ctx)))
+                                (filter #(effect-applicable? % effect-ctx) effects)))
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
