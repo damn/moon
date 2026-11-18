@@ -2672,10 +2672,7 @@
   (case k
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
-      (swap! eid assoc :entity/fsm (create-fsm (case fsm
-                                                 :fsms/player (:player fsms)
-                                                 :fsms/npc (:npc fsms))
-                                               initial-state))
+      (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
       (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid elapsed-time))
       nil)
 
@@ -2992,7 +2989,7 @@
      [:tx/spawn-entity (animation-entity game-db position :audiovisuals/spawn)]
      [:tx/spawn-entity (spawn-creature {:position position
                                         :creature-property v
-                                        :components {:entity/fsm {:fsm :fsms/npc
+                                        :components {:entity/fsm {:fsm (:npc fsms)
                                                                   :initial-state :npc-idle}
                                                      :entity/faction (:entity/faction @source)}})]]))
 
@@ -3238,7 +3235,7 @@
               [[:tx/spawn-entity 
                (spawn-creature {:position (mapv (partial + 0.5) position)
                                 :creature-property (build schemas db (keyword creature-id))
-                                :components {:entity/fsm {:fsm :fsms/npc
+                                :components {:entity/fsm {:fsm (:npc fsms)
                                                           :initial-state :npc-sleeping}
                                              :entity/faction :evil}})]]))
           (spawn-positions tiled-map)))
@@ -4638,7 +4635,7 @@
          (reset! elapsed-time 0)
          (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) start-position)
                                                    :creature-property (build game-schemas game-db :creatures/vampire)
-                                                   :components {:entity/fsm {:fsm :fsms/player
+                                                   :components {:entity/fsm {:fsm (:player fsms)
                                                                              :initial-state :player-idle}
                                                                 :entity/faction :good
                                                                 :entity/player? true
