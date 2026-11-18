@@ -1,13 +1,5 @@
 (ns game)
 
-; Missing defs:
-; diagonal-check-indizes 
-; rgba8888 
-; effect-applicable?
-; effects-behaviour 
-; spiderweb-modifiers
-; spiderweb-duration
-
 (def factions-iterations {:good 15 :evil 5})
 (def float-rounding-error (double 0.000001))
 (def active-skill-radius (let [tile-size 48
