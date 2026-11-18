@@ -3543,7 +3543,6 @@
         ; TODO get rid
         input (atom nil)
         ; handle-txs!
-        ; get-mouseover-actor
         ; draw-component!
         ; draw-world-layer!
         ;;
@@ -4275,8 +4274,6 @@
         resize-viewport! (fn [width height]
                            (resize! @viewport width height false))
         batch-end! #(.end ^Batch @batch)
-        get-mouseover-actor #(let [[x y] (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])]
-                               (mouseover-actor @stage x y))
         active-skill-radius (let [tile-size 48
                                   image-width 32]
                               (/ (/ image-width tile-size) 2))
@@ -4314,7 +4311,8 @@
                             (clickable-draw v entity @batch @default-font @unit-scale)
                             :player-item-on-cursor
                             (let [{:keys [item]} v]
-                              (when-not (get-mouseover-actor)
+                              (when-not (let [[x y] (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])]
+                                          (mouseover-actor @stage x y))
                                 (draw-texture-region! @batch @unit-scale
                                                       (image->texture-region (:entity/image item))
                                                       (item-place-position (unproject @viewport [(get-x @input) (get-y @input)])
