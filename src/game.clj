@@ -3395,9 +3395,6 @@
 (defn new-sound [audio file-handle]
   (Audio/.newSound audio file-handle))
 
-(defn clear-screen! [r g b a]
-  (ScreenUtils/clear r g b a))
-
 (defn sprite-batch! []
   (SpriteBatch.))
 
@@ -4576,7 +4573,7 @@
        (dispose! @tiled-map*))
 
      :render!
-     (fn [{:keys [graphics]}]
+     (fn [{:keys [clear-screen! graphics]}]
 
        (clear-screen! 0 0 0 0)
 
@@ -4701,7 +4698,7 @@
        (dispose! @tiled-map))
 
      :render!
-     (fn [{:keys [input]}]
+     (fn [{:keys [clear-screen! input]}]
        (clear-screen! 0 0 0 0) 
        (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
        (Batch/.begin @batch) 
@@ -5529,7 +5526,7 @@
        (dispose! @skin)
        (run! dispose! (vals @textures)))
      :render!
-     (fn [_capabilities]
+     (fn [{:keys [clear-screen!]}]
        (clear-screen! 0 0 0 0)
        (act! @editor-stage)
        (draw! @editor-stage))
@@ -5552,6 +5549,8 @@
 
 (defn create-capabilities []
   {
+   :clear-screen! (fn [r g b a]
+                    (ScreenUtils/clear r g b a))
    :audio    Gdx/audio
    :files    Gdx/files
    :graphics Gdx/graphics
@@ -5651,7 +5650,7 @@
        (dispose! @shape-drawer-texture))
 
      :render!
-     (fn [{:keys [input]}]
+     (fn [{:keys [clear-screen! input]}]
        (when (key-just-pressed? input Input$Keys/U)
          (swap! unit-scale #(if (== ^double % 1.0)
                               world-unit-scale
