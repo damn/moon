@@ -2597,7 +2597,7 @@
                         (:effect/target-position effect-ctx))
     :effects/target-all true
     :effects/target-entity (and (:effect/target effect-ctx)
-                                (seq (filter #(effect-applicable? [k v] effect-ctx) (:entity-effects v))))
+                                (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
     :effects.target/convert (let [source (:effect/source effect-ctx)
                                   target (:effect/target effect-ctx)]
                               (and target
