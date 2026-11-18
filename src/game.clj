@@ -3953,28 +3953,27 @@
     [[:tx/sound "bfxr_denied.wav"]
      [:tx/show-message "No selected skill"]]))
 
-(defn handle-player-input!
-  [player-eid handle-txs! interaction-state stage input key-pressed? button-just-pressed?]
+(defn handle-player-input
+  [player-eid interaction-state stage input key-pressed? button-just-pressed?]
   (case (:state (:entity/fsm @player-eid))
     :player-idle
     (if-let [move-v (movement-vector key-pressed?)]
-      (handle-txs! [[:tx/event player-eid :movement-input move-v]])
+      [[:tx/event player-eid :movement-input move-v]]
       (when (button-just-pressed? Input$Buttons/LEFT)
-        (handle-txs! (interaction-state->txs interaction-state stage player-eid))))
+        (interaction-state->txs interaction-state stage player-eid)))
 
     :player-moving
     (if-let [move-v (movement-vector key-pressed?)]
-      (do (swap! player-eid assoc :entity/movement {:direction move-v
-                                                      :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
-                                                                 0)})
-          nil)
-      (handle-txs! [[:tx/event player-eid :no-movement-input]]))
+      [[:tx/swap player-eid assoc :entity/movement {:direction move-v
+                                                    :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
+                                                               0)}]]
+      [[:tx/event player-eid :no-movement-input]])
 
     :player-item-on-cursor
     (let [[x y] (ui-mouse-position stage input)]
       (when (and (button-just-pressed? Input$Buttons/LEFT)
                  (not (mouseover-actor stage x y)))
-        (handle-txs! [[:tx/event player-eid :drop-item]])))
+        [[:tx/event player-eid :drop-item]]))
 
     nil))
 
@@ -4430,13 +4429,12 @@
         mouse-interaction! (fn []
                              (let [interaction-state (create-interaction-state @input)]
                                (set-cursor! @graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
-                               (handle-player-input! @player-eid
-                                                     handle-txs!
-                                                     interaction-state
-                                                     @stage
-                                                     @input
-                                                     #(key-pressed? @input (int %))
-                                                     #(.isButtonJustPressed ^Input @input (int %)))))
+                               (handle-txs! (handle-player-input @player-eid
+                                                                 interaction-state
+                                                                 @stage
+                                                                 @input
+                                                                 #(key-pressed? @input (int %))
+                                                                 #(.isButtonJustPressed ^Input @input (int %))))))
         update-paused-state! (fn []
                                (reset! paused?
                                        (or #_error
