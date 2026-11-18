@@ -2963,7 +2963,7 @@
                     (float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
-  [shape-drawer world-mouse-position viewport grid]
+  [shape-drawer world-mouse-position grid]
   (let [[x y] (mapv int world-mouse-position)
         cell (when-let [cell-atom (get-in grid [x y])]
                @cell-atom)]
@@ -3543,8 +3543,6 @@
         ; TODO get rid
         input (atom nil)
         ; handle-txs!
-        ; draw-component!
-        ; draw-world-layer! 
         ;;
 
         elapsed-time (atom 0)
@@ -4305,17 +4303,17 @@
         effects-render (fn [effects effect-ctx shape-drawer active-entities raycaster] 
                          (doseq [effect effects]
                            (effect-render effect effect-ctx shape-drawer active-entities raycaster)))
-        draw-component! (fn [k v entity]
+        draw-component! (fn [mouse-position k v entity]
                           (case k
                             :entity/clickable
                             (clickable-draw v entity @batch @default-font @unit-scale)
                             :player-item-on-cursor
                             (let [{:keys [item]} v]
-                              (when-not (let [[x y] (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])]
+                              (when-not (let [[x y] (unproject (get-viewport @stage) mouse-position)]
                                           (mouseover-actor @stage x y))
                                 (draw-texture-region! @batch @unit-scale
                                                       (image->texture-region (:entity/image item))
-                                                      (item-place-position (unproject @viewport [(get-x @input) (get-y @input)])
+                                                      (item-place-position (unproject @viewport mouse-position)
                                                                            (:entity/position entity)
                                                                            (- (:entity/click-distance-tiles entity) 0.1))
                                                       {:center? true})))
@@ -4352,25 +4350,27 @@
                          :entity/string-effect}
                        #{:entity/stats
                          :active-skill}]
-        draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
-                             (reset! unit-scale world-unit-scale)
-                             (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
-                             (draw-cell-debug factions-iterations
-                                              @shape-drawer @viewport
-                                              @show-cell-entities?
-                                              @show-cell-occupied?
-                                              @show-potential-field-colors?
-                                              @grid)
-                             (draw-entities! draw-component!
-                                             @shape-drawer
-                                             @raycaster
-                                             @active-entities
-                                             @@player-eid
-                                             @show-body-bounds?
-                                             render-z-order
-                                             render-layers)
-                             (highlight-mouseover-tile @shape-drawer (unproject @viewport [(get-x @input) (get-y @input)]) @grid)
-                             (reset! unit-scale 1))
+        draw-world-layer! (fn [mouse-position]
+                            (with-line-width @shape-drawer world-unit-scale
+                              (reset! unit-scale world-unit-scale)
+                              (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
+                              (draw-cell-debug factions-iterations
+                                               @shape-drawer @viewport
+                                               @show-cell-entities?
+                                               @show-cell-occupied?
+                                               @show-potential-field-colors?
+                                               @grid)
+                              (draw-entities! (fn [& params]
+                                                (apply draw-component! mouse-position params))
+                                              @shape-drawer
+                                              @raycaster
+                                              @active-entities
+                                              @@player-eid
+                                              @show-body-bounds?
+                                              render-z-order
+                                              render-layers)
+                              (highlight-mouseover-tile @shape-drawer (unproject @viewport mouse-position) @grid)
+                              (reset! unit-scale 1)))
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
         render-tiled-map! #(draw-tiled-map! @tiled-map*
                                             @batch
@@ -4588,7 +4588,7 @@
 
        (set-batch-color!)
 
-       (draw-world-layer!)
+       (draw-world-layer! [(get-x @input) (get-y @input)])
        (batch-end!)
 
        (mouse-interaction! #(set-cursor! graphics %)
