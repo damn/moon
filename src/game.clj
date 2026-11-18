@@ -5602,10 +5602,10 @@
                                                                   (add-actor! @editor-stage (property-editor-window property))))
                                        create-widget (fn create-widget [[schema-k :as schema] v]
                                                        (case schema-k
-                                                         :s/animation (create-animation-widget v (:editor/get-texture-region editor))
+                                                         :s/animation (create-animation-widget v image->texture-region)
                                                          :s/boolean (create-boolean-widget v @skin)
                                                          :s/enum (create-enum-widget schema v @skin)
-                                                         :s/image (create-image-widget v (:editor/get-texture-region editor))
+                                                         :s/image (create-image-widget v image->texture-region)
                                                          :s/map (create-map-widget schemas schema v
                                                                                    (fn build-widget [schema k v] 
                                                                                      (let [widget (create-widget schema v)]
