@@ -3676,15 +3676,12 @@
                                       (entity-state-exit! eid old-state-obj world-mouse-position)
                                       (entity-state-enter! eid new-state-obj))))))
         sounds (atom nil)
-        viewport (atom nil)
-        get-mouse-pos* (atom nil)
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
-        handle-txs! (fn handle-txs! [txs]
-                      (let [world-mouse-position (unproject @viewport (@get-mouse-pos*))
-                            k->txs {
+        handle-txs! (fn handle-txs! [world-mouse-position txs]
+                      (let [k->txs {
                                     :tx/swap 
                                     (fn [eid f & params]
                                       (apply swap! eid f params))
@@ -3698,7 +3695,7 @@
                                     ; at player-item-on-cursor inventory/world/ui magic.
                                     ; => handle-clicked-inventory-cell (player-item-on-cursor)
                                     (fn [& params]
-                                      (handle-txs! (apply fsm-event-txs world-mouse-position params)))
+                                      (handle-txs! world-mouse-position (apply fsm-event-txs world-mouse-position params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
@@ -3794,6 +3791,7 @@
                 :items [{:label controls-info}]}]
         paused? (atom false)
         mouseover-eid (atom nil)
+        viewport (atom nil)
         update-labels (fn [get-frames-per-second get-mouse-position]
                         (for [item [{:label "elapsed-time"
                                      :update-fn (fn [] 
@@ -3973,13 +3971,13 @@
                            :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill)
                            :entity/movement (movement-tick v eid delta-time @grid max-speed)
                            nil))
-        tick-entities! (fn [delta-time elapsed-time]
+        tick-entities! (fn [delta-time elapsed-time world-mouse-position]
                          (doseq [eid @active-entities
                                  component @eid]
-                           (handle-txs! (tick-component component eid delta-time elapsed-time))))
+                           (handle-txs! world-mouse-position (tick-component component eid delta-time elapsed-time))))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
-        tick-game! (fn [delta-time]
+        tick-game! (fn [delta-time world-mouse-position]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
                          (swap! elapsed-time + delta-time)
@@ -3989,7 +3987,7 @@
                                     faction
                                     @active-entities
                                     max-iterations))
-                         (tick-entities! delta-time @elapsed-time))))
+                         (tick-entities! delta-time @elapsed-time world-mouse-position))))
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -4169,12 +4167,12 @@
         mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position]
                              (let [interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
                                (set-cursor! (safe-get @cursors (cursor-key @player-eid interaction-state)))
-                               (handle-txs! (handle-player-input @player-eid
-                                                                 interaction-state
-                                                                 @stage
-                                                                 mouseover-actor
-                                                                 key-pressed?
-                                                                 button-just-pressed?))))
+                               (handle-txs! world-mouse-position (handle-player-input @player-eid
+                                                                                      interaction-state
+                                                                                      @stage
+                                                                                      mouseover-actor
+                                                                                      key-pressed?
+                                                                                      button-just-pressed?))))
         update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
                                        (or #_error
@@ -4182,7 +4180,7 @@
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
                                                 (not (or (key-just-pressed? (:unpause-once controls))
                                                          (key-pressed? (:unpause-continously controls))))))))
-        remove-destroyed-entities! (fn [] (handle-txs! (destroy-entities game-db entity-ids)))
+        remove-destroyed-entities! (fn [world-mouse-position] (handle-txs! world-mouse-position (destroy-entities game-db entity-ids)))
         key-pressed-checks! (fn [key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
@@ -4359,7 +4357,6 @@
      (fn [{:keys [audio files graphics get-input-position set-input-processor!]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! get-mouse-pos* get-input-position)
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
                                       (let [pixmap (pixmap (internal files path))
@@ -4384,6 +4381,8 @@
        (set-input-processor! @stage)
        (reset! textures (create-textures files (:textures game-config)))
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
+
+       ;; non -gdx lifecycle data ... ???? 
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level!)]
          (reset! tiled-map* tiled-map)
@@ -4412,6 +4411,8 @@
            (let [eid (get @entity-ids 1)]
              (assert (:entity/player? @eid))
              (reset! player-eid eid)))
+         ;;
+
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
                                           :update-labels (update-labels (fn [] (get-frames-per-second graphics))
@@ -4470,7 +4471,8 @@
                                            {:player-eid @player-eid
                                             :get-mouse-position get-input-position
                                             :on-click-cell (fn [_event cell]
-                                                             (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
+                                                             (let [world-mouse-position (unproject @viewport (get-input-position))]
+                                                               (handle-txs! world-mouse-position (handle-clicked-inventory-cell @player-eid cell))))
                                             :draw-cell-rect! (fn [player-entity x y mouseover? cell]
                                                                (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
                                                                (when (and mouseover?
@@ -4488,8 +4490,9 @@
                         (player-state-draw-create @player-eid unit-scale image->texture-region get-input-position)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
-         (handle-txs! (sync-player-ui!))
-         (handle-txs! (spawn-map-creatures build-property @tiled-map* start-position fsms))))
+         (let [world-mouse-position (unproject @viewport (get-input-position))]
+           (handle-txs! world-mouse-position (sync-player-ui!))
+           (handle-txs! world-mouse-position (spawn-map-creatures build-property @tiled-map* start-position fsms)))))
      :dispose!
      (fn []
        (let [batch @batch
@@ -4539,8 +4542,10 @@
          (.end ^Batch batch)
          (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position)
          (update-paused-state! key-just-pressed? key-pressed?)
-         (tick-game! delta-time)
-         (remove-destroyed-entities!)
+         (tick-game! delta-time world-mouse-position)
+         (remove-destroyed-entities! world-mouse-position)
+
+         ; TODO pass camera/stage capabilities ???
          (key-pressed-checks! key-pressed?)
          (key-just-pressed-checks! key-just-pressed?)
          (act! stage)
@@ -5830,9 +5835,9 @@
                     :build-property (fn [property-id]
                                       (build-values (safe-get game-db property-id)))
                     :info-text info-text
-                    :level-fn ;create-vampire-level
+                    :level-fn create-vampire-level
                     ;create-uf-caves
-                    create-modules-level
+                    ;create-modules-level
                     :pausing? true
                     :state->pause-game? {:active-skill false
                                          :stunned false
