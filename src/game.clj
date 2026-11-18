@@ -1113,11 +1113,11 @@
 (defn get-parent [actor]
   (.getParent ^Actor actor))
 
-(defn inventory-window-cell-highlight-widget [draw-cell-rect! get-mouse-position player-eid]
+(defn inventory-window-cell-highlight-widget [draw-cell-rect! get-mouse-position get-player-eid]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
       (when-let [stage (.getStage ^Actor this)]
-        (draw-cell-rect! @player-eid
+        (draw-cell-rect! @(get-player-eid)
                          (get-x this)
                          (get-y this)
                          (let [[x y] (unproject (get-viewport stage) (get-mouse-position))
@@ -1142,11 +1142,11 @@
 (defn add-actors! [group actors]
   (run! #(add-actor! group %) actors))
 
-(defn- inv-window-cell [player-eid get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+(defn- inv-window-cell [get-player-eid get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     (doto (create-stack)
-      (add-actors! [(inventory-window-cell-highlight-widget draw-cell-rect! get-mouse-position player-eid)
+      (add-actors! [(inventory-window-cell-highlight-widget draw-cell-rect! get-mouse-position get-player-eid)
                     (inventory-window-cell-image-widget background-drawable cell-size)])
       (add-listener! (proxy [ClickListener] []
                        (clicked [event _x _y]
@@ -1183,7 +1183,7 @@
    (Actor/.setPosition actor (float x) (float y) align)))
 
 (defn- build-inventory-window
-  [{:keys [player-eid
+  [{:keys [get-player-eid
            get-mouse-position
            on-click-cell
            draw-cell-rect!
@@ -1195,7 +1195,7 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint (Color. 1 1 1 0.4))))
-        ->cell (partial inv-window-cell player-eid get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
+        ->cell (partial inv-window-cell get-player-eid get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (table-create)
         window (create-window "Inventory" skin)]
     (doseq [row (concat [[nil 
@@ -2804,6 +2804,19 @@
                                                        :entity/faction :evil}}))]]))
           (spawn-positions tiled-map)))
 
+(defn player-ui-txs [entity]
+  (concat
+    (map (fn [skill]
+           [:tx/set-skill skill])
+         (vals (:entity/skills entity)))
+    (for [[slot grid] (:entity/inventory entity)
+          x (range (count grid))
+          y (range (count (grid 0)))
+          :let [position [x y]
+                item (get-in grid position)]
+          :when item]
+      [:tx/set-item [slot position] item])))
+
 (defn handle-clicked-inventory-cell
   [player-eid cell]
   (case (:state (:entity/fsm @player-eid))
@@ -2882,14 +2895,14 @@
 
     nil))
 
-(defn player-state-draw-create [player-eid unit-scale image->texture-region get-mouse-position]
+(defn player-state-draw-create [get-player-eid unit-scale image->texture-region get-mouse-position]
   (proxy [Actor] []
     (act [delta]
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha]
       (let [stage (.getStage ^Actor this)
-            player-eid player-eid 
+            player-eid (get-player-eid)
             entity @player-eid
             state-k (:state (:entity/fsm entity))
             mouse-pos (unproject (get-viewport stage) (get-mouse-position))
@@ -3634,9 +3647,13 @@
                         (timer-create duration @elapsed-time))
         id-counter (atom 0)
         generate-id!* #(swap! id-counter inc)
-        entity* (fn [entity]
-                  (assoc (construct-entity entity create-timer*)
-                         :entity/id (generate-id!*)))
+        entity* (fn
+                  ([entity]
+                   (assoc (construct-entity entity create-timer*)
+                          :entity/id (generate-id!*)))
+                  ([entity id]
+                   (assoc (construct-entity entity create-timer*)
+                          :entity/id id)))
         entity-state-exit! (fn [eid [state-k _state-v] world-mouse-position create-timer]
                              (case state-k
                                :player-item-on-cursor
@@ -3751,19 +3768,11 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
-        player-eid (atom nil)
-        sync-player-ui! (fn []
-                          (concat
-                            (map (fn [skill] 
-                                   [:tx/set-skill skill])
-                                 (vals (:entity/skills @@player-eid)))
-                            (for [[slot grid] (:entity/inventory @@player-eid)
-                                  x (range (count grid))
-                                  y (range (count (grid 0)))
-                                  :let [position [x y]
-                                        item (get-in grid position)]
-                                  :when item]
-                              [:tx/set-item [slot position] item])))
+        player-id (atom nil)
+        player-eid (fn []
+                     (let [eid (get @entity-ids @player-id)]
+                       (assert eid (str "player id not in entity-ids: " @player-id))
+                       eid))
         controls-info (str/join "\n"
                                 ["[W][A][S][D] - Move"
                                  "[ESCAPE] - Close windows"
@@ -4002,7 +4011,7 @@
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
         create-interaction-state (fn [mouseover-actor world-mouse-position]
-                                   (let [player-eid @player-eid
+                                   (let [player-eid (player-eid)
                                          stage @stage
                                          mouseover-eid @mouseover-eid]
                                      (cond
@@ -4169,9 +4178,10 @@
                                 nil))
         cursors (atom nil)
         mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position]
-                             (let [interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
-                               (set-cursor! (safe-get @cursors (cursor-key @player-eid interaction-state)))
-                               (handle-txs! world-mouse-position (handle-player-input @player-eid
+                             (let [player-eid (player-eid)
+                                   interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
+                               (set-cursor! (safe-get @cursors (cursor-key player-eid interaction-state)))
+                               (handle-txs! world-mouse-position (handle-player-input player-eid
                                                                                       interaction-state
                                                                                       @stage
                                                                                       mouseover-actor
@@ -4181,7 +4191,7 @@
                                (reset! paused?
                                        (or #_error
                                            (and pausing?
-                                                (state->pause-game? (:state (:entity/fsm @@player-eid)))
+                                                (state->pause-game? (:state (:entity/fsm @(player-eid))))
                                                 (not (or (key-just-pressed? (:unpause-once controls))
                                                          (key-pressed? (:unpause-continously controls))))))))
         key-pressed-checks! (fn [key-pressed?]
@@ -4260,7 +4270,7 @@
                             :entity/line-render
                             (line-render-draw v entity @shape-drawer)
                             :entity/mouseover?
-                            (mouseover?-draw entity @shape-drawer @@player-eid)
+                            (mouseover?-draw entity @shape-drawer @(player-eid))
                             :entity/stats
                             (stats-draw entity @shape-drawer @unit-scale)
                             :entity/string-effect
@@ -4301,7 +4311,7 @@
                                               @shape-drawer
                                               @raycaster
                                               @active-entities
-                                              @@player-eid
+                                              @(player-eid)
                                               @show-body-bounds?
                                               render-z-order
                                               render-layers)
@@ -4323,12 +4333,12 @@
                                                :invisible-tile-color (float-bits 0 0 0 1)})
                                             world-unit-scale)
          update-active-entities! (fn []
-                                   (reset! active-entities (active-entities* @content-grid @@player-eid)))
+                                   (reset! active-entities (active-entities* @content-grid @(player-eid))))
          update-mouseover-eid! (fn [mouseover-actor world-mouse-position]
                                  (let [old-mouseover-eid @mouseover-eid
                                        new-eid (if mouseover-actor
                                                  nil
-                                                 (let [player @@player-eid
+                                                 (let [player @(player-eid)
                                                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
                                                                     (point->entities @grid world-mouse-position))]
                                                    (->> hits
@@ -4402,21 +4412,7 @@
                                                (range width)))
            (reset! raycaster (create-raycaster g)))
          (reset! elapsed-time 0)
-         (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                :creature-property (build-property :creatures/vampire)
-                                                :components {:entity/fsm {:fsm (:player fsms)
-                                                                          :initial-state :player-idle}
-                                                             :entity/faction :good
-                                                             :entity/player? true
-                                                             :entity/free-skill-points 3
-                                                             :entity/clickable {:type :clickable/player}
-                                                             :entity/click-distance-tiles 1.5}}))
-               eid (spawn-entity! entity)]
-           (assert (:entity/player? @eid))
-           (assert (= (:entity/id entity) (:entity/id @eid)))
-           (reset! player-eid eid))
-         ;;
-
+         (reset! player-id (generate-id!*))
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
                                           :update-labels (update-labels (fn [] (get-frames-per-second graphics))
@@ -4443,9 +4439,9 @@
                                                                     {:image/file content-file
                                                                      :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
                                                                   [x y])
-                                            (draw-text! batch 
-                                                        @default-font 
-                                                        @unit-scale 
+                                            (draw-text! batch
+                                                        @default-font
+                                                        @unit-scale
                                                         {:text (str (readable (minmaxval 0))
                                                                     "/"
                                                                     (minmaxval 1)
@@ -4454,10 +4450,11 @@
                                                          :x (+ x 75)
                                                          :y (+ y 2)
                                                          :up? true}))]
-                            {:draw! 
+                            {:draw!
                              (fn [batch _parent-alpha]
-                               (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints (:entity/stats @@player-eid)) "HP")
-                               (draw-bar! batch bar-x y-mana manacontent-file (get-mana (:entity/stats @@player-eid)) "MP"))}))
+                               (let [stats (:entity/stats @(player-eid))]
+                                 (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
+                                 (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
                         (windows-create [(create-info-window
                                            {:title "Entity Info"
                                             :actor-name "moon.ui.windows.entity-info"
@@ -4472,11 +4469,11 @@
                                                                  ""))
                                             :skin @skin})
                                          (build-inventory-window
-                                           {:player-eid @player-eid
+                                           {:get-player-eid player-eid
                                             :get-mouse-position get-input-position
                                             :on-click-cell (fn [_event cell]
                                                              (let [world-mouse-position (unproject @viewport (get-input-position))]
-                                                               (handle-txs! world-mouse-position (handle-clicked-inventory-cell @player-eid cell))))
+                                                               (handle-txs! world-mouse-position (handle-clicked-inventory-cell (player-eid) cell))))
                                             :draw-cell-rect! (fn [player-entity x y mouseover? cell]
                                                                (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
                                                                (when (and mouseover?
@@ -4491,11 +4488,24 @@
                                                        (get-world-height (get-viewport @stage))]
                                             :slot->texture-region slot->texture-region
                                             :cell-size inventory-cell-size})])
-                        (player-state-draw-create @player-eid unit-scale image->texture-region get-input-position)
+                        (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
-         (let [world-mouse-position (unproject @viewport (get-input-position))]
-           (handle-txs! world-mouse-position (sync-player-ui!))
+         (let [world-mouse-position (unproject @viewport (get-input-position))
+               entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                :creature-property (build-property :creatures/vampire)
+                                                :components {:entity/fsm {:fsm (:player fsms)
+                                                                          :initial-state :player-idle}
+                                                             :entity/faction :good
+                                                             :entity/player? true
+                                                             :entity/free-skill-points 3
+                                                             :entity/clickable {:type :clickable/player}
+                                                             :entity/click-distance-tiles 1.5}})
+                               @player-id)]
+           (handle-txs! world-mouse-position
+                        (concat [[:tx/spawn-entity entity]]
+                                (player-ui-txs entity)))
+           (assert (:entity/player? @(player-eid)))
            (handle-txs! world-mouse-position (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
      :dispose!
      (fn []
@@ -4529,7 +4539,7 @@
              viewport @viewport
              mouse-position (get-input-position)
              delta-time (get-delta-time)
-             camera-position (:entity/position @@player-eid)
+             camera-position (:entity/position @(player-eid))
              mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
                                (stage-hit stage x y))
              world-mouse-position (unproject viewport mouse-position)
