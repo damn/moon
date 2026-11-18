@@ -2590,29 +2590,6 @@
   [fsm initial-state]
   (assoc (fsm initial-state nil) :state initial-state))
 
-(defn effect-applicable? [[k v] effect-ctx]
-  (case k
-    :effects/projectile (:effect/target-direction effect-ctx)
-    :effects/spawn (and (:entity/faction @(:effect/source effect-ctx))
-                        (:effect/target-position effect-ctx))
-    :effects/target-all true
-    :effects/target-entity (and (:effect/target effect-ctx)
-                                (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
-    :effects.target/convert (let [source (:effect/source effect-ctx)
-                                  target (:effect/target effect-ctx)]
-                              (and target
-                                   (= (:entity/faction @target)
-                                      (enemy (:entity/faction @source)))))
-    :effects.target/damage (and (:effect/target effect-ctx)
-                                #_(:stats/hp @target))
-    :effects.target/kill (and (:effect/target effect-ctx)
-                              (:entity/fsm @(:effect/target effect-ctx)))
-    :effects.target/melee-damage (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
-                                                     effect-ctx)
-    :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
-    :effects.target/stun (and (:effect/target effect-ctx)
-                              (:entity/fsm @(:effect/target effect-ctx)))))
-
 (defn- double-ray-endpositions
   [[start-x start-y]
    [target-x target-y]
@@ -2789,7 +2766,8 @@
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
    entity
-   effect-ctx]
+   effect-ctx
+   effect-applicable?]
   (cond
    cooling-down?
    :cooldown
@@ -3245,13 +3223,13 @@
             :when (get render-layer k)]
       (draw-component! k v entity))))
 
-(defn- choose-skill [ray-blocked? entity effect-ctx]
+(defn- choose-skill [ray-blocked? entity effect-ctx effect-applicable?]
   (->> entity
        :entity/skills
        vals
        (sort-by :skill/cost)
        reverse
-       (filter #(and (= :usable (usable-state % entity effect-ctx))
+       (filter #(and (= :usable (usable-state % entity effect-ctx effect-applicable?))
                      (->> (:skill/effects %)
                           (filter (fn [e] (effect-applicable? e effect-ctx)))
                           (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
@@ -3358,7 +3336,7 @@
     nil))
 
 (defn active-skill-tick
-  [v eid _delta-time handle-txs! line-of-sight? applicable-effect-txs elapsed-time]
+  [v eid _delta-time handle-txs! line-of-sight? applicable-effect-txs elapsed-time effect-applicable?]
   (let [{:keys [skill effect-ctx counter]} v
         source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
@@ -3403,7 +3381,7 @@
         (handle-txs! [[:tx/event eid :alert]])))))
 
 (defn npc-idle-tick
-  [_v eid _delta-time handle-txs! line-of-sight? raycaster-blocked? grid]
+  [_v eid _delta-time handle-txs! line-of-sight? raycaster-blocked? grid effect-applicable?]
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
@@ -3413,7 +3391,7 @@
                     :effect/target target
                     :effect/target-direction (when target
                                                (direction entity @target))}]
-    (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx)]
+    (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx effect-applicable?)]
       (handle-txs! [[:tx/event eid :start-action [skill effect-ctx]]])
       (handle-txs! [[:tx/event eid :movement-direction (or (find-direction grid eid)
                                                            [0 0])]]))))
@@ -4048,6 +4026,28 @@
                           :drop-item -> :player-idle
                           :dropped-item -> :player-idle]
                          [:player-dead]])}
+        effect-applicable? (fn effect-applicable? [[k v] effect-ctx]
+                             (case k
+                               :effects/projectile (:effect/target-direction effect-ctx)
+                               :effects/spawn (and (:entity/faction @(:effect/source effect-ctx))
+                                                   (:effect/target-position effect-ctx))
+                               :effects/target-all true
+                               :effects/target-entity (and (:effect/target effect-ctx)
+                                                           (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
+                               :effects.target/convert (let [source (:effect/source effect-ctx)
+                                                             target (:effect/target effect-ctx)]
+                                                         (and target
+                                                              (= (:entity/faction @target)
+                                                                 (enemy (:entity/faction @source)))))
+                               :effects.target/damage (and (:effect/target effect-ctx)
+                                                           #_(:stats/hp @target))
+                               :effects.target/kill (and (:effect/target effect-ctx)
+                                                         (:entity/fsm @(:effect/target effect-ctx)))
+                               :effects.target/melee-damage (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
+                                                                                effect-ctx)
+                               :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
+                               :effects.target/stun (and (:effect/target effect-ctx)
+                                                         (:entity/fsm @(:effect/target effect-ctx)))))
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]] 
                                   (case k
@@ -4083,7 +4083,7 @@
                            (projectile-collision-tick v eid delta-time handle-txs! @grid mk-effect-txs)
 
                            :active-skill
-                           (active-skill-tick v eid delta-time handle-txs! (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time)
+                           (active-skill-tick v eid delta-time handle-txs! (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable?)
 
                            :entity/delete-after-duration
                            (delete-after-duration-tick v eid delta-time handle-txs! elapsed-time)
@@ -4101,7 +4101,8 @@
                            (npc-idle-tick v eid delta-time handle-txs!
                                           (partial line-of-sight? @raycaster)
                                           (partial raycaster-blocked? @raycaster)
-                                          @grid)
+                                          @grid
+                                          effect-applicable?)
 
                            :entity/movement
                            (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
@@ -4163,7 +4164,7 @@
                                                            :effect/target-position target-position
                                                            :effect/target-direction (v2-direction (:entity/position @player-eid)
                                                                                                   target-position)}
-                                               state (usable-state skill entity effect-ctx)]
+                                               state (usable-state skill entity effect-ctx effect-applicable?)]
                                            (if (= state :usable)
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
