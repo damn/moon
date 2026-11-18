@@ -5460,21 +5460,6 @@
     :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
                                (set (keys m))))}))
 
-(defn widget-value [schemas [schema-k] widget]
-  (case schema-k
-    :s/boolean (boolean-widget-value widget)
-    :s/enum (enum-widget-value widget)
-    :s/map (into {}
-                 (for [widget (filter (comp vector? get-user-object) (get-children widget))
-                       :let [[k _] (get-user-object widget)]]
-                   [k (widget-value schemas (get schemas k) widget)]))
-    :s/number (number-widget-value widget)
-    :s/one-to-many (one-to-many-widget-value widget)
-    :s/one-to-one (one-to-one-widget-value widget)
-    :s/string (string-widget-value widget)
-    :s/val-max (val-max-widget-value widget)
-    (default-widget-value widget)))
-
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
@@ -5593,13 +5578,26 @@
                         :properties/projectiles
                         :properties/skills]
         property-editor-window (fn property-editor-window [schemas property skin editor]
-                                 (let [
-                                       schema (get schemas (keyword "properties" (namespace (:property/id property))))
+                                 (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
+                                       widget-value (fn widget-value [[schema-k] widget]
+                                                      (case schema-k
+                                                        :s/boolean (boolean-widget-value widget)
+                                                        :s/enum (enum-widget-value widget)
+                                                        :s/map (into {}
+                                                                     (for [widget (filter (comp vector? get-user-object) (get-children widget))
+                                                                           :let [[k _] (get-user-object widget)]]
+                                                                       [k (widget-value (get schemas k) widget)]))
+                                                        :s/number (number-widget-value widget)
+                                                        :s/one-to-many (one-to-many-widget-value widget)
+                                                        :s/one-to-one (one-to-one-widget-value widget)
+                                                        :s/string (string-widget-value widget)
+                                                        :s/val-max (val-max-widget-value widget)
+                                                        (default-widget-value widget)))
                                        rebuild-editor-window! (fn []
                                                                 (let [window (-> (get-root @editor-stage)
                                                                                  (find-actor "moon.ui.clojure.editor-window"))
                                                                       map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
-                                                                      property (widget-value schemas schema map-widget-table)]
+                                                                      property (widget-value schema map-widget-table)]
                                                                   (remove! window)
                                                                   (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
                                        create-widget (fn create-widget [[schema-k :as schema] v]
@@ -5613,7 +5611,7 @@
                                                                                      (let [widget (create-widget schema v)]
                                                                                        (set-user-object! widget [k v])
                                                                                        widget))
-                                                                                   (fn [schema widget] (widget-value schemas schema widget))
+                                                                                   widget-value
                                                                                    skin
                                                                                    editor
                                                                                    rebuild-editor-window!
@@ -5632,7 +5630,6 @@
                                                          (create-default-widget v skin)))
                                        widget (create-widget schema property)
                                        scroll-pane-height (get-world-height (get-viewport @editor-stage))
-                                       get-widget-value #(widget-value schemas schema widget)
                                        property-id (:property/id property)
                                        with-window-close (fn [f]
                                                            (fn [actor]
@@ -5650,7 +5647,7 @@
                                                        new-db)))
                                        on-save (with-window-close 
                                                  (fn [db]
-                                                   (let [property (get-widget-value)
+                                                   (let [property (widget-value schema widget)
                                                          id (:property/id property)]
                                                      (assert (contains? property :property/id))
                                                      (assert (contains? db id))
