@@ -2750,20 +2750,7 @@
                                                                   :initial-state :npc-idle}
                                                      :entity/faction (:entity/faction @source)}})]]))
 
-(declare effect-transactions)
-
-(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db elapsed-time fsms]
-  (mapcat (fn [effect] 
-            (effect-transactions effect
-                                 effect-ctx 
-                                 active-entities
-                                 raycaster
-                                 game-db
-                                 elapsed-time
-                                 fsms))
-          (filter #(effect-applicable? % effect-ctx) effects)))
-
-(defn target-all-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms]
+(defn target-all-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
@@ -2790,7 +2777,7 @@
      [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms]
+(defn target-entity-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
@@ -2863,39 +2850,6 @@
 
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
-
-(defn- effect-transactions
-  [[k v] effect-ctx active-entities raycaster game-db elapsed-time fsms]
-  (case k
-    :effects/projectile
-    (projectile-effect v effect-ctx)
-
-    :effects/spawn
-    (spawn-effect* v effect-ctx game-db fsms)
-
-    :effects/target-all
-    (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms)
-
-    :effects/target-entity
-    (target-entity-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms)
-
-    :effects.target/convert
-    (convert-effect v effect-ctx game-db)
-
-    :effects.target/damage
-    (damage-effect v effect-ctx game-db elapsed-time)
-
-    :effects.target/kill
-    (kill-effect v effect-ctx)
-
-    :effects.target/melee-damage
-    (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db elapsed-time)
-
-    :effects.target/spiderweb
-    (spiderweb-effect v effect-ctx elapsed-time)
-
-    :effects.target/stun
-    (stun-effect v effect-ctx)))
 
 (defn- usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
@@ -3442,6 +3396,21 @@
       (swap! eid dissoc :entity/temp-modifier)
       (swap! eid update :entity/stats remove-mods modifiers))
     nil))
+
+(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db elapsed-time fsms]
+  (mapcat (fn [[k v]] 
+            (case k
+              :effects/projectile (projectile-effect v effect-ctx)
+              :effects/spawn (spawn-effect* v effect-ctx game-db fsms)
+              :effects/target-all (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs)
+              :effects/target-entity (target-entity-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms applicable-effect-txs)
+              :effects.target/convert (convert-effect v effect-ctx game-db)
+              :effects.target/damage (damage-effect v effect-ctx game-db elapsed-time)
+              :effects.target/kill (kill-effect v effect-ctx)
+              :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db elapsed-time)
+              :effects.target/spiderweb (spiderweb-effect v effect-ctx elapsed-time)
+              :effects.target/stun (stun-effect v effect-ctx)))
+          (filter #(effect-applicable? % effect-ctx) effects)))
 
 (defn projectile-collision-tick
   [v eid _delta-time handle-txs! active-entities raycaster game-db elapsed-time grid fsms]
