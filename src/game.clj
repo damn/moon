@@ -3489,18 +3489,7 @@
            world-unit-scale
            slot->y-sprite-idx]
     :as game-config}]
-  (let [stage (atom nil)
-        skin (atom nil)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-        set-item! (fn [cell item]
-                    (-> (get-root @stage)
-                        (find-actor "moon.ui.windows.inventory")
-                        (set-item!* cell
-                                    {:texture-region (image->texture-region (:entity/image item))
-                                     :tooltip-text (item-info-text item)}
-                                    @skin)))
-        z-orders [:z-order/on-ground
+  (let [z-orders [:z-order/on-ground
                   :z-order/ground
                   :z-order/flying
                   :z-order/effect]
@@ -3720,6 +3709,10 @@
         sounds (atom nil)
         viewport (atom nil)
         get-mouse-pos* (atom nil)
+        stage (atom nil)
+        skin (atom nil)
+        textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         handle-txs! (fn handle-txs! [txs]
                       (let [world-mouse-position (unproject @viewport (@get-mouse-pos*))
                             k->txs {
@@ -3740,7 +3733,14 @@
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
-                                    :tx/set-item set-item!
+                                    :tx/set-item 
+                                    (fn [cell item]
+                                      (-> (get-root @stage)
+                                          (find-actor "moon.ui.windows.inventory")
+                                          (set-item!* cell
+                                                      {:texture-region (image->texture-region (:entity/image item))
+                                                       :tooltip-text (item-info-text item)}
+                                                      @skin)))
                                     :tx/remove-item
                                     (fn [cell] 
                                       (remove-item! @stage cell))
@@ -3750,6 +3750,14 @@
                                     :tx/show-message
                                     (fn [message]
                                       (show-message! @stage message))
+                                    :tx/set-skill
+                                    (fn [skill]
+                                      (-> (get-root @stage)
+                                          (find-actor "moon.ui.action-bar")
+                                          (add-skill! {:skill-id (:property/id skill)
+                                                       :texture-region (image->texture-region (:entity/image skill))
+                                                       :tooltip-text (info-text skill @elapsed-time)}
+                                                      @skin)))
                                     }]
                         (doseq [[k & params] txs]
                           (try (apply (safe-get k->txs k) params)
@@ -3757,24 +3765,19 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
-        set-skill! (fn [skill]
-                     (-> (get-root @stage)
-                         (find-actor "moon.ui.action-bar")
-                         (add-skill! {:skill-id (:property/id skill)
-                                      :texture-region (image->texture-region (:entity/image skill))
-                                      :tooltip-text (info-text skill @elapsed-time)}
-                                     @skin)))
         player-eid (atom nil)
         sync-player-ui! (fn []
-                          (doseq [skill (vals (:entity/skills @@player-eid))]
-                            (set-skill! skill))
-                          (doseq [[slot grid] (:entity/inventory @@player-eid)
+                          (concat
+                            (map (fn [skill] 
+                                   [:tx/set-skill skill])
+                                 (vals (:entity/skills @@player-eid)))
+                            (for [[slot grid] (:entity/inventory @@player-eid)
                                   x (range (count grid))
                                   y (range (count (grid 0)))
                                   :let [position [x y]
                                         item (get-in grid position)]
                                   :when item]
-                            (set-item! [slot position] item)))
+                              [:tx/set-item [slot position] item])))
         controls-info (str/join "\n"
                                 ["[W][A][S][D] - Move"
                                  "[ESCAPE] - Close windows"
@@ -4500,7 +4503,7 @@
                         (player-state-draw-create @player-eid unit-scale image->texture-region get-input-position)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
-         (sync-player-ui!)
+         (handle-txs! (sync-player-ui!))
          (handle-txs! (spawn-map-creatures build-property @tiled-map* start-position fsms))))
      :dispose!
      (fn []
