@@ -1920,10 +1920,6 @@
 (defn mouseover-actor [stage x y]
   (.hit ^Stage stage (float x) (float y) true))
 
-(defn ui-mouse-position [stage input]
-  (unproject (get-viewport stage) 
-             [(get-x input) (get-y input)]))
-
 (import '(com.badlogic.gdx.utils Align
                                  Disposable
                                  ScreenUtils))
@@ -2891,7 +2887,7 @@
             player-eid player-eid 
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            mouse-pos (ui-mouse-position stage input)
+            mouse-pos (unproject (get-viewport stage) [(get-x input) (get-y input)])
             [x y] mouse-pos]
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
@@ -3352,7 +3348,7 @@
       (set-name! "moon.ui.action-bar"))))
 
 (defn current-mouseover-actor [stage input]
-  (let [[x y] (ui-mouse-position stage input)]
+  (let [[x y] (unproject (get-viewport stage) [(get-x input) (get-y input)])]
     (mouseover-actor stage x y)))
 
 ; FIXME make txs (destroy also part of?)
@@ -3880,7 +3876,7 @@
                                      :update-fn (fn [] @paused?)}
                                     {:label "GUI"
                                      :update-fn (fn []
-                                                  (mapv int (ui-mouse-position @stage @input)))}
+                                                  (mapv int (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])))}
                                     {:label "World"
                                      :update-fn (fn []
                                                   (mapv int (unproject @viewport [(get-x @input) (get-y @input)])))}
@@ -4228,7 +4224,7 @@
                                   [[:tx/event player-eid :no-movement-input]])
 
                                 :player-item-on-cursor
-                                (let [[x y] (ui-mouse-position stage input)]
+                                (let [[x y] (unproject (get-viewport stage) [(get-x input) (get-y input)])]
                                   (when (and (button-just-pressed? Input$Buttons/LEFT)
                                              (not (mouseover-actor stage x y)))
                                     [[:tx/event player-eid :drop-item]]))
@@ -4278,7 +4274,7 @@
         resize-viewport! (fn [width height]
                            (resize! @viewport width height false))
         batch-end! #(.end ^Batch @batch)
-        get-mouseover-actor #(let [[x y] (ui-mouse-position @stage @input)]
+        get-mouseover-actor #(let [[x y] (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])]
                                (mouseover-actor @stage x y))
         active-skill-radius (let [tile-size 48
                                   image-width 32]
@@ -4403,7 +4399,7 @@
                                    (reset! active-entities (active-entities* @content-grid @@player-eid)))
          update-mouseover-eid! (fn []
                                  (let [old-mouseover-eid @mouseover-eid
-                                       [x y] (ui-mouse-position @stage @input)
+                                       [x y] (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])
                                        new-eid (if (mouseover-actor @stage x y)
                                                  nil
                                                  (let [player @@player-eid
