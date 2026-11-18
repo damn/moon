@@ -2737,24 +2737,6 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
-(defn- usable-state
-  [{:keys [skill/cooling-down? skill/effects] :as skill}
-   entity
-   effect-ctx
-   effect-applicable?]
-  (cond
-   cooling-down?
-   :cooldown
-
-   (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
-   :not-enough-mana
-
-   (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
-   :invalid-params
-
-   :else
-   :usable))
-
 (defn create-skin [^FileHandle file-handle]
   (Skin. file-handle))
 
@@ -4047,14 +4029,27 @@
                                       @(:effect/target effect-ctx)
                                       (:maxrange v))
 
-                           true))
+                          true))
+        usable-state (fn [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
+                       (cond
+                         cooling-down?
+                         :cooldown
+
+                         (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
+                         :not-enough-mana
+
+                         (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
+                         :invalid-params
+
+                         :else
+                         :usable))
         choose-skill (fn [entity effect-ctx]
                        (->> entity
                             :entity/skills
                             vals
                             (sort-by :skill/cost)
                             reverse
-                            (filter #(and (= :usable (usable-state % entity effect-ctx effect-applicable?))
+                            (filter #(and (= :usable (usable-state % entity effect-ctx))
                                           (->> (:skill/effects %)
                                                (filter (fn [e] (effect-applicable? e effect-ctx)))
                                                (some (fn [e] (effect-useful? e effect-ctx (partial raycaster-blocked? @raycaster)))))))
@@ -4157,7 +4152,7 @@
                                                            :effect/target-position target-position
                                                            :effect/target-direction (v2-direction (:entity/position @player-eid)
                                                                                                   target-position)}
-                                               state (usable-state skill entity effect-ctx effect-applicable?)]
+                                               state (usable-state skill entity effect-ctx)]
                                            (if (= state :usable)
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
