@@ -3088,7 +3088,7 @@
   (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius effect-render]
+  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius effects-render]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -3106,10 +3106,7 @@
              (math/to-radians (* (float action-counter-ratio) 360))
              (float-bits 1 1 1 0.5))
     (draw-texture-region! batch unit-scale (image->texture-region image) [(- (float x) radius) y])
-    (doseq [effect effects]
-      (effect-render effect effect-ctx shape-drawer
-                     active-entities
-                     raycaster))))
+    (effects-render effects effect-ctx shape-drawer active-entities raycaster)))
 
 (defn npc-sleeping-draw
   [entity batch default-font unit-scale]
@@ -4336,6 +4333,9 @@
                                        (float-bits 1 1 0 0.5)))))
 
                           nil))
+        effects-render (fn [effects effect-ctx shape-drawer active-entities raycaster] 
+                         (doseq [effect effects]
+                           (effect-render effect effect-ctx shape-drawer active-entities raycaster)))
         draw-component! (fn [k v entity]
                           (case k
                             :entity/clickable
@@ -4357,7 +4357,7 @@
                             :entity/temp-modifier
                             (temp-modifier-draw entity @shape-drawer)
                             :active-skill
-                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius effect-render)
+                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius effects-render)
                             :npc-sleeping
                             (npc-sleeping-draw entity @batch @default-font @unit-scale)
                             :stunned
