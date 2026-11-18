@@ -5437,29 +5437,6 @@
 
 (require '[clojure.set :as set])
 
-(defn- create-map-widget [schemas schema m build-widget widget-value skin editor rebuild-editor-window! property-k-order-index]
-  (map-widget-table-create
-   {:map-schema-keys (map-keys (malli-form schemas schema))
-    :rebuild-editor-window! rebuild-editor-window!
-    :schema schema
-    :widget-value widget-value
-    :skin skin
-    :editor editor
-    :new-default-value-widget (fn [k]
-                                (build-widget (get schemas k)
-                                              k
-                                              (let [schema (get schemas k)]
-                                                (cond
-                                                  (#{:s/map} (schema 0)) {}
-                                                  :else nil))))
-    :k->widget (into {}
-                     (for [[k v] m]
-                       [k (build-widget (get schemas k) k v)]))
-    :k->optional? #(optional? (malli-form schemas schema) %)
-    :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
-    :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
-                               (set (keys m))))}))
-
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
@@ -5600,22 +5577,39 @@
                                                                       property (widget-value schema map-widget-table)]
                                                                   (remove! window)
                                                                   (add-actor! @editor-stage (property-editor-window property))))
+                                       create-map-widget (fn [schema m build-widget]
+                                                           (map-widget-table-create
+                                                             {:map-schema-keys (map-keys (malli-form schemas schema))
+                                                              :rebuild-editor-window! rebuild-editor-window!
+                                                              :schema schema
+                                                              :widget-value widget-value
+                                                              :skin @skin
+                                                              :editor editor
+                                                              :new-default-value-widget (fn [k]
+                                                                                          (build-widget (get schemas k)
+                                                                                                        k
+                                                                                                        (let [schema (get schemas k)]
+                                                                                                          (cond
+                                                                                                            (#{:s/map} (schema 0)) {}
+                                                                                                            :else nil))))
+                                                              :k->widget (into {}
+                                                                               (for [[k v] m]
+                                                                                 [k (build-widget (get schemas k) k v)]))
+                                                              :k->optional? #(optional? (malli-form schemas schema) %)
+                                                              :ks-sorted (map key (sort-by (fn [[k _]] (get property-k-order-index k Integer/MAX_VALUE)) m))
+                                                              :opt? (seq (set/difference (optional-keyset (malli-form schemas schema))
+                                                                                         (set (keys m))))}))
                                        create-widget (fn create-widget [[schema-k :as schema] v]
                                                        (case schema-k
                                                          :s/animation (create-animation-widget v image->texture-region)
                                                          :s/boolean (create-boolean-widget v @skin)
                                                          :s/enum (create-enum-widget schema v @skin)
                                                          :s/image (create-image-widget v image->texture-region)
-                                                         :s/map (create-map-widget schemas schema v
+                                                         :s/map (create-map-widget schema v
                                                                                    (fn build-widget [schema k v] 
                                                                                      (let [widget (create-widget schema v)]
                                                                                        (set-user-object! widget [k v])
-                                                                                       widget))
-                                                                                   widget-value
-                                                                                   @skin
-                                                                                   editor
-                                                                                   rebuild-editor-window!
-                                                                                   property-k-order-index)
+                                                                                       widget)))
                                                          :s/number (create-number-widget schema v @skin)
                                                          :s/one-to-many (create-one-to-many-widget schema v @skin editor)
                                                          :s/one-to-one (create-one-to-one-widget schema v editor)
