@@ -5077,13 +5077,12 @@
 (defn create-image-widget [image get-texture-region]
   (scaled-image-button (get-texture-region image) 2))
 
-(defn create-animation-widget [animation get-texture-region]
+(defn create-animation-widget 
+  [{:keys [pad columns]}]
   (let [table (table-create)]
-    (pad! (defaults table) 1)
-    (doseq [image (:animation/frames animation)]
-      (add! table (scaled-image-button
-                    (get-texture-region image)
-                    2)))
+    (pad! (defaults table) pad)
+    (doseq [actor columns]
+      (add! table actor))
     (row! table)
     (pack! table)
     table))
@@ -5291,7 +5290,9 @@
               (let [redo-rows (fn [property-ids]
                                 (clear-children! table)
                                 (add-one-to-many-rows property-ids)
-                                (pack! (first-ascendant table Window)))]
+                                ; editor window callback instead ? 
+                                (pack! (first-ascendant table Window))
+                                )]
                 (doseq [row
                         [[{:actor (doto (create-text-button "+" skin)
                                     (add-listener! (create-change-listener
@@ -5607,7 +5608,10 @@
                                                                                          (set (keys m))))}))
                                        create-widget (fn create-widget [[schema-k :as schema] v]
                                                        (case schema-k
-                                                         :s/animation (create-animation-widget v image->texture-region)
+                                                         :s/animation (create-animation-widget 
+                                                                        {:columns (for [image (:animation/frames v)]
+                                                                                    (scaled-image-button (image->texture-region image) 2))
+                                                                         :pad 1})
                                                          :s/boolean (create-boolean-widget v @skin)
                                                          :s/enum (create-enum-widget schema v @skin)
                                                          :s/image (create-image-widget v image->texture-region)
