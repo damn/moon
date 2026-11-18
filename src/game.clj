@@ -3355,7 +3355,7 @@
         (handle-txs! [[:tx/event eid :alert]])))))
 
 (defn npc-idle-tick
-  [_v eid _delta-time handle-txs! line-of-sight? raycaster-blocked? grid effect-applicable? effect-useful?]
+  [_v eid _delta-time line-of-sight? raycaster-blocked? grid effect-applicable? effect-useful?]
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
@@ -3366,9 +3366,9 @@
                     :effect/target-direction (when target
                                                (direction entity @target))}]
     (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx effect-applicable? effect-useful?)]
-      (handle-txs! [[:tx/event eid :start-action [skill effect-ctx]]])
-      (handle-txs! [[:tx/event eid :movement-direction (or (find-direction grid eid)
-                                                           [0 0])]]))))
+      [[:tx/event eid :start-action [skill effect-ctx]]]
+      [[:tx/event eid :movement-direction (or (find-direction grid eid)
+                                              [0 0])]])))
 
 (defn movement-tick
   [v eid delta-time _handle-txs! grid content-grid max-speed]
@@ -4096,12 +4096,12 @@
                            (npc-sleeping-tick v eid delta-time handle-txs! @grid)
 
                            :npc-idle
-                           (npc-idle-tick v eid delta-time handle-txs!
-                                          (partial line-of-sight? @raycaster)
-                                          (partial raycaster-blocked? @raycaster)
-                                          @grid
-                                          effect-applicable?
-                                          effect-useful?)
+                           (handle-txs! (npc-idle-tick v eid delta-time 
+                                                       (partial line-of-sight? @raycaster)
+                                                       (partial raycaster-blocked? @raycaster)
+                                                       @grid
+                                                       effect-applicable?
+                                                       effect-useful?))
 
                            :entity/movement
                            (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
