@@ -3555,8 +3555,11 @@
         image->texture-region #(get-texture-region @textures %)
         viewport (atom nil)
         raycaster (atom nil)
+
+        ;;
         input (atom nil)
-        graphics (atom nil)
+        ;;
+
         elapsed-time (atom 0)
         id-counter (atom 0)
         entity-ids (atom {})
@@ -3865,33 +3868,34 @@
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-        update-labels (for [item [{:label "elapsed-time"
-                                   :update-fn (fn [] 
-                                                (str (readable @elapsed-time) " seconds"))
-                                   :icon "images/clock.png"}
-                                  {:label "FPS"
-                                   :update-fn (fn [] (get-frames-per-second @graphics))
-                                   :icon "images/fps.png"}
-                                  {:label "Mouseover-entity id"
-                                   :update-fn (fn []
-                                                (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                                  (:entity/id entity)))
-                                   :icon "images/mouseover.png"}
-                                  {:label "paused?"
-                                   :update-fn (fn [] @paused?)}
-                                  {:label "GUI"
-                                   :update-fn (fn []
-                                                (mapv int (ui-mouse-position @stage @input)))}
-                                  {:label "World"
-                                   :update-fn (fn []
-                                                (mapv int (unproject @viewport [(get-x @input) (get-y @input)])))}
-                                  {:label "Zoom"
-                                   :update-fn (fn []
-                                                (.zoom ^OrthographicCamera (get-camera @viewport)))
-                                   :icon "images/zoom.png"}]]
-                        (if (:icon item)
-                          (update item :icon #(get @textures %))
-                          item))
+        update-labels (fn [get-frames-per-second]
+                        (for [item [{:label "elapsed-time"
+                                     :update-fn (fn [] 
+                                                  (str (readable @elapsed-time) " seconds"))
+                                     :icon "images/clock.png"}
+                                    {:label "FPS"
+                                     :update-fn get-frames-per-second
+                                     :icon "images/fps.png"}
+                                    {:label "Mouseover-entity id"
+                                     :update-fn (fn []
+                                                  (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                                    (:entity/id entity)))
+                                     :icon "images/mouseover.png"}
+                                    {:label "paused?"
+                                     :update-fn (fn [] @paused?)}
+                                    {:label "GUI"
+                                     :update-fn (fn []
+                                                  (mapv int (ui-mouse-position @stage @input)))}
+                                    {:label "World"
+                                     :update-fn (fn []
+                                                  (mapv int (unproject @viewport [(get-x @input) (get-y @input)])))}
+                                    {:label "Zoom"
+                                     :update-fn (fn []
+                                                  (.zoom ^OrthographicCamera (get-camera @viewport)))
+                                     :icon "images/zoom.png"}]]
+                          (if (:icon item)
+                            (update item :icon #(get @textures %))
+                            item)))
         max-delta 0.04
         max-speed (/ minimum-size max-delta)
         fsms {:npc (fsm/fsm-inc
@@ -4259,9 +4263,9 @@
                                     [[:tx/event player-eid :drop-item]]))
 
                                 nil))
-        mouse-interaction! (fn []
+        mouse-interaction! (fn [set-cursor!]
                              (let [interaction-state (create-interaction-state @input)]
-                               (set-cursor! @graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
+                               (set-cursor! (safe-get @cursors (cursor-key @player-eid interaction-state)))
                                (handle-txs! (handle-player-input @player-eid
                                                                  interaction-state
                                                                  @stage
@@ -4451,13 +4455,12 @@
         ]
     {
      :create!
-     (fn [{:keys [audio files] :as capabilities}]
-       (reset! graphics (:graphics capabilities))
+     (fn [{:keys [audio files graphics] :as capabilities}]
        (reset! input (:input capabilities))
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
                                       (let [pixmap (pixmap (internal files path))
-                                            cursor (new-cursor (:graphics capabilities) pixmap hotspot-x hotspot-y)]
+                                            cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
                                         (dispose! pixmap)
                                         cursor))))
        (reset! sounds (into {}
@@ -4510,7 +4513,7 @@
              (reset! player-eid eid)))
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
-                                          :update-labels update-labels
+                                          :update-labels (update-labels (fn [] (get-frames-per-second graphics)))
                                           :skin @skin})
                         (create-actor
                           (let [y-mana 80
@@ -4596,7 +4599,7 @@
        (dispose! @tiled-map*))
 
      :render!
-     (fn [capabilities]
+     (fn [{:keys [graphics]}]
        (clear-screen! 0 0 0 0)
        (update-mouseover-eid!)
        (update-active-entities!)
@@ -4607,9 +4610,9 @@
        (set-batch-color!)
        (draw-world-layer!)
        (batch-end!)
-       (mouse-interaction!)
+       (mouse-interaction! #(set-cursor! graphics %))
        (update-paused-state!)
-       (tick-game! (get-delta-time (:graphics capabilities)))
+       (tick-game! (get-delta-time graphics))
        (remove-destroyed-entities!)
        (key-pressed-checks!)
        (key-just-pressed-checks!)
