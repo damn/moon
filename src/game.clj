@@ -4600,7 +4600,10 @@
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 (defn levelgen-listener []
-  (let [world-unit-scale (/ 48)
+  (let [db (create-db (-> "schema.edn" io/resource slurp edn/read-string) 
+                      (-> "properties.edn" io/resource slurp edn/read-string))
+        tile-size 48
+        world-unit-scale (/ tile-size)
         world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
         batch (atom nil)
@@ -4608,14 +4611,13 @@
         stage (atom nil)
         viewport (atom nil)
         camera (atom nil)
-        db (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
         tiled-map (atom nil)
         generate-level! (fn [level-fn]
                           (let [level (level-fn {:level/creature-properties
                                                  (prepare-creature-tiles
-                                                   (all-raw @db :properties/creatures)
+                                                   (all-raw db :properties/creatures)
                                                    image->texture-region)
                                                  :textures @textures})
                                 ^TiledMap tiled-map (:tiled-map level)
@@ -4664,8 +4666,6 @@
                                                      world-width
                                                      world-height))))
        (reset! camera (get-camera @viewport)) 
-       (reset! db (create-db (-> "schema.edn" io/resource slurp edn/read-string) 
-                             (-> "properties.edn" io/resource slurp edn/read-string)))
        (reset! textures (create-textures files
                                          {:folder "resources/"
                                           :extensions #{"png" "bmp"}}))
