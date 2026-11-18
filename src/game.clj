@@ -2621,18 +2621,18 @@
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def ^:private spiderweb-duration 5)
 
-(defn projectile-effect [v effect-ctx]
+(defn projectile-effect [v effect-ctx entity*]
   (let [source (:effect/source effect-ctx)
         source* @source
         direction (:effect/target-direction effect-ctx)
         size (:projectile/size v)]
-    [[:tx/spawn-entity (spawn-projectile
-                         {:position (mapv + (:entity/position source*)
-                                          (v2-scale direction
-                                                    (+ (/ (:entity/width source*) 2) size 0.1)))
-                          :direction direction
-                          :faction (:entity/faction source*)}
-                         v)]]))
+    [[:tx/spawn-entity (entity* (spawn-projectile
+                                  {:position (mapv + (:entity/position source*)
+                                                   (v2-scale direction
+                                                             (+ (/ (:entity/width source*) 2) size 0.1)))
+                                   :direction direction
+                                   :faction (:entity/faction source*)}
+                                  v))]]))
 
 (defn animation-entity [game-db position animation-k]
   (assert (keyword? animation-k))
@@ -2640,58 +2640,58 @@
     (spawn-effect position
                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
 
-(defn spawn-effect* [v effect-ctx game-db fsms]
+(defn spawn-effect* [v effect-ctx game-db fsms entity*]
   (let [source (:effect/source effect-ctx)
         position (:effect/target-position effect-ctx)]
     [[:tx/sound "bfxr_curse.wav"]
-     [:tx/spawn-entity (animation-entity game-db position :audiovisuals/spawn)]
-     [:tx/spawn-entity (spawn-creature {:position position
-                                        :creature-property v
-                                        :components {:entity/fsm {:fsm (:npc fsms)
-                                                                  :initial-state :npc-idle}
-                                                     :entity/faction (:entity/faction @source)}})]]))
+     [:tx/spawn-entity (entity* (animation-entity game-db position :audiovisuals/spawn))]
+     [:tx/spawn-entity (entity* (spawn-creature {:position position
+                                                 :creature-property v
+                                                 :components {:entity/fsm {:fsm (:npc fsms)
+                                                                           :initial-state :npc-idle}
+                                                              :entity/faction (:entity/faction @source)}}))]]))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster applicable-effect-txs]
+(defn target-all-effect [v effect-ctx active-entities raycaster applicable-effect-txs entity*]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
-              (cons [:tx/spawn-entity 
-                     (spawn-line {:start (:entity/position source*)
-                                  :end (:entity/position @target)
-                                  :duration 0.05
-                                  :color (float-bits 1 0 0 0.75)
-                                  :thick? true})]
+              (cons [:tx/spawn-entity
+                     (entity* (spawn-line {:start (:entity/position source*)
+                                           :end (:entity/position @target)
+                                           :duration 0.05
+                                           :color (float-bits 1 0 0 0.75)
+                                           :thick? true}))]
                     (applicable-effect-txs {:effect/source source
                                             :effect/target target}
                                            (:entity-effects v))))
             (affected-targets active-entities raycaster source*))))
 
-(defn convert-effect [_v effect-ctx game-db]
+(defn convert-effect [_v effect-ctx game-db entity*]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)]
     [[:tx/sound "bfxr_burrow.wav"]
-     [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
+     [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position @target) :audiovisuals/convert))]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs]
+(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs entity*]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
         target-body @target
         {:keys [maxrange entity-effects]} v]
     (if (in-range? body target-body maxrange)
-      (cons [:tx/spawn-entity 
-             (spawn-line
-               {:start (start-point body target-body)
-                :end (:entity/position target-body)
-                :duration 0.05
-                :color (float-bits 1 0 0 0.75)
-                :thick? true})]
+      (cons [:tx/spawn-entity
+             (entity* (spawn-line
+                        {:start (start-point body target-body)
+                         :end (:entity/position target-body)
+                         :duration 0.05
+                         :color (float-bits 1 0 0 0.75)
+                         :thick? true}))]
             (applicable-effect-txs effect-ctx entity-effects))
       [[:tx/sound "bfxr_fisthit.wav"]
-       [:tx/spawn-entity (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
+       [:tx/spawn-entity (entity* (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground))]])))
 
-(defn damage-effect [v effect-ctx game-db elapsed-time]
+(defn damage-effect [v effect-ctx game-db elapsed-time entity*]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -2725,7 +2725,7 @@
          [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
          [:tx/event target (if (zero? new-hp-val) :kill :alert)]
          [:tx/sound "bfxr_normalhit.wav"]
-         [:tx/spawn-entity (animation-entity game-db (:entity/position target*) :audiovisuals/damage)]]))))
+         [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position target*) :audiovisuals/damage))]]))))
 
 (defn kill-effect [_v effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :kill]])
@@ -2793,15 +2793,15 @@
           :when value]
       [[x y] value])))
 
-(defn spawn-map-creatures [build-property tiled-map start-position fsms]
-  (mapcat (fn [[position creature-id]] 
+(defn spawn-map-creatures [build-property tiled-map start-position fsms entity*]
+  (mapcat (fn [[position creature-id]]
             (when (not= position start-position)
-              [[:tx/spawn-entity 
-               (spawn-creature {:position (mapv (partial + 0.5) position)
-                                :creature-property (build-property (keyword creature-id))
-                                :components {:entity/fsm {:fsm (:npc fsms)
-                                                          :initial-state :npc-sleeping}
-                                             :entity/faction :evil}})]]))
+              [[:tx/spawn-entity
+                (entity* (spawn-creature {:position (mapv (partial + 0.5) position)
+                                          :creature-property (build-property (keyword creature-id))
+                                          :components {:entity/fsm {:fsm (:npc fsms)
+                                                                    :initial-state :npc-sleeping}
+                                                       :entity/faction :evil}}))]]))
           (spawn-positions tiled-map)))
 
 (defn handle-clicked-inventory-cell
@@ -3340,7 +3340,7 @@
       (set-name! "moon.ui.action-bar"))))
 
 (defn destroy-entities
-  [game-db entity-ids]
+  [game-db entity-ids entity*]
   (mapcat (fn [eid]
             (cons [:tx/remove-entity eid]
                   (mapcat (fn [[k v]]
@@ -3350,7 +3350,7 @@
                                 (case v
                                   :audiovisuals/creature-die "bfxr_defaultmonsterdeath.wav"
                                   :audiovisuals/hit-wall "bfxr_projectile_wallhit.wav")]
-                               [:tx/spawn-entity (animation-entity game-db (:entity/position @eid) v)]]
+                               [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position @eid) v))]]
                               nil))
                           @eid)))
           (filter (comp :entity/destroyed? deref) (vals @entity-ids))))
@@ -3573,17 +3573,17 @@
         entity-ids (atom {})
         grid (atom nil)
         content-grid (atom nil)
-        spawn-entity! (fn [entity id]
-                        (let [eid (atom entity)]
-                          (assert (and (not (contains? @eid :entity/id))))
+        spawn-entity! (fn [entity]
+                        (let [id (:entity/id entity)
+                              eid (atom entity)]
                           (assert (number? id))
-                          (swap! eid assoc :entity/id id)
+                          (assert (not (contains? @entity-ids id)))
                           (swap! entity-ids assoc id eid)
                           (assert (:entity/position @eid))
                           (update-entity! @content-grid eid)
                           (assert (:entity/position @eid))
                           (when (:entity/collides? @eid)
-                            (assert (valid-position? @grid @eid (:entity/id @eid))))
+                            (assert (valid-position? @grid @eid id)))
                           (set-touched-cells! @grid eid)
                           (when (:entity/collides? @eid)
                             (set-occupied-cells! @grid eid))
@@ -3630,6 +3630,13 @@
 
                                 nil))
         elapsed-time (atom 0)
+        create-timer* (fn [duration]
+                        (timer-create duration @elapsed-time))
+        id-counter (atom 0)
+        generate-id!* #(swap! id-counter inc)
+        entity* (fn [entity]
+                  (assoc (construct-entity entity create-timer*)
+                         :entity/id (generate-id!*)))
         entity-state-exit! (fn [eid [state-k _state-v] world-mouse-position create-timer]
                              (case state-k
                                :player-item-on-cursor
@@ -3638,24 +3645,22 @@
                                  (when item
                                    [[:tx/swap eid dissoc :entity/item-on-cursor]
                                     [:tx/sound "bfxr_itemputground.wav"]
-                                    [:tx/spawn-entity (spawn-item (item-place-position world-mouse-position
-                                                                                       (:entity/position entity)
-                                                                                       (- (:entity/click-distance-tiles entity) 0.1))
-                                                                  item)]]))
+                                    [:tx/spawn-entity (entity* (spawn-item (item-place-position world-mouse-position
+                                                                                                (:entity/position entity)
+                                                                                                (- (:entity/click-distance-tiles entity) 0.1))
+                                                                           item))]]))
 
                                :player-moving
                                [[:tx/swap eid dissoc :entity/movement]]
 
                                :npc-sleeping
                                [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
-                                [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 @elapsed-time)]]
+                                [:tx/spawn-entity (entity* (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 @elapsed-time))]]
 
                                :npc-moving
                                [[:tx/swap eid dissoc :entity/movement]]
 
                                nil))
-        create-timer* (fn [duration]
-                        (timer-create duration @elapsed-time))
         fsm-event-txs (fn [world-mouse-position eid event & [params]]
                         (let [fsm (:entity/fsm @eid)
                               _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
@@ -3679,10 +3684,6 @@
         skin (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
-        id-counter (atom 0)
-        generate-id!* #(swap! id-counter inc)
-        spawn-entity!* (fn [entity]
-                         (spawn-entity! (construct-entity entity create-timer*) (generate-id!*)))
         handle-txs! (fn handle-txs! [world-mouse-position txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -3692,7 +3693,7 @@
                                     (fn [sound-name]
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
-                                    spawn-entity!*
+                                    spawn-entity!
                                     :tx/event
                                     ; cant remove this because item on cursor triggers to :tx/event after another
                                     ; which are order dependent!
@@ -3897,16 +3898,16 @@
         raycaster (atom nil)
         active-entities (atom nil)
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
-                        (mapcat (fn [[k v]] 
+                        (mapcat (fn [[k v]]
                                   (case k
-                                    :effects/projectile (projectile-effect v effect-ctx)
-                                    :effects/spawn (spawn-effect* v effect-ctx game-db fsms)
-                                    :effects/target-all (target-all-effect v effect-ctx @active-entities @raycaster applicable-effect-txs)
-                                    :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs)
-                                    :effects.target/convert (convert-effect v effect-ctx game-db)
-                                    :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time)
+                                    :effects/projectile (projectile-effect v effect-ctx entity*)
+                                    :effects/spawn (spawn-effect* v effect-ctx game-db fsms entity*)
+                                    :effects/target-all (target-all-effect v effect-ctx @active-entities @raycaster applicable-effect-txs entity*)
+                                    :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs entity*)
+                                    :effects.target/convert (convert-effect v effect-ctx game-db entity*)
+                                    :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time entity*)
                                     :effects.target/kill (kill-effect v effect-ctx)
-                                    :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db @elapsed-time)
+                                    :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db @elapsed-time entity*)
                                     :effects.target/spiderweb (spiderweb-effect v effect-ctx @elapsed-time)
                                     :effects.target/stun (stun-effect v effect-ctx)))
                                 (filter #(effect-applicable? % effect-ctx) effects)))
@@ -3990,7 +3991,7 @@
                          (doseq [eid @active-entities
                                  component @eid]
                            (handle-txs! world-mouse-position (tick-component component eid delta-time @elapsed-time)))))
-                     (handle-txs! world-mouse-position (destroy-entities game-db entity-ids)))
+                     (handle-txs! world-mouse-position (destroy-entities game-db entity-ids entity*)))
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -4401,18 +4402,19 @@
                                                (range width)))
            (reset! raycaster (create-raycaster g)))
          (reset! elapsed-time 0)
-         (let [eid (spawn-entity!* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                    :creature-property (build-property :creatures/vampire)
-                                                    :components {:entity/fsm {:fsm (:player fsms)
-                                                                              :initial-state :player-idle}
-                                                                 :entity/faction :good
-                                                                 :entity/player? true
-                                                                 :entity/free-skill-points 3
-                                                                 :entity/clickable {:type :clickable/player}
-                                                                 :entity/click-distance-tiles 1.5}}))]
-           (let [eid (get @entity-ids 1)]
-             (assert (:entity/player? @eid))
-             (reset! player-eid eid)))
+         (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                :creature-property (build-property :creatures/vampire)
+                                                :components {:entity/fsm {:fsm (:player fsms)
+                                                                          :initial-state :player-idle}
+                                                             :entity/faction :good
+                                                             :entity/player? true
+                                                             :entity/free-skill-points 3
+                                                             :entity/clickable {:type :clickable/player}
+                                                             :entity/click-distance-tiles 1.5}}))
+               eid (spawn-entity! entity)]
+           (assert (:entity/player? @eid))
+           (assert (= (:entity/id entity) (:entity/id @eid)))
+           (reset! player-eid eid))
          ;;
 
          (doseq [actor [(create-action-bar)
@@ -4494,7 +4496,7 @@
            (add-actor! @stage actor))
          (let [world-mouse-position (unproject @viewport (get-input-position))]
            (handle-txs! world-mouse-position (sync-player-ui!))
-           (handle-txs! world-mouse-position (spawn-map-creatures build-property @tiled-map* start-position fsms)))))
+           (handle-txs! world-mouse-position (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
      :dispose!
      (fn []
        (let [batch @batch
