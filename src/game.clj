@@ -3542,6 +3542,10 @@
         ;;
         ; TODO get rid
         input (atom nil)
+        ; handle-txs!
+        ; get-mouseover-actor
+        ; draw-component!
+        ; draw-world-layer!
         ;;
 
         elapsed-time (atom 0)
@@ -4394,14 +4398,14 @@
                                   (.update camera)))
          update-active-entities! (fn []
                                    (reset! active-entities (active-entities* @content-grid @@player-eid)))
-         update-mouseover-eid! (fn []
+         update-mouseover-eid! (fn [mouse-position]
                                  (let [old-mouseover-eid @mouseover-eid
-                                       [x y] (unproject (get-viewport @stage) [(get-x @input) (get-y @input)])
+                                       [x y] (unproject (get-viewport @stage) mouse-position)
                                        new-eid (if (mouseover-actor @stage x y)
                                                  nil
                                                  (let [player @@player-eid
                                                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                                                    (point->entities @grid (unproject @viewport [(get-x @input) (get-y @input)])))]
+                                                                    (point->entities @grid (unproject @viewport mouse-position)))]
                                                    (->> hits
                                                         (sort-by #((:entity/z-order @%) render-z-order) <)
                                                         reverse
@@ -4427,6 +4431,9 @@
     {
      :create!
      (fn [{:keys [audio files graphics] :as capabilities}]
+       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+       (set! (.initialTime (TooltipManager/getInstance)) 0)
+
        (reset! input (:input capabilities))
        (reset! cursors (update-vals (:cursors game-config)
                                     (fn [[path [hotspot-x hotspot-y]]]
@@ -4450,8 +4457,6 @@
                                            (float (:height (:stage game-config)))) 
                              @batch))
        (set-input-processor! (:input capabilities) @stage)
-       (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (reset! textures (create-textures files (:textures game-config)))
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
@@ -4572,16 +4577,22 @@
 
      :render!
      (fn [{:keys [graphics]}]
+
        (clear-screen! 0 0 0 0)
-       (update-mouseover-eid!)
+
+       (update-mouseover-eid! [(get-x @input) (get-y @input)])
        (update-active-entities!)
        (set-camera-to-player!)
+
        (set-proj-matrix!)
        (batch-begin!)
        (render-tiled-map!)
+
        (set-batch-color!)
+
        (draw-world-layer!)
        (batch-end!)
+
        (mouse-interaction! #(set-cursor! graphics %)
                            #(key-pressed? @input %)
                            #(.isButtonJustPressed ^Input @input (int %))
@@ -4592,6 +4603,7 @@
        (remove-destroyed-entities!)
        (key-pressed-checks! #(key-pressed? @input %))
        (key-just-pressed-checks! #(key-just-pressed? @input %))
+
        (update-stage!)
        (draw-stage!))
 
