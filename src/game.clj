@@ -1,26 +1,8 @@
 (ns game)
 
 (def float-rounding-error (double 0.000001)) ; cant inline as tests somewhere ... ? 
-(def transition-idxvalues [2 8 1 4])
-(def minimum-size 0.39)
-(def z-orders [:z-order/on-ground
-               :z-order/ground
-               :z-order/flying
-               :z-order/effect])
-(def render-layers [#{:entity/mouseover?
-                      :stunned
-                      :player-item-on-cursor}
-                    #{:entity/clickable
-                      :entity/animation
-                      :entity/image
-                      :entity/line-render}
-                    #{:npc-sleeping
-                      :entity/temp-modifier
-                      :entity/string-effect}
-                    #{:entity/stats
-                      :active-skill}])
-(def render-z-order (apply hash-map (interleave z-orders (range))))
-(def slots #{:inventory.slot/bag
+(def transition-idxvalues [2 8 1 4]) ; ?  - duplicated in all 3 projects...
+(def slots #{:inventory.slot/bag ; used @ known-slot?
              :inventory.slot/weapon
              :inventory.slot/shield
              :inventory.slot/helm
@@ -31,18 +13,6 @@
              :inventory.slot/cloak
              :inventory.slot/necklace
              :inventory.slot/rings})
-(def max-delta 0.04)
-(def max-speed (/ minimum-size max-delta))
-(require '[clojure.string :as str])
-(def controls-info
-  (str/join "\n"
-            ["[W][A][S][D] - Move"
-             "[ESCAPE] - Close windows"
-             "[I] - Inventory window"
-             "[E] - Entity Info window"
-             "[-]/[=] - Zoom"
-             "[P]/[SPACE] - Unpause"
-             "Leftmouse click - use skill/drop item on cursor"]))
 (require '[malli.core :as m])
 (def val-max-schema
   (m/schema
@@ -173,6 +143,7 @@
              base-value))
 
 (require '[clojure.math :as math])
+(require '[clojure.string :as str])
 
 (defn mods-format-text
   [mods]
@@ -2746,7 +2717,7 @@
 
     nil))
 
-(defn- spawn-entity! [entity elapsed-time id-counter entity-ids grid content-grid]
+(defn- spawn-entity! [entity elapsed-time id-counter entity-ids grid content-grid minimum-size z-orders]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
                                       :entity/animation
@@ -3635,7 +3606,7 @@
     (rectangle! shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [draw-component! shape-drawer raycaster active-entities player-entity show-body-bounds?]
+  [draw-component! shape-drawer raycaster active-entities player-entity show-body-bounds? render-z-order render-layers]
   (doseq [[z-order entities] (sort-by (comp render-z-order key) <
                                       (group-by :entity/z-order (map deref active-entities)))
           render-layer render-layers
@@ -3830,7 +3801,7 @@
                                                            [0 0])]]))))
 
 (defn movement-tick
-  [v eid delta-time _handle-txs! grid content-grid]
+  [v eid delta-time _handle-txs! grid content-grid max-speed]
   (let [{:keys [direction
                 speed]
          :as movement} v]
@@ -4232,6 +4203,11 @@
                                     {:texture-region (image->texture-region (:entity/image item))
                                      :tooltip-text (item-info-text item)}
                                     @skin)))
+        z-orders [:z-order/on-ground
+                  :z-order/ground
+                  :z-order/flying
+                  :z-order/effect]
+        minimum-size 0.39
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -4242,7 +4218,7 @@
                                       (Sound/.play (safe-get @sounds sound-name)))
                                     :tx/spawn-entity 
                                     (fn [entity-decl]
-                                      (spawn-entity! entity-decl @elapsed-time id-counter entity-ids @grid @content-grid))
+                                      (spawn-entity! entity-decl @elapsed-time id-counter entity-ids @grid @content-grid minimum-size z-orders))
                                     :tx/event
                                     (fn [eid event & [params]]
                                       ; FIXME state exit/enter from player-item-on-cursor first (enter needs to happen before exit or reverse)
@@ -4285,6 +4261,14 @@
                                         item (get-in grid position)]
                                   :when item]
                             (set-item! [slot position] item)))
+        controls-info (str/join "\n"
+                                ["[W][A][S][D] - Move"
+                                 "[ESCAPE] - Close windows"
+                                 "[I] - Inventory window"
+                                 "[E] - Entity Info window"
+                                 "[-]/[=] - Zoom"
+                                 "[P]/[SPACE] - Unpause"
+                                 "Leftmouse click - use skill/drop item on cursor"])
         menus [{:label "Debug"
                 :items [{:label "Toggle show-tile-grid?"
                          :on-click #(swap! show-tile-grid? not)}
@@ -4329,6 +4313,8 @@
                         (if (:icon item)
                           (update item :icon #(get @textures %))
                           item))
+        max-delta 0.04
+        max-speed (/ minimum-size max-delta)
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
@@ -4380,7 +4366,7 @@
                                           @grid)
 
                            :entity/movement
-                           (movement-tick v eid delta-time handle-txs! @grid @content-grid)
+                           (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
 
                            nil))
         tick-entities! (fn [delta-time elapsed-time]
@@ -4520,6 +4506,19 @@
                             (npc-sleeping-draw entity @batch @default-font @unit-scale)
                             :stunned
                             (stunned-draw entity @shape-drawer)))
+        render-z-order (apply hash-map (interleave z-orders (range)))
+        render-layers [#{:entity/mouseover?
+                         :stunned
+                         :player-item-on-cursor}
+                       #{:entity/clickable
+                         :entity/animation
+                         :entity/image
+                         :entity/line-render}
+                       #{:npc-sleeping
+                         :entity/temp-modifier
+                         :entity/string-effect}
+                       #{:entity/stats
+                         :active-skill}]
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
                              (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
@@ -4534,7 +4533,9 @@
                                              @raycaster
                                              @active-entities
                                              @@player-eid
-                                             @show-body-bounds?)
+                                             @show-body-bounds?
+                                             render-z-order
+                                             render-layers)
                              (highlight-mouseover-tile @shape-drawer @input @viewport @grid)
                              (reset! unit-scale 1))
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
@@ -4652,7 +4653,9 @@
                                   id-counter
                                   entity-ids
                                   @grid
-                                  @content-grid)]
+                                  @content-grid
+                                  minimum-size
+                                  z-orders)]
            (let [eid (get @entity-ids 1)]
              (assert (:entity/player? @eid))
              (reset! player-eid eid)))
