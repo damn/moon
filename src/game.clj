@@ -1337,19 +1337,8 @@
   (.getWorldHeight viewport))
 
 (defn create-inventory-window
-  [player-eid input on-click-cell draw-cell-rect! skin stage textures]
-  (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
-                                             :shield 1
-                                             :rings 2
-                                             :necklace 3
-                                             :helm 4
-                                             :cloak 5
-                                             :chest 6
-                                             :leg 7
-                                             :glove 8
-                                             :boot 9
-                                             :bag 10}
-        slot->texture-region (fn [slot]
+  [slot->y-sprite-idx player-eid input on-click-cell draw-cell-rect! skin stage textures]
+  (let [slot->texture-region (fn [slot]
                                (let [width 48
                                      height 48
                                      sprite-x 21
@@ -4287,7 +4276,8 @@
            state->pause-game?
            level-fn
            controls
-           world-unit-scale]
+           world-unit-scale
+           slot->y-sprite-idx]
     :as game-config}]
   (let [player-eid (atom nil)
         batch (atom nil)
@@ -4751,6 +4741,7 @@
                                             :skin @skin})
                                          (let [cell-size 48]
                                            (create-inventory-window
+                                             slot->y-sprite-idx
                                              @player-eid
                                              input-arg
                                              (fn [_event cell]
@@ -6014,6 +6005,17 @@
                                           (str "\n" (info-text v elapsed-time))))))
                            (str/join "\n")
                            remove-newlines)))
+        slot->y-sprite-idx #:inventory.slot {:weapon 0
+                                             :shield 1
+                                             :rings 2
+                                             :necklace 3
+                                             :helm 4
+                                             :cloak 5
+                                             :chest 6
+                                             :leg 7
+                                             :glove 8
+                                             :boot 9
+                                             :bag 10}
         listener (game-listener
                    {
                     :game-schemas game-schemas
@@ -6044,6 +6046,7 @@
                     :textures {:folder "resources/"
                                :extensions #{"png" "bmp"}}
                     :world-unit-scale (/ 48)
+                    :slot->y-sprite-idx slot->y-sprite-idx
                     })
         config {:title "Moon"
                 :width 1440 
