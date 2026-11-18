@@ -3145,7 +3145,7 @@
      :height size}))
 
 (defn animation-tick
-  [v eid delta-time handle-txs!]
+  [v eid delta-time]
   (let [{:keys [delete-after-stopped?
                 looping?
                 cnt
@@ -4020,7 +4020,7 @@
         ; extract handle-txs! 
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
-                           :entity/animation (animation-tick v eid delta-time handle-txs!)
+                           :entity/animation (animation-tick v eid delta-time)
                            :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time handle-txs! elapsed-time @grid)
                            :entity/string-effect (string-effect-tick v eid delta-time handle-txs! elapsed-time)
                            :entity/skills (skills-tick v eid delta-time handle-txs! elapsed-time)
