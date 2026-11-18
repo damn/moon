@@ -2665,19 +2665,17 @@
 
 (defn- create-fsm
   [fsm initial-state]
-  (assoc ((case fsm
-            :fsms/player (:player fsms)
-            :fsms/npc (:npc fsms))
-          initial-state
-          nil)
-         :state initial-state))
+  (assoc (fsm initial-state nil) :state initial-state))
 
 (defn- after-create-component
   [eid [k v] elapsed-time]
   (case k
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
-      (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
+      (swap! eid assoc :entity/fsm (create-fsm (case fsm
+                                                 :fsms/player (:player fsms)
+                                                 :fsms/npc (:npc fsms))
+                                               initial-state))
       (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid elapsed-time))
       nil)
 
