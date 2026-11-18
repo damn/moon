@@ -3489,39 +3489,10 @@
            world-unit-scale
            slot->y-sprite-idx]
     :as game-config}]
-  (let [player-eid (atom nil)
-        batch (atom nil)
-        cursors (atom nil)
-        default-font (atom nil)
-        shape-drawer (atom nil)
-        shape-drawer-texture (atom nil)
-        explored-tile-corners (atom nil)
-        tiled-map* (atom nil)
-        unit-scale (atom 1)
-        paused? (atom false)
-        mouseover-eid (atom nil)
-        potential-field-cache (atom nil)
-        sounds (atom nil)
-        stage (atom nil)
+  (let [stage (atom nil)
         skin (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
-        viewport (atom nil)
-        raycaster (atom nil)
-
-        get-mouse-pos* (atom nil)
-
-        elapsed-time (atom 0)
-        id-counter (atom 0)
-        entity-ids (atom {})
-        grid (atom nil)
-        content-grid (atom nil)
-        active-entities (atom nil)
-        show-potential-field-colors? (atom nil)
-        show-cell-entities? (atom false)
-        show-cell-occupied? (atom false)
-        show-body-bounds? (atom false)
-        show-tile-grid? (atom false)
         set-item! (fn [cell item]
                     (-> (get-root @stage)
                         (find-actor "moon.ui.windows.inventory")
@@ -3534,6 +3505,7 @@
                   :z-order/flying
                   :z-order/effect]
         minimum-size 0.39
+        elapsed-time (atom 0)
         create-entity-state (fn [[k v] entity]
                               (case k
                                 :active-skill
@@ -3640,6 +3612,10 @@
                                       :entity/width (float width)
                                       :entity/height (float height)
                                       :entity/rotation-angle (or rotation-angle 0)))))
+        id-counter (atom 0)
+        entity-ids (atom {})
+        grid (atom nil)
+        content-grid (atom nil)
         spawn-entity! (fn [entity]
                         (let [eid (atom (construct-entity entity))]
                           (assert (and (not (contains? @eid :entity/id))))
@@ -3741,6 +3717,9 @@
                                        [:tx/swap eid dissoc old-state-k]]
                                       (entity-state-exit! eid old-state-obj world-mouse-position)
                                       (entity-state-enter! eid new-state-obj))))))
+        sounds (atom nil)
+        viewport (atom nil)
+        get-mouse-pos* (atom nil)
         handle-txs! (fn handle-txs! [txs]
                       (let [world-mouse-position (unproject @viewport (@get-mouse-pos*))
                             k->txs {
@@ -3785,6 +3764,7 @@
                                       :texture-region (image->texture-region (:entity/image skill))
                                       :tooltip-text (info-text skill @elapsed-time)}
                                      @skin)))
+        player-eid (atom nil)
         sync-player-ui! (fn []
                           (doseq [skill (vals (:entity/skills @@player-eid))]
                             (set-skill! skill))
@@ -3803,6 +3783,11 @@
                                  "[-]/[=] - Zoom"
                                  "[P]/[SPACE] - Unpause"
                                  "Leftmouse click - use skill/drop item on cursor"])
+        show-potential-field-colors? (atom nil)
+        show-cell-entities? (atom false)
+        show-cell-occupied? (atom false)
+        show-body-bounds? (atom false)
+        show-tile-grid? (atom false)
         menus [{:label "Debug"
                 :items [{:label "Toggle show-tile-grid?"
                          :on-click #(swap! show-tile-grid? not)}
@@ -3820,6 +3805,8 @@
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
+        paused? (atom false)
+        mouseover-eid (atom nil)
         update-labels (fn [get-frames-per-second get-mouse-position]
                         (for [item [{:label "elapsed-time"
                                      :update-fn (fn [] 
@@ -3918,6 +3905,8 @@
                                :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
                                :effects.target/stun (and (:effect/target effect-ctx)
                                                          (:entity/fsm @(:effect/target effect-ctx)))))
+        raycaster (atom nil)
+        active-entities (atom nil)
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]] 
                                   (case k
@@ -4003,6 +3992,7 @@
                                  component @eid]
                            (tick-component component eid delta-time elapsed-time)))
         factions-iterations {:good 15 :evil 5}
+        potential-field-cache (atom nil)
         tick-game! (fn [delta-time]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
@@ -4189,6 +4179,7 @@
                                   [[:tx/event player-eid :drop-item]])
 
                                 nil))
+        cursors (atom nil)
         mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position]
                              (let [interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
                                (set-cursor! (safe-get @cursors (cursor-key @player-eid interaction-state)))
@@ -4257,6 +4248,10 @@
         effects-render (fn [effects effect-ctx shape-drawer active-entities raycaster] 
                          (doseq [effect effects]
                            (effect-render effect effect-ctx shape-drawer active-entities raycaster)))
+        batch (atom nil)
+        default-font (atom nil)
+        shape-drawer (atom nil)
+        unit-scale (atom 1)
         draw-component! (fn [mouse-position k v entity]
                           (case k
                             :entity/clickable
@@ -4325,6 +4320,8 @@
                                               render-layers)
                               (highlight-mouseover-tile @shape-drawer (unproject @viewport mouse-position) @grid)
                               (reset! unit-scale 1)))
+        explored-tile-corners (atom nil)
+        tiled-map* (atom nil)
         render-tiled-map! #(draw-tiled-map! @tiled-map*
                                             @batch
                                             (camera-view-bounds (get-camera @viewport))
@@ -4368,6 +4365,7 @@
                                              height]]
                                  (image->texture-region {:image/file "images/items.png"
                                                          :image/bounds bounds})))
+        shape-drawer-texture (atom nil)
         ]
     {
      :create!
