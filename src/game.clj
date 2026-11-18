@@ -2473,6 +2473,10 @@
                   (min maxrange
                        (v2-distance player-position world-mouse-position)))))
 
+(defn- create-fsm
+  [fsm initial-state]
+  (assoc (fsm initial-state nil) :state initial-state))
+
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
   (let [entity (-> creature-property
@@ -2481,7 +2485,11 @@
                           :entity/z-order (if (:entity/flying? creature-property)
                                             :z-order/flying
                                             :z-order/ground))
-                   (assoc :entity/destroy-audiovisual :audiovisuals/creature-die))]
+                   (assoc :entity/destroy-audiovisual :audiovisuals/creature-die))
+        {:keys [fsm initial-state]} (:entity/fsm components)
+        components (assoc components
+                          :entity/fsm (create-fsm fsm initial-state)
+                          initial-state nil)]
     (assert (not-any? #(contains? entity %) (keys components)))
     (merge entity components)))
 
@@ -2543,10 +2551,6 @@
    :entity/destroy-audiovisual :audiovisuals/hit-wall
    :entity/projectile-collision {:entity-effects entity-effects
                                  :piercing? piercing?}})
-
-(defn- create-fsm
-  [fsm initial-state]
-  (assoc (fsm initial-state nil) :state initial-state))
 
 (defn- double-ray-endpositions
   [[start-x start-y]
@@ -3489,14 +3493,8 @@
                                 {:item v}
 
                                 v))
-        after-create-component (fn [eid [k v] create-timer]
+        after-create-component (fn [eid [k v]]
                                  (case k
-                                   :entity/fsm
-                                   (let [{:keys [fsm initial-state]} v]
-                                     (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
-                                     (swap! eid assoc initial-state (create-entity-state [initial-state nil] @eid create-timer))
-                                     nil)
-
                                    :entity/skills
                                    (do
                                      (swap! eid assoc :entity/skills nil)
@@ -3570,7 +3568,7 @@
         entity-ids (atom {})
         grid (atom nil)
         content-grid (atom nil)
-        spawn-entity! (fn [entity id create-timer]
+        spawn-entity! (fn [entity id]
                         (let [eid (atom entity)]
                           (assert (and (not (contains? @eid :entity/id))))
                           (assert (number? id))
@@ -3585,7 +3583,7 @@
                           (when (:entity/collides? @eid)
                             (set-occupied-cells! @grid eid))
                           (doseq [component @eid]
-                            (after-create-component eid component create-timer))
+                            (after-create-component eid component))
                           eid))
         entity-state-enter! (fn [eid [state-k state-v] create-timer]
                               (case state-k
@@ -3681,7 +3679,7 @@
         id-counter (atom 0)
         generate-id!* #(swap! id-counter inc)
         spawn-entity!* (fn [entity]
-                         (spawn-entity! (construct-entity entity create-timer*) (generate-id!*) create-timer*))
+                         (spawn-entity! (construct-entity entity create-timer*) (generate-id!*)))
         handle-txs! (fn handle-txs! [world-mouse-position txs]
                       (let [k->txs {
                                     :tx/swap 
