@@ -3985,7 +3985,8 @@
                                     max-iterations))
                          (doseq [eid @active-entities
                                  component @eid]
-                           (handle-txs! world-mouse-position (tick-component component eid delta-time @elapsed-time))))))
+                           (handle-txs! world-mouse-position (tick-component component eid delta-time @elapsed-time)))))
+                     (handle-txs! world-mouse-position (destroy-entities game-db entity-ids)))
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -4178,7 +4179,6 @@
                                                 (state->pause-game? (:state (:entity/fsm @@player-eid)))
                                                 (not (or (key-just-pressed? (:unpause-once controls))
                                                          (key-pressed? (:unpause-continously controls))))))))
-        remove-destroyed-entities! (fn [world-mouse-position] (handle-txs! world-mouse-position (destroy-entities game-db entity-ids)))
         key-pressed-checks! (fn [key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
@@ -4541,7 +4541,6 @@
          (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position)
          (update-paused-state! key-just-pressed? key-pressed?)
          (tick-game! delta-time world-mouse-position)
-         (remove-destroyed-entities! world-mouse-position)
          (key-pressed-checks! key-pressed?)
          (key-just-pressed-checks! key-just-pressed?)
          (act! stage)
