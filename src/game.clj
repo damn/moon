@@ -3299,11 +3299,10 @@
            rahmenh
            hpcontent-file
            manacontent-file
+           x
            y-mana]}
-   player-eid default-font stage textures unit-scale]
-  (let [[x y-mana] [(/ (get-world-width (get-viewport stage)) 2)
-                    y-mana]
-        rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
+   player-eid default-font textures unit-scale]
+  (let [rahmen-tex-reg (get-texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
         draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
                            (draw-texture-region! batch @unit-scale rahmen-tex-reg [x y])
@@ -4734,8 +4733,9 @@
                                              :rahmenh 26
                                              :hpcontent-file "images/hp.png"
                                              :manacontent-file "images/mana.png"
+                                             :x (/ (get-world-width (get-viewport @stage)) 2)
                                              :y-mana 80}
-                                            @player-eid @default-font @stage @textures unit-scale)
+                                            @player-eid @default-font @textures unit-scale)
                         (windows-create [(create-info-window
                                            {:title "Entity Info"
                                             :actor-name "moon.ui.windows.entity-info"
