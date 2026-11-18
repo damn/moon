@@ -4597,6 +4597,19 @@
                      (fn [_event _actor]
                        (on-click!))))))
 
+(defn fit-to-size! [^OrthographicCamera camera width height]
+  (let [pos (.position camera)
+        px (float (/ width 2))
+        py (float (/ height 2))
+        x-diff (max (- px (float 0)) (- (float width) px))
+        y-diff (max (- (float height) py) (- py (float 0)))
+        vp-ratio-w (/ (* x-diff 2) (.viewportWidth camera))
+        vp-ratio-h (/ (* y-diff 2) (.viewportHeight camera))]
+    (set! (.x pos) px)
+    (set! (.y pos) py)
+    (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
+    (.update camera)))
+
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
 (defn levelgen-listener []
@@ -4617,24 +4630,12 @@
                                                    (all-raw db :properties/creatures)
                                                    image->texture-region)
                                                  :textures @textures})
-                                ^TiledMap tiled-map (:tiled-map level)
-                                props (get-properties tiled-map)
-                                width (props-get props "width")
-                                height (props-get props "height")]
+                                tiled-map (:tiled-map level)]
                             (assert tiled-map)
                             (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
-                            (let [^OrthographicCamera camera @camera
-                                  pos (.position camera)
-                                  px (float (/ width 2))
-                                  py (float (/ height 2))
-                                  x-diff (max (- px (float 0)) (- (float width) px))
-                                  y-diff (max (- (float height) py) (- py (float 0)))
-                                  vp-ratio-w (/ (* x-diff 2) (.viewportWidth camera))
-                                  vp-ratio-h (/ (* y-diff 2) (.viewportHeight camera))]
-                              (set! (.x pos) px)
-                              (set! (.y pos) py)
-                              (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
-                              (.update camera))
+                            (fit-to-size! @camera 
+                                          (props-get (get-properties tiled-map) "width")
+                                          (props-get (get-properties tiled-map) "height")) 
                             tiled-map))
         buttons (for [[label level-fn] [["Vampire" create-vampire-level]
                                         ["UF Caves" create-uf-caves]
