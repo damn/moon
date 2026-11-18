@@ -5568,7 +5568,6 @@
         skin (atom nil)
         input (atom nil)
         sounds (atom nil)
-        schemas (-> "schema.edn" io/resource slurp edn/read-string)
         editor {:editor/all-raw
                 (fn [property-type]
                   (all-raw @db property-type))
