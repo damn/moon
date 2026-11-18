@@ -2963,8 +2963,8 @@
                     (float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
-  [shape-drawer input viewport grid]
-  (let [[x y] (mapv int (unproject viewport [(get-x input) (get-y input)]))
+  [shape-drawer world-mouse-position viewport grid]
+  (let [[x y] (mapv int world-mouse-position)
         cell (when-let [cell-atom (get-in grid [x y])]
                @cell-atom)]
     (when (and cell (#{:air :none} (:movement cell)))
@@ -3544,7 +3544,7 @@
         input (atom nil)
         ; handle-txs!
         ; draw-component!
-        ; draw-world-layer!
+        ; draw-world-layer! 
         ;;
 
         elapsed-time (atom 0)
@@ -4369,7 +4369,7 @@
                                              @show-body-bounds?
                                              render-z-order
                                              render-layers)
-                             (highlight-mouseover-tile @shape-drawer @input @viewport @grid)
+                             (highlight-mouseover-tile @shape-drawer (unproject @viewport [(get-x @input) (get-y @input)]) @grid)
                              (reset! unit-scale 1))
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
         render-tiled-map! #(draw-tiled-map! @tiled-map*
