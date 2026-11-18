@@ -3283,8 +3283,18 @@
       (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
         [[:tx/event eid :alert]]))))
 
+(defn start-action-txs [eid skill effect-ctx create-timer]
+  (let [cost (:skill/cost skill)]
+    [[:tx/swap eid update :entity/stats (fn [stats]
+                                          (let [mana-val ((get-mana stats) 0)]
+                                            (assert (<= cost mana-val))
+                                            (assoc-in stats [:stats/mana 0] (- mana-val cost))))]
+     [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (create-timer (:skill/cooldown skill))]
+     [:tx/sound (:skill/start-action-sound skill)]
+     [:tx/event eid :start-action [skill effect-ctx]]]))
+
 (defn npc-idle-tick
-  [_v eid _delta-time line-of-sight? grid choose-skill]
+  [_v eid _delta-time line-of-sight? grid choose-skill create-timer]
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
@@ -3295,7 +3305,7 @@
                     :effect/target-direction (when target
                                                (direction entity @target))}]
     (if-let [skill (choose-skill entity effect-ctx)]
-      [[:tx/event eid :start-action [skill effect-ctx]]]
+      (start-action-txs eid skill effect-ctx create-timer)
       [[:tx/event eid :movement-direction (or (find-direction grid eid)
                                               [0 0])]])))
 
@@ -3585,16 +3595,6 @@
                                 :player-item-on-cursor
                                 (let [{:keys [item]} state-v]
                                   [[:tx/swap eid assoc :entity/item-on-cursor item]])
-
-                                :active-skill
-                                (let [{:keys [skill]} state-v
-                                      cost (:skill/cost skill)]
-                                  [[:tx/swap eid update :entity/stats (fn [stats]
-                                                                        (let [mana-val ((get-mana stats) 0)]
-                                                                          (assert (<= cost mana-val))
-                                                                          (assoc-in stats [:stats/mana 0] (- mana-val cost))))]
-                                   [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (create-timer (:skill/cooldown skill))]
-                                   [:tx/sound (:skill/start-action-sound skill)]])
 
                                 :npc-dead
                                 [[:tx/swap eid assoc :entity/destroyed? true]]
@@ -3964,7 +3964,7 @@
                            :player-moving (movement-tick v eid delta-time @grid max-speed)
                            :npc-moving (npc-moving-tick v eid delta-time elapsed-time @grid max-speed)
                            :npc-sleeping (npc-sleeping-tick v eid delta-time @grid)
-                           :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill)
+                           :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill create-timer*)
                            nil))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
@@ -4068,7 +4068,7 @@
 
                                    :interaction-state.skill/usable
                                    (let [[skill effect-ctx] params]
-                                     [[:tx/event player-eid :start-action [skill effect-ctx]]])
+                                     (start-action-txs player-eid skill effect-ctx create-timer*))
 
                                    :interaction-state.skill/not-usable
                                    (let [state params]
