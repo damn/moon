@@ -3355,6 +3355,7 @@
   (let [[x y] (ui-mouse-position stage input)]
     (mouseover-actor stage x y)))
 
+; FIXME make txs (destroy also part of?)
 (defn destroy-entities! [handle-txs! game-db entity-ids grid content-grid]
   (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
     (let [id (:entity/id @eid)]
@@ -3547,6 +3548,7 @@
         raycaster (atom nil)
 
         ;;
+        ; TODO get rid
         input (atom nil)
         ;;
 
@@ -3780,6 +3782,8 @@
                                        [:tx/swap eid dissoc old-state-k]]
                                       (entity-state-exit! eid old-state-obj world-mouse-position)
                                       (entity-state-enter! eid new-state-obj))))))
+        ; TODO needs input -> first see why so many times used, can rebind and pass world-mouse-position inside the frame!?
+        ; valid game data?
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
@@ -3793,6 +3797,7 @@
                                     ; cant remove this because item on cursor triggers to :tx/event after another
                                     ; which are order dependent!
                                     ; at player-item-on-cursor inventory/world/ui magic.
+                                    ; => handle-clicked-inventory-cell (player-item-on-cursor)
                                     (fn [& params]
                                       (handle-txs! (apply fsm-event-txs (unproject @viewport [(get-x @input) (get-y @input)]) params)))
                                     :tx/modal
@@ -4017,47 +4022,23 @@
                                                (filter (fn [e] (effect-applicable? e effect-ctx)))
                                                (some (fn [e] (effect-useful? e effect-ctx (partial raycaster-blocked? @raycaster)))))))
                             first))
+        ; FIXME many pure functions on entity map here
+        ; extract handle-txs! 
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
-                           :entity/animation
-                           (animation-tick v eid delta-time handle-txs!)
-
-                           :entity/alert-friendlies-after-duration
-                           (alert-friendlies-after-duration-tick v eid delta-time handle-txs! elapsed-time @grid)
-
-                           :entity/string-effect
-                           (string-effect-tick v eid delta-time handle-txs! elapsed-time)
-
-                           :entity/skills
-                           (skills-tick v eid delta-time handle-txs! elapsed-time)
-
-                           :entity/temp-modifier
-                           (temp-modifier-tick v eid delta-time handle-txs! elapsed-time)
-
-                           :entity/projectile-collision
-                           (projectile-collision-tick v eid delta-time handle-txs! @grid mk-effect-txs)
-
-                           :active-skill
-                           (active-skill-tick v eid delta-time handle-txs! (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable?)
-
-                           :entity/delete-after-duration
-                           (delete-after-duration-tick v eid delta-time handle-txs! elapsed-time)
-
-                           :stunned
-                           (stunned-tick v eid delta-time handle-txs! elapsed-time)
-
-                           :npc-moving
-                           (npc-moving-tick v eid delta-time handle-txs! elapsed-time)
-
-                           :npc-sleeping
-                           (npc-sleeping-tick v eid delta-time handle-txs! @grid)
-
-                           :npc-idle
-                           (handle-txs! (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill))
-
-                           :entity/movement
-                           (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
-
+                           :entity/animation (animation-tick v eid delta-time handle-txs!)
+                           :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time handle-txs! elapsed-time @grid)
+                           :entity/string-effect (string-effect-tick v eid delta-time handle-txs! elapsed-time)
+                           :entity/skills (skills-tick v eid delta-time handle-txs! elapsed-time)
+                           :entity/temp-modifier (temp-modifier-tick v eid delta-time handle-txs! elapsed-time)
+                           :entity/projectile-collision (projectile-collision-tick v eid delta-time handle-txs! @grid mk-effect-txs)
+                           :active-skill (active-skill-tick v eid delta-time handle-txs! (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable?)
+                           :entity/delete-after-duration (delete-after-duration-tick v eid delta-time handle-txs! elapsed-time)
+                           :stunned (stunned-tick v eid delta-time handle-txs! elapsed-time)
+                           :npc-moving (npc-moving-tick v eid delta-time handle-txs! elapsed-time)
+                           :npc-sleeping (npc-sleeping-tick v eid delta-time handle-txs! @grid)
+                           :npc-idle (handle-txs! (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill))
+                           :entity/movement (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
                            nil))
         tick-entities! (fn [delta-time elapsed-time]
                          (doseq [eid @active-entities
