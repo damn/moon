@@ -1,9 +1,6 @@
 (ns game)
 
-(def float-rounding-error (double 0.000001))
-(def active-skill-radius (let [tile-size 48
-                               image-width 32]
-                           (/ (/ image-width tile-size) 2)))
+(def float-rounding-error (double 0.000001)) ; cant inline as tests somewhere ... ? 
 (def transition-idxvalues [2 8 1 4])
 (def minimum-size 0.39)
 (def z-orders [:z-order/on-ground
@@ -3591,7 +3588,7 @@
   (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time]
+  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -4494,6 +4491,9 @@
         batch-end! #(.end ^Batch @batch)
         get-mouseover-actor #(let [[x y] (ui-mouse-position @stage @input)]
                                (mouseover-actor @stage x y))
+        active-skill-radius (let [tile-size 48
+                                  image-width 32]
+                              (/ (/ image-width tile-size) 2))
         draw-component! (fn [k v entity]
                           (case k
                             :entity/clickable
@@ -4515,7 +4515,7 @@
                             :entity/temp-modifier
                             (temp-modifier-draw entity @shape-drawer)
                             :active-skill
-                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time)
+                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius)
                             :npc-sleeping
                             (npc-sleeping-draw entity @batch @default-font @unit-scale)
                             :stunned
