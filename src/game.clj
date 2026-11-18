@@ -3149,41 +3149,37 @@
          (filter #(= (:entity/faction @%) faction)))))
 
 (defn alert-friendlies-after-duration-tick
-  [v eid _delta-time handle-txs! elapsed-time grid]
+  [v eid _delta-time elapsed-time grid]
   (let [{:keys [counter faction]} v]
     (when (timer-stopped? counter elapsed-time)
-      (swap! eid assoc :entity/destroyed? true)
-      (doseq [friendly-eid (get-friendlies-for-alert eid faction grid)
-              ; TODO called on projectiles
-              :when (:entity/fsm @friendly-eid)]
-        (handle-txs! [[:tx/event friendly-eid :alert]])))
-    nil))
+      (into [[:tx/swap eid assoc :entity/destroyed? true]]
+            (for [friendly-eid (get-friendlies-for-alert eid faction grid)
+                  ; TODO called on projectiles
+                  :when (:entity/fsm @friendly-eid)]
+              [:tx/event friendly-eid :alert])))))
 
 (defn string-effect-tick
-  [v eid _delta-time _handle-txs! elapsed-time]
+  [v eid _delta-time elapsed-time]
   (let [{:keys [counter]} v]
     (when (timer-stopped? counter elapsed-time)
-      (swap! eid dissoc :entity/string-effect))
-    nil))
+      [[:tx/swap eid dissoc :entity/string-effect]])))
 
 (defn skills-tick
-  [v eid _delta-time _handle-txs! elapsed-time]
-  (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
-          :when (and cooling-down?
-                     (timer-stopped? cooling-down? elapsed-time))]
-    (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
-  nil)
+  [v eid _delta-time elapsed-time]
+  (for [{:keys [skill/cooling-down?] :as skill} (vals v)
+        :when (and cooling-down?
+                   (timer-stopped? cooling-down? elapsed-time))]
+    [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false]))
 
 (defn temp-modifier-tick
-  [v eid _delta-time _handle-txs! elapsed-time]
+  [v eid _delta-time elapsed-time]
   (let [{:keys [modifiers counter]} v]
     (when (timer-stopped? counter elapsed-time)
-      (swap! eid dissoc :entity/temp-modifier)
-      (swap! eid update :entity/stats remove-mods modifiers))
-    nil))
+      [[:tx/swap eid dissoc :entity/temp-modifier]
+       [:tx/swap eid update :entity/stats remove-mods modifiers]])))
 
 (defn projectile-collision-tick
-  [v eid _delta-time handle-txs! grid applicable-effect-txs]
+  [v eid _delta-time grid applicable-effect-txs]
   (let [{:keys [entity-effects already-hit-bodies piercing?]} v
         entity @eid
         touched-cells (map deref (keep #(get-in grid %) (touched-tiles entity)))
@@ -3196,19 +3192,18 @@
                                   (into #{} (mapcat :entities) touched-cells)))
         destroy? (or (and hit-entity (not piercing?))
                      (some #(cell-blocked? % (:entity/z-order entity)) touched-cells))]
-    (when hit-entity
-      (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
-             (conj already-hit-bodies hit-entity)))
-    (when destroy?
-      (swap! eid assoc :entity/destroyed? true))
-    (when hit-entity
-      (handle-txs! (applicable-effect-txs {:effect/source eid 
-                                           :effect/target hit-entity} 
-                                          entity-effects)))
-    nil))
+    (concat (when hit-entity
+              [[:tx/swap eid assoc-in [:entity/projectile-collision :already-hit-bodies]
+                (conj already-hit-bodies hit-entity)]])
+            (when destroy?
+              [[:tx/swap eid assoc :entity/destroyed? true]])
+            (when hit-entity
+              (applicable-effect-txs {:effect/source eid
+                                      :effect/target hit-entity}
+                                     entity-effects)))))
 
 (defn active-skill-tick
-  [v eid _delta-time handle-txs! line-of-sight? applicable-effect-txs elapsed-time effect-applicable?]
+  [v eid _delta-time line-of-sight? applicable-effect-txs elapsed-time effect-applicable?]
   (let [{:keys [skill effect-ctx counter]} v
         source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
@@ -3220,37 +3215,35 @@
     (cond
       (not (seq (filter #(effect-applicable? % effect-ctx)
                         (:skill/effects skill))))
-      (handle-txs! [[:tx/event eid :action-done]])
+      [[:tx/event eid :action-done]]
 
       (timer-stopped? counter elapsed-time)
-      (do (handle-txs! (applicable-effect-txs effect-ctx (:skill/effects skill)))
-          (handle-txs! [[:tx/event eid :action-done]])
-          nil))))
+      (concat (applicable-effect-txs effect-ctx (:skill/effects skill))
+              [[:tx/event eid :action-done]]))))
 
 (defn delete-after-duration-tick
-  [v eid _delta-time _handle-txs! elapsed-time]
+  [v eid _delta-time elapsed-time]
   (when (timer-stopped? v elapsed-time)
-    (swap! eid assoc :entity/destroyed? true))
-  nil)
+    [[:tx/swap eid assoc :entity/destroyed? true]]))
 
 (defn stunned-tick
-  [v eid _delta-time handle-txs! elapsed-time]
+  [v eid _delta-time elapsed-time]
   (let [{:keys [counter]} v]
     (when (timer-stopped? counter elapsed-time)
-      (handle-txs! [[:tx/event eid :effect-wears-off]]))))
+      [[:tx/event eid :effect-wears-off]])))
 
 (defn npc-moving-tick
-  [v eid _delta-time handle-txs! elapsed-time]
+  [v eid _delta-time elapsed-time]
   (let [{:keys [timer]} v]
     (when (timer-stopped? timer elapsed-time)
-      (handle-txs! [[:tx/event eid :timer-finished]]))))
+      [[:tx/event eid :timer-finished]])))
 
 (defn npc-sleeping-tick
-  [_v eid _delta-time handle-txs! grid]
+  [_v eid _delta-time grid]
   (let [entity @eid]
     (when-let [distance (nearest-enemy-distance grid entity)]
       (when (<= distance (get-value (:entity/stats entity) :stats/aggro-range))
-        (handle-txs! [[:tx/event eid :alert]])))))
+        [[:tx/event eid :alert]]))))
 
 (defn npc-idle-tick
   [_v eid _delta-time line-of-sight? grid choose-skill]
@@ -3269,7 +3262,7 @@
                                               [0 0])]])))
 
 (defn movement-tick
-  [v eid delta-time _handle-txs! grid content-grid max-speed]
+  [v eid delta-time grid max-speed]
   (let [{:keys [direction
                 speed]
          :as movement} v]
@@ -3289,14 +3282,8 @@
                           (let [{:keys [direction speed delta-time]} movement]
                             (update body :entity/position
                                     #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
-          (swap! eid assoc :entity/position (:entity/position body))
-          (update-entity! content-grid eid)
-          (remove-from-touched-cells! grid eid)
-          (set-touched-cells! grid eid)
-          (when (:entity/collides? @eid)
-            (remove-from-occupied-cells! grid eid)
-            (set-occupied-cells! grid eid))
-          nil)))))
+          [[:tx/swap eid assoc :entity/position (:entity/position body)]
+           [:tx/update-position eid]])))))
 
 (defn defaults [^Table table]
   (.defaults table))
@@ -3758,6 +3745,14 @@
                                                        :texture-region (image->texture-region (:entity/image skill))
                                                        :tooltip-text (info-text skill @elapsed-time)}
                                                       @skin)))
+                                    :tx/update-position
+                                    (fn [eid]
+                                      (update-entity! @content-grid eid)
+                                      (remove-from-touched-cells! @grid eid)
+                                      (set-touched-cells! @grid eid)
+                                      (when (:entity/collides? @eid)
+                                        (remove-from-occupied-cells! @grid eid)
+                                        (set-occupied-cells! @grid eid)))
                                     }]
                         (doseq [[k & params] txs]
                           (try (apply (safe-get k->txs k) params)
@@ -3973,27 +3968,26 @@
                                                (some (fn [e] (effect-useful? e effect-ctx (partial raycaster-blocked? @raycaster)))))))
                             first))
         ; FIXME many pure functions on entity map here
-        ; extract handle-txs! 
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
-                           :entity/animation (swap! eid animation-tick delta-time)
-                           :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time handle-txs! elapsed-time @grid)
-                           :entity/string-effect (string-effect-tick v eid delta-time handle-txs! elapsed-time)
-                           :entity/skills (skills-tick v eid delta-time handle-txs! elapsed-time)
-                           :entity/temp-modifier (temp-modifier-tick v eid delta-time handle-txs! elapsed-time)
-                           :entity/projectile-collision (projectile-collision-tick v eid delta-time handle-txs! @grid mk-effect-txs)
-                           :active-skill (active-skill-tick v eid delta-time handle-txs! (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable?)
-                           :entity/delete-after-duration (delete-after-duration-tick v eid delta-time handle-txs! elapsed-time)
-                           :stunned (stunned-tick v eid delta-time handle-txs! elapsed-time)
-                           :npc-moving (npc-moving-tick v eid delta-time handle-txs! elapsed-time)
-                           :npc-sleeping (npc-sleeping-tick v eid delta-time handle-txs! @grid)
-                           :npc-idle (handle-txs! (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill))
-                           :entity/movement (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
+                           :entity/animation [[:tx/swap eid animation-tick delta-time]]
+                           :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time elapsed-time @grid)
+                           :entity/string-effect (string-effect-tick v eid delta-time elapsed-time)
+                           :entity/skills (skills-tick v eid delta-time elapsed-time)
+                           :entity/temp-modifier (temp-modifier-tick v eid delta-time elapsed-time)
+                           :entity/projectile-collision (projectile-collision-tick v eid delta-time @grid mk-effect-txs)
+                           :active-skill (active-skill-tick v eid delta-time (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable?)
+                           :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
+                           :stunned (stunned-tick v eid delta-time elapsed-time)
+                           :npc-moving (npc-moving-tick v eid delta-time elapsed-time)
+                           :npc-sleeping (npc-sleeping-tick v eid delta-time @grid)
+                           :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill)
+                           :entity/movement (movement-tick v eid delta-time @grid max-speed)
                            nil))
         tick-entities! (fn [delta-time elapsed-time]
                          (doseq [eid @active-entities
                                  component @eid]
-                           (tick-component component eid delta-time elapsed-time)))
+                           (handle-txs! (tick-component component eid delta-time elapsed-time))))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
         tick-game! (fn [delta-time]
