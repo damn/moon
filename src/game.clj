@@ -4546,9 +4546,9 @@
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
+         (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
          (.begin ^Batch batch)
          (render-tiled-map!)
-         ;(.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
          (draw-world-layer! mouse-position)
          (.end ^Batch batch)
          (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouse-position)
