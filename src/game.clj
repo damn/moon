@@ -4610,8 +4610,24 @@
     (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
     (.update camera)))
 
+(defn adjust-camera! [viewport tiled-map]
+  (fit-to-size! (get-camera viewport)
+                (props-get (get-properties tiled-map) "width")
+                (props-get (get-properties tiled-map) "height")))
+
+(defn generate-level [db textures level-fn]
+  (let [tiled-map (:tiled-map 
+                    (level-fn {:level/creature-properties
+                               (prepare-creature-tiles
+                                 (all-raw db :properties/creatures)
+                                 #(get-texture-region textures %))
+                               :textures textures}))]
+    (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
+    tiled-map))
+
 (require '[clojure.edn :as edn])
 (require '[clojure.java.io :as io])
+
 (defn levelgen-listener []
   (let [db (create-db (-> "schema.edn" io/resource slurp edn/read-string) 
                       (-> "properties.edn" io/resource slurp edn/read-string))
@@ -4620,109 +4636,99 @@
         world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
         tiled-map-color-setter (constantly (.toFloatBits Color/WHITE))
-        camera (atom nil)
-        generate-level! (fn [textures level-fn]
-                          (let [level (level-fn {:level/creature-properties
-                                                 (prepare-creature-tiles
-                                                   (all-raw db :properties/creatures)
-                                                   #(get-texture-region textures %))
-                                                 :textures textures})
-                                tiled-map (:tiled-map level)]
-                            (assert tiled-map)
-                            (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
-                            (fit-to-size! @camera 
-                                          (props-get (get-properties tiled-map) "width")
-                                          (props-get (get-properties tiled-map) "height")) 
-                            tiled-map))
-        tiled-map (atom nil)
-        buttons (fn [textures]
-                  (for [[label level-fn] [["Vampire" create-vampire-level]
-                                          ["UF Caves" create-uf-caves]
-                                          ["Modules" create-modules-level]]]
-                    [(str "Generate " label)
-                     (fn []
-                       (dispose! @tiled-map)
-                       (reset! tiled-map (generate-level! textures level-fn)))]))
-        batch (atom nil)
-        skin (atom nil)
-        stage (atom nil)
-        textures (atom nil)
-        viewport (atom nil)
-        ]
+        state (atom nil)]
     {:create!
      (fn [{:keys [files input set-input-processor!]}]
-       (reset! batch (sprite-batch!))
-       (reset! skin (create-skin (internal files "skin/uiskin.json")))
-       (reset! textures (create-textures files
-                                         {:folder "resources/"
-                                          :extensions #{"png" "bmp"}}))
-       (reset! stage (let [stage (Stage. (FitViewport. 1440 900) @batch)
-                           window (create-window "Edit" @skin)] 
-                       (doseq [[label on-click!] (buttons @textures)]
-                         (add! window (text-button @skin label on-click!))
-                         (row! window))
-                       (pack! window)
-                       (add-actor! stage window)
-                       stage))
-       (set-input-processor! @stage) 
-       (reset! viewport (FitViewport. (float world-width)
-                                      (float world-height)
-                                      (doto (OrthographicCamera.)
-                                        (.setToOrtho false
-                                                     world-width
-                                                     world-height))))
-       (reset! camera (get-camera @viewport)) 
-       (reset! tiled-map (generate-level! @textures create-uf-caves))) 
+       (let [batch (sprite-batch!)
+             skin (create-skin (internal files "skin/uiskin.json"))
+             textures (create-textures files
+                                       {:folder "resources/"
+                                        :extensions #{"png" "bmp"}})
+             viewport (FitViewport. (float world-width)
+                                    (float world-height)
+                                    (doto (OrthographicCamera.)
+                                      (.setToOrtho false
+                                                   world-width
+                                                   world-height)))
+             
+             current-tiled-map (atom nil)
+             button-window (let [window (create-window "Edit" skin)] 
+                             (doseq [[label level-fn] [["Vampire" create-vampire-level]
+                                                       ["UF Caves" create-uf-caves]
+                                                       ["Modules" create-modules-level]]]
+                               (add! window (text-button skin 
+                                                         (str "Generate " label)
+                                                         (fn []
+                                                           (dispose! @current-tiled-map)
+                                                           (reset! current-tiled-map (generate-level db textures level-fn))
+                                                           (adjust-camera! viewport @current-tiled-map))))
+                               (row! window))
+                             (pack! window)
+                             window)
+             stage (doto (Stage. (FitViewport. 1440 900) batch)
+                     (add-actor! button-window))]
+         (set-input-processor! stage) 
+         (reset! current-tiled-map (generate-level db textures create-uf-caves)) 
+         (adjust-camera! viewport @current-tiled-map)
+         (reset! state {:batch batch
+                        :skin skin
+                        :stage stage
+                        :textures textures
+                        :current-tiled-map current-tiled-map
+                        :viewport viewport}))) 
 
      :dispose!
      (fn []
-       (dispose! @batch)
-       (dispose! @skin)
-       (run! dispose! (vals @textures))
-       (dispose! @tiled-map))
+       (let [{:keys [batch skin textures current-tiled-map]} @state]
+         (dispose! batch)
+         (dispose! skin)
+         (run! dispose! (vals textures))
+         (dispose! @current-tiled-map)))
 
      :render!
      (fn [{:keys [clear-screen! key-pressed?]}]
-       (clear-screen! 0 0 0 0) 
-       (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
-       (Batch/.begin @batch) 
-       (draw-tiled-map! @tiled-map
-                        @batch
-                        (camera-view-bounds (get-camera @viewport))
-                        tiled-map-color-setter
-                        world-unit-scale)
-       (Batch/.end @batch)
-       (doseq [[k f] {Input$Keys/MINUS (fn [^OrthographicCamera camera] 
-                                         (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.1)))
-                                         (.update camera))
-                      Input$Keys/EQUALS (fn [^OrthographicCamera camera]
-                                          (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.1)))
-                                          (.update camera))
-                      Input$Keys/LEFT (fn [^OrthographicCamera camera]
+       (let [{:keys [batch stage current-tiled-map viewport]} @state]
+         (clear-screen! 0 0 0 0) 
+         (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
+         (Batch/.begin batch) 
+         (draw-tiled-map! @current-tiled-map
+                          batch
+                          (camera-view-bounds (get-camera viewport))
+                          tiled-map-color-setter
+                          world-unit-scale)
+         (Batch/.end batch)
+         (doseq [[k f] {Input$Keys/MINUS (fn [^OrthographicCamera camera] 
+                                           (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.1)))
+                                           (.update camera))
+                        Input$Keys/EQUALS (fn [^OrthographicCamera camera]
+                                            (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.1)))
+                                            (.update camera))
+                        Input$Keys/LEFT (fn [^OrthographicCamera camera]
+                                          (let [pos (.position camera)]
+                                            (set! (.x pos) (- (.x pos) 1))
+                                            (.update camera)))
+                        Input$Keys/RIGHT (fn [^OrthographicCamera camera]
+                                           (let [pos (.position camera)]
+                                             (set! (.x pos) (+ (.x pos) 1))
+                                             (.update camera)))
+                        Input$Keys/UP (fn [^OrthographicCamera camera]
                                         (let [pos (.position camera)]
-                                          (set! (.x pos) (- (.x pos) 1))
+                                          (set! (.y pos) (+ (.y pos) 1))
                                           (.update camera)))
-                      Input$Keys/RIGHT (fn [^OrthographicCamera camera]
-                                         (let [pos (.position camera)]
-                                           (set! (.x pos) (+ (.x pos) 1))
-                                           (.update camera)))
-                      Input$Keys/UP (fn [^OrthographicCamera camera]
-                                      (let [pos (.position camera)]
-                                        (set! (.y pos) (+ (.y pos) 1))
-                                        (.update camera)))
-                      Input$Keys/DOWN (fn [^OrthographicCamera camera]
-                                        (let [pos (.position camera)]
-                                          (set! (.y pos) (- (.y pos) 1))
-                                          (.update camera)))}]
-         (when (key-pressed? k)
-           (f @camera)))
-       (act! @stage)
-       (draw! @stage))
+                        Input$Keys/DOWN (fn [^OrthographicCamera camera]
+                                          (let [pos (.position camera)]
+                                            (set! (.y pos) (- (.y pos) 1))
+                                            (.update camera)))}]
+           (when (key-pressed? k)
+             (f (get-camera viewport))))
+         (act! stage)
+         (draw! stage)))
 
      :resize!
      (fn [width height]
-       (resize! (get-viewport @stage) width height true)
-       (resize! @viewport width height false))
+       (let [{:keys [stage viewport]} @state]
+         (resize! (get-viewport stage) width height true)
+         (resize! viewport width height false)))
      }))
 
 (defn map-form-k->properties
