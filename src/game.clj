@@ -2991,6 +2991,23 @@
   (frames (min (int (/ (float cnt) (float frame-duration)))
                (dec (count frames)))))
 
+(defn animation-tick*
+  [{:keys [looping? cnt maxcnt] :as animation} delta-time]
+  (let [maxcnt (float maxcnt)
+        newcnt (+ (float cnt) (float delta-time))]
+    (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
+                                looping? (min maxcnt (- newcnt maxcnt))
+                                :else maxcnt))))
+
+(defn animation-tick
+  [entity delta-time]
+  (let [{:keys [delete-after-stopped? looping? cnt maxcnt]} (:entity/animation entity)]
+    (cond-> (update entity :entity/animation animation-tick* delta-time)
+      (and delete-after-stopped?
+           (not looping?)
+           (>= cnt maxcnt))
+      (assoc :entity/destroyed? true))))
+
 (defn animation-draw
   [animation entity batch unit-scale image->texture-region]
   (draw-texture-region! batch
@@ -3143,23 +3160,6 @@
      :y (- (float y) radius)
      :width  size
      :height size}))
-
-(defn animation-tick
-  [v eid delta-time]
-  (let [{:keys [delete-after-stopped?
-                looping?
-                cnt
-                maxcnt]
-         :as animation} v]
-    (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
-                                             newcnt (+ (float cnt) (float delta-time))]
-                                         (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
-                                                                     looping? (min maxcnt (- newcnt maxcnt))
-                                                                     :else maxcnt))))
-    (when (and delete-after-stopped?
-               (and (not looping?) (>= cnt maxcnt)))
-      (swap! eid assoc :entity/destroyed? true))
-    nil))
 
 (defn get-friendlies-for-alert [eid faction grid]
   (let [circle {:position (:entity/position @eid)
@@ -3543,6 +3543,10 @@
         ; TODO get rid
         input (atom nil)
         ; handle-txs!
+        ; -> tick-component
+        ; -> mouse-interaction!
+        ; -> destroy-entities!
+        ; -> handle-clicked-inventory-cell
         ;;
 
         elapsed-time (atom 0)
@@ -3775,8 +3779,6 @@
                                        [:tx/swap eid dissoc old-state-k]]
                                       (entity-state-exit! eid old-state-obj world-mouse-position)
                                       (entity-state-enter! eid new-state-obj))))))
-        ; TODO needs input -> first see why so many times used, can rebind and pass world-mouse-position inside the frame!?
-        ; valid game data?
         handle-txs! (fn handle-txs! [txs]
                       (let [world-mouse-position (unproject @viewport [(get-x @input) (get-y @input)])
                             k->txs {
@@ -4020,7 +4022,7 @@
         ; extract handle-txs! 
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
-                           :entity/animation (animation-tick v eid delta-time)
+                           :entity/animation (swap! eid animation-tick delta-time)
                            :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time handle-txs! elapsed-time @grid)
                            :entity/string-effect (string-effect-tick v eid delta-time handle-txs! elapsed-time)
                            :entity/skills (skills-tick v eid delta-time handle-txs! elapsed-time)
