@@ -3631,47 +3631,6 @@
   [entity shape-drawer]
   (circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6)))
 
-(defn- draw-component
-  [shape-drawer batch default-font unit-scale mouseover-actor
-   image->texture-region player active-entities raycaster viewport input elapsed-time
-   entity k v]
-  (case k
-    :entity/clickable
-    (clickable-draw v entity batch default-font unit-scale)
-
-    :player-item-on-cursor
-    (player-item-on-cursor-draw v entity batch unit-scale (mouseover-actor) image->texture-region viewport input)
-
-    :entity/animation
-    (animation-draw v entity batch unit-scale image->texture-region)
-
-    :entity/image
-    (image-draw v entity batch unit-scale image->texture-region)
-
-    :entity/line-render
-    (line-render-draw v entity shape-drawer)
-
-    :entity/mouseover?
-    (mouseover?-draw entity shape-drawer player)
-
-    :entity/stats
-    (stats-draw entity shape-drawer unit-scale)
-
-    :entity/string-effect
-    (string-effect-draw v entity batch default-font unit-scale)
-
-    :entity/temp-modifier
-    (temp-modifier-draw entity shape-drawer)
-
-    :active-skill
-    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time)
-
-    :npc-sleeping
-    (npc-sleeping-draw entity batch default-font unit-scale)
-
-    :stunned
-    (stunned-draw entity shape-drawer)))
-
 (defn- draw-entity-rectangle!
   [shape-drawer entity color-float-bits]
   (let [{:keys [entity/position entity/width entity/height]} entity
@@ -4533,21 +4492,34 @@
         resize-viewport! (fn [width height]
                            (resize! @viewport width height false))
         batch-end! #(.end ^Batch @batch)
+        get-mouseover-actor #(let [[x y] (ui-mouse-position @stage @input)]
+                               (mouseover-actor @stage x y))
         draw-component! (fn [k v entity]
-                          (draw-component @shape-drawer 
-                                          @batch 
-                                          @default-font 
-                                          @unit-scale 
-                                          #(let [[x y] (ui-mouse-position @stage @input)]
-                                            (mouseover-actor @stage x y)) 
-                                          image->texture-region
-                                          @@player-eid 
-                                          @active-entities 
-                                          @raycaster 
-                                          @viewport
-                                          @input
-                                          @elapsed-time
-                                          entity k v))
+                          (case k
+                            :entity/clickable
+                            (clickable-draw v entity @batch @default-font @unit-scale)
+                            :player-item-on-cursor
+                            (player-item-on-cursor-draw v entity @batch @unit-scale (get-mouseover-actor) image->texture-region @viewport @input)
+                            :entity/animation
+                            (animation-draw v entity @batch @unit-scale image->texture-region)
+                            :entity/image
+                            (image-draw v entity @batch @unit-scale image->texture-region)
+                            :entity/line-render
+                            (line-render-draw v entity @shape-drawer)
+                            :entity/mouseover?
+                            (mouseover?-draw entity @shape-drawer @@player-eid)
+                            :entity/stats
+                            (stats-draw entity @shape-drawer @unit-scale)
+                            :entity/string-effect
+                            (string-effect-draw v entity @batch @default-font @unit-scale)
+                            :entity/temp-modifier
+                            (temp-modifier-draw entity @shape-drawer)
+                            :active-skill
+                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time)
+                            :npc-sleeping
+                            (npc-sleeping-draw entity @batch @default-font @unit-scale)
+                            :stunned
+                            (stunned-draw entity @shape-drawer)))
         draw-world-layer! #(with-line-width @shape-drawer world-unit-scale
                              (reset! unit-scale world-unit-scale)
                              (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
