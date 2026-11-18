@@ -2557,11 +2557,11 @@
              (float w)
              (float h)))))
 
-(defn- item-place-position [viewport input player-position maxrange]
+(defn- item-place-position [world-mouse-position player-position maxrange]
   (mapv + player-position
-        (v2-scale (v2-direction player-position (unproject viewport [(get-x input) (get-y input)]))
+        (v2-scale (v2-direction player-position world-mouse-position)
                   (min maxrange
-                       (v2-distance player-position (unproject viewport [(get-x input) (get-y input)]))))))
+                       (v2-distance player-position world-mouse-position)))))
 
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
@@ -4193,7 +4193,7 @@
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
         item-place-position* (fn [position click-distance]
-                               (item-place-position @viewport @input position click-distance))
+                               (item-place-position (unproject @viewport [(get-x @input) (get-y @input)]) position click-distance))
         set-item! (fn [cell item]
                     (-> (get-root @stage)
                         (find-actor "moon.ui.windows.inventory")
