@@ -2634,14 +2634,14 @@
    :entity/projectile-collision {:entity-effects entity-effects
                                  :piercing? piercing?}})
 
-(defn- create-entity-state [[k v] eid elapsed-time]
+(defn- create-entity-state [[k v] entity elapsed-time]
   (case k
     :active-skill
     (let [[skill effect-ctx] v]
       {:skill skill
        :effect-ctx effect-ctx
        :counter (timer-create (/ (:skill/action-time skill)
-                                 (or (get-value (:entity/stats @eid)
+                                 (or (get-value (:entity/stats entity)
                                                 (:skill/action-time-modifier-key skill))
                                      1))
                               elapsed-time)})
@@ -2654,7 +2654,7 @@
 
     :npc-moving
     {:movement-vector v
-     :timer (timer-create (* (get-value (:entity/stats @eid) :stats/reaction-time)
+     :timer (timer-create (* (get-value (:entity/stats entity) :stats/reaction-time)
                              0.016)
                           elapsed-time)}
 
@@ -2673,7 +2673,7 @@
     :entity/fsm
     (let [{:keys [fsm initial-state]} v]
       (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
-      (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid elapsed-time))
+      (swap! eid assoc initial-state (create-entity-state [initial-state nil] @eid elapsed-time))
       nil)
 
     :entity/skills
@@ -3116,7 +3116,7 @@
             state-args (if params 
                          [new-state-k params]
                          [new-state-k nil])
-            new-state-obj [new-state-k (create-entity-state state-args eid elapsed-time)]]
+            new-state-obj [new-state-k (create-entity-state state-args @eid elapsed-time)]]
         (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                  [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                  [:tx/swap eid dissoc old-state-k]]
