@@ -3953,30 +3953,6 @@
     [[:tx/sound "bfxr_denied.wav"]
      [:tx/show-message "No selected skill"]]))
 
-(defn handle-player-input
-  [player-eid interaction-state stage input key-pressed? button-just-pressed?]
-  (case (:state (:entity/fsm @player-eid))
-    :player-idle
-    (if-let [move-v (movement-vector key-pressed?)]
-      [[:tx/event player-eid :movement-input move-v]]
-      (when (button-just-pressed? Input$Buttons/LEFT)
-        (interaction-state->txs interaction-state stage player-eid)))
-
-    :player-moving
-    (if-let [move-v (movement-vector key-pressed?)]
-      [[:tx/swap player-eid assoc :entity/movement {:direction move-v
-                                                    :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
-                                                               0)}]]
-      [[:tx/event player-eid :no-movement-input]])
-
-    :player-item-on-cursor
-    (let [[x y] (ui-mouse-position stage input)]
-      (when (and (button-just-pressed? Input$Buttons/LEFT)
-                 (not (mouseover-actor stage x y)))
-        [[:tx/event player-eid :drop-item]]))
-
-    nil))
-
 (defn get-delta-time [graphics]
   (Graphics/.getDeltaTime graphics))
 
@@ -4426,6 +4402,28 @@
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
+        handle-player-input (fn [player-eid interaction-state stage input key-pressed? button-just-pressed?]
+                              (case (:state (:entity/fsm @player-eid))
+                                :player-idle
+                                (if-let [move-v (movement-vector key-pressed?)]
+                                  [[:tx/event player-eid :movement-input move-v]]
+                                  (when (button-just-pressed? Input$Buttons/LEFT)
+                                    (interaction-state->txs interaction-state stage player-eid)))
+
+                                :player-moving
+                                (if-let [move-v (movement-vector key-pressed?)]
+                                  [[:tx/swap player-eid assoc :entity/movement {:direction move-v
+                                                                                :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
+                                                                                           0)}]]
+                                  [[:tx/event player-eid :no-movement-input]])
+
+                                :player-item-on-cursor
+                                (let [[x y] (ui-mouse-position stage input)]
+                                  (when (and (button-just-pressed? Input$Buttons/LEFT)
+                                             (not (mouseover-actor stage x y)))
+                                    [[:tx/event player-eid :drop-item]]))
+
+                                nil))
         mouse-interaction! (fn []
                              (let [interaction-state (create-interaction-state @input)]
                                (set-cursor! @graphics (safe-get @cursors (cursor-key @player-eid interaction-state)))
