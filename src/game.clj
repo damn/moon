@@ -5577,7 +5577,7 @@
                         :properties/items
                         :properties/projectiles
                         :properties/skills]
-        property-editor-window (fn property-editor-window [schemas property skin editor]
+        property-editor-window (fn property-editor-window [property]
                                  (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
                                        widget-value (fn widget-value [[schema-k] widget]
                                                       (case schema-k
@@ -5599,12 +5599,12 @@
                                                                       map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
                                                                       property (widget-value schema map-widget-table)]
                                                                   (remove! window)
-                                                                  (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
+                                                                  (add-actor! @editor-stage (property-editor-window property))))
                                        create-widget (fn create-widget [[schema-k :as schema] v]
                                                        (case schema-k
                                                          :s/animation (create-animation-widget v (:editor/get-texture-region editor))
-                                                         :s/boolean (create-boolean-widget v skin)
-                                                         :s/enum (create-enum-widget schema v skin)
+                                                         :s/boolean (create-boolean-widget v @skin)
+                                                         :s/enum (create-enum-widget schema v @skin)
                                                          :s/image (create-image-widget v (:editor/get-texture-region editor))
                                                          :s/map (create-map-widget schemas schema v
                                                                                    (fn build-widget [schema k v] 
@@ -5612,22 +5612,22 @@
                                                                                        (set-user-object! widget [k v])
                                                                                        widget))
                                                                                    widget-value
-                                                                                   skin
+                                                                                   @skin
                                                                                    editor
                                                                                    rebuild-editor-window!
                                                                                    property-k-order-index)
-                                                         :s/number (create-number-widget schema v skin)
-                                                         :s/one-to-many (create-one-to-many-widget schema v skin editor)
+                                                         :s/number (create-number-widget schema v @skin)
+                                                         :s/one-to-many (create-one-to-many-widget schema v @skin editor)
                                                          :s/one-to-one (create-one-to-one-widget schema v editor)
                                                          :s/sound (create-sound-widget ((:editor/sound-names editor))
                                                                                        v 
                                                                                        (:editor/play-sound! editor)
-                                                                                       skin
+                                                                                       @skin
                                                                                        ((:editor/get-viewport editor))
                                                                                        (:editor/add-actor! editor))
-                                                         :s/string (create-string-widget schema v skin)
-                                                         :s/val-max (create-val-max-widget schema v skin)
-                                                         (create-default-widget v skin)))
+                                                         :s/string (create-string-widget schema v @skin)
+                                                         :s/val-max (create-val-max-widget schema v @skin)
+                                                         (create-default-widget v @skin)))
                                        widget (create-widget schema property)
                                        scroll-pane-height (get-world-height (get-viewport @editor-stage))
                                        property-id (:property/id property)
@@ -5656,17 +5656,17 @@
                                                      (let [new-db (assoc db id property)]
                                                        (save! new-db properties-file)
                                                        new-db))))
-                                       table (property-editor-table widget on-save on-delete skin)
-                                       window (create-window "[SKY]Property[]" skin)]
+                                       table (property-editor-table widget on-save on-delete @skin)
+                                       window (create-window "[SKY]Property[]" @skin)]
                                    (pad! (defaults window) 5)
-                                   (let [c (add! window (scroll-pane table skin))]
+                                   (let [c (add! window (scroll-pane table @skin))]
                                      (width! c (+ (get-width table) 50))
                                      (height! c (min (- scroll-pane-height 50)
                                                      (get-height table))))
                                    (row! window)
                                    (pack! window)
                                    (add! (get-title-table window)
-                                         (doto (create-text-button "X" skin)
+                                         (doto (create-text-button "X" @skin)
                                            (add-listener! (create-change-listener
                                                             (fn [_event _actor]
                                                               (remove! window))))))
@@ -5691,7 +5691,7 @@
                                                                           property-type
                                                                           (fn [_actor id]
                                                                             (add-actor! @editor-stage
-                                                                                        (property-editor-window schemas ((:editor/get-property editor) id) @skin editor)))
+                                                                                        (property-editor-window ((:editor/get-property editor) id))))
                                                                           editor)))))))
                           (row! window))
                         (pack! window)
