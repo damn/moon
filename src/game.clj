@@ -4606,6 +4606,7 @@
         world-unit-scale (/ tile-size)
         world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
+        tiled-map-color-setter (constantly (.toFloatBits Color/WHITE))
         batch (atom nil)
         skin (atom nil)
         stage (atom nil)
@@ -4686,7 +4687,7 @@
        (draw-tiled-map! @tiled-map
                         @batch
                         (camera-view-bounds (get-camera @viewport))
-                        (constantly (.toFloatBits Color/WHITE))
+                        tiled-map-color-setter
                         world-unit-scale)
        (Batch/.end @batch)
        (doseq [[k f] {Input$Keys/MINUS (fn [^OrthographicCamera camera] 
