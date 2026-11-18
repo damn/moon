@@ -1239,19 +1239,6 @@
 (defn get-world-height [^Viewport viewport]
   (.getWorldHeight viewport))
 
-(defn create-inventory-window
-  [slot->texture-region player-eid get-mouse-position on-click-cell draw-cell-rect! skin stage]
-  (build-inventory-window
-    {:player-eid player-eid
-     :get-mouse-position get-mouse-position
-     :on-click-cell on-click-cell
-     :draw-cell-rect! draw-cell-rect!
-     :skin skin
-     :position [(get-world-width (get-viewport stage))
-                (get-world-height (get-viewport stage))]
-     :slot->texture-region slot->texture-region
-     :cell-size 48}))
-
 (defn create-content-grid [width height cell-size]
   (let [w (inc (int (/ width cell-size)))
         h (inc (int (/ height cell-size)))
@@ -4353,6 +4340,7 @@
                                    (when new-eid
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
+        inventory-cell-size 48
         slot->texture-region (fn [slot]
                                (let [width 48
                                      height 48
@@ -4478,24 +4466,25 @@
                                                                             @elapsed-time)
                                                                  ""))
                                             :skin @skin})
-                                         (let [cell-size 48]
-                                           (create-inventory-window
-                                             slot->texture-region
-                                             @player-eid
-                                             get-input-position
-                                             (fn [_event cell]
-                                               (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
-                                             (fn [player-entity x y mouseover? cell]
-                                               (rectangle! @shape-drawer x y cell-size cell-size (float-bits 0.5 0.5 0.5 1))
-                                               (when (and mouseover?
-                                                          (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                                                 (let [item (:entity/item-on-cursor player-entity)
-                                                       color (if (valid-slot? cell item)
-                                                               (float-bits 0 0.6 0 0.8)
-                                                               (float-bits 0.6 0 0 0.8))]
-                                                   (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
-                                             @skin
-                                             @stage))])
+                                         (build-inventory-window
+                                           {:player-eid @player-eid
+                                            :get-mouse-position get-input-position
+                                            :on-click-cell (fn [_event cell]
+                                                             (handle-txs! (handle-clicked-inventory-cell @player-eid cell)))
+                                            :draw-cell-rect! (fn [player-entity x y mouseover? cell]
+                                                               (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
+                                                               (when (and mouseover?
+                                                                          (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                                                                 (let [item (:entity/item-on-cursor player-entity)
+                                                                       color (if (valid-slot? cell item)
+                                                                               (float-bits 0 0.6 0 0.8)
+                                                                               (float-bits 0.6 0 0 0.8))]
+                                                                   (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color))))
+                                            :skin @skin
+                                            :position [(get-world-width (get-viewport @stage))
+                                                       (get-world-height (get-viewport @stage))]
+                                            :slot->texture-region slot->texture-region
+                                            :cell-size inventory-cell-size})])
                         (player-state-draw-create @player-eid unit-scale image->texture-region get-input-position)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
