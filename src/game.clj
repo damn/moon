@@ -857,13 +857,16 @@
   (get-height [this]
     (.getHeight this)))
 
-(defn create-actor [{:keys [act!]}]
+(defn create-actor [{:keys [act! draw!]}]
   (proxy [Actor] []
     (act [delta]
-      (act! this delta)
+      (when act!
+        (act! this delta))
       (let [^Actor this this]
         (proxy-super act delta)))
-    (draw [batch parent-alpha])))
+    (draw [batch parent-alpha]
+      (when draw!
+        (draw! batch parent-alpha)))))
 
 (defn get-stage [^Actor actor]
   (.getStage actor))
@@ -3269,47 +3272,6 @@
                                              :entity/faction :evil}})]]))
           (spawn-positions tiled-map)))
 
-(defn hp-mana-bar-create
-  [{:keys [rahmen-file
-           rahmenw
-           rahmenh
-           hpcontent-file
-           manacontent-file
-           x
-           y-mana
-           y-hp
-           bar-x]}
-   player-eid default-font image->texture-region unit-scale]
-  (let [draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
-                           (draw-texture-region! batch
-                                                 @unit-scale
-                                                 (image->texture-region {:image/file rahmen-file})
-                                                 [x y])
-                           (draw-texture-region! batch
-                                                 @unit-scale
-                                                 (image->texture-region
-                                                   {:image/file content-file
-                                                    :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
-                                                 [x y])
-                           (draw-text! batch 
-                                       default-font 
-                                       @unit-scale 
-                                       {:text (str (readable (minmaxval 0))
-                                                   "/"
-                                                   (minmaxval 1)
-                                                   " "
-                                                   name)
-                                        :x (+ x 75)
-                                        :y (+ y 2)
-                                        :up? true}))]
-    (proxy [Actor] []
-      (act [delta]
-        (let [^Actor this this]
-          (proxy-super act delta)))
-      (draw [batch parent-alpha]
-        (draw-hpmana-bar! batch bar-x y-hp hpcontent-file (get-hitpoints (:entity/stats @player-eid)) "HP")
-        (draw-hpmana-bar! batch bar-x y-mana manacontent-file (get-mana (:entity/stats @player-eid)) "MP")))))
-
 (defn handle-clicked-inventory-cell
   [player-eid cell]
   (case (:state (:entity/fsm @player-eid))
@@ -4719,20 +4681,42 @@
                         (create-dev-menu {:menus menus
                                           :update-labels update-labels
                                           :skin @skin})
-                        (hp-mana-bar-create 
+                        (create-actor
                           (let [y-mana 80
+                                rahmenw 150
                                 rahmenh 26
-                                x (/ (get-world-width (get-viewport @stage)) 2)]
-                            {:rahmen-file "images/rahmen.png"
-                             :rahmenw 150
-                             :rahmenh rahmenh
-                             :hpcontent-file "images/hp.png"
-                             :manacontent-file "images/mana.png"
-                             :x x
-                             :y-mana y-mana
-                             :y-hp (+ y-mana rahmenh)
-                             :bar-x (- x (/ rahmenw 2))})
-                          @player-eid @default-font image->texture-region unit-scale)
+                                x (/ (get-world-width (get-viewport @stage)) 2)
+                                rahmen-file "images/rahmen.png"
+                                hpcontent-file "images/hp.png"
+                                manacontent-file "images/mana.png"
+                                y-hp (+ y-mana rahmenh)
+                                bar-x (- x (/ rahmenw 2))
+                                draw-bar! (fn [batch x y content-file minmaxval name]
+                                            (draw-texture-region! batch
+                                                                  @unit-scale
+                                                                  (image->texture-region {:image/file rahmen-file})
+                                                                  [x y])
+                                            (draw-texture-region! batch
+                                                                  @unit-scale
+                                                                  (image->texture-region
+                                                                    {:image/file content-file
+                                                                     :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
+                                                                  [x y])
+                                            (draw-text! batch 
+                                                        @default-font 
+                                                        @unit-scale 
+                                                        {:text (str (readable (minmaxval 0))
+                                                                    "/"
+                                                                    (minmaxval 1)
+                                                                    " "
+                                                                    name)
+                                                         :x (+ x 75)
+                                                         :y (+ y 2)
+                                                         :up? true}))]
+                            {:draw! 
+                             (fn [batch _parent-alpha]
+                               (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints (:entity/stats @@player-eid)) "HP")
+                               (draw-bar! batch bar-x y-mana manacontent-file (get-mana (:entity/stats @@player-eid)) "MP"))}))
                         (windows-create [(create-info-window
                                            {:title "Entity Info"
                                             :actor-name "moon.ui.windows.entity-info"
