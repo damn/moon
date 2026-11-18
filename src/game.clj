@@ -3971,10 +3971,6 @@
                            :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill)
                            :entity/movement (movement-tick v eid delta-time @grid max-speed)
                            nil))
-        tick-entities! (fn [delta-time elapsed-time world-mouse-position]
-                         (doseq [eid @active-entities
-                                 component @eid]
-                           (handle-txs! world-mouse-position (tick-component component eid delta-time elapsed-time))))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
         tick-game! (fn [delta-time world-mouse-position]
@@ -3987,7 +3983,9 @@
                                     faction
                                     @active-entities
                                     max-iterations))
-                         (tick-entities! delta-time @elapsed-time world-mouse-position))))
+                         (doseq [eid @active-entities
+                                 component @eid]
+                           (handle-txs! world-mouse-position (tick-component component eid delta-time @elapsed-time))))))
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -4537,15 +4535,13 @@
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
          (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
          (.begin ^Batch batch)
-         (render-tiled-map!) ; batch, viewport...
+         (render-tiled-map!)
          (draw-world-layer! mouse-position)
          (.end ^Batch batch)
          (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position)
          (update-paused-state! key-just-pressed? key-pressed?)
          (tick-game! delta-time world-mouse-position)
          (remove-destroyed-entities! world-mouse-position)
-
-         ; TODO pass camera/stage capabilities ???
          (key-pressed-checks! key-pressed?)
          (key-just-pressed-checks! key-just-pressed?)
          (act! stage)
