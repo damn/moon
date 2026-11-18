@@ -3379,18 +3379,19 @@
       (set-user-object! (atom nil)))))
 
 (defn- entity-state-draw-ui-view
-  [[k _v] eid batch unit-scale textures mouseover-actor* ui-mouse-pos]
+  [[k _v] eid batch unit-scale image->texture-region mouseover-actor* ui-mouse-pos]
   (case k
     :player-item-on-cursor
     (when mouseover-actor*
-      (draw-texture-region! batch @unit-scale
-                              (get-texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
-                              ui-mouse-pos
-                              {:center? true}))
+      (draw-texture-region! batch
+                            @unit-scale
+                            (image->texture-region (:entity/image (:entity/item-on-cursor @eid)))
+                            ui-mouse-pos
+                            {:center? true}))
 
     nil))
 
-(defn player-state-draw-create [player-eid unit-scale textures input]
+(defn player-state-draw-create [player-eid unit-scale image->texture-region input]
   (proxy [Actor] []
     (act [delta]
       (let [^Actor this this]
@@ -3406,7 +3407,7 @@
                                    player-eid
                                    batch
                                    unit-scale
-                                   textures
+                                   image->texture-region
                                    (mouseover-actor stage x y)
                                    mouse-pos)))))
 
@@ -3528,11 +3529,11 @@
                      :up? true})))))
 
 (defn player-item-on-cursor-draw
-  [v entity batch unit-scale mouseover-actor textures viewport input]
+  [v entity batch unit-scale mouseover-actor image->texture-region viewport input]
   (let [{:keys [item]} v]
     (when-not mouseover-actor
       (draw-texture-region! batch unit-scale
-                            (get-texture-region textures (:entity/image item))
+                            (image->texture-region (:entity/image item))
                             (item-place-position viewport
                                                  input
                                                  (:entity/position entity)
@@ -3544,18 +3545,18 @@
                (dec (count frames)))))
 
 (defn animation-draw
-  [animation entity batch unit-scale textures]
+  [animation entity batch unit-scale image->texture-region]
   (draw-texture-region! batch
                         unit-scale
-                        (get-texture-region textures (current-frame animation))
+                        (image->texture-region (current-frame animation))
                         (:entity/position entity)
                         {:center? true
                          :rotation (or (:entity/rotation-angle entity) 0)}))
 
 (defn image-draw
-  [image entity batch unit-scale textures]
+  [image entity batch unit-scale image->texture-region]
   (draw-texture-region! batch unit-scale
-                        (get-texture-region textures image)
+                        (image->texture-region image)
                         (:entity/position entity)
                         {:center? true
                          :rotation (or (:entity/rotation-angle entity) 0)}))
@@ -3626,7 +3627,7 @@
   (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale textures active-entities raycaster elapsed-time]
+  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -3643,7 +3644,7 @@
              (math/to-radians 90)
              (math/to-radians (* (float action-counter-ratio) 360))
              (float-bits 1 1 1 0.5))
-    (draw-texture-region! batch unit-scale (get-texture-region textures image) [(- (float x) radius) y])
+    (draw-texture-region! batch unit-scale (image->texture-region image) [(- (float x) radius) y])
     (doseq [effect effects]
       (effect-render effect effect-ctx shape-drawer
                      active-entities
@@ -3667,20 +3668,20 @@
 
 (defn- draw-component
   [shape-drawer batch default-font unit-scale mouseover-actor
-   textures player active-entities raycaster viewport input elapsed-time
+   image->texture-region player active-entities raycaster viewport input elapsed-time
    entity k v]
   (case k
     :entity/clickable
     (clickable-draw v entity batch default-font unit-scale)
 
     :player-item-on-cursor
-    (player-item-on-cursor-draw v entity batch unit-scale (mouseover-actor) textures viewport input)
+    (player-item-on-cursor-draw v entity batch unit-scale (mouseover-actor) image->texture-region viewport input)
 
     :entity/animation
-    (animation-draw v entity batch unit-scale textures)
+    (animation-draw v entity batch unit-scale image->texture-region)
 
     :entity/image
-    (image-draw v entity batch unit-scale textures)
+    (image-draw v entity batch unit-scale image->texture-region)
 
     :entity/line-render
     (line-render-draw v entity shape-drawer)
@@ -3698,7 +3699,7 @@
     (temp-modifier-draw entity shape-drawer)
 
     :active-skill
-    (active-skill-draw v entity shape-drawer batch unit-scale textures active-entities raycaster elapsed-time)
+    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time)
 
     :npc-sleeping
     (npc-sleeping-draw entity batch default-font unit-scale)
@@ -4574,7 +4575,7 @@
                                           @unit-scale 
                                           #(let [[x y] (ui-mouse-position @stage @input)]
                                             (mouseover-actor @stage x y)) 
-                                          @textures 
+                                          image->texture-region
                                           @@player-eid 
                                           @active-entities 
                                           @raycaster 
@@ -4760,7 +4761,7 @@
                                                    (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                                              @skin
                                              @stage))])
-                        (player-state-draw-create @player-eid unit-scale @textures input-arg)
+                        (player-state-draw-create @player-eid unit-scale image->texture-region input-arg)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
          (sync-player-ui!)
