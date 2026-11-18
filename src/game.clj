@@ -22,54 +22,6 @@
                       (when (< mx v)
                         (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
      (fn [[^int a ^int b]] (<= a b))]]))
-(require '[reduce-fsm :as fsm])
-(def fsms
-  {:npc (fsm/fsm-inc
-          [[:npc-sleeping
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :alert -> :npc-idle]
-           [:npc-idle
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :start-action -> :active-skill
-            :movement-direction -> :npc-moving]
-           [:npc-moving
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :timer-finished -> :npc-idle]
-           [:active-skill
-            :kill -> :npc-dead
-            :stun -> :stunned
-            :action-done -> :npc-idle]
-           [:stunned
-            :kill -> :npc-dead
-            :effect-wears-off -> :npc-idle]
-           [:npc-dead]])
-   :player (fsm/fsm-inc
-            [[:player-idle
-              :kill -> :player-dead
-              :stun -> :stunned
-              :start-action -> :active-skill
-              :pickup-item -> :player-item-on-cursor
-              :movement-input -> :player-moving]
-             [:player-moving
-              :kill -> :player-dead
-              :stun -> :stunned
-              :no-movement-input -> :player-idle]
-             [:active-skill
-              :kill -> :player-dead
-              :stun -> :stunned
-              :action-done -> :player-idle]
-             [:stunned
-              :kill -> :player-dead
-              :effect-wears-off -> :player-idle]
-             [:player-item-on-cursor
-              :kill -> :player-dead
-              :stun -> :stunned
-              :drop-item -> :player-idle
-              :dropped-item -> :player-idle]
-             [:player-dead]])})
 
 (import '(java.util Random))
 
@@ -2995,17 +2947,18 @@
 
 (declare effect-transactions)
 
-(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db elapsed-time]
+(defn applicable-effect-txs [effect-ctx effects active-entities raycaster game-db elapsed-time fsms]
   (mapcat (fn [effect] 
             (effect-transactions effect
                                  effect-ctx 
                                  active-entities
                                  raycaster
                                  game-db
-                                 elapsed-time))
+                                 elapsed-time
+                                 fsms))
           (filter #(effect-applicable? % effect-ctx) effects)))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster game-db elapsed-time]
+(defn target-all-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
@@ -3021,7 +2974,8 @@
                                            active-entities
                                            raycaster
                                            game-db
-                                           elapsed-time)))
+                                           elapsed-time
+                                           fsms)))
             (affected-targets active-entities raycaster source*))))
 
 (defn convert-effect [_v effect-ctx game-db]
@@ -3031,7 +2985,7 @@
      [:tx/spawn-entity (animation-entity game-db (:entity/position @target) :audiovisuals/convert)]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx active-entities raycaster game-db elapsed-time]
+(defn target-entity-effect [v effect-ctx active-entities raycaster game-db elapsed-time fsms]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
@@ -3050,7 +3004,8 @@
                                    active-entities
                                    raycaster
                                    game-db
-                                   elapsed-time))
+                                   elapsed-time
+                                   fsms))
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground)]])))
 
@@ -3104,6 +3059,8 @@
 (defn stun-effect [duration effect-ctx]
   [[:tx/event (:effect/target effect-ctx) :stun duration]])
 
+(require '[reduce-fsm :as fsm])
+
 (defn- fsm-event-txs [eid event item-place-position elapsed-time & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
@@ -3124,7 +3081,7 @@
                 (entity-state-enter! eid new-state-obj elapsed-time))))))
 
 (defn- effect-transactions
-  [[k v] effect-ctx active-entities raycaster game-db elapsed-time]
+  [[k v] effect-ctx active-entities raycaster game-db elapsed-time fsms]
   (case k
     :effects/projectile
     (projectile-effect v effect-ctx)
@@ -3133,10 +3090,10 @@
     (spawn-effect* v effect-ctx game-db fsms)
 
     :effects/target-all
-    (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time)
+    (target-all-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms)
 
     :effects/target-entity
-    (target-entity-effect v effect-ctx active-entities raycaster game-db elapsed-time)
+    (target-entity-effect v effect-ctx active-entities raycaster game-db elapsed-time fsms)
 
     :effects.target/convert
     (convert-effect v effect-ctx game-db)
@@ -3703,7 +3660,7 @@
     nil))
 
 (defn projectile-collision-tick
-  [v eid _delta-time handle-txs! active-entities raycaster game-db elapsed-time grid]
+  [v eid _delta-time handle-txs! active-entities raycaster game-db elapsed-time grid fsms]
   (let [{:keys [entity-effects already-hit-bodies piercing?]} v
         entity @eid
         touched-cells (map deref (keep #(get-in grid %) (touched-tiles entity)))
@@ -3728,7 +3685,8 @@
                                           active-entities
                                           raycaster
                                           game-db
-                                          elapsed-time)))
+                                          elapsed-time
+                                          fsms)))
     nil))
 
 (defn active-skill-tick
@@ -4307,6 +4265,52 @@
                           item))
         max-delta 0.04
         max-speed (/ minimum-size max-delta)
+        fsms {:npc (fsm/fsm-inc
+                     [[:npc-sleeping
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :alert -> :npc-idle]
+                      [:npc-idle
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :start-action -> :active-skill
+                       :movement-direction -> :npc-moving]
+                      [:npc-moving
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :timer-finished -> :npc-idle]
+                      [:active-skill
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :action-done -> :npc-idle]
+                      [:stunned
+                       :kill -> :npc-dead
+                       :effect-wears-off -> :npc-idle]
+                      [:npc-dead]])
+              :player (fsm/fsm-inc
+                        [[:player-idle
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :start-action -> :active-skill
+                          :pickup-item -> :player-item-on-cursor
+                          :movement-input -> :player-moving]
+                         [:player-moving
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :no-movement-input -> :player-idle]
+                         [:active-skill
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :action-done -> :player-idle]
+                         [:stunned
+                          :kill -> :player-dead
+                          :effect-wears-off -> :player-idle]
+                         [:player-item-on-cursor
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :drop-item -> :player-idle
+                          :dropped-item -> :player-idle]
+                         [:player-dead]])}
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
@@ -4325,7 +4329,7 @@
                            (temp-modifier-tick v eid delta-time handle-txs! elapsed-time)
 
                            :entity/projectile-collision
-                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @raycaster game-db elapsed-time @grid)
+                           (projectile-collision-tick v eid delta-time handle-txs! active-entities @raycaster game-db elapsed-time @grid fsms)
 
                            :active-skill
                            (active-skill-tick v eid delta-time handle-txs!
@@ -4336,7 +4340,8 @@
                                                                        active-entities
                                                                        @raycaster
                                                                        game-db
-                                                                       elapsed-time))
+                                                                       elapsed-time
+                                                                       fsms))
                                               elapsed-time)
 
                            :entity/delete-after-duration
