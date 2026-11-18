@@ -4229,13 +4229,6 @@
                                                                                    (toggle-entity-info! @stage))}]
                                      (when (key-just-pressed? k)
                                        (f))))
-        update-stage! #(act! @stage)
-        draw-stage! #(draw! @stage)
-        resize-stage! (fn [width height]
-                        (resize! (get-viewport @stage) width height true))
-        resize-viewport! (fn [width height]
-                           (resize! @viewport width height false))
-        batch-end! #(.end ^Batch @batch)
         active-skill-radius (let [tile-size 48
                                   image-width 32]
                               (/ (/ image-width tile-size) 2))
@@ -4335,7 +4328,6 @@
                                               render-layers)
                               (highlight-mouseover-tile @shape-drawer (unproject @viewport mouse-position) @grid)
                               (reset! unit-scale 1)))
-        set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
         render-tiled-map! #(draw-tiled-map! @tiled-map*
                                             @batch
                                             (camera-view-bounds (get-camera @viewport))
@@ -4349,8 +4341,6 @@
                                                :visible-tile-color (float-bits 1 1 1 1)
                                                :invisible-tile-color (float-bits 0 0 0 1)})
                                             world-unit-scale)
-        batch-begin! #(.begin ^Batch @batch)
-        set-proj-matrix! #(set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
          update-active-entities! (fn []
                                    (reset! active-entities (active-entities* @content-grid @@player-eid)))
          update-mouseover-eid! (fn [mouse-position]
@@ -4520,14 +4510,22 @@
          (handle-txs! (spawn-map-creatures build-property @tiled-map* start-position fsms))))
      :dispose!
      (fn []
-       (run! dispose! (vals @sounds))
-       (dispose! @batch)
-       (run! dispose! (vals @cursors))
-       (dispose! @default-font)
-       (dispose! @shape-drawer-texture)
-       (dispose! @skin)
-       (run! dispose! (vals @textures))
-       (dispose! @tiled-map*))
+       (let [batch @batch
+             cursors @cursors
+             default-font @default-font
+             shape-drawer-texture @shape-drawer-texture
+             skin @skin
+             sounds @sounds
+             textures @textures
+             tiled-map @tiled-map*]
+         (dispose! batch)
+         (run! dispose! (vals cursors))
+         (dispose! default-font)
+         (dispose! shape-drawer-texture)
+         (dispose! skin)
+         (run! dispose! (vals sounds))
+         (run! dispose! (vals textures))
+         (dispose! tiled-map)))
 
      :render!
      (fn [{:keys [clear-screen! 
@@ -4537,33 +4535,37 @@
                   button-just-pressed? 
                   get-delta-time 
                   get-input-position]}]
-       (clear-screen! 0 0 0 0)
-       (update-mouseover-eid! (get-input-position))
-       (update-active-entities!)
-       (set-camera-position! @viewport (:entity/position @@player-eid))
-       (set-proj-matrix!)
-       (batch-begin!)
-       (render-tiled-map!)
-       (set-batch-color!)
-       (draw-world-layer! (get-input-position))
-       (batch-end!)
-       (mouse-interaction! set-cursor!
-                           key-pressed?
-                           button-just-pressed?
-                           (get-input-position))
-       (update-paused-state! key-just-pressed?
-                             key-pressed?)
-       (tick-game! (get-delta-time))
-       (remove-destroyed-entities!)
-       (key-pressed-checks! key-pressed?)
-       (key-just-pressed-checks! key-just-pressed?)
-       (update-stage!)
-       (draw-stage!))
+       (let [batch @batch
+             stage @stage
+             viewport @viewport
+             mouse-position (get-input-position)
+             delta-time (get-delta-time)
+             camera-position (:entity/position @@player-eid)]
+         (clear-screen! 0 0 0 0)
+         (update-mouseover-eid! mouse-position)
+         (update-active-entities!)
+         (set-camera-position! viewport camera-position)
+         (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
+         (.begin ^Batch batch)
+         (render-tiled-map!)
+         ;(.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
+         (draw-world-layer! mouse-position)
+         (.end ^Batch batch)
+         (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouse-position)
+         (update-paused-state! key-just-pressed? key-pressed?)
+         (tick-game! delta-time)
+         (remove-destroyed-entities!)
+         (key-pressed-checks! key-pressed?)
+         (key-just-pressed-checks! key-just-pressed?)
+         (act! stage)
+         (draw! stage)))
 
      :resize!
      (fn [width height]
-       (resize-stage! width height)
-       (resize-viewport! width height))
+       (let [stage @stage
+             viewport @viewport]
+         (resize! (get-viewport stage) width height true)
+         (resize! viewport width height false)))
      }))
 
 (defn- text-button [skin label on-click!]
