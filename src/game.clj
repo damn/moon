@@ -2590,75 +2590,6 @@
   [fsm initial-state]
   (assoc (fsm initial-state nil) :state initial-state))
 
-; TODO INLINE!
-(defn- entity-state-exit!
-  [eid [state-k _state-v] item-place-position elapsed-time]
-  (case state-k
-    :player-item-on-cursor
-    (let [entity @eid
-          item (:entity/item-on-cursor entity)]
-      (when item
-        [[:tx/swap eid dissoc :entity/item-on-cursor]
-         [:tx/sound "bfxr_itemputground.wav"]
-         [:tx/spawn-entity (spawn-item (item-place-position (:entity/position entity)
-                                                            (- (:entity/click-distance-tiles entity) 0.1))
-                                       item)]]))
-
-    :player-moving
-    [[:tx/swap eid dissoc :entity/movement]]
-
-    :npc-sleeping
-    [[:tx/swap eid add-text-effect "[WHITE]!" 1 #(timer-create % elapsed-time)]
-     [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 elapsed-time)]]
-
-    :npc-moving
-    [[:tx/swap eid dissoc :entity/movement]]
-
-    nil))
-
-(defn- entity-state-enter!
-  [eid [state-k state-v] elapsed-time]
-  (case state-k
-    :player-item-on-cursor
-    (let [{:keys [item]} state-v]
-      [[:tx/swap eid assoc :entity/item-on-cursor item]])
-
-    :active-skill
-    (let [{:keys [skill]} state-v
-          cost (:skill/cost skill)]
-      [[:tx/swap eid update :entity/stats (fn [stats]
-                                            (let [mana-val ((get-mana stats) 0)]
-                                              (assert (<= cost mana-val))
-                                              (assoc-in stats [:stats/mana 0] (- mana-val cost))))]
-       [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (timer-create (:skill/cooldown skill) elapsed-time)]
-       [:tx/sound (:skill/start-action-sound skill)]])
-
-    :npc-dead
-    [[:tx/swap eid assoc :entity/destroyed? true]]
-
-    :player-moving
-    (let [{:keys [movement-vector]} state-v]
-      [[:tx/swap eid assoc :entity/movement {:direction movement-vector
-                                             :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                        0)}]])
-
-    :player-dead
-    [
-     [:tx/sound "bfxr_playerdeath.wav"]
-     [:tx/modal {:title "YOU DIED - again!"
-                 :text "Good luck next time!"
-                 :button-text "OK"
-                 :on-click (fn [])}]
-     ]
-
-    :npc-moving
-    (let [{:keys [movement-vector]} state-v]
-      [[:tx/swap eid assoc :entity/movement {:direction movement-vector
-                                             :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                        0)}]])
-
-    nil))
-
 (declare effect-applicable?)
 
 (def effects-behaviour
@@ -3999,6 +3930,70 @@
                           (doseq [component @eid]
                             (after-create-component eid component))
                           eid))
+        entity-state-enter! (fn [eid [state-k state-v]]
+                              (case state-k
+                                :player-item-on-cursor
+                                (let [{:keys [item]} state-v]
+                                  [[:tx/swap eid assoc :entity/item-on-cursor item]])
+
+                                :active-skill
+                                (let [{:keys [skill]} state-v
+                                      cost (:skill/cost skill)]
+                                  [[:tx/swap eid update :entity/stats (fn [stats]
+                                                                        (let [mana-val ((get-mana stats) 0)]
+                                                                          (assert (<= cost mana-val))
+                                                                          (assoc-in stats [:stats/mana 0] (- mana-val cost))))]
+                                   [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] (timer-create (:skill/cooldown skill) @elapsed-time)]
+                                   [:tx/sound (:skill/start-action-sound skill)]])
+
+                                :npc-dead
+                                [[:tx/swap eid assoc :entity/destroyed? true]]
+
+                                :player-moving
+                                (let [{:keys [movement-vector]} state-v]
+                                  [[:tx/swap eid assoc :entity/movement {:direction movement-vector
+                                                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
+                                                                                    0)}]])
+
+                                :player-dead
+                                [
+                                 [:tx/sound "bfxr_playerdeath.wav"]
+                                 [:tx/modal {:title "YOU DIED - again!"
+                                             :text "Good luck next time!"
+                                             :button-text "OK"
+                                             :on-click (fn [])}]
+                                 ]
+
+                                :npc-moving
+                                (let [{:keys [movement-vector]} state-v]
+                                  [[:tx/swap eid assoc :entity/movement {:direction movement-vector
+                                                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
+                                                                                    0)}]])
+
+                                nil))
+        entity-state-exit! (fn [eid [state-k _state-v]]
+                             (case state-k
+                               :player-item-on-cursor
+                               (let [entity @eid
+                                     item (:entity/item-on-cursor entity)]
+                                 (when item
+                                   [[:tx/swap eid dissoc :entity/item-on-cursor]
+                                    [:tx/sound "bfxr_itemputground.wav"]
+                                    [:tx/spawn-entity (spawn-item (item-place-position* (:entity/position entity)
+                                                                                        (- (:entity/click-distance-tiles entity) 0.1))
+                                                                  item)]]))
+
+                               :player-moving
+                               [[:tx/swap eid dissoc :entity/movement]]
+
+                               :npc-sleeping
+                               [[:tx/swap eid add-text-effect "[WHITE]!" 1 #(timer-create % @elapsed-time)]
+                                [:tx/spawn-entity (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 @elapsed-time)]]
+
+                               :npc-moving
+                               [[:tx/swap eid dissoc :entity/movement]]
+
+                               nil))
         fsm-event-txs (fn [eid event & [params]]
                         (let [fsm (:entity/fsm @eid)
                               _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
@@ -4015,8 +4010,8 @@
                               (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                                        [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                                        [:tx/swap eid dissoc old-state-k]]
-                                      (entity-state-exit! eid old-state-obj item-place-position* @elapsed-time)
-                                      (entity-state-enter! eid new-state-obj @elapsed-time))))))
+                                      (entity-state-exit! eid old-state-obj)
+                                      (entity-state-enter! eid new-state-obj))))))
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
                                     :tx/swap 
