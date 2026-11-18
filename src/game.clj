@@ -3276,10 +3276,10 @@
            hpcontent-file
            manacontent-file
            x
-           y-mana]}
+           y-mana
+           y-hp]}
    player-eid default-font image->texture-region unit-scale]
-  (let [y-hp (+ y-mana rahmenh)
-        draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
+  (let [draw-hpmana-bar! (fn [batch x y content-file minmaxval name]
                            (draw-texture-region! batch
                                                  @unit-scale
                                                  (image->texture-region {:image/file rahmen-file})
@@ -4722,14 +4722,18 @@
                         (create-dev-menu {:menus menus
                                           :update-labels update-labels
                                           :skin @skin})
-                        (hp-mana-bar-create {:rahmen-file "images/rahmen.png"
-                                             :rahmenw 150
-                                             :rahmenh 26
-                                             :hpcontent-file "images/hp.png"
-                                             :manacontent-file "images/mana.png"
-                                             :x (/ (get-world-width (get-viewport @stage)) 2)
-                                             :y-mana 80}
-                                            @player-eid @default-font image->texture-region unit-scale)
+                        (hp-mana-bar-create 
+                          (let [y-mana 80
+                                rahmenh 26]
+                            {:rahmen-file "images/rahmen.png"
+                             :rahmenw 150
+                             :rahmenh rahmenh
+                             :hpcontent-file "images/hp.png"
+                             :manacontent-file "images/mana.png"
+                             :x (/ (get-world-width (get-viewport @stage)) 2)
+                             :y-mana y-mana
+                             :y-hp (+ y-mana rahmenh)})
+                          @player-eid @default-font image->texture-region unit-scale)
                         (windows-create [(create-info-window
                                            {:title "Entity Info"
                                             :actor-name "moon.ui.windows.entity-info"
