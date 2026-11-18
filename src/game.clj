@@ -505,12 +505,7 @@
         (recur (dec row)
                (- y layer-tile-height))))))
 
-(defn draw-tiled-map!
-  [tiled-map
-   batch
-   ^OrthographicCamera camera
-   color-setter
-   world-unit-scale]
+(defn camera-view-bounds [^OrthographicCamera camera]
   (let [width  (* (.viewportWidth camera) (.zoom camera))
         height (* (.viewportHeight camera) (.zoom camera))
         up (.up camera)
@@ -518,17 +513,20 @@
              (* height (Math/abs (float (.x up)))))
         h (+ (* height (Math/abs (float (.y up))))
              (* width  (Math/abs (float (.x up)))))
-        pos (.position camera)
-        view-bounds {:x (- (.x pos) (/ w 2))
-                     :y (- (.y pos) (/ h 2))
-                     :width w
-                     :height h}]
-    (doseq [layer (filter visible? (get-layers tiled-map))]
-      (draw-tile-layer! layer
-                        batch
-                        view-bounds
-                        color-setter
-                        world-unit-scale))))
+        pos (.position camera)]
+    {:x (- (.x pos) (/ w 2))
+     :y (- (.y pos) (/ h 2))
+     :width w
+     :height h}))
+
+(defn draw-tiled-map!
+  [tiled-map batch view-bounds color-setter world-unit-scale]
+  (doseq [layer (filter visible? (get-layers tiled-map))]
+    (draw-tile-layer! layer
+                      batch
+                      view-bounds
+                      color-setter
+                      world-unit-scale)))
 
 (import '(com.badlogic.gdx.files FileHandle))
 
@@ -4365,7 +4363,7 @@
         set-batch-color! #(.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
         render-tiled-map! #(draw-tiled-map! @tiled-map*
                                             @batch
-                                            (get-camera @viewport)
+                                            (camera-view-bounds (get-camera @viewport))
                                             (tile-color-setter*
                                               {:ray-blocked? (partial raycaster-blocked? @raycaster)
                                                :explored-tile-corners explored-tile-corners
@@ -4687,7 +4685,7 @@
        (Batch/.begin @batch) 
        (draw-tiled-map! @tiled-map
                         @batch
-                        (get-camera @viewport)
+                        (camera-view-bounds (get-camera @viewport))
                         (constantly (.toFloatBits Color/WHITE))
                         world-unit-scale)
        (Batch/.end @batch)
