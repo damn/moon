@@ -2607,32 +2607,6 @@
         target2 (mapv + [target-x target-y] normal2)]
     [start1 target1 start2 target2]))
 
-(defn- effect-useful?
-  [[k v] effect-ctx ray-blocked?]
-  (case k
-    :effects/projectile
-    (let [{:keys [projectile/max-range] :as projectile} v
-          source-p (:entity/position @(:effect/source effect-ctx))
-          target-p (:entity/position @(:effect/target effect-ctx))]
-      (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
-                                                                              target-p
-                                                                              (:projectile/size projectile))]
-                  (or
-                   (ray-blocked? start1 target1)
-                   (ray-blocked? start2 target2))))
-           (< (v2-distance source-p target-p)
-              max-range)))
-
-    :effects/target-all
-    false
-
-    :effects/target-entity
-    (in-range? @(:effect/source effect-ctx)
-                    @(:effect/target effect-ctx)
-                    (:maxrange v))
-
-    true))
-
 (defn- affected-targets
   [active-entities raycaster entity]
   (->> active-entities
@@ -3223,7 +3197,7 @@
             :when (get render-layer k)]
       (draw-component! k v entity))))
 
-(defn- choose-skill [ray-blocked? entity effect-ctx effect-applicable?]
+(defn- choose-skill [ray-blocked? entity effect-ctx effect-applicable? effect-useful?]
   (->> entity
        :entity/skills
        vals
@@ -3381,7 +3355,7 @@
         (handle-txs! [[:tx/event eid :alert]])))))
 
 (defn npc-idle-tick
-  [_v eid _delta-time handle-txs! line-of-sight? raycaster-blocked? grid effect-applicable?]
+  [_v eid _delta-time handle-txs! line-of-sight? raycaster-blocked? grid effect-applicable? effect-useful?]
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
@@ -3391,7 +3365,7 @@
                     :effect/target target
                     :effect/target-direction (when target
                                                (direction entity @target))}]
-    (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx effect-applicable?)]
+    (if-let [skill (choose-skill raycaster-blocked? entity effect-ctx effect-applicable? effect-useful?)]
       (handle-txs! [[:tx/event eid :start-action [skill effect-ctx]]])
       (handle-txs! [[:tx/event eid :movement-direction (or (find-direction grid eid)
                                                            [0 0])]]))))
@@ -4062,6 +4036,30 @@
                                     :effects.target/spiderweb (spiderweb-effect v effect-ctx @elapsed-time)
                                     :effects.target/stun (stun-effect v effect-ctx)))
                                 (filter #(effect-applicable? % effect-ctx) effects)))
+        effect-useful? (fn [[k v] effect-ctx ray-blocked?]
+                         (case k
+                           :effects/projectile
+                           (let [{:keys [projectile/max-range] :as projectile} v
+                                 source-p (:entity/position @(:effect/source effect-ctx))
+                                 target-p (:entity/position @(:effect/target effect-ctx))]
+                             (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
+                                                                                                      target-p
+                                                                                                      (:projectile/size projectile))]
+                                         (or
+                                           (ray-blocked? start1 target1)
+                                           (ray-blocked? start2 target2))))
+                                  (< (v2-distance source-p target-p)
+                                     max-range)))
+
+                           :effects/target-all
+                           false
+
+                           :effects/target-entity
+                           (in-range? @(:effect/source effect-ctx)
+                                      @(:effect/target effect-ctx)
+                                      (:maxrange v))
+
+                           true))
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation
@@ -4102,7 +4100,8 @@
                                           (partial line-of-sight? @raycaster)
                                           (partial raycaster-blocked? @raycaster)
                                           @grid
-                                          effect-applicable?)
+                                          effect-applicable?
+                                          effect-useful?)
 
                            :entity/movement
                            (movement-tick v eid delta-time handle-txs! @grid @content-grid max-speed)
