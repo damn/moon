@@ -2477,6 +2477,41 @@
   [fsm initial-state]
   (assoc (fsm initial-state nil) :state initial-state))
 
+(defn- empty-inventory []
+  (->> #:inventory.slot{:bag      [6 4]
+                        :weapon   [1 1]
+                        :shield   [1 1]
+                        :helm     [1 1]
+                        :chest    [1 1]
+                        :leg      [1 1]
+                        :glove    [1 1]
+                        :boot     [1 1]
+                        :cloak    [1 1]
+                        :necklace [1 1]
+                        :rings    [2 1]}
+       (map (fn [[slot [width height]]]
+              [slot (mapv (fn [x] (mapv (fn [y] nil)
+                                        (range height)))
+                          (range width))]))
+       (into {})))
+
+(defn- skills->id-map [skills]
+  (reduce (fn [m {:keys [property/id] :as skill}]
+            (assert (not (contains? m id)))
+            (assoc m id skill))
+          {}
+          skills))
+
+(defn- place-items [entity items]
+  (reduce (fn [entity item]
+            (assert (valid-item? item))
+            (let [[cell cell-item] (can-pickup-item? (:entity/inventory entity) item)]
+              (assert cell)
+              (assert (nil? cell-item))
+              (set-item entity cell item)))
+          entity
+          items))
+
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
   (let [entity (-> creature-property
@@ -2491,7 +2526,14 @@
                           :entity/fsm (create-fsm fsm initial-state)
                           initial-state nil)]
     (assert (not-any? #(contains? entity %) (keys components)))
-    (merge entity components)))
+    (let [items (:entity/inventory entity)
+          entity (cond-> (merge entity components)
+                   (:entity/skills entity) (update :entity/skills skills->id-map))]
+      (if items
+        (-> entity
+            (assoc :entity/inventory (empty-inventory))
+            (place-items items))
+        entity))))
 
 (defn- spawn-effect [position components]
   (assoc components
@@ -3493,43 +3535,6 @@
                                 {:item v}
 
                                 v))
-        after-create-component (fn [eid [k v]]
-                                 (case k
-                                   :entity/skills
-                                   (do
-                                     (swap! eid assoc :entity/skills nil)
-                                     (doseq [{:keys [property/id] :as skill} v]
-                                       (assert (not (contains? (:entity/skills @eid) id)))
-                                       (swap! eid update :entity/skills assoc id skill))
-                                     nil)
-
-                                   :entity/inventory
-                                   (do
-                                     (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
-                                                                                              :weapon   [1 1]
-                                                                                              :shield   [1 1]
-                                                                                              :helm     [1 1]
-                                                                                              :chest    [1 1]
-                                                                                              :leg      [1 1]
-                                                                                              :glove    [1 1]
-                                                                                              :boot     [1 1]
-                                                                                              :cloak    [1 1]
-                                                                                              :necklace [1 1]
-                                                                                              :rings    [2 1]}
-                                                                             (map (fn [[slot [width height]]]
-                                                                                    [slot (mapv (fn [x] (mapv (fn [y] nil)
-                                                                                                              (range height)))
-                                                                                                (range width))]))
-                                                                             (into {})))
-                                     (doseq [item v]
-                                       (assert (valid-item? item))
-                                       (let [[cell cell-item] (can-pickup-item? (:entity/inventory @eid) item)]
-                                         (assert cell)
-                                         (assert (nil? cell-item))
-                                         (swap! eid set-item cell item)))
-                                     nil)
-
-                                   nil))
         construct-entity (fn [entity create-timer]
                            (let [entity (reduce (fn [m [k v]]
                                                   (assoc m k (case k
@@ -3582,8 +3587,6 @@
                           (set-touched-cells! @grid eid)
                           (when (:entity/collides? @eid)
                             (set-occupied-cells! @grid eid))
-                          (doseq [component @eid]
-                            (after-create-component eid component))
                           eid))
         entity-state-enter! (fn [eid [state-k state-v] create-timer]
                               (case state-k
