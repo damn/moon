@@ -4621,15 +4621,12 @@
         world-height (* 900 world-unit-scale)
         tiled-map-color-setter (constantly (.toFloatBits Color/WHITE))
         camera (atom nil)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-        tiled-map (atom nil)
-        generate-level! (fn [level-fn]
+        generate-level! (fn [textures level-fn]
                           (let [level (level-fn {:level/creature-properties
                                                  (prepare-creature-tiles
                                                    (all-raw db :properties/creatures)
-                                                   image->texture-region)
-                                                 :textures @textures})
+                                                   #(get-texture-region textures %))
+                                                 :textures textures})
                                 tiled-map (:tiled-map level)]
                             (assert tiled-map)
                             (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
@@ -4637,25 +4634,31 @@
                                           (props-get (get-properties tiled-map) "width")
                                           (props-get (get-properties tiled-map) "height")) 
                             tiled-map))
-        buttons (for [[label level-fn] [["Vampire" create-vampire-level]
-                                        ["UF Caves" create-uf-caves]
-                                        ["Modules" create-modules-level]]]
-                  [(str "Generate " label)
-                   (fn []
-                     (dispose! @tiled-map)
-                     (reset! tiled-map (generate-level! level-fn)))])
+        tiled-map (atom nil)
+        buttons (fn [textures]
+                  (for [[label level-fn] [["Vampire" create-vampire-level]
+                                          ["UF Caves" create-uf-caves]
+                                          ["Modules" create-modules-level]]]
+                    [(str "Generate " label)
+                     (fn []
+                       (dispose! @tiled-map)
+                       (reset! tiled-map (generate-level! textures level-fn)))]))
         batch (atom nil)
         skin (atom nil)
         stage (atom nil)
+        textures (atom nil)
         viewport (atom nil)
         ]
     {:create!
      (fn [{:keys [files input set-input-processor!]}]
        (reset! batch (sprite-batch!))
        (reset! skin (create-skin (internal files "skin/uiskin.json")))
+       (reset! textures (create-textures files
+                                         {:folder "resources/"
+                                          :extensions #{"png" "bmp"}}))
        (reset! stage (let [stage (Stage. (FitViewport. 1440 900) @batch)
                            window (create-window "Edit" @skin)] 
-                       (doseq [[label on-click!] buttons]
+                       (doseq [[label on-click!] (buttons @textures)]
                          (add! window (text-button @skin label on-click!))
                          (row! window))
                        (pack! window)
@@ -4669,10 +4672,7 @@
                                                      world-width
                                                      world-height))))
        (reset! camera (get-camera @viewport)) 
-       (reset! textures (create-textures files
-                                         {:folder "resources/"
-                                          :extensions #{"png" "bmp"}}))
-       (reset! tiled-map (generate-level! create-uf-caves))) 
+       (reset! tiled-map (generate-level! @textures create-uf-caves))) 
 
      :dispose!
      (fn []
