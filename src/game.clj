@@ -1337,30 +1337,17 @@
   (.getWorldHeight viewport))
 
 (defn create-inventory-window
-  [slot->y-sprite-idx player-eid input on-click-cell draw-cell-rect! skin stage textures]
-  (let [slot->texture-region (fn [slot]
-                               (let [width 48
-                                     height 48
-                                     sprite-x 21
-                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
-                                     bounds [(* sprite-x width)
-                                             (* sprite-y height)
-                                             width
-                                             height]]
-                                 (get-texture-region textures
-                                                     {:image/file "images/items.png"
-                                                      :image/bounds bounds})))
-        cell-size 48]
-    (build-inventory-window
-     {:player-eid player-eid
-      :input input
-      :on-click-cell on-click-cell
-      :draw-cell-rect! draw-cell-rect!
-      :skin skin
-      :position [(get-world-width (get-viewport stage))
-                 (get-world-height (get-viewport stage))]
-      :slot->texture-region slot->texture-region
-      :cell-size cell-size})))
+  [slot->texture-region player-eid input on-click-cell draw-cell-rect! skin stage]
+  (build-inventory-window
+    {:player-eid player-eid
+     :input input
+     :on-click-cell on-click-cell
+     :draw-cell-rect! draw-cell-rect!
+     :skin skin
+     :position [(get-world-width (get-viewport stage))
+                (get-world-height (get-viewport stage))]
+     :slot->texture-region slot->texture-region
+     :cell-size 48}))
 
 (defn create-content-grid [width height cell-size]
   (let [w (inc (int (/ width cell-size)))
@@ -4649,6 +4636,18 @@
                                    (when new-eid
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
+        slot->texture-region (fn [slot]
+                               (let [width 48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 (get-texture-region @textures
+                                                     {:image/file "images/items.png"
+                                                      :image/bounds bounds})))
         ]
     {
      :create!
@@ -4741,7 +4740,7 @@
                                             :skin @skin})
                                          (let [cell-size 48]
                                            (create-inventory-window
-                                             slot->y-sprite-idx
+                                             slot->texture-region
                                              @player-eid
                                              input-arg
                                              (fn [_event cell]
@@ -4756,8 +4755,7 @@
                                                                (float-bits 0.6 0 0 0.8))]
                                                    (filled-rectangle! @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
                                              @skin
-                                             @stage
-                                             @textures))])
+                                             @stage))])
                         (player-state-draw-create @player-eid unit-scale @textures input-arg)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
