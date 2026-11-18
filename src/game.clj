@@ -2580,13 +2580,14 @@
                             (if (neg? angle)
                               (+ angle 360)
                               angle))
-   :entity/movement {:direction direction :speed speed}
    :entity/image image
    :entity/faction faction
    :entity/delete-after-duration (/ max-range speed)
    :entity/destroy-audiovisual :audiovisuals/hit-wall
    :entity/projectile-collision {:entity-effects entity-effects
-                                 :piercing? piercing?}})
+                                 :piercing? piercing?
+                                 :direction direction
+                                 :speed speed}})
 
 (defn- double-ray-endpositions
   [[start-x start-y]
@@ -3219,9 +3220,10 @@
        [:tx/swap eid update :entity/stats remove-mods modifiers]])))
 
 (defn projectile-collision-tick
-  [v eid _delta-time grid applicable-effect-txs]
-  (let [{:keys [entity-effects already-hit-bodies piercing?]} v
-        entity @eid
+  [v eid delta-time grid applicable-effect-txs]
+  (let [{:keys [entity-effects already-hit-bodies piercing? direction speed]} v
+        entity (update @eid :entity/position
+                       #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))
         touched-cells (map deref (keep #(get-in grid %) (touched-tiles entity)))
         hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                         (not= (:entity/faction entity)
@@ -3232,7 +3234,9 @@
                                   (into #{} (mapcat :entities) touched-cells)))
         destroy? (or (and hit-entity (not piercing?))
                      (some #(cell-blocked? % (:entity/z-order entity)) touched-cells))]
-    (concat (when hit-entity
+    (concat [[:tx/swap eid assoc :entity/position (:entity/position entity)]
+             [:tx/update-position eid]]
+            (when hit-entity
               [[:tx/swap eid assoc-in [:entity/projectile-collision :already-hit-bodies]
                 (conj already-hit-bodies hit-entity)]])
             (when destroy?
@@ -3272,12 +3276,6 @@
     (when (timer-stopped? counter elapsed-time)
       [[:tx/event eid :effect-wears-off]])))
 
-(defn npc-moving-tick
-  [v eid _delta-time elapsed-time]
-  (let [{:keys [timer]} v]
-    (when (timer-stopped? timer elapsed-time)
-      [[:tx/event eid :timer-finished]])))
-
 (defn npc-sleeping-tick
   [_v eid _delta-time grid]
   (let [entity @eid]
@@ -3315,15 +3313,16 @@
     (when-not (or (zero? (v2-length direction))
                   (nil? speed)
                   (zero? speed))
-      (let [movement (assoc movement :delta-time delta-time)
-            body @eid]
-        (when-let [body (if (:entity/collides? body)
-                          (try-move-solid-body grid body (:entity/id @eid) movement)
-                          (let [{:keys [direction speed delta-time]} movement]
-                            (update body :entity/position
-                                    #(mapv (fn [p d] (+ p (* d speed delta-time))) % direction))))]
-          [[:tx/swap eid assoc :entity/position (:entity/position body)]
-           [:tx/update-position eid]])))))
+      (when-let [body (try-move-solid-body grid @eid (:entity/id @eid) (assoc movement :delta-time delta-time))]
+        [[:tx/swap eid assoc :entity/position (:entity/position body)]
+         [:tx/update-position eid]]))))
+
+(defn npc-moving-tick
+  [v eid delta-time elapsed-time grid max-speed]
+  (concat (movement-tick v eid delta-time grid max-speed)
+          (when (timer-stopped? (:timer v) elapsed-time)
+            [[:tx/event eid :timer-finished]])))
+
 
 (defn defaults [^Table table]
   (.defaults table))
@@ -3531,10 +3530,14 @@
                                 {:counter (create-timer v)}
 
                                 :player-moving
-                                {:movement-vector v}
+                                {:direction v
+                                 :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
+                                            0)}
 
                                 :npc-moving
-                                {:movement-vector v
+                                {:direction v
+                                 :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
+                                            0)
                                  :timer (create-timer (* (get-value (:entity/stats entity) :stats/reaction-time)
                                                          0.016))}
 
@@ -3596,12 +3599,6 @@
                                 :npc-dead
                                 [[:tx/swap eid assoc :entity/destroyed? true]]
 
-                                :player-moving
-                                (let [{:keys [movement-vector]} state-v]
-                                  [[:tx/swap eid assoc :entity/movement {:direction movement-vector
-                                                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                                                    0)}]])
-
                                 :player-dead
                                 [
                                  [:tx/sound "bfxr_playerdeath.wav"]
@@ -3610,12 +3607,6 @@
                                              :button-text "OK"
                                              :on-click (fn [])}]
                                  ]
-
-                                :npc-moving
-                                (let [{:keys [movement-vector]} state-v]
-                                  [[:tx/swap eid assoc :entity/movement {:direction movement-vector
-                                                                         :speed (or (get-value (:entity/stats @eid) :stats/movement-speed)
-                                                                                    0)}]])
 
                                 nil))
         elapsed-time (atom 0)
@@ -3643,18 +3634,12 @@
                                                                                                 (- (:entity/click-distance-tiles entity) 0.1))
                                                                            item))]]))
 
-                               :player-moving
-                               [[:tx/swap eid dissoc :entity/movement]]
-
                                :npc-sleeping
                                [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
                                 [:tx/spawn-entity (entity* (spawn-effect (:entity/position @eid) 
                                                                          {:entity/alert-friendlies-after-duration
                                                                           {:counter (create-timer 0.2)
                                                                            :faction (:entity/faction @eid)}}))]]
-
-                               :npc-moving
-                               [[:tx/swap eid dissoc :entity/movement]]
 
                                nil))
         fsm-event-txs (fn [world-mouse-position eid event & [params]]
@@ -3976,10 +3961,10 @@
                            :active-skill (active-skill-tick v eid delta-time (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable?)
                            :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
                            :stunned (stunned-tick v eid delta-time elapsed-time)
-                           :npc-moving (npc-moving-tick v eid delta-time elapsed-time)
+                           :player-moving (movement-tick v eid delta-time @grid max-speed)
+                           :npc-moving (npc-moving-tick v eid delta-time elapsed-time @grid max-speed)
                            :npc-sleeping (npc-sleeping-tick v eid delta-time @grid)
                            :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill)
-                           :entity/movement (movement-tick v eid delta-time @grid max-speed)
                            nil))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
@@ -4161,9 +4146,9 @@
 
                                 :player-moving
                                 (if-let [move-v (movement-vector key-pressed?)]
-                                  [[:tx/swap player-eid assoc :entity/movement {:direction move-v
-                                                                                :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
-                                                                                           0)}]]
+                                  [[:tx/swap player-eid assoc :player-moving {:direction move-v
+                                                                              :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
+                                                                                         0)}]]
                                   [[:tx/event player-eid :no-movement-input]])
 
                                 :player-item-on-cursor
@@ -4541,20 +4526,24 @@
              world-mouse-position (unproject viewport mouse-position)
              ]
          (clear-screen! 0 0 0 0)
+
          (update-mouseover-eid! mouseover-actor world-mouse-position)
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
+
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
          (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
          (.begin ^Batch batch)
          (render-tiled-map!)
          (draw-world-layer! mouse-position)
          (.end ^Batch batch)
+
          (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position)
          (update-paused-state! key-just-pressed? key-pressed?)
          (tick-game! delta-time world-mouse-position)
          (key-pressed-checks! key-pressed?)
          (key-just-pressed-checks! key-just-pressed?)
+
          (act! stage)
          (draw! stage)))
 
