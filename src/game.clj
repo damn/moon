@@ -1,7 +1,9 @@
 (ns game)
 
 (def float-rounding-error (double 0.000001))
+
 (def transition-idxvalues [2 8 1 4])
+
 (def slots #{:inventory.slot/bag
              :inventory.slot/weapon
              :inventory.slot/shield
@@ -13,7 +15,9 @@
              :inventory.slot/cloak
              :inventory.slot/necklace
              :inventory.slot/rings})
+
 (require '[malli.core :as m])
+
 (def val-max-schema
   (m/schema
    [:and
@@ -1061,33 +1065,6 @@
 (defn all-raw [db property-type]
   (->> (vals db)
        (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
-
-(declare build-values)
-
-(defn- create-value [schemas [k] v db]
-  (case k
-    :s/map
-    (build-values schemas v db)
-
-    :s/one-to-many
-    (set (map (fn [property-id]
-                (build-values schemas (safe-get db property-id) db))
-              v))
-
-    :s/one-to-one
-    (build-values schemas (safe-get db v) db)
-
-    v))
-
-(defn build-values [schemas property db]
-  (reduce (fn [m k]
-            (assoc m k
-                   (try (create-value schemas (get schemas k) (k m) db)
-                        (catch Throwable t
-                          (throw (ex-info " " {:k k
-                                               :v (k m)} t))))))
-          property
-          (keys property)))
 
 (import '(com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3))
 
@@ -2783,15 +2760,12 @@
           :when value]
       [[x y] value])))
 
-(defn build [schemas db property-id]
-  (build-values schemas (safe-get db property-id) db))
-
-(defn spawn-map-creatures [schemas db tiled-map start-position fsms]
+(defn spawn-map-creatures [build-property tiled-map start-position fsms]
   (mapcat (fn [[position creature-id]] 
             (when (not= position start-position)
               [[:tx/spawn-entity 
                (spawn-creature {:position (mapv (partial + 0.5) position)
-                                :creature-property (build schemas db (keyword creature-id))
+                                :creature-property (build-property (keyword creature-id))
                                 :components {:entity/fsm {:fsm (:npc fsms)
                                                           :initial-state :npc-sleeping}
                                              :entity/faction :evil}})]]))
@@ -3506,6 +3480,7 @@
 (defn game-listener 
   [{:keys [game-schemas
            game-db
+           build-property
            info-text
            pausing?
            state->pause-game?
@@ -4455,7 +4430,7 @@
            (reset! raycaster (create-raycaster g)))
          (reset! elapsed-time 0)
          (let [eid (spawn-entity! (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                   :creature-property (build game-schemas game-db :creatures/vampire)
+                                                   :creature-property (build-property :creatures/vampire)
                                                    :components {:entity/fsm {:fsm (:player fsms)
                                                                              :initial-state :player-idle}
                                                                 :entity/faction :good
@@ -4542,7 +4517,7 @@
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
          (sync-player-ui!)
-         (handle-txs! (spawn-map-creatures game-schemas game-db @tiled-map* start-position fsms))))
+         (handle-txs! (spawn-map-creatures build-property @tiled-map* start-position fsms))))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
@@ -5838,10 +5813,34 @@
                                              :glove 8
                                              :boot 9
                                              :bag 10}
+        build-values (fn build-values [property]
+                       (reduce (fn [m k]
+                                 (assoc m k
+                                        (try (let [v (k m)]
+                                               (case (first (get game-schemas k))
+                                                 :s/map
+                                                 (build-values v)
+
+                                                 :s/one-to-many
+                                                 (set (map (fn [property-id]
+                                                             (build-values (safe-get game-db property-id)))
+                                                           v))
+
+                                                 :s/one-to-one
+                                                 (build-values (safe-get game-db v))
+
+                                                 v))
+                                             (catch Throwable t
+                                               (throw (ex-info " " {:k k
+                                                                    :v (k m)} t))))))
+                               property
+                               (keys property)))
         listener (game-listener
                    {
                     :game-schemas game-schemas
                     :game-db game-db
+                    :build-property (fn [property-id]
+                                      (build-values (safe-get game-db property-id)))
                     :info-text info-text
                     :level-fn ;create-vampire-level
                     ;create-uf-caves
