@@ -3738,7 +3738,7 @@
                                                                                     0)}]])
 
                                 nil))
-        entity-state-exit! (fn [eid [state-k _state-v]]
+        entity-state-exit! (fn [eid [state-k _state-v] world-mouse-position]
                              (case state-k
                                :player-item-on-cursor
                                (let [entity @eid
@@ -3746,7 +3746,7 @@
                                  (when item
                                    [[:tx/swap eid dissoc :entity/item-on-cursor]
                                     [:tx/sound "bfxr_itemputground.wav"]
-                                    [:tx/spawn-entity (spawn-item (item-place-position (unproject @viewport [(get-x @input) (get-y @input)])
+                                    [:tx/spawn-entity (spawn-item (item-place-position world-mouse-position
                                                                                        (:entity/position entity)
                                                                                        (- (:entity/click-distance-tiles entity) 0.1))
                                                                   item)]]))
@@ -3762,7 +3762,7 @@
                                [[:tx/swap eid dissoc :entity/movement]]
 
                                nil))
-        fsm-event-txs (fn [eid event & [params]]
+        fsm-event-txs (fn [world-mouse-position eid event & [params]]
                         (let [fsm (:entity/fsm @eid)
                               _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
                               old-state-k (:state fsm)
@@ -3778,7 +3778,7 @@
                               (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                                        [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                                        [:tx/swap eid dissoc old-state-k]]
-                                      (entity-state-exit! eid old-state-obj)
+                                      (entity-state-exit! eid old-state-obj world-mouse-position)
                                       (entity-state-enter! eid new-state-obj))))))
         handle-txs! (fn handle-txs! [txs]
                       (let [k->txs {
@@ -3794,7 +3794,7 @@
                                     ; which are order dependent!
                                     ; at player-item-on-cursor inventory/world/ui magic.
                                     (fn [& params]
-                                      (handle-txs! (apply fsm-event-txs params)))
+                                      (handle-txs! (apply fsm-event-txs (unproject @viewport [(get-x @input) (get-y @input)]) params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
