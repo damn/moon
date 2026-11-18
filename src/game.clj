@@ -5478,36 +5478,6 @@
 (defn play-sound!* [sounds sound-name]
   (play! (safe-get sounds sound-name)))
 
-(defn create-widget
-  [schemas [schema-k :as schema] v skin editor rebuild-editor-window! property-k-order-index]
-  (case schema-k
-    :s/animation (create-animation-widget v (:editor/get-texture-region editor))
-    :s/boolean (create-boolean-widget v skin)
-    :s/enum (create-enum-widget schema v skin)
-    :s/image (create-image-widget v (:editor/get-texture-region editor))
-    :s/map (create-map-widget schemas schema v
-                              (fn build-widget [schema k v] 
-                                (let [widget (create-widget schemas schema v skin editor rebuild-editor-window! property-k-order-index)]
-                                  (set-user-object! widget [k v])
-                                  widget))
-                              (fn [schema widget] (widget-value schemas schema widget))
-                              skin
-                              editor
-                              rebuild-editor-window!
-                              property-k-order-index)
-    :s/number (create-number-widget schema v skin)
-    :s/one-to-many (create-one-to-many-widget schema v skin editor)
-    :s/one-to-one (create-one-to-one-widget schema v editor)
-    :s/sound (create-sound-widget ((:editor/sound-names editor))
-                                  v 
-                                  (:editor/play-sound! editor)
-                                  skin
-                                  ((:editor/get-viewport editor))
-                                  (:editor/add-actor! editor))
-    :s/string (create-string-widget schema v skin)
-    :s/val-max (create-val-max-widget schema v skin)
-    (create-default-widget v skin)))
-
 (defn center! [cell]
   (.center ^Cell cell))
 
@@ -5623,7 +5593,8 @@
                         :properties/projectiles
                         :properties/skills]
         property-editor-window (fn property-editor-window [schemas property skin editor]
-                                 (let [schema (get schemas (keyword "properties" (namespace (:property/id property))))
+                                 (let [
+                                       schema (get schemas (keyword "properties" (namespace (:property/id property))))
                                        rebuild-editor-window! (fn []
                                                                 (let [window (-> (get-root @editor-stage)
                                                                                  (find-actor "moon.ui.clojure.editor-window"))
@@ -5631,7 +5602,35 @@
                                                                       property (widget-value schemas schema map-widget-table)]
                                                                   (remove! window)
                                                                   (add-actor! @editor-stage (property-editor-window schemas property skin editor))))
-                                       widget (create-widget schemas schema property skin editor rebuild-editor-window! property-k-order-index)
+                                       create-widget (fn create-widget [[schema-k :as schema] v]
+                                                       (case schema-k
+                                                         :s/animation (create-animation-widget v (:editor/get-texture-region editor))
+                                                         :s/boolean (create-boolean-widget v skin)
+                                                         :s/enum (create-enum-widget schema v skin)
+                                                         :s/image (create-image-widget v (:editor/get-texture-region editor))
+                                                         :s/map (create-map-widget schemas schema v
+                                                                                   (fn build-widget [schema k v] 
+                                                                                     (let [widget (create-widget schema v)]
+                                                                                       (set-user-object! widget [k v])
+                                                                                       widget))
+                                                                                   (fn [schema widget] (widget-value schemas schema widget))
+                                                                                   skin
+                                                                                   editor
+                                                                                   rebuild-editor-window!
+                                                                                   property-k-order-index)
+                                                         :s/number (create-number-widget schema v skin)
+                                                         :s/one-to-many (create-one-to-many-widget schema v skin editor)
+                                                         :s/one-to-one (create-one-to-one-widget schema v editor)
+                                                         :s/sound (create-sound-widget ((:editor/sound-names editor))
+                                                                                       v 
+                                                                                       (:editor/play-sound! editor)
+                                                                                       skin
+                                                                                       ((:editor/get-viewport editor))
+                                                                                       (:editor/add-actor! editor))
+                                                         :s/string (create-string-widget schema v skin)
+                                                         :s/val-max (create-val-max-widget schema v skin)
+                                                         (create-default-widget v skin)))
+                                       widget (create-widget schema property)
                                        scroll-pane-height (get-world-height (get-viewport @editor-stage))
                                        get-widget-value #(widget-value schemas schema widget)
                                        property-id (:property/id property)
