@@ -1118,17 +1118,22 @@
     (draw [_batch _parent-alpha]
       (draw! this))))
 
-(defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position get-player-eid]
+(defn stage->local-coordinates [^Actor actor [x y]]
+  (let [v2 (.stageToLocalCoordinates actor (Vector2. x y))]
+    [(.x v2)
+     (.y v2)]))
+
+(defn actor-hit [^Actor actor [x y]]
+  (.hit actor (float x) (float y) true))
+
+(defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position]
   (create-widget
     (fn [this]
-      (draw-cell-rect! @(get-player-eid)
-                       (get-x this)
+      (draw-cell-rect! (get-x this)
                        (get-y this)
-                       (let [[x y] (unproject (get-viewport (.getStage ^Actor this)) (get-mouse-position))
-                             local (.stageToLocalCoordinates ^Actor this (Vector2. x y))
-                             x (.x ^Vector2 local)
-                             y (.y ^Vector2 local)]
-                         (.hit ^Actor this (float x) (float y) true))
+                       (actor-hit this
+                                  (let [stage-mouse-coords (unproject (get-viewport (get-stage this)) (get-mouse-position))]
+                                    (stage->local-coordinates this stage-mouse-coords)))
                        cell))))
 
 (defn set-user-object! [^Actor actor obj]
@@ -1146,11 +1151,11 @@
 (defn add-actors! [group actors]
   (run! #(add-actor! group %) actors))
 
-(defn- inv-window-cell [get-player-eid get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+(defn- inv-window-cell [get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     (doto (create-stack)
-      (add-actors! [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-mouse-position get-player-eid)
+      (add-actors! [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-mouse-position)
                     (inventory-window-cell-image-widget background-drawable cell-size)])
       (add-listener! (proxy [ClickListener] []
                        (clicked [event _x _y]
@@ -1187,8 +1192,7 @@
    (Actor/.setPosition actor (float x) (float y) align)))
 
 (defn- build-inventory-window
-  [{:keys [get-player-eid
-           get-mouse-position
+  [{:keys [get-mouse-position
            on-click-cell
            draw-cell-rect!
            skin
@@ -1199,7 +1203,7 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint (Color. 1 1 1 0.4))))
-        ->cell (partial inv-window-cell get-player-eid get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
+        ->cell (partial inv-window-cell get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (table-create)
         window (create-window "Inventory" skin)]
     (doseq [row (concat [[nil 
@@ -4266,22 +4270,22 @@
                                                ""))
                           :skin @skin})
         inventory-window-opts (fn [on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
-                                {:get-player-eid player-eid
-                               :get-mouse-position get-input-position
-                               :on-click-cell (fn [_event cell]
-                                                (on-click-cell! cell))
-                               :draw-cell-rect! (fn [player-entity x y mouseover? cell]
-                                                  (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
-                                                  (when (and mouseover? (:entity/item-on-cursor player-entity))
-                                                    (let [item (:entity/item-on-cursor player-entity)
-                                                          color (if (valid-slot? cell item)
-                                                                  (float-bits 0 0.6 0 0.8)
-                                                                  (float-bits 0.6 0 0 0.8))]
-                                                      (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color))))
-                               :skin @skin
-                               :position [ui-viewport-width ui-viewport-height]
-                               :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
-                               :cell-size inventory-cell-size})
+                                {:get-mouse-position get-input-position
+                                 :on-click-cell (fn [_event cell]
+                                                  (on-click-cell! cell))
+                                 :draw-cell-rect! (fn [x y mouseover? cell]
+                                                    (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
+                                                    (let [player-entity @(player-eid)]
+                                                      (when (and mouseover? (:entity/item-on-cursor player-entity))
+                                                        (let [item (:entity/item-on-cursor player-entity)
+                                                              color (if (valid-slot? cell item)
+                                                                      (float-bits 0 0.6 0 0.8)
+                                                                      (float-bits 0.6 0 0 0.8))]
+                                                          (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
+                                 :skin @skin
+                                 :position [ui-viewport-width ui-viewport-height]
+                                 :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
+                                 :cell-size inventory-cell-size})
 hp-mana-bar-opts (fn [ui-viewport-width]
                    (let [y-mana 80
                                 rahmenw 150
