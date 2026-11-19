@@ -3657,6 +3657,57 @@
     :effects.target/stun (and (:effect/target effect-ctx)
                               (:entity/fsm @(:effect/target effect-ctx)))))
 
+(defn effect-useful? [[k v] effect-ctx ray-blocked?]
+  (case k
+    :effects/projectile
+    (let [{:keys [projectile/max-range] :as projectile} v
+          source-p (:entity/position @(:effect/source effect-ctx))
+          target-p (:entity/position @(:effect/target effect-ctx))]
+      (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
+                                                                               target-p
+                                                                               (:projectile/size projectile))]
+                  (or
+                    (ray-blocked? start1 target1)
+                    (ray-blocked? start2 target2))))
+           (< (v2-distance source-p target-p)
+              max-range)))
+
+    :effects/target-all
+    false
+
+    :effects/target-entity
+    (in-range? @(:effect/source effect-ctx)
+               @(:effect/target effect-ctx)
+               (:maxrange v))
+
+    true))
+
+(defn usable-state [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
+  (cond
+    cooling-down?
+    :cooldown
+
+    (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
+    :not-enough-mana
+
+    (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
+    :invalid-params
+
+    :else
+    :usable))
+
+(defn choose-skill [raycaster-blocked? entity effect-ctx]
+  (->> entity
+       :entity/skills
+       vals
+       (sort-by :skill/cost)
+       reverse
+       (filter #(and (= :usable (usable-state % entity effect-ctx))
+                     (->> (:skill/effects %)
+                          (filter (fn [e] (effect-applicable? e effect-ctx)))
+                          (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?))))))
+       first))
+
 ; TODO pass data literals
 ; anony fns just bind state otherwise make sep. fns
 (defn game-listener 
@@ -3764,55 +3815,9 @@
                                     :effects.target/stun (let [duration v]
                                                            (tx-event-txs (:effect/target effect-ctx) :stun duration))))
                                 (filter #(effect-applicable? % effect-ctx) effects)))
-        effect-useful? (fn [[k v] effect-ctx ray-blocked?]
-                         (case k
-                           :effects/projectile
-                           (let [{:keys [projectile/max-range] :as projectile} v
-                                 source-p (:entity/position @(:effect/source effect-ctx))
-                                 target-p (:entity/position @(:effect/target effect-ctx))]
-                             (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
-                                                                                                      target-p
-                                                                                                      (:projectile/size projectile))]
-                                         (or
-                                           (ray-blocked? start1 target1)
-                                           (ray-blocked? start2 target2))))
-                                  (< (v2-distance source-p target-p)
-                                     max-range)))
-
-                           :effects/target-all
-                           false
-
-                           :effects/target-entity
-                           (in-range? @(:effect/source effect-ctx)
-                                      @(:effect/target effect-ctx)
-                                      (:maxrange v))
-
-                          true))
-        usable-state (fn [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
-                       (cond
-                         cooling-down?
-                         :cooldown
-
-                         (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
-                         :not-enough-mana
-
-                         (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
-                         :invalid-params
-
-                         :else
-                         :usable))
-        choose-skill (fn [entity effect-ctx]
-                       (->> entity
-                            :entity/skills
-                            vals
-                            (sort-by :skill/cost)
-                            reverse
-                            (filter #(and (= :usable (usable-state % entity effect-ctx))
-                                          (->> (:skill/effects %)
-                                               (filter (fn [e] (effect-applicable? e effect-ctx)))
-                                               (some (fn [e] (effect-useful? e effect-ctx (partial raycaster-blocked? @raycaster)))))))
-                            first))
         grid (atom nil)
+        choose-skill (fn [& params]
+                       (apply choose-skill (partial raycaster-blocked? @raycaster) params))
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation [[:tx/swap eid animation-tick delta-time]]
