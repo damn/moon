@@ -4251,8 +4251,6 @@
         play-sound!* (fn [sound-name]
                        (Sound/.play (safe-get @sounds sound-name)))
         viewport (atom nil)
-        shape-drawer-texture (atom nil)
-        state (atom nil)
         info-window-opts (fn [ui-viewport-width]
                            {:title "Entity Info"
                           :actor-name "moon.ui.windows.entity-info"
@@ -4384,6 +4382,10 @@ init-game-state! (fn []
                                     (concat [[:tx/spawn-entity entity]]
                                             (player-ui-txs #(info-text % @elapsed-time) entity)
                                             (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
+
+
+        state (atom nil)
+        shape-drawer-texture (atom nil)
         ]
     {
      :create!
