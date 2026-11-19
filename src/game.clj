@@ -3640,9 +3640,6 @@
                                                                            :faction (:entity/faction @eid)}}))]]
 
                                nil))
-        ; TODO simple -> pass functions around instead of state!
-        ; clear about state space 
-        ; especially libgdx state ?
         controls-info (str/join "\n"
                                 ["[W][A][S][D] - Move"
                                  "[ESCAPE] - Close windows"
@@ -3676,9 +3673,6 @@
         paused? (atom false)
         mouseover-eid (atom nil)
         elapsed-time (atom 0)
-        ; FIXME libgdx state atoms passed! pass functions better!
-        ; but here its engine info? concat engine info???
-        ; engine info update labels and game info update labels?
         update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
                         [{:label "elapsed-time"
                           :update-fn (fn [] 
@@ -4259,7 +4253,6 @@
         viewport (atom nil)
         shape-drawer-texture (atom nil)
         state (atom nil)
-
         info-window-opts (fn [ui-viewport-width]
                            {:title "Entity Info"
                           :actor-name "moon.ui.windows.entity-info"
@@ -4342,49 +4335,26 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
     {
      :create!
      (fn [{:keys [audio files graphics get-input-position set-input-processor!]}]
-
-
-       ; No GL/thread context needed, but can still expose as capab?
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-
-       ; idk check
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-
-
-       ; return 'make-cursor fn ? 
-       (reset! state {
-                      :cursors (update-vals (:cursors game-config)
+       (reset! state {:cursors (update-vals (:cursors game-config)
                                             (fn [[path [hotspot-x hotspot-y]]]
                                               (let [pixmap (pixmap (internal files path))
                                                     cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
                                                 (dispose! pixmap)
-                                                cursor)))
-                      })
-
-       ; return make-sound cap?
+                                                cursor)))})
        (reset! sounds (into {}
                             (for [path (:sounds game-config)]
                               [path (new-sound audio (internal files path))])))
-
-       ; cap?
        (reset! batch (sprite-batch!))
-
-       ; cap?
        (reset! default-font (create-default-font! files 
                                                   {:path "fonts/films.EXL_____.ttf"
                                                    :size 16
                                                    :quality-scaling 2
                                                    :use-integer-positions? false}))
-
-       ; cap?
        (reset! shape-drawer-texture (white-pixel-texture))
-
-       ; cap?
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
-
-       ; cap?
        (reset! skin (create-skin! (internal files (:skin game-config))))
-
        (reset! textures (create-textures files (:textures game-config)))
        (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                           (float (:height (:stage game-config)))) 
@@ -4404,24 +4374,12 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
            (add-actor! stage* actor))
          (reset! stage stage*))
        (set-input-processor! @stage)
-
-       ; files?
-
-       ; viewport is cap. ? -> make GDX game engine so clear and documented separation?
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
-
-       ; could load this already before/independent of GL context
-       ; if it would not be for the tiledmaps needing textures.
        (let [{:keys [^TiledMap tiled-map 
                      start-position]} (create-level! @textures image->texture-region)]
          (reset! tiled-map* tiled-map)
-
-         ; already set?
          (reset! id-counter 0)
-
-         ; already set?
          (reset! entity-ids {})
-
          (let [props (get-properties tiled-map)
                width (props-get props "width")
                height (props-get props "height")
@@ -4432,14 +4390,8 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
                                                              (range height)))
                                                (range width)))
            (reset! raycaster (create-raycaster g)))
-
-         ; set already
          (reset! elapsed-time 0)
-
-         ; set already , no need atom
          (reset! player-id (generate-id!*))
-
-         
          (handle-txs! play-sound!*
                       (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
                                                              :creature-property (build-property :creatures/vampire)
