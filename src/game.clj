@@ -2467,12 +2467,6 @@
              (float w)
              (float h)))))
 
-(defn- item-place-position [world-mouse-position player-position maxrange]
-  (mapv + player-position
-        (v2-scale (v2-direction player-position world-mouse-position)
-                  (min maxrange
-                       (v2-distance player-position world-mouse-position)))))
-
 (defn- create-fsm
   [fsm initial-state]
   (assoc (fsm initial-state nil) :state initial-state))
@@ -2814,40 +2808,40 @@
 
 (defn handle-clicked-inventory-cell
   [player-eid cell]
-  (case (:state (:entity/fsm @player-eid))
-    :player-idle
-    (when-let [item (item-at (:entity/inventory @player-eid) cell)]
-      [[:tx/sound "bfxr_takeit.wav"]
-       [:tx/swap player-eid remove-item cell]
+  (let [entity @player-eid
+        inventory (:entity/inventory entity)
+        item-in-cell (item-at inventory cell)
+        item-on-cursor (:entity/item-on-cursor entity)]
+    (cond
+      (and (not item-on-cursor) 
+           item-in-cell)
+      [[:tx/swap player-eid remove-item cell]
+       [:tx/swap player-eid assoc :entity/item-on-cursor item-in-cell]
+       [:tx/sound "bfxr_takeit.wav"]
+       [:tx/remove-item cell]]
+
+      (and (not item-on-cursor) (not item-in-cell))
+      ; FIXME handle
+      nil  
+
+      ; TODO 2x more cases for not-valid-slot (cant place it here -> handle all cases -> clarity)
+      (and item-on-cursor
+           (not item-in-cell)
+           (valid-slot? cell item-on-cursor))
+      [[:tx/swap player-eid set-item cell item-on-cursor]
+       [:tx/swap player-eid dissoc :entity/item-on-cursor]
+       [:tx/sound "bfxr_itemput.wav"]
+       [:tx/set-item cell item-on-cursor]]
+
+      (and item-on-cursor
+           item-in-cell
+           (valid-slot? cell item-on-cursor))
+      [[:tx/swap player-eid remove-item cell]
+       [:tx/swap player-eid set-item cell item-on-cursor]
+       [:tx/swap player-eid assoc :entity/item-on-cursor item-in-cell]
+       [:tx/sound "bfxr_itemput.wav"]
        [:tx/remove-item cell]
-       [:tx/event player-eid :pickup-item item]])
-
-    :player-item-on-cursor
-    (let [entity @player-eid
-          inventory (:entity/inventory entity)
-          item-in-cell (item-at inventory cell)
-          item-on-cursor (:entity/item-on-cursor entity)]
-      (cond
-       (and (not item-in-cell)
-            (valid-slot? cell item-on-cursor))
-       [[:tx/swap player-eid dissoc :entity/item-on-cursor]
-        [:tx/sound "bfxr_itemput.wav"]
-        [:tx/swap player-eid set-item cell item-on-cursor]
-        [:tx/set-item cell item-on-cursor]
-        [:tx/event player-eid :dropped-item]]
-
-       (and item-in-cell
-            (valid-slot? cell item-on-cursor))
-       [[:tx/swap player-eid dissoc :entity/item-on-cursor]
-        [:tx/sound "bfxr_itemput.wav"]
-        [:tx/swap player-eid remove-item cell]
-        [:tx/remove-item cell]
-        [:tx/swap player-eid set-item cell item-on-cursor]
-        [:tx/set-item cell item-on-cursor]
-        [:tx/event player-eid :dropped-item]
-        [:tx/event player-eid :pickup-item item-in-cell]]))
-
-    nil))
+       [:tx/set-item cell item-on-cursor]])))
 
 (defn player-message-actor-create [default-font unit-scale]
   (let [message-duration-seconds 0.5]
@@ -2877,18 +2871,15 @@
       (set-name! "player-message")
       (set-user-object! (atom nil)))))
 
+; TODO inline.
 (defn- entity-state-draw-ui-view
   [[k _v] eid batch unit-scale image->texture-region mouseover-actor* ui-mouse-pos]
-  (case k
-    :player-item-on-cursor
-    (when mouseover-actor*
-      (draw-texture-region! batch
-                            @unit-scale
-                            (image->texture-region (:entity/image (:entity/item-on-cursor @eid)))
-                            ui-mouse-pos
-                            {:center? true}))
-
-    nil))
+  (when-let [item (:entity/item-on-cursor @eid)]
+    (draw-texture-region! batch
+                          @unit-scale
+                          (image->texture-region (:entity/image item))
+                          ui-mouse-pos
+                          {:center? true})))
 
 (defn player-state-draw-create [get-player-eid unit-scale image->texture-region get-mouse-position]
   (proxy [Actor] []
@@ -3551,9 +3542,6 @@
                                  :timer (create-timer (* (get-value (:entity/stats entity) :stats/reaction-time)
                                                          0.016))}
 
-                                :player-item-on-cursor
-                                {:item v}
-
                                 v))
         construct-entity (fn [entity create-timer]
                            (let [entity (reduce (fn [m [k v]]
@@ -3590,12 +3578,8 @@
                                       :entity/width (float width)
                                       :entity/height (float height)
                                       :entity/rotation-angle (or rotation-angle 0)))))
-        entity-state-enter! (fn [eid [state-k state-v] create-timer]
+        entity-state-enter! (fn [eid [state-k state-v] _create-timer]
                               (case state-k
-                                :player-item-on-cursor
-                                (let [{:keys [item]} state-v]
-                                  [[:tx/swap eid assoc :entity/item-on-cursor item]])
-
                                 :npc-dead
                                 [[:tx/swap eid assoc :entity/destroyed? true]]
 
@@ -3609,19 +3593,8 @@
                                  ]
 
                                 nil))
-        entity-state-exit! (fn [eid [state-k _state-v] world-mouse-position create-timer entity*]
+        entity-state-exit! (fn [eid [state-k _state-v] _world-mouse-position create-timer entity*]
                              (case state-k
-                               :player-item-on-cursor
-                               (let [entity @eid
-                                     item (:entity/item-on-cursor entity)]
-                                 (when item
-                                   [[:tx/swap eid dissoc :entity/item-on-cursor]
-                                    [:tx/sound "bfxr_itemputground.wav"]
-                                    [:tx/spawn-entity (entity* (spawn-item (item-place-position world-mouse-position
-                                                                                                (:entity/position entity)
-                                                                                                (- (:entity/click-distance-tiles entity) 0.1))
-                                                                           item))]]))
-
                                :npc-sleeping
                                [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
                                 [:tx/spawn-entity (entity* (spawn-effect (:entity/position @eid) 
@@ -3688,10 +3661,7 @@
                                           (set-occupied-cells! @grid eid))
                                         eid))
                                     :tx/event
-                                    ; cant remove this because item on cursor triggers to :tx/event after another
-                                    ; which are order dependent!
-                                    ; at player-item-on-cursor inventory/world/ui magic.
-                                    ; => handle-clicked-inventory-cell (player-item-on-cursor)
+                                    ; FIXME 
                                     (fn [& params]
                                       (handle-txs! play-sound! world-mouse-position (apply fsm-event-txs world-mouse-position params)))
                                     :tx/modal
@@ -3839,7 +3809,6 @@
                           :kill -> :player-dead
                           :stun -> :stunned
                           :start-action -> :active-skill
-                          :pickup-item -> :player-item-on-cursor
                           :movement-input -> :player-moving]
                          [:player-moving
                           :kill -> :player-dead
@@ -3852,11 +3821,6 @@
                          [:stunned
                           :kill -> :player-dead
                           :effect-wears-off -> :player-idle]
-                         [:player-item-on-cursor
-                          :kill -> :player-dead
-                          :stun -> :stunned
-                          :drop-item -> :player-idle
-                          :dropped-item -> :player-idle]
                          [:player-dead]])}
         effect-applicable? (fn effect-applicable? [[k v] effect-ctx]
                              (case k
@@ -3992,10 +3956,14 @@
         create-interaction-state (fn [mouseover-actor world-mouse-position]
                                    (let [player-eid (player-eid)
                                          stage @stage
-                                         mouseover-eid @mouseover-eid]
+                                         mouseover-eid @mouseover-eid
+                                         item-on-cursor (:entity/item-on-cursor @player-eid)]
                                      (cond
                                        mouseover-actor
                                        [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+
+                                       item-on-cursor
+                                       [:interaction-state/drop-item-on-cursor item-on-cursor]
 
                                        (and mouseover-eid
                                             (:entity/clickable @mouseover-eid))
@@ -4029,6 +3997,12 @@
                                    :interaction-state/mouseover-actor
                                    nil
 
+                                   :interaction-state/drop-item-on-cursor
+                                   (let [item params]
+                                     [[:tx/swap player-eid dissoc :entity/item-on-cursor]
+                                      [:tx/sound "bfxr_itemputground.wav"]
+                                      [:tx/spawn-entity (entity* (spawn-item (:entity/position @player-eid) item))]])
+
                                    :interaction-state/clickable-mouseover-eid
                                    (let [{:keys [clicked-eid in-click-range?]} params]
                                      (if in-click-range?
@@ -4042,9 +4016,13 @@
                                              (-> (get-root stage)
                                                  (find-actor "moon.ui.windows.inventory")
                                                  visible?)
+                                             ; beacuse of this case destroy entities havs to run after paused
+                                             ; otherwise game pauses and we just mark destryoted 
+                                             ; maybe transactions shouldnt be allowed to return partial valid state
+                                             ; then can destroy immediately?
                                              [[:tx/swap clicked-eid assoc :entity/destroyed? true]
-                                              [:tx/sound "bfxr_takeit.wav"]
-                                              [:tx/event player-eid :pickup-item item]]
+                                              [:tx/swap player-eid assoc :entity/item-on-cursor item]
+                                              [:tx/sound "bfxr_takeit.wav"]]
 
                                              (can-pickup-item? (:entity/inventory @player-eid) item)
                                              (do
@@ -4079,11 +4057,11 @@
                                    :interaction-state/no-skill-selected
                                    [[:tx/sound "bfxr_denied.wav"]
                                     [:tx/show-message "No selected skill"]]))
-        cursor-key (fn [player-eid interaction-state]
+        cursor-key (fn [player-eid interaction-state] ; doesnt handle item on cursor swap/place/etc. cases?
                      (let [eid player-eid
                            entity @eid
                            state-k (:state (:entity/fsm entity))
-                           cursor-fn (get {:player-item-on-cursor :cursors/hand-grab
+                           cursor-fn (get {
                                            :player-dead :cursors/black-x
                                            :active-skill :cursors/sandclock
                                            :stunned :cursors/denied
@@ -4112,6 +4090,10 @@
 
                                                                   :else
                                                                   :cursors/default))
+
+                                                              :interaction-state/drop-item-on-cursor
+                                                              :cursors/hand-grab ; FIXME better cursor ? or no different cursor?
+                                                              ; text what is current interaction state?
 
                                                               :interaction-state/clickable-mouseover-eid
                                                               (let [{:keys [clicked-eid
@@ -4148,12 +4130,6 @@
                                                                               :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
                                                                                          0)}]]
                                   [[:tx/event player-eid :no-movement-input]])
-
-                                :player-item-on-cursor
-                                (when (and (button-just-pressed? Input$Buttons/LEFT)
-                                           (not mouseover-actor))
-                                  [[:tx/event player-eid :drop-item]])
-
                                 nil))
         cursors (atom nil)
         mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position]
@@ -4232,16 +4208,6 @@
                           (case k
                             :entity/clickable
                             (clickable-draw v entity @batch @default-font @unit-scale)
-                            :player-item-on-cursor
-                            (let [{:keys [item]} v]
-                              (when-not (let [[x y] (unproject (get-viewport @stage) mouse-position)]
-                                          (stage-hit @stage x y))
-                                (draw-texture-region! @batch @unit-scale
-                                                      (image->texture-region (:entity/image item))
-                                                      (item-place-position (unproject @viewport mouse-position)
-                                                                           (:entity/position entity)
-                                                                           (- (:entity/click-distance-tiles entity) 0.1))
-                                                      {:center? true})))
                             :entity/animation
                             (animation-draw v entity @batch @unit-scale image->texture-region)
                             :entity/image
@@ -4264,8 +4230,7 @@
                             (stunned-draw entity @shape-drawer)))
         render-z-order (apply hash-map (interleave z-orders (range)))
         render-layers [#{:entity/mouseover?
-                         :stunned
-                         :player-item-on-cursor}
+                         :stunned}
                        #{:entity/clickable
                          :entity/animation
                          :entity/image
@@ -4455,8 +4420,7 @@
                                                                (handle-txs! play-sound!* world-mouse-position (handle-clicked-inventory-cell (player-eid) cell))))
                                             :draw-cell-rect! (fn [player-entity x y mouseover? cell]
                                                                (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
-                                                               (when (and mouseover?
-                                                                          (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                                                               (when (and mouseover? (:entity/item-on-cursor player-entity))
                                                                  (let [item (:entity/item-on-cursor player-entity)
                                                                        color (if (valid-slot? cell item)
                                                                                (float-bits 0 0.6 0 0.8)
@@ -5838,7 +5802,11 @@
                                          :player-moving false
                                          :player-idle true
                                          :player-dead true
-                                         :player-item-on-cursor true}
+                                         
+                                         ; ? if we dont pause anymore and its in idle do we still have to destroy entities outsife of running ?
+                                         ; should transcations be self contained ? or systems no intermediary wrong state?
+                                         ;:player-item-on-cursor true
+                                         }
                     :controls {:zoom-in Input$Keys/MINUS
                                :zoom-out Input$Keys/EQUALS
                                :unpause-once Input$Keys/P
