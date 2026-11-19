@@ -4259,6 +4259,85 @@
         viewport (atom nil)
         shape-drawer-texture (atom nil)
         state (atom nil)
+
+        info-window-opts (fn [ui-viewport-width]
+                           {:title "Entity Info"
+                          :actor-name "moon.ui.windows.entity-info"
+                          :visible? false
+                          :position [ui-viewport-width 0]
+                          :set-label-text! (fn []
+                                             (if-let [eid @mouseover-eid]
+                                               (info-text (apply dissoc @eid [:entity/skills
+                                                                              :entity/faction
+                                                                              :active-skill])
+                                                          @elapsed-time)
+                                               ""))
+                          :skin @skin})
+        inventory-window-opts (fn [get-input-position ui-viewport-width ui-viewport-height]
+                                {:get-player-eid player-eid
+                               :get-mouse-position get-input-position
+                               :on-click-cell (fn [_event cell]
+                                                (handle-txs! play-sound!* (handle-clicked-inventory-cell (player-eid) cell)))
+                               :draw-cell-rect! (fn [player-entity x y mouseover? cell]
+                                                  (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
+                                                  (when (and mouseover? (:entity/item-on-cursor player-entity))
+                                                    (let [item (:entity/item-on-cursor player-entity)
+                                                          color (if (valid-slot? cell item)
+                                                                  (float-bits 0 0.6 0 0.8)
+                                                                  (float-bits 0.6 0 0 0.8))]
+                                                      (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color))))
+                               :skin @skin
+                               :position [ui-viewport-width ui-viewport-height]
+                               :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
+                               :cell-size inventory-cell-size})
+hp-mana-bar-opts (fn [ui-viewport-width]
+                   (let [y-mana 80
+                                rahmenw 150
+                                rahmenh 26
+                                x (/ ui-viewport-width 2)
+                                rahmen-file "images/rahmen.png"
+                                hpcontent-file "images/hp.png"
+                                manacontent-file "images/mana.png"
+                                y-hp (+ y-mana rahmenh)
+                                bar-x (- x (/ rahmenw 2))
+                                draw-bar! (fn [batch x y content-file minmaxval name]
+                                            (draw-texture-region! batch
+                                                                  @unit-scale
+                                                                  (image->texture-region {:image/file rahmen-file})
+                                                                  [x y])
+                                            (draw-texture-region! batch
+                                                                  @unit-scale
+                                                                  (image->texture-region
+                                                                    {:image/file content-file
+                                                                     :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
+                                                                  [x y])
+                                            (draw-text! batch
+                                                        @default-font
+                                                        @unit-scale
+                                                        {:text (str (readable (minmaxval 0))
+                                                                    "/"
+                                                                    (minmaxval 1)
+                                                                    " "
+                                                                    name)
+                                                         :x (+ x 75)
+                                                         :y (+ y 2)
+                                                         :up? true}))]
+                            {:draw!
+                             (fn [batch _parent-alpha]
+                               (let [stats (:entity/stats @(player-eid))]
+                                 (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
+                                 (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
+dev-menu-opts (fn [get-input-position get-frames-per-second]
+                {:menus menus
+               :update-labels (map (fn [item]
+                                     (if (:icon item)
+                                       (update item :icon #(get @textures %))
+                                       item))
+                                   (update-labels get-frames-per-second
+                                                  get-input-position
+                                                  stage
+                                                  viewport))
+               :skin @skin})
         ]
     {
      :create!
@@ -4306,14 +4385,27 @@
        ; cap?
        (reset! skin (create-skin! (internal files (:skin game-config))))
 
-       ; cap?
-       (reset! stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
-                                           (float (:height (:stage game-config)))) 
-                             @batch))
+       (reset! textures (create-textures files (:textures game-config)))
+       (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
+                                          (float (:height (:stage game-config)))) 
+                            @batch)
+             ui-viewport-width (get-world-width (get-viewport stage*))
+             ui-viewport-height (get-world-height (get-viewport stage*))]
+         (doseq [actor [(create-action-bar)
+                        (create-dev-menu (dev-menu-opts get-input-position
+                                                        (fn [] (get-frames-per-second graphics))))
+                        (create-actor (hp-mana-bar-opts ui-viewport-width))
+                        (windows-create [(create-info-window (info-window-opts ui-viewport-width))
+                                         (build-inventory-window (inventory-window-opts get-input-position
+                                                                                        ui-viewport-width 
+                                                                                        ui-viewport-height))])
+                        (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
+                        (player-message-actor-create @default-font unit-scale)]]
+           (add-actor! stage* actor))
+         (reset! stage stage*))
        (set-input-processor! @stage)
 
        ; files?
-       (reset! textures (create-textures files (:textures game-config)))
 
        ; viewport is cap. ? -> make GDX game engine so clear and documented separation?
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
@@ -4347,88 +4439,7 @@
          ; set already , no need atom
          (reset! player-id (generate-id!*))
 
-         (doseq [actor [(create-action-bar)
-                        (create-dev-menu {:menus menus
-                                          :update-labels (map (fn [item]
-                                                                (if (:icon item)
-                                                                  (update item :icon #(get @textures %))
-                                                                  item))
-                                                              (update-labels (fn [] (get-frames-per-second graphics))
-                                                                             get-input-position
-                                                                             stage
-                                                                             viewport))
-                                          :skin @skin})
-                        (create-actor
-                          (let [y-mana 80
-                                rahmenw 150
-                                rahmenh 26
-                                x (/ (get-world-width (get-viewport @stage)) 2)
-                                rahmen-file "images/rahmen.png"
-                                hpcontent-file "images/hp.png"
-                                manacontent-file "images/mana.png"
-                                y-hp (+ y-mana rahmenh)
-                                bar-x (- x (/ rahmenw 2))
-                                draw-bar! (fn [batch x y content-file minmaxval name]
-                                            (draw-texture-region! batch
-                                                                  @unit-scale
-                                                                  (image->texture-region {:image/file rahmen-file})
-                                                                  [x y])
-                                            (draw-texture-region! batch
-                                                                  @unit-scale
-                                                                  (image->texture-region
-                                                                    {:image/file content-file
-                                                                     :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
-                                                                  [x y])
-                                            (draw-text! batch
-                                                        @default-font
-                                                        @unit-scale
-                                                        {:text (str (readable (minmaxval 0))
-                                                                    "/"
-                                                                    (minmaxval 1)
-                                                                    " "
-                                                                    name)
-                                                         :x (+ x 75)
-                                                         :y (+ y 2)
-                                                         :up? true}))]
-                            {:draw!
-                             (fn [batch _parent-alpha]
-                               (let [stats (:entity/stats @(player-eid))]
-                                 (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
-                                 (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
-                        (windows-create [(create-info-window
-                                           {:title "Entity Info"
-                                            :actor-name "moon.ui.windows.entity-info"
-                                            :visible? false
-                                            :position [(get-world-width (get-viewport @stage)) 0]
-                                            :set-label-text! (fn []
-                                                               (if-let [eid @mouseover-eid]
-                                                                 (info-text (apply dissoc @eid [:entity/skills
-                                                                                                :entity/faction
-                                                                                                :active-skill])
-                                                                            @elapsed-time)
-                                                                 ""))
-                                            :skin @skin})
-                                         (build-inventory-window
-                                           {:get-player-eid player-eid
-                                            :get-mouse-position get-input-position
-                                            :on-click-cell (fn [_event cell]
-                                                             (handle-txs! play-sound!* (handle-clicked-inventory-cell (player-eid) cell)))
-                                            :draw-cell-rect! (fn [player-entity x y mouseover? cell]
-                                                               (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
-                                                               (when (and mouseover? (:entity/item-on-cursor player-entity))
-                                                                 (let [item (:entity/item-on-cursor player-entity)
-                                                                       color (if (valid-slot? cell item)
-                                                                               (float-bits 0 0.6 0 0.8)
-                                                                               (float-bits 0.6 0 0 0.8))]
-                                                                   (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color))))
-                                            :skin @skin
-                                            :position [(get-world-width (get-viewport @stage))
-                                                       (get-world-height (get-viewport @stage))]
-                                            :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
-                                            :cell-size inventory-cell-size})])
-                        (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
-                        (player-message-actor-create @default-font unit-scale)]]
-           (add-actor! @stage actor))
+         
          (handle-txs! play-sound!*
                       (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
                                                              :creature-property (build-property :creatures/vampire)
