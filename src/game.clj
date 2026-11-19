@@ -3739,9 +3739,46 @@
     :as game-config}]
   (let [
         
+        inventory-cell-size 48
+        slot->texture-region (fn [slot]
+                               (let [width 48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 {:image/file "images/items.png"
+                                  :image/bounds bounds}))
+        factions-iterations {:good 15 :evil 5}
         construct-entity (fn [entity create-timer*]
                            (construct-entity entity create-timer* minimum-size z-orders))
-        
+        create-level! (fn [textures image->texture-region]
+                        (let [{level-tiled-map :tiled-map
+                               level-start :start-position}
+                              (level-fn {:level/creature-properties (prepare-creature-tiles
+                                                                      (all-raw game-db :properties/creatures)
+                                                                      image->texture-region)
+                                         :textures textures})]
+                          {:tiled-map level-tiled-map
+                           :start-position level-start}))
+        render-z-order (apply hash-map (interleave z-orders (range)))
+        render-layers [#{:entity/mouseover?
+                         :stunned}
+                       #{:entity/clickable
+                         :entity/animation
+                         :entity/image
+                         :entity/line-render}
+                       #{:npc-sleeping
+                         :entity/temp-modifier
+                         :entity/string-effect}
+                       #{:entity/stats
+                         :active-skill}]
+        font-params {:path "fonts/films.EXL_____.ttf"
+                     :size 16
+                     :quality-scaling 2
+                     :use-integer-positions? false}
         elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
@@ -3783,9 +3820,9 @@
                                     :effects.target/stun (let [duration v]
                                                            (tx-event-txs (:effect/target effect-ctx) :stun duration))))
                                 (filter #(effect-applicable? % effect-ctx) effects)))
-        grid (atom nil)
         choose-skill (fn [& params]
                        (apply choose-skill (partial raycaster-blocked? @raycaster) params))
+        grid (atom nil)
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation [[:tx/swap eid animation-tick delta-time]]
@@ -3802,17 +3839,6 @@
                            :npc-sleeping (npc-sleeping-tick v eid delta-time @grid tx-event-txs)
                            :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill create-timer* tx-event-txs)
                            nil))
-        factions-iterations {:good 15 :evil 5}
-        potential-field-cache (atom nil)
-        create-level! (fn [textures image->texture-region]
-                        (let [{level-tiled-map :tiled-map
-                               level-start :start-position}
-                              (level-fn {:level/creature-properties (prepare-creature-tiles
-                                                                      (all-raw game-db :properties/creatures)
-                                                                      image->texture-region)
-                                         :textures textures})]
-                          {:tiled-map level-tiled-map
-                           :start-position level-start}))
         entity-ids (atom {})
         player-id (atom nil)
         player-eid (fn []
@@ -4078,18 +4104,6 @@
                             (npc-sleeping-draw entity batch default-font unit-scale)
                             :stunned
                             (stunned-draw entity shape-drawer)))
-        render-z-order (apply hash-map (interleave z-orders (range)))
-        render-layers [#{:entity/mouseover?
-                         :stunned}
-                       #{:entity/clickable
-                         :entity/animation
-                         :entity/image
-                         :entity/line-render}
-                       #{:npc-sleeping
-                         :entity/temp-modifier
-                         :entity/string-effect}
-                       #{:entity/stats
-                         :active-skill}]
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
         content-grid (atom nil)
@@ -4112,18 +4126,6 @@
                                    (when new-eid
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
-        inventory-cell-size 48
-        slot->texture-region (fn [slot]
-                               (let [width 48
-                                     height 48
-                                     sprite-x 21
-                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
-                                     bounds [(* sprite-x width)
-                                             (* sprite-y height)
-                                             width
-                                             height]]
-                                 {:image/file "images/items.png"
-                                  :image/bounds bounds}))
         skin (atom nil)
         stage (atom nil)
         textures (atom nil)
@@ -4176,11 +4178,6 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
-        batch (atom nil)
-        default-font (atom nil)
-        unit-scale (atom 1)
-        shape-drawer (atom nil)
-        viewport (atom nil)
         info-window-opts (fn [ui-viewport-width]
                            {:title "Entity Info"
                           :actor-name "moon.ui.windows.entity-info"
@@ -4194,6 +4191,7 @@
                                                           @elapsed-time)
                                                ""))
                           :skin @skin})
+        shape-drawer (atom nil)
         inventory-window-opts (fn [on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
                                 {:get-mouse-position get-input-position
                                  :on-click-cell (fn [_event cell]
@@ -4211,6 +4209,8 @@
                                  :position [ui-viewport-width ui-viewport-height]
                                  :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
                                  :cell-size inventory-cell-size})
+        unit-scale (atom 1)
+        default-font (atom nil)
 hp-mana-bar-opts (fn [ui-viewport-width]
                    (let [y-mana 80
                                 rahmenw 150
@@ -4295,29 +4295,26 @@ update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
                           :update-fn (fn []
                                        (.zoom ^OrthographicCamera (get-camera @viewport)))
                           :icon "images/zoom.png"}])
-dev-menu-opts (fn [get-input-position get-frames-per-second]
+dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-per-second]
                 {:menus menus
                :update-labels (map (fn [item]
                                      (if (:icon item)
-                                       (update item :icon #(get @textures %))
+                                       (update item :icon #(get textures %))
                                        item))
                                    (update-labels get-frames-per-second
                                                   get-input-position
                                                   stage
                                                   viewport))
-               :skin @skin})
-font-params {:path "fonts/films.EXL_____.ttf"
-             :size 16
-             :quality-scaling 2
-             :use-integer-positions? false}
-create-stage (fn [get-input-position get-frames-per-second on-click-cell!]
+               :skin skin})
+        viewport (atom nil)
+create-stage (fn [batch get-input-position get-frames-per-second on-click-cell!]
                (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                                   (float (:height (:stage game-config)))) 
-                                    @batch)
+                                    batch)
                      ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))]
                  (doseq [actor [(create-action-bar)
-                                (create-dev-menu (dev-menu-opts get-input-position get-frames-per-second))
+                                (create-dev-menu (dev-menu-opts @textures stage @skin viewport get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts ui-viewport-width))
                                 (windows-create [(create-info-window (info-window-opts ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts on-click-cell!
@@ -4370,6 +4367,8 @@ init-game-state! (fn [handle-txs!]
                       (handle-txs! play-sound!* txs))
 clicked-inventory-cell! (fn [cell]
                                      (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
+        batch (atom nil)
+        potential-field-cache (atom nil)
         ]
     {
      :create!
@@ -4394,7 +4393,7 @@ clicked-inventory-cell! (fn [cell]
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
-       (reset! stage (create-stage get-input-position get-frames-per-second clicked-inventory-cell!))
+       (reset! stage (create-stage @batch get-input-position get-frames-per-second clicked-inventory-cell!))
        (set-input-processor! @stage)
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
        (init-game-state! handle-txs!))
