@@ -1113,19 +1113,18 @@
 (defn get-parent [actor]
   (.getParent ^Actor actor))
 
-(defn inventory-window-cell-highlight-widget [draw-cell-rect! get-mouse-position get-player-eid]
+(defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position get-player-eid]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
-      (when-let [stage (.getStage ^Actor this)]
-        (draw-cell-rect! @(get-player-eid)
-                         (get-x this)
-                         (get-y this)
-                         (let [[x y] (unproject (get-viewport stage) (get-mouse-position))
-                               local (.stageToLocalCoordinates ^Actor this (Vector2. x y))
-                               x (.x ^Vector2 local)
-                               y (.y ^Vector2 local)]
-                           (.hit ^Actor this (float x) (float y) true))
-                         (get-user-object (get-parent this)))))))
+      (draw-cell-rect! @(get-player-eid)
+                       (get-x this)
+                       (get-y this)
+                       (let [[x y] (unproject (get-viewport (.getStage ^Actor this)) (get-mouse-position))
+                             local (.stageToLocalCoordinates ^Actor this (Vector2. x y))
+                             x (.x ^Vector2 local)
+                             y (.y ^Vector2 local)]
+                         (.hit ^Actor this (float x) (float y) true))
+                       cell))))
 
 (defn set-user-object! [^Actor actor obj]
   (.setUserObject actor obj))
@@ -1146,7 +1145,7 @@
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     (doto (create-stack)
-      (add-actors! [(inventory-window-cell-highlight-widget draw-cell-rect! get-mouse-position get-player-eid)
+      (add-actors! [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-mouse-position get-player-eid)
                     (inventory-window-cell-image-widget background-drawable cell-size)])
       (add-listener! (proxy [ClickListener] []
                        (clicked [event _x _y]
