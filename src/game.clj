@@ -4352,6 +4352,38 @@ create-stage (fn [get-input-position get-frames-per-second]
                                 (player-message-actor-create @default-font unit-scale)]]
                    (add-actor! stage* actor))
                  stage*))
+init-game-state! (fn []
+                   (let [{:keys [^TiledMap tiled-map 
+                                 start-position]} (create-level! @textures image->texture-region)]
+                     (reset! tiled-map* tiled-map)
+                     (reset! id-counter 0)
+                     (reset! entity-ids {})
+                     (let [props (get-properties tiled-map)
+                           width (props-get props "width")
+                           height (props-get props "height")
+                           g (create-grid tiled-map)]
+                       (reset! grid g) 
+                       (reset! content-grid (create-content-grid width height 16))
+                       (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
+                                                                         (range height)))
+                                                           (range width)))
+                       (reset! raycaster (create-raycaster g)))
+                     (reset! elapsed-time 0)
+                     (reset! player-id (generate-id!*))
+                     (handle-txs! play-sound!*
+                                  (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                                         :creature-property (build-property :creatures/vampire)
+                                                                         :components {:entity/fsm {:fsm (:player fsms)
+                                                                                                   :initial-state :player-idle}
+                                                                                      :entity/faction :good
+                                                                                      :entity/player? true
+                                                                                      :entity/free-skill-points 3
+                                                                                      :entity/clickable {:type :clickable/player}
+                                                                                      :entity/click-distance-tiles 1.5}})
+                                                        @player-id)]
+                                    (concat [[:tx/spawn-entity entity]]
+                                            (player-ui-txs #(info-text % @elapsed-time) entity)
+                                            (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
         ]
     {
      :create!
@@ -4379,37 +4411,7 @@ create-stage (fn [get-input-position get-frames-per-second]
        (reset! stage (create-stage get-input-position get-frames-per-second))
        (set-input-processor! @stage)
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
-       (let [{:keys [^TiledMap tiled-map 
-                     start-position]} (create-level! @textures image->texture-region)]
-         (reset! tiled-map* tiled-map)
-         (reset! id-counter 0)
-         (reset! entity-ids {})
-         (let [props (get-properties tiled-map)
-               width (props-get props "width")
-               height (props-get props "height")
-               g (create-grid tiled-map)]
-           (reset! grid g) 
-           (reset! content-grid (create-content-grid width height 16))
-           (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
-                                                             (range height)))
-                                               (range width)))
-           (reset! raycaster (create-raycaster g)))
-         (reset! elapsed-time 0)
-         (reset! player-id (generate-id!*))
-         (handle-txs! play-sound!*
-                      (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                             :creature-property (build-property :creatures/vampire)
-                                                             :components {:entity/fsm {:fsm (:player fsms)
-                                                                                       :initial-state :player-idle}
-                                                                          :entity/faction :good
-                                                                          :entity/player? true
-                                                                          :entity/free-skill-points 3
-                                                                          :entity/clickable {:type :clickable/player}
-                                                                          :entity/click-distance-tiles 1.5}})
-                                            @player-id)]
-                        (concat [[:tx/spawn-entity entity]]
-                                (player-ui-txs #(info-text % @elapsed-time) entity)
-                                (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
+       (init-game-state!))
      :dispose!
      (fn []
        (let [batch @batch
