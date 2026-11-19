@@ -4335,6 +4335,23 @@ font-params {:path "fonts/films.EXL_____.ttf"
              :size 16
              :quality-scaling 2
              :use-integer-positions? false}
+create-stage (fn [get-input-position get-frames-per-second]
+               (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
+                                                  (float (:height (:stage game-config)))) 
+                                    @batch)
+                     ui-viewport-width (get-world-width (get-viewport stage*))
+                     ui-viewport-height (get-world-height (get-viewport stage*))]
+                 (doseq [actor [(create-action-bar)
+                                (create-dev-menu (dev-menu-opts get-input-position get-frames-per-second))
+                                (create-actor (hp-mana-bar-opts ui-viewport-width))
+                                (windows-create [(create-info-window (info-window-opts ui-viewport-width))
+                                                 (build-inventory-window (inventory-window-opts get-input-position
+                                                                                                ui-viewport-width 
+                                                                                                ui-viewport-height))])
+                                (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
+                                (player-message-actor-create @default-font unit-scale)]]
+                   (add-actor! stage* actor))
+                 stage*))
         ]
     {
      :create!
@@ -4359,22 +4376,7 @@ font-params {:path "fonts/films.EXL_____.ttf"
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
-       (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
-                                          (float (:height (:stage game-config)))) 
-                            @batch)
-             ui-viewport-width (get-world-width (get-viewport stage*))
-             ui-viewport-height (get-world-height (get-viewport stage*))]
-         (doseq [actor [(create-action-bar)
-                        (create-dev-menu (dev-menu-opts get-input-position get-frames-per-second))
-                        (create-actor (hp-mana-bar-opts ui-viewport-width))
-                        (windows-create [(create-info-window (info-window-opts ui-viewport-width))
-                                         (build-inventory-window (inventory-window-opts get-input-position
-                                                                                        ui-viewport-width 
-                                                                                        ui-viewport-height))])
-                        (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
-                        (player-message-actor-create @default-font unit-scale)]]
-           (add-actor! stage* actor))
-         (reset! stage stage*))
+       (reset! stage (create-stage get-input-position get-frames-per-second))
        (set-input-processor! @stage)
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
        (let [{:keys [^TiledMap tiled-map 
