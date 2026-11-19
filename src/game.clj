@@ -4347,7 +4347,8 @@ font-params {:path "fonts/films.EXL_____.ttf"
                   create-sound
                   create-font
                   white-pixel-texture
-                  sprite-batch!]}]
+                  sprite-batch!
+                  get-frames-per-second]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (reset! state {:cursors (update-vals (:cursors game-config) create-cursor)})
@@ -4364,8 +4365,7 @@ font-params {:path "fonts/films.EXL_____.ttf"
              ui-viewport-width (get-world-width (get-viewport stage*))
              ui-viewport-height (get-world-height (get-viewport stage*))]
          (doseq [actor [(create-action-bar)
-                        (create-dev-menu (dev-menu-opts get-input-position
-                                                        (fn [] (get-frames-per-second graphics))))
+                        (create-dev-menu (dev-menu-opts get-input-position get-frames-per-second))
                         (create-actor (hp-mana-bar-opts ui-viewport-width))
                         (windows-create [(create-info-window (info-window-opts ui-viewport-width))
                                          (build-inventory-window (inventory-window-opts get-input-position
@@ -5485,6 +5485,7 @@ font-params {:path "fonts/films.EXL_____.ttf"
         input Gdx/input
         graphics Gdx/graphics]
     {
+     :get-frames-per-second (fn [] (get-frames-per-second graphics))
      :sprite-batch! sprite-batch!
      :white-pixel-texture white-pixel-texture
      :create-font (fn [params] (create-default-font! files params))
