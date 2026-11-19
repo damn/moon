@@ -3569,13 +3569,12 @@
            level-fn
            controls
            world-unit-scale
-           slot->y-sprite-idx]
+           slot->y-sprite-idx
+           z-orders
+           minimum-size
+           ]
     :as game-config}]
-  (let [z-orders [:z-order/on-ground
-                  :z-order/ground
-                  :z-order/flying
-                  :z-order/effect]
-        minimum-size 0.39
+  (let [
         create-entity-state (fn [[k v] entity create-timer]
                               (case k
                                 :active-skill
@@ -5831,8 +5830,14 @@ init-game-state! (fn [handle-txs!]
                                                                     :v (k m)} t))))))
                                property
                                (keys property)))
+        z-orders [:z-order/on-ground
+                  :z-order/ground
+                  :z-order/flying
+                  :z-order/effect]
+        minimum-size 0.39
         listener (game-listener
-                   {
+                   {:z-orders z-orders
+                    :minimum-size minimum-size
                     :game-schemas game-schemas
                     :game-db game-db
                     :build-property (fn [property-id]
