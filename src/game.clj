@@ -2793,10 +2793,10 @@
                                                        :entity/faction :evil}}))]]))
           (spawn-positions tiled-map)))
 
-(defn player-ui-txs [entity]
+(defn player-ui-txs [info-text entity]
   (concat
     (map (fn [skill]
-           [:tx/set-skill skill])
+           [:tx/set-skill (:property/id skill) (:entity/image skill) (info-text skill)])
          (vals (:entity/skills entity)))
     (for [[slot grid] (:entity/inventory entity)
           x (range (count grid))
@@ -3640,7 +3640,8 @@
                                                                            :faction (:entity/faction @eid)}}))]]
 
                                nil))
-        elapsed-time (atom 0)
+        ; TODO simple -> pass functions around instead of state!
+        ; clear about state space 
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
@@ -3649,7 +3650,6 @@
         grid (atom nil)
         content-grid (atom nil)
         handle-txs! (fn [play-sound! txs]
-                      ; okay ... like play-sound we can pass each dispatcher (world/ui too ?)
                       (let [k->txs {
                                     :tx/swap swap!
                                     :tx/spawn-entity 
@@ -3683,12 +3683,12 @@
                                     (fn [message]
                                       (show-message! @stage message))
                                     :tx/set-skill
-                                    (fn [skill]
+                                    (fn [skill-id image tooltip-text]
                                       (-> (get-root @stage)
                                           (find-actor "moon.ui.action-bar")
-                                          (add-skill! {:skill-id (:property/id skill)
-                                                       :texture-region (image->texture-region (:entity/image skill))
-                                                       :tooltip-text (info-text skill @elapsed-time)}
+                                          (add-skill! {:skill-id skill-id
+                                                       :texture-region (image->texture-region image)
+                                                       :tooltip-text tooltip-text}
                                                       @skin)))
                                     }]
                         (doseq [[k & params] txs]
@@ -3735,6 +3735,9 @@
         paused? (atom false)
         mouseover-eid (atom nil)
         viewport (atom nil)
+        elapsed-time (atom 0)
+        ; TODO maybe dev-menu/update-albels for every piece of state we can get some info
+        ; -> state space overview?
         update-labels (fn [get-frames-per-second get-mouse-position]
                         (for [item [{:label "elapsed-time"
                                      :update-fn (fn [] 
@@ -4457,7 +4460,7 @@
                                @player-id)]
            (handle-txs! play-sound!* 
                         (concat [[:tx/spawn-entity entity]]
-                                (player-ui-txs entity)))
+                                (player-ui-txs #(info-text % @elapsed-time) entity)))
            (assert (:entity/player? @(player-eid)))
            (handle-txs! play-sound!* (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
      :dispose!
