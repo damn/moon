@@ -3609,19 +3609,7 @@
                                  ]
 
                                 nil))
-        elapsed-time (atom 0)
-        create-timer* (fn [duration]
-                        (timer-create duration @elapsed-time))
-        id-counter (atom 0)
-        generate-id!* #(swap! id-counter inc)
-        entity* (fn
-                  ([entity]
-                   (assoc (construct-entity entity create-timer*)
-                          :entity/id (generate-id!*)))
-                  ([entity id]
-                   (assoc (construct-entity entity create-timer*)
-                          :entity/id id)))
-        entity-state-exit! (fn [eid [state-k _state-v] world-mouse-position create-timer]
+        entity-state-exit! (fn [eid [state-k _state-v] world-mouse-position create-timer entity*]
                              (case state-k
                                :player-item-on-cursor
                                (let [entity @eid
@@ -3642,6 +3630,18 @@
                                                                            :faction (:entity/faction @eid)}}))]]
 
                                nil))
+        elapsed-time (atom 0)
+        create-timer* (fn [duration]
+                        (timer-create duration @elapsed-time))
+        id-counter (atom 0)
+        generate-id!* #(swap! id-counter inc)
+        entity* (fn
+                  ([entity]
+                   (assoc (construct-entity entity create-timer*)
+                          :entity/id (generate-id!*)))
+                  ([entity id]
+                   (assoc (construct-entity entity create-timer*)
+                          :entity/id id)))
         fsm-event-txs (fn [world-mouse-position eid event & [params]]
                         (let [fsm (:entity/fsm @eid)
                               _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
@@ -3658,7 +3658,7 @@
                               (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                                        [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                                        [:tx/swap eid dissoc old-state-k]]
-                                      (entity-state-exit! eid old-state-obj world-mouse-position create-timer*)
+                                      (entity-state-exit! eid old-state-obj world-mouse-position create-timer* entity*)
                                       (entity-state-enter! eid new-state-obj create-timer*))))))
         stage (atom nil)
         skin (atom nil)
