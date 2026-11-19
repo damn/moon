@@ -3652,58 +3652,7 @@
            controls-info 
            ]
     :as game-config}]
-  (let [
-        show-potential-field-colors? (atom nil)
-        show-cell-entities? (atom false)
-        show-cell-occupied? (atom false)
-        show-body-bounds? (atom false)
-        show-tile-grid? (atom false)
-        menus [{:label "Debug"
-                :items [{:label "Toggle show-tile-grid?"
-                         :on-click #(swap! show-tile-grid? not)}
-                        {:label "Toggle show-cell-entities?"
-                         :on-click #(swap! show-cell-entities? not)}
-                        {:label "Toggle show-cell-occupied?"
-                         :on-click #(swap! show-cell-occupied? not)}
-                        {:label "Toggle show-body-bounds?"
-                         :on-click #(swap! show-body-bounds? not)}
-                        {:label "Potential field colors: off"
-                         :on-click #(reset! show-potential-field-colors? nil)}
-                        {:label "Potential field colors: :good"
-                         :on-click #(reset! show-potential-field-colors? :good)}
-                        {:label "Potential field colors: :evil"
-                         :on-click #(reset! show-potential-field-colors? :evil)}]}
-               {:label "Help"
-                :items [{:label controls-info}]}]
-        paused? (atom false)
-        mouseover-eid (atom nil)
-        elapsed-time (atom 0)
-        update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
-                        [{:label "elapsed-time"
-                          :update-fn (fn [] 
-                                       (str (readable @elapsed-time) " seconds"))
-                          :icon "images/clock.png"}
-                         {:label "FPS"
-                          :update-fn get-frames-per-second
-                          :icon "images/fps.png"}
-                         {:label "Mouseover-entity id"
-                          :update-fn (fn []
-                                       (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                         (:entity/id entity)))
-                          :icon "images/mouseover.png"}
-                         {:label "paused?"
-                          :update-fn (fn [] @paused?)}
-                         {:label "GUI"
-                          :update-fn (fn []
-                                       (mapv int (unproject (get-viewport @stage) (get-mouse-position))))}
-                         {:label "World"
-                          :update-fn (fn []
-                                       (mapv int (unproject @viewport (get-mouse-position))))}
-                         {:label "Zoom"
-                          :update-fn (fn []
-                                       (.zoom ^OrthographicCamera (get-camera @viewport)))
-                          :icon "images/zoom.png"}])
-        max-delta 0.04
+  (let [max-delta 0.04
         max-speed (/ minimum-size max-delta)
         fsms {:npc (fsm/fsm-inc
                      [[:npc-sleeping
@@ -3769,6 +3718,7 @@
                                                          (:entity/fsm @(:effect/target effect-ctx)))))
         raycaster (atom nil)
         active-entities (atom nil)
+        elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
         id-counter (atom 0)
@@ -3895,6 +3845,7 @@
                      (let [eid (get @entity-ids @player-id)]
                        (assert eid (str "player id not in entity-ids: " @player-id))
                        eid))
+        mouseover-eid (atom nil)
         create-interaction-state (fn [mouseover-actor world-mouse-position get-selected-skill]
                                    (let [player-eid (player-eid)
                                          mouseover-eid @mouseover-eid
@@ -4070,6 +4021,7 @@
                                                                                          0)}]]
                                   (tx-event-txs player-eid :no-movement-input))
                                 nil))
+        paused? (atom false)
         update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
                                        (or #_error
@@ -4322,6 +4274,53 @@ hp-mana-bar-opts (fn [ui-viewport-width]
                                (let [stats (:entity/stats @(player-eid))]
                                  (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
                                  (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
+        show-potential-field-colors? (atom nil)
+        show-cell-entities? (atom false)
+        show-cell-occupied? (atom false)
+        show-body-bounds? (atom false)
+        show-tile-grid? (atom false)
+menus [{:label "Debug"
+                :items [{:label "Toggle show-tile-grid?"
+                         :on-click #(swap! show-tile-grid? not)}
+                        {:label "Toggle show-cell-entities?"
+                         :on-click #(swap! show-cell-entities? not)}
+                        {:label "Toggle show-cell-occupied?"
+                         :on-click #(swap! show-cell-occupied? not)}
+                        {:label "Toggle show-body-bounds?"
+                         :on-click #(swap! show-body-bounds? not)}
+                        {:label "Potential field colors: off"
+                         :on-click #(reset! show-potential-field-colors? nil)}
+                        {:label "Potential field colors: :good"
+                         :on-click #(reset! show-potential-field-colors? :good)}
+                        {:label "Potential field colors: :evil"
+                         :on-click #(reset! show-potential-field-colors? :evil)}]}
+               {:label "Help"
+                :items [{:label controls-info}]}]
+update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
+                        [{:label "elapsed-time"
+                          :update-fn (fn [] 
+                                       (str (readable @elapsed-time) " seconds"))
+                          :icon "images/clock.png"}
+                         {:label "FPS"
+                          :update-fn get-frames-per-second
+                          :icon "images/fps.png"}
+                         {:label "Mouseover-entity id"
+                          :update-fn (fn []
+                                       (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                         (:entity/id entity)))
+                          :icon "images/mouseover.png"}
+                         {:label "paused?"
+                          :update-fn (fn [] @paused?)}
+                         {:label "GUI"
+                          :update-fn (fn []
+                                       (mapv int (unproject (get-viewport @stage) (get-mouse-position))))}
+                         {:label "World"
+                          :update-fn (fn []
+                                       (mapv int (unproject @viewport (get-mouse-position))))}
+                         {:label "Zoom"
+                          :update-fn (fn []
+                                       (.zoom ^OrthographicCamera (get-camera @viewport)))
+                          :icon "images/zoom.png"}])
 dev-menu-opts (fn [get-input-position get-frames-per-second]
                 {:menus menus
                :update-labels (map (fn [item]
