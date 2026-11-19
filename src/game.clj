@@ -4390,22 +4390,20 @@
                         (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
                         (player-message-actor-create @default-font unit-scale)]]
            (add-actor! @stage actor))
-         (let [world-mouse-position (unproject @viewport (get-input-position))
-               entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                :creature-property (build-property :creatures/vampire)
-                                                :components {:entity/fsm {:fsm (:player fsms)
-                                                                          :initial-state :player-idle}
-                                                             :entity/faction :good
-                                                             :entity/player? true
-                                                             :entity/free-skill-points 3
-                                                             :entity/clickable {:type :clickable/player}
-                                                             :entity/click-distance-tiles 1.5}})
-                               @player-id)]
-           (handle-txs! play-sound!* 
+         (handle-txs! play-sound!*
+                      (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                             :creature-property (build-property :creatures/vampire)
+                                                             :components {:entity/fsm {:fsm (:player fsms)
+                                                                                       :initial-state :player-idle}
+                                                                          :entity/faction :good
+                                                                          :entity/player? true
+                                                                          :entity/free-skill-points 3
+                                                                          :entity/clickable {:type :clickable/player}
+                                                                          :entity/click-distance-tiles 1.5}})
+                                            @player-id)]
                         (concat [[:tx/spawn-entity entity]]
-                                (player-ui-txs #(info-text % @elapsed-time) entity)))
-           (assert (:entity/player? @(player-eid)))
-           (handle-txs! play-sound!* (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
+                                (player-ui-txs #(info-text % @elapsed-time) entity)
+                                (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
      :dispose!
      (fn []
        (let [batch @batch
