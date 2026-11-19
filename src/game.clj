@@ -1113,9 +1113,14 @@
 (defn get-parent [actor]
   (.getParent ^Actor actor))
 
-(defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position get-player-eid]
+(defn create-widget [draw!]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
+      (draw! this))))
+
+(defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position get-player-eid]
+  (create-widget
+    (fn [this]
       (draw-cell-rect! @(get-player-eid)
                        (get-x this)
                        (get-y this)
