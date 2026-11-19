@@ -4256,9 +4256,9 @@
         sounds (atom nil)
         play-sound!* (fn [sound-name]
                        (Sound/.play (safe-get @sounds sound-name)))
-        cursors (atom nil)
         viewport (atom nil)
         shape-drawer-texture (atom nil)
+        state (atom nil)
         ]
     {
      :create!
@@ -4273,12 +4273,14 @@
 
 
        ; return 'make-cursor fn ? 
-       (reset! cursors (update-vals (:cursors game-config)
-                                    (fn [[path [hotspot-x hotspot-y]]]
-                                      (let [pixmap (pixmap (internal files path))
-                                            cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
-                                        (dispose! pixmap)
-                                        cursor))))
+       (reset! state {
+                      :cursors (update-vals (:cursors game-config)
+                                            (fn [[path [hotspot-x hotspot-y]]]
+                                              (let [pixmap (pixmap (internal files path))
+                                                    cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
+                                                (dispose! pixmap)
+                                                cursor)))
+                      })
 
        ; return make-sound cap?
        (reset! sounds (into {}
@@ -4444,7 +4446,7 @@
      :dispose!
      (fn []
        (let [batch @batch
-             cursors @cursors
+             {:keys [cursors]} @state
              default-font @default-font
              shape-drawer-texture @shape-drawer-texture
              skin @skin
@@ -4468,7 +4470,8 @@
                   button-just-pressed? 
                   get-delta-time 
                   get-input-position]}]
-       (let [batch @batch
+       (let [{:keys [cursors]} @state
+             batch @batch
              stage @stage
              viewport @viewport
              mouse-position (get-input-position)
@@ -4528,7 +4531,7 @@
                interaction-state (create-interaction-state mouseover-actor 
                                                            world-mouse-position 
                                                            get-selected-skill)]
-           (set-cursor! (safe-get @cursors (cursor-key player-eid interaction-state)))
+           (set-cursor! (safe-get cursors (cursor-key player-eid interaction-state)))
            (handle-txs! play-sound!* (handle-player-input player-eid
                                                           interaction-state
                                                           stage
