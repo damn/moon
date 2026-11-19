@@ -3642,6 +3642,7 @@
                                nil))
         ; TODO simple -> pass functions around instead of state!
         ; clear about state space 
+        ; especially libgdx state ?
         controls-info (str/join "\n"
                                 ["[W][A][S][D] - Move"
                                  "[ESCAPE] - Close windows"
@@ -3672,12 +3673,13 @@
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-        stage (atom nil)
         paused? (atom false)
         mouseover-eid (atom nil)
-        viewport (atom nil)
         elapsed-time (atom 0)
-        update-labels (fn [get-frames-per-second get-mouse-position]
+        ; FIXME libgdx state atoms passed! pass functions better!
+        ; but here its engine info? concat engine info???
+        ; engine info update labels and game info update labels?
+        update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
                         [{:label "elapsed-time"
                           :update-fn (fn [] 
                                        (str (readable @elapsed-time) " seconds"))
@@ -3883,7 +3885,7 @@
                               (level-fn {:level/creature-properties (prepare-creature-tiles
                                                                       (all-raw game-db :properties/creatures)
                                                                       image->texture-region)
-                                         :textures @textures})]
+                                         :textures textures})]
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
         entity-ids (atom {})
@@ -3892,9 +3894,8 @@
                      (let [eid (get @entity-ids @player-id)]
                        (assert eid (str "player id not in entity-ids: " @player-id))
                        eid))
-        create-interaction-state (fn [mouseover-actor world-mouse-position]
+        create-interaction-state (fn [mouseover-actor world-mouse-position get-selected-skill]
                                    (let [player-eid (player-eid)
-                                         stage @stage
                                          mouseover-eid @mouseover-eid
                                          item-on-cursor (:entity/item-on-cursor @player-eid)]
                                      (cond
@@ -3913,9 +3914,7 @@
                                                              (:entity/click-distance-tiles @player-eid))}]
 
                                        :else
-                                       (if-let [skill-id (-> (get-root stage)
-                                                             (find-actor "moon.ui.action-bar")
-                                                             selected-skill)]
+                                       (if-let [skill-id (get-selected-skill)]
                                          (let [entity @player-eid
                                                skill (skill-id (:entity/skills entity))
                                                target-position (or (and mouseover-eid
@@ -4078,6 +4077,7 @@
                                                 (state->pause-game? (:state (:entity/fsm @(player-eid))))
                                                 (not (or (key-just-pressed? (:unpause-once controls))
                                                          (key-pressed? (:unpause-continously controls))))))))
+        viewport (atom nil)
         key-pressed-checks! (fn [key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
@@ -4089,6 +4089,7 @@
                                                                       (.update camera)))}]
                                 (when (key-pressed? k)
                                   (f))))
+        stage (atom nil)
         key-just-pressed-checks! (fn [key-just-pressed?]
                                    (doseq [[k f] {(:close-windows-key controls) (fn []
                                                                                   (close-windows! @stage))
@@ -4348,7 +4349,9 @@
                                                                   (update item :icon #(get @textures %))
                                                                   item))
                                                               (update-labels (fn [] (get-frames-per-second graphics))
-                                                                             get-input-position))
+                                                                             get-input-position
+                                                                             stage
+                                                                             viewport))
                                           :skin @skin})
                         (create-actor
                           (let [y-mana 80
@@ -4487,7 +4490,12 @@
          (draw-world-layer! mouse-position)
          (.end ^Batch batch)
          (let [player-eid (player-eid)
-               interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
+               get-selected-skill #(-> (get-root stage)
+                                       (find-actor "moon.ui.action-bar")
+                                       selected-skill)
+               interaction-state (create-interaction-state mouseover-actor 
+                                                           world-mouse-position 
+                                                           get-selected-skill)]
            (set-cursor! (safe-get @cursors (cursor-key player-eid interaction-state)))
            (handle-txs! play-sound!* (handle-player-input player-eid
                                                           interaction-state
