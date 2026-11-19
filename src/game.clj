@@ -2648,7 +2648,7 @@
                                                                            :initial-state :npc-idle}
                                                               :entity/faction (:entity/faction @source)}}))]]))
 
-(defn target-all-effect [v effect-ctx active-entities raycaster applicable-effect-txs entity*]
+(defn target-all-effect [v effect-ctx affected-targets applicable-effect-txs entity*]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
@@ -2661,7 +2661,7 @@
                     (applicable-effect-txs {:effect/source source
                                             :effect/target target}
                                            (:entity-effects v))))
-            (affected-targets active-entities raycaster source*))))
+            (affected-targets source*))))
 
 (defn convert-effect [_v effect-ctx game-db entity*]
   (let [source (:effect/source effect-ctx)
@@ -3708,6 +3708,16 @@
                           (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?))))))
        first))
 
+(defn kill-txs* [tx-event-txs eid]
+  (concat (tx-event-txs eid :kill)
+          (if (:entity/player? @eid)
+            [[:tx/sound "bfxr_playerdeath.wav"]
+             [:tx/modal {:title "YOU DIED - again!"
+                         :text "Good luck next time!"
+                         :button-text "OK"
+                         :on-click (fn [])}]]
+            [[:tx/swap eid assoc :entity/destroyed? true]])))
+
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -3727,13 +3737,16 @@
            fsms
            ]
     :as game-config}]
-  (let [elapsed-time (atom 0)
+  (let [
+        
+        construct-entity (fn [entity create-timer*]
+                           (construct-entity entity create-timer* minimum-size z-orders))
+        
+        elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
         id-counter (atom 0)
         generate-id!* #(swap! id-counter inc)
-        construct-entity (fn [entity create-timer*]
-                           (construct-entity entity create-timer* minimum-size z-orders))
         entity* (fn
                   ([entity]
                    (assoc (construct-entity entity create-timer*)
@@ -3741,30 +3754,24 @@
                   ([entity id]
                    (assoc (construct-entity entity create-timer*)
                           :entity/id id)))
+        create-entity-state (fn [state-args entity]
+                                (create-entity-state state-args entity create-timer*))
+        entity-state-exit! (fn [eid old-state-obj]
+                             (entity-state-exit! eid old-state-obj create-timer* entity*))
         tx-event-txs (fn [& params]
-                       (apply tx-event-txs* 
-                              (fn [state-args entity]
-                                (create-entity-state state-args entity create-timer*)) 
-                              (fn [eid old-state-obj]
-                                (entity-state-exit! eid old-state-obj create-timer* entity*))
-                              params))
+                       (apply tx-event-txs* create-entity-state entity-state-exit! params))
         kill-txs (fn [eid]
-                   (concat (tx-event-txs eid :kill)
-                           (if (:entity/player? @eid)
-                             [[:tx/sound "bfxr_playerdeath.wav"]
-                              [:tx/modal {:title "YOU DIED - again!"
-                                          :text "Good luck next time!"
-                                          :button-text "OK"
-                                          :on-click (fn [])}]]
-                             [[:tx/swap eid assoc :entity/destroyed? true]])))
+                   (kill-txs* tx-event-txs eid))
         raycaster (atom nil)
         active-entities (atom nil)
+        affected-targets* (fn [entity]
+                            (affected-targets @active-entities @raycaster entity))
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]]
                                   (case k
                                     :effects/projectile (projectile-effect v effect-ctx entity*)
                                     :effects/spawn (spawn-effect* v effect-ctx game-db fsms entity*)
-                                    :effects/target-all (target-all-effect v effect-ctx @active-entities @raycaster applicable-effect-txs entity*)
+                                    :effects/target-all (target-all-effect v effect-ctx affected-targets* applicable-effect-txs entity*)
                                     :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs entity*)
                                     :effects.target/convert (convert-effect v effect-ctx game-db entity*)
                                     :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time entity* kill-txs tx-event-txs)
