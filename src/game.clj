@@ -4069,7 +4069,6 @@
                                                                                          0)}]]
                                   (tx-event-txs player-eid :no-movement-input))
                                 nil))
-        cursors (atom nil)
         update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
                                        (or #_error
@@ -4077,26 +4076,24 @@
                                                 (state->pause-game? (:state (:entity/fsm @(player-eid))))
                                                 (not (or (key-just-pressed? (:unpause-once controls))
                                                          (key-pressed? (:unpause-continously controls))))))))
-        viewport (atom nil)
-        key-pressed-checks! (fn [key-pressed?]
+        key-pressed-checks! (fn [viewport key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
-                                                                   (let [^OrthographicCamera camera (get-camera @viewport)]
+                                                                   (let [^OrthographicCamera camera (get-camera viewport)]
                                                                      (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
                                                                      (.update camera)))
                                              (:zoom-out controls) (fn []
-                                                                    (let [^OrthographicCamera camera (get-camera @viewport)]
+                                                                    (let [^OrthographicCamera camera (get-camera viewport)]
                                                                       (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
                                                                       (.update camera)))}]
                                 (when (key-pressed? k)
                                   (f))))
-        stage (atom nil)
-        key-just-pressed-checks! (fn [key-just-pressed?]
+        key-just-pressed-checks! (fn [stage key-just-pressed?]
                                    (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                                                  (close-windows! @stage))
+                                                                                  (close-windows! stage))
                                                   (:toggle-inventory controls) (fn []
-                                                                                 (toggle-inventory-visible! @stage))
+                                                                                 (toggle-inventory-visible! stage))
                                                   (:toggle-entity-info controls) (fn []
-                                                                                   (toggle-entity-info! @stage))}]
+                                                                                   (toggle-entity-info! stage))}]
                                      (when (key-just-pressed? k)
                                        (f))))
         active-skill-radius (let [tile-size 48
@@ -4130,36 +4127,30 @@
         effects-render (fn [effects effect-ctx shape-drawer active-entities raycaster] 
                          (doseq [effect effects]
                            (effect-render effect effect-ctx shape-drawer active-entities raycaster)))
-        batch (atom nil)
-        default-font (atom nil)
-        shape-drawer (atom nil)
-        unit-scale (atom 1)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-        draw-component! (fn [mouse-position k v entity]
+        draw-component! (fn [image->texture-region unit-scale batch default-font shape-drawer mouse-position k v entity]
                           (case k
                             :entity/clickable
-                            (clickable-draw v entity @batch @default-font @unit-scale)
+                            (clickable-draw v entity batch default-font unit-scale)
                             :entity/animation
-                            (animation-draw v entity @batch @unit-scale image->texture-region)
+                            (animation-draw v entity batch unit-scale image->texture-region)
                             :entity/image
-                            (image-draw v entity @batch @unit-scale image->texture-region)
+                            (image-draw v entity batch unit-scale image->texture-region)
                             :entity/line-render
-                            (line-render-draw v entity @shape-drawer)
+                            (line-render-draw v entity shape-drawer)
                             :entity/mouseover?
-                            (mouseover?-draw entity @shape-drawer @(player-eid))
+                            (mouseover?-draw entity shape-drawer @(player-eid))
                             :entity/stats
-                            (stats-draw entity @shape-drawer @unit-scale)
+                            (stats-draw entity shape-drawer unit-scale)
                             :entity/string-effect
-                            (string-effect-draw v entity @batch @default-font @unit-scale)
+                            (string-effect-draw v entity batch default-font unit-scale)
                             :entity/temp-modifier
-                            (temp-modifier-draw entity @shape-drawer)
+                            (temp-modifier-draw entity shape-drawer)
                             :active-skill
-                            (active-skill-draw v entity @shape-drawer @batch @unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius effects-render)
+                            (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius effects-render)
                             :npc-sleeping
-                            (npc-sleeping-draw entity @batch @default-font @unit-scale)
+                            (npc-sleeping-draw entity batch default-font unit-scale)
                             :stunned
-                            (stunned-draw entity @shape-drawer)))
+                            (stunned-draw entity shape-drawer)))
         render-z-order (apply hash-map (interleave z-orders (range)))
         render-layers [#{:entity/mouseover?
                          :stunned}
@@ -4172,42 +4163,8 @@
                          :entity/string-effect}
                        #{:entity/stats
                          :active-skill}]
-        draw-world-layer! (fn [mouse-position]
-                            (with-line-width @shape-drawer world-unit-scale
-                              (reset! unit-scale world-unit-scale)
-                              (draw-tile-grid @shape-drawer @viewport @show-tile-grid?)
-                              (draw-cell-debug factions-iterations
-                                               @shape-drawer @viewport
-                                               @show-cell-entities?
-                                               @show-cell-occupied?
-                                               @show-potential-field-colors?
-                                               @grid)
-                              (draw-entities! (fn [& params]
-                                                (apply draw-component! mouse-position params))
-                                              @shape-drawer
-                                              @raycaster
-                                              @active-entities
-                                              @(player-eid)
-                                              @show-body-bounds?
-                                              render-z-order
-                                              render-layers)
-                              (highlight-mouseover-tile @shape-drawer (unproject @viewport mouse-position) @grid)
-                              (reset! unit-scale 1)))
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
-        render-tiled-map! #(draw-tiled-map! @tiled-map*
-                                            @batch
-                                            (camera-view-bounds (get-camera @viewport))
-                                            (tile-color-setter*
-                                              {:ray-blocked? (partial raycaster-blocked? @raycaster)
-                                               :explored-tile-corners explored-tile-corners
-                                               :light-position (let [pos (.position ^OrthographicCamera (get-camera @viewport))]
-                                                                 [(.x pos) (.y pos) (.z pos)])
-                                               :see-all-tiles? false
-                                               :explored-tile-color (float-bits 0.5 0.5 0.5 1)
-                                               :visible-tile-color (float-bits 1 1 1 1)
-                                               :invisible-tile-color (float-bits 0 0 0 1)})
-                                            world-unit-scale)
         content-grid (atom nil)
          update-active-entities! (fn []
                                    (reset! active-entities (active-entities* @content-grid @(player-eid))))
@@ -4238,10 +4195,12 @@
                                              (* sprite-y height)
                                              width
                                              height]]
-                                 (image->texture-region {:image/file "images/items.png"
-                                                         :image/bounds bounds})))
-        shape-drawer-texture (atom nil)
+                                 {:image/file "images/items.png"
+                                  :image/bounds bounds}))
         skin (atom nil)
+        stage (atom nil)
+        textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         handle-txs! (fn [play-sound! txs]
                       (let [k->txs {
                                     :tx/swap swap!
@@ -4290,9 +4249,16 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
+        batch (atom nil)
+        default-font (atom nil)
+        unit-scale (atom 1)
+        shape-drawer (atom nil)
         sounds (atom nil)
         play-sound!* (fn [sound-name]
                        (Sound/.play (safe-get @sounds sound-name)))
+        cursors (atom nil)
+        viewport (atom nil)
+        shape-drawer-texture (atom nil)
         ]
     {
      :create!
@@ -4419,7 +4385,7 @@
                                             :skin @skin
                                             :position [(get-world-width (get-viewport @stage))
                                                        (get-world-height (get-viewport @stage))]
-                                            :slot->texture-region slot->texture-region
+                                            :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
                                             :cell-size inventory-cell-size})])
                         (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
                         (player-message-actor-create @default-font unit-scale)]]
@@ -4486,8 +4452,39 @@
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
          (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
          (.begin ^Batch batch)
-         (render-tiled-map!)
-         (draw-world-layer! mouse-position)
+         (draw-tiled-map! @tiled-map*
+                          batch
+                          (camera-view-bounds (get-camera viewport))
+                          (tile-color-setter*
+                            {:ray-blocked? (partial raycaster-blocked? @raycaster)
+                             :explored-tile-corners explored-tile-corners
+                             :light-position (let [pos (.position ^OrthographicCamera (get-camera viewport))]
+                                               [(.x pos) (.y pos) (.z pos)])
+                             :see-all-tiles? false
+                             :explored-tile-color (float-bits 0.5 0.5 0.5 1)
+                             :visible-tile-color (float-bits 1 1 1 1)
+                             :invisible-tile-color (float-bits 0 0 0 1)})
+                          world-unit-scale)
+         (with-line-width @shape-drawer world-unit-scale
+           (reset! unit-scale world-unit-scale)
+           (draw-tile-grid @shape-drawer viewport @show-tile-grid?)
+           (draw-cell-debug factions-iterations
+                            @shape-drawer viewport
+                            @show-cell-entities?
+                            @show-cell-occupied?
+                            @show-potential-field-colors?
+                            @grid)
+           (draw-entities! (fn [& params]
+                             (apply draw-component! image->texture-region @unit-scale batch @default-font @shape-drawer mouse-position params))
+                           @shape-drawer
+                           @raycaster
+                           @active-entities
+                           @(player-eid)
+                           @show-body-bounds?
+                           render-z-order
+                           render-layers)
+           (highlight-mouseover-tile @shape-drawer (unproject viewport mouse-position) @grid)
+           (reset! unit-scale 1))
          (.end ^Batch batch)
          (let [player-eid (player-eid)
                get-selected-skill #(-> (get-root stage)
@@ -4517,8 +4514,8 @@
                      component @eid]
                (handle-txs! play-sound!* (tick-component component eid delta-time @elapsed-time)))))
          (handle-txs! play-sound!* (destroy-entities game-db entity-ids entity*))
-         (key-pressed-checks! key-pressed?)
-         (key-just-pressed-checks! key-just-pressed?)
+         (key-pressed-checks! viewport key-pressed?)
+         (key-just-pressed-checks! stage key-just-pressed?)
          (act! stage)
          (draw! stage)))
 
