@@ -3559,6 +3559,83 @@
   (when (:entity/collides? @eid)
     (remove-from-occupied-cells! grid eid)))
 
+(defn create-entity-state [[k v] entity create-timer]
+  (case k
+    :active-skill
+    (let [[skill effect-ctx] v]
+      {:skill skill
+       :effect-ctx effect-ctx
+       :counter (create-timer (/ (:skill/action-time skill)
+                                 (or (get-value (:entity/stats entity)
+                                                (:skill/action-time-modifier-key skill))
+                                     1)))})
+
+    :stunned
+    {:counter (create-timer v)}
+
+    :player-moving
+    {:direction v
+     :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
+                0)}
+
+    :npc-moving
+    {:direction v
+     :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
+                0)
+     :timer (create-timer (* (get-value (:entity/stats entity) :stats/reaction-time)
+                             0.016))}
+
+    v))
+
+(defn construct-entity [entity create-timer minimum-size z-orders]
+  (let [entity (reduce (fn [m [k v]]
+                         (assoc m k (case k
+                                      :entity/animation
+                                      (create-animation v)
+
+                                      :entity/delete-after-duration
+                                      (create-timer v)
+
+                                      :entity/projectile-collision
+                                      (assoc v :already-hit-bodies #{})
+
+                                      :entity/stats
+                                      (-> v
+                                          (update :stats/mana (fn [v] [v v]))
+                                          (update :stats/hp   (fn [v] [v v])))
+
+                                      v)))
+                       {}
+                       entity)]
+    (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
+      (assert position)
+      (assert width)
+      (assert height)
+      (assert (>= width  (if collides? minimum-size 0)))
+      (assert (>= height (if collides? minimum-size 0)))
+      (assert (or (boolean? collides?) (nil? collides?)))
+      (assert ((set z-orders) z-order))
+      (assert (or (nil? rotation-angle)
+                  (<= 0 rotation-angle 360)))
+      (assoc entity
+             :entity/position (mapv float position)
+             :entity/width (float width)
+             :entity/height (float height)
+             :entity/rotation-angle (or rotation-angle 0)))))
+
+(defn entity-state-exit! [eid [k _v] create-timer entity*]
+  (case k
+    :npc-sleeping
+    [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
+     [:tx/spawn-entity (entity* (spawn-effect (:entity/position @eid) 
+                                              {:entity/alert-friendlies-after-duration
+                                               {:counter (create-timer 0.2)
+                                                :faction (:entity/faction @eid)}}))]]
+
+    nil))
+
+; TODO pass data literals
+; anony fns just bind state otherwise make sep. fns
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -3572,89 +3649,10 @@
            slot->y-sprite-idx
            z-orders
            minimum-size
+           controls-info 
            ]
     :as game-config}]
   (let [
-        create-entity-state (fn [[k v] entity create-timer]
-                              (case k
-                                :active-skill
-                                (let [[skill effect-ctx] v]
-                                  {:skill skill
-                                   :effect-ctx effect-ctx
-                                   :counter (create-timer (/ (:skill/action-time skill)
-                                                             (or (get-value (:entity/stats entity)
-                                                                            (:skill/action-time-modifier-key skill))
-                                                                 1)))})
-
-                                :stunned
-                                {:counter (create-timer v)}
-
-                                :player-moving
-                                {:direction v
-                                 :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
-                                            0)}
-
-                                :npc-moving
-                                {:direction v
-                                 :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
-                                            0)
-                                 :timer (create-timer (* (get-value (:entity/stats entity) :stats/reaction-time)
-                                                         0.016))}
-
-                                v))
-        construct-entity (fn [entity create-timer]
-                           (let [entity (reduce (fn [m [k v]]
-                                                  (assoc m k (case k
-                                                               :entity/animation
-                                                               (create-animation v)
-
-                                                               :entity/delete-after-duration
-                                                               (create-timer v)
-
-                                                               :entity/projectile-collision
-                                                               (assoc v :already-hit-bodies #{})
-
-                                                               :entity/stats
-                                                               (-> v
-                                                                   (update :stats/mana (fn [v] [v v]))
-                                                                   (update :stats/hp   (fn [v] [v v])))
-
-                                                               v)))
-                                                {}
-                                                entity)]
-                             (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
-                               (assert position)
-                               (assert width)
-                               (assert height)
-                               (assert (>= width  (if collides? minimum-size 0)))
-                               (assert (>= height (if collides? minimum-size 0)))
-                               (assert (or (boolean? collides?) (nil? collides?)))
-                               (assert ((set z-orders) z-order))
-                               (assert (or (nil? rotation-angle)
-                                           (<= 0 rotation-angle 360)))
-                               (assoc entity
-                                      :entity/position (mapv float position)
-                                      :entity/width (float width)
-                                      :entity/height (float height)
-                                      :entity/rotation-angle (or rotation-angle 0)))))
-        entity-state-exit! (fn [eid [k _v] create-timer entity*]
-                             (case k
-                               :npc-sleeping
-                               [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
-                                [:tx/spawn-entity (entity* (spawn-effect (:entity/position @eid) 
-                                                                         {:entity/alert-friendlies-after-duration
-                                                                          {:counter (create-timer 0.2)
-                                                                           :faction (:entity/faction @eid)}}))]]
-
-                               nil))
-        controls-info (str/join "\n"
-                                ["[W][A][S][D] - Move"
-                                 "[ESCAPE] - Close windows"
-                                 "[I] - Inventory window"
-                                 "[E] - Entity Info window"
-                                 "[-]/[=] - Zoom"
-                                 "[P]/[SPACE] - Unpause"
-                                 "Leftmouse click - use skill/drop item on cursor"])
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -3775,6 +3773,8 @@
                         (timer-create duration @elapsed-time))
         id-counter (atom 0)
         generate-id!* #(swap! id-counter inc)
+        construct-entity (fn [entity create-timer*]
+                           (construct-entity entity create-timer* minimum-size z-orders))
         entity* (fn
                   ([entity]
                    (assoc (construct-entity entity create-timer*)
@@ -5836,7 +5836,15 @@ init-game-state! (fn [handle-txs!]
                   :z-order/effect]
         minimum-size 0.39
         listener (game-listener
-                   {:z-orders z-orders
+                   {:controls-info (str/join "\n"
+                                             ["[W][A][S][D] - Move"
+                                              "[ESCAPE] - Close windows"
+                                              "[I] - Inventory window"
+                                              "[E] - Entity Info window"
+                                              "[-]/[=] - Zoom"
+                                              "[P]/[SPACE] - Unpause"
+                                              "Leftmouse click - use skill/drop item on cursor"])
+                    :z-orders z-orders
                     :minimum-size minimum-size
                     :game-schemas game-schemas
                     :game-db game-db
