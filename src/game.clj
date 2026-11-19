@@ -2618,18 +2618,18 @@
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def ^:private spiderweb-duration 5)
 
-(defn projectile-effect [v effect-ctx entity*]
+(defn projectile-effect [v effect-ctx create-projectile]
   (let [source (:effect/source effect-ctx)
         source* @source
         direction (:effect/target-direction effect-ctx)
         size (:projectile/size v)]
-    [[:tx/spawn-entity (entity* (spawn-projectile
-                                  {:position (mapv + (:entity/position source*)
-                                                   (v2-scale direction
-                                                             (+ (/ (:entity/width source*) 2) size 0.1)))
-                                   :direction direction
-                                   :faction (:entity/faction source*)}
-                                  v))]]))
+    [[:tx/spawn-entity (create-projectile
+                         {:position (mapv + (:entity/position source*)
+                                          (v2-scale direction
+                                                    (+ (/ (:entity/width source*) 2) size 0.1)))
+                          :direction direction
+                          :faction (:entity/faction source*)}
+                         v)]]))
 
 (defn animation-entity [game-db position animation-k]
   (assert (keyword? animation-k))
@@ -3754,6 +3754,8 @@
                   ([entity id]
                    (assoc (construct-entity entity create-timer*)
                           :entity/id id)))
+        create-projectile (fn [foo bar]
+                            (entity* (spawn-projectile foo bar)))
         create-entity-state (fn [state-args entity]
                                 (create-entity-state state-args entity create-timer*))
         entity-state-exit! (fn [eid old-state-obj]
@@ -3769,7 +3771,7 @@
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]]
                                   (case k
-                                    :effects/projectile (projectile-effect v effect-ctx entity*)
+                                    :effects/projectile (projectile-effect v effect-ctx create-projectile)
                                     :effects/spawn (spawn-effect* v effect-ctx game-db fsms entity*)
                                     :effects/target-all (target-all-effect v effect-ctx affected-targets* applicable-effect-txs entity*)
                                     :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs entity*)
