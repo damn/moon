@@ -2680,7 +2680,7 @@
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (entity* (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground))]])))
 
-(defn damage-effect [v effect-ctx game-db elapsed-time entity*]
+(defn damage-effect [v effect-ctx game-db elapsed-time entity* kill-txs]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -2710,14 +2710,17 @@
             new-hp-val (max (- (hp 0) dmg-amount)
                             0)
             dmg-text (str "[RED]" dmg-amount "[]")]
-        [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
-         [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
-         [:tx/event target (if (zero? new-hp-val) :kill :alert)]
-         [:tx/sound "bfxr_normalhit.wav"]
-         [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position target*) :audiovisuals/damage))]]))))
+        (concat
+          [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
+           [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
+           [:tx/sound "bfxr_normalhit.wav"]
+           [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position target*) :audiovisuals/damage))]]
+          (if (zero? new-hp-val)
+            (kill-txs target)
+            [[:tx/event target :alert]]))))))
 
-(defn kill-effect [_v effect-ctx]
-  [[:tx/event (:effect/target effect-ctx) :kill]])
+(defn kill-effect [_v effect-ctx kill-txs]
+  (kill-txs (:effect/target effect-ctx)))
 
 (defn spiderweb-effect [_v effect-ctx elapsed-time]
   (let [target (:effect/target effect-ctx)]
@@ -3578,19 +3581,6 @@
                                       :entity/width (float width)
                                       :entity/height (float height)
                                       :entity/rotation-angle (or rotation-angle 0)))))
-        entity-state-enter! (fn [eid [k _v]]
-                              (case k 
-                                :npc-dead
-                                [[:tx/swap eid assoc :entity/destroyed? true]]
-
-                                :player-dead
-                                [[:tx/sound "bfxr_playerdeath.wav"]
-                                 [:tx/modal {:title "YOU DIED - again!"
-                                             :text "Good luck next time!"
-                                             :button-text "OK"
-                                             :on-click (fn [])}]]
-
-                                nil))
         entity-state-exit! (fn [eid [k _v] create-timer entity*]
                              (case k
                                :npc-sleeping
@@ -3629,8 +3619,16 @@
                               (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
                                        [:tx/swap eid assoc new-state-k (new-state-obj 1)]
                                        [:tx/swap eid dissoc old-state-k]]
-                                      (entity-state-exit! eid old-state-obj create-timer* entity*)
-                                      (entity-state-enter! eid new-state-obj))))))
+                                      (entity-state-exit! eid old-state-obj create-timer* entity*))))))
+        kill-txs (fn [eid]
+                   (concat [[:tx/event eid :kill]]
+                           (if (:entity/player? @eid)
+                             [[:tx/sound "bfxr_playerdeath.wav"]
+                              [:tx/modal {:title "YOU DIED - again!"
+                                          :text "Good luck next time!"
+                                          :button-text "OK"
+                                          :on-click (fn [])}]]
+                             [[:tx/swap eid assoc :entity/destroyed? true]])))
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
@@ -3659,7 +3657,7 @@
                                           (set-occupied-cells! @grid eid))
                                         eid))
                                     :tx/event
-                                    ; FIXME 
+                                    ; FIXME expand at call sites
                                     (fn [& params]
                                       (handle-txs! play-sound! (apply fsm-event-txs params)))
                                     :tx/modal
@@ -3852,9 +3850,9 @@
                                     :effects/target-all (target-all-effect v effect-ctx @active-entities @raycaster applicable-effect-txs entity*)
                                     :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs entity*)
                                     :effects.target/convert (convert-effect v effect-ctx game-db entity*)
-                                    :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time entity*)
-                                    :effects.target/kill (kill-effect v effect-ctx)
-                                    :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db @elapsed-time entity*)
+                                    :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time entity* kill-txs)
+                                    :effects.target/kill (kill-effect v effect-ctx kill-txs)
+                                    :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db @elapsed-time entity* kill-txs)
                                     :effects.target/spiderweb (spiderweb-effect v effect-ctx @elapsed-time)
                                     :effects.target/stun (stun-effect v effect-ctx)))
                                 (filter #(effect-applicable? % effect-ctx) effects)))
