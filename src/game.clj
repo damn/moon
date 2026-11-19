@@ -3708,8 +3708,6 @@
                           (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?))))))
        first))
 
-; TODO pass data literals
-; anony fns just bind state otherwise make sep. fns
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -3724,51 +3722,12 @@
            z-orders
            minimum-size
            controls-info 
+           max-delta
+           max-speed
+           fsms
            ]
     :as game-config}]
-  (let [max-delta 0.04
-        max-speed (/ minimum-size max-delta)
-        fsms {:npc (fsm/fsm-inc
-                     [[:npc-sleeping
-                       :kill -> :npc-dead
-                       :stun -> :stunned
-                       :alert -> :npc-idle]
-                      [:npc-idle
-                       :kill -> :npc-dead
-                       :stun -> :stunned
-                       :start-action -> :active-skill
-                       :movement-direction -> :npc-moving]
-                      [:npc-moving
-                       :kill -> :npc-dead
-                       :stun -> :stunned
-                       :timer-finished -> :npc-idle]
-                      [:active-skill
-                       :kill -> :npc-dead
-                       :stun -> :stunned
-                       :action-done -> :npc-idle]
-                      [:stunned
-                       :kill -> :npc-dead
-                       :effect-wears-off -> :npc-idle]
-                      [:npc-dead]])
-              :player (fsm/fsm-inc
-                        [[:player-idle
-                          :kill -> :player-dead
-                          :stun -> :stunned
-                          :start-action -> :active-skill
-                          :movement-input -> :player-moving]
-                         [:player-moving
-                          :kill -> :player-dead
-                          :stun -> :stunned
-                          :no-movement-input -> :player-idle]
-                         [:active-skill
-                          :kill -> :player-dead
-                          :stun -> :stunned
-                          :action-done -> :player-idle]
-                         [:stunned
-                          :kill -> :player-dead
-                          :effect-wears-off -> :player-idle]
-                         [:player-dead]])}
-        elapsed-time (atom 0)
+  (let [elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
         id-counter (atom 0)
@@ -5840,8 +5799,53 @@ init-game-state! (fn [handle-txs!]
                   :z-order/flying
                   :z-order/effect]
         minimum-size 0.39
+        max-delta 0.04
+        max-speed (/ minimum-size max-delta)
+        fsms {:npc (fsm/fsm-inc
+                     [[:npc-sleeping
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :alert -> :npc-idle]
+                      [:npc-idle
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :start-action -> :active-skill
+                       :movement-direction -> :npc-moving]
+                      [:npc-moving
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :timer-finished -> :npc-idle]
+                      [:active-skill
+                       :kill -> :npc-dead
+                       :stun -> :stunned
+                       :action-done -> :npc-idle]
+                      [:stunned
+                       :kill -> :npc-dead
+                       :effect-wears-off -> :npc-idle]
+                      [:npc-dead]])
+              :player (fsm/fsm-inc
+                        [[:player-idle
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :start-action -> :active-skill
+                          :movement-input -> :player-moving]
+                         [:player-moving
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :no-movement-input -> :player-idle]
+                         [:active-skill
+                          :kill -> :player-dead
+                          :stun -> :stunned
+                          :action-done -> :player-idle]
+                         [:stunned
+                          :kill -> :player-dead
+                          :effect-wears-off -> :player-idle]
+                         [:player-dead]])}
         listener (game-listener
-                   {:controls-info (str/join "\n"
+                   {:fsms fsms
+                    :max-speed max-speed
+                    :max-delta max-delta
+                    :controls-info (str/join "\n"
                                              ["[W][A][S][D] - Move"
                                               "[ESCAPE] - Close windows"
                                               "[I] - Inventory window"
