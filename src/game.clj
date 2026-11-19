@@ -3677,35 +3677,31 @@
         mouseover-eid (atom nil)
         viewport (atom nil)
         elapsed-time (atom 0)
-        textures (atom nil)
         update-labels (fn [get-frames-per-second get-mouse-position]
-                        (for [item [{:label "elapsed-time"
-                                     :update-fn (fn [] 
-                                                  (str (readable @elapsed-time) " seconds"))
-                                     :icon "images/clock.png"}
-                                    {:label "FPS"
-                                     :update-fn get-frames-per-second
-                                     :icon "images/fps.png"}
-                                    {:label "Mouseover-entity id"
-                                     :update-fn (fn []
-                                                  (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                                    (:entity/id entity)))
-                                     :icon "images/mouseover.png"}
-                                    {:label "paused?"
-                                     :update-fn (fn [] @paused?)}
-                                    {:label "GUI"
-                                     :update-fn (fn []
-                                                  (mapv int (unproject (get-viewport @stage) (get-mouse-position))))}
-                                    {:label "World"
-                                     :update-fn (fn []
-                                                  (mapv int (unproject @viewport (get-mouse-position))))}
-                                    {:label "Zoom"
-                                     :update-fn (fn []
-                                                  (.zoom ^OrthographicCamera (get-camera @viewport)))
-                                     :icon "images/zoom.png"}]]
-                          (if (:icon item)
-                            (update item :icon #(get @textures %))
-                            item)))
+                        [{:label "elapsed-time"
+                          :update-fn (fn [] 
+                                       (str (readable @elapsed-time) " seconds"))
+                          :icon "images/clock.png"}
+                         {:label "FPS"
+                          :update-fn get-frames-per-second
+                          :icon "images/fps.png"}
+                         {:label "Mouseover-entity id"
+                          :update-fn (fn []
+                                       (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                         (:entity/id entity)))
+                          :icon "images/mouseover.png"}
+                         {:label "paused?"
+                          :update-fn (fn [] @paused?)}
+                         {:label "GUI"
+                          :update-fn (fn []
+                                       (mapv int (unproject (get-viewport @stage) (get-mouse-position))))}
+                         {:label "World"
+                          :update-fn (fn []
+                                       (mapv int (unproject @viewport (get-mouse-position))))}
+                         {:label "Zoom"
+                          :update-fn (fn []
+                                       (.zoom ^OrthographicCamera (get-camera @viewport)))
+                          :icon "images/zoom.png"}])
         max-delta 0.04
         max-speed (/ minimum-size max-delta)
         fsms {:npc (fsm/fsm-inc
@@ -3881,11 +3877,7 @@
                            nil))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
-        sounds (atom nil)
-        play-sound!* (fn [sound-name]
-                       (Sound/.play (safe-get @sounds sound-name)))
-        image->texture-region #(get-texture-region @textures %)
-        create-level! (fn []
+        create-level! (fn [textures image->texture-region]
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
                               (level-fn {:level/creature-properties (prepare-creature-tiles
@@ -4141,6 +4133,8 @@
         default-font (atom nil)
         shape-drawer (atom nil)
         unit-scale (atom 1)
+        textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         draw-component! (fn [mouse-position k v entity]
                           (case k
                             :entity/clickable
@@ -4295,6 +4289,9 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
+        sounds (atom nil)
+        play-sound!* (fn [sound-name]
+                       (Sound/.play (safe-get @sounds sound-name)))
         ]
     {
      :create!
@@ -4328,7 +4325,7 @@
 
        ;; non -gdx lifecycle data ... ???? 
        (let [{:keys [^TiledMap tiled-map 
-                     start-position]} (create-level!)]
+                     start-position]} (create-level! @textures image->texture-region)]
          (reset! tiled-map* tiled-map)
          (reset! id-counter 0)
          (reset! entity-ids {})
@@ -4346,8 +4343,12 @@
          (reset! player-id (generate-id!*))
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
-                                          :update-labels (update-labels (fn [] (get-frames-per-second graphics))
-                                                                        get-input-position)
+                                          :update-labels (map (fn [item]
+                                                                (if (:icon item)
+                                                                  (update item :icon #(get @textures %))
+                                                                  item))
+                                                              (update-labels (fn [] (get-frames-per-second graphics))
+                                                                             get-input-position))
                                           :skin @skin})
                         (create-actor
                           (let [y-mana 80
