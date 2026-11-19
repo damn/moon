@@ -3634,6 +3634,29 @@
 
     nil))
 
+(defn effect-applicable? [[k v] effect-ctx]
+  (case k
+    :effects/projectile (:effect/target-direction effect-ctx)
+    :effects/spawn (and (:entity/faction @(:effect/source effect-ctx))
+                        (:effect/target-position effect-ctx))
+    :effects/target-all true
+    :effects/target-entity (and (:effect/target effect-ctx)
+                                (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
+    :effects.target/convert (let [source (:effect/source effect-ctx)
+                                  target (:effect/target effect-ctx)]
+                              (and target
+                                   (= (:entity/faction @target)
+                                      (enemy (:entity/faction @source)))))
+    :effects.target/damage (and (:effect/target effect-ctx)
+                                #_(:stats/hp @target))
+    :effects.target/kill (and (:effect/target effect-ctx)
+                              (:entity/fsm @(:effect/target effect-ctx)))
+    :effects.target/melee-damage (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
+                                                     effect-ctx)
+    :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
+    :effects.target/stun (and (:effect/target effect-ctx)
+                              (:entity/fsm @(:effect/target effect-ctx)))))
+
 ; TODO pass data literals
 ; anony fns just bind state otherwise make sep. fns
 (defn game-listener 
@@ -3694,30 +3717,6 @@
                           :kill -> :player-dead
                           :effect-wears-off -> :player-idle]
                          [:player-dead]])}
-        effect-applicable? (fn effect-applicable? [[k v] effect-ctx]
-                             (case k
-                               :effects/projectile (:effect/target-direction effect-ctx)
-                               :effects/spawn (and (:entity/faction @(:effect/source effect-ctx))
-                                                   (:effect/target-position effect-ctx))
-                               :effects/target-all true
-                               :effects/target-entity (and (:effect/target effect-ctx)
-                                                           (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
-                               :effects.target/convert (let [source (:effect/source effect-ctx)
-                                                             target (:effect/target effect-ctx)]
-                                                         (and target
-                                                              (= (:entity/faction @target)
-                                                                 (enemy (:entity/faction @source)))))
-                               :effects.target/damage (and (:effect/target effect-ctx)
-                                                           #_(:stats/hp @target))
-                               :effects.target/kill (and (:effect/target effect-ctx)
-                                                         (:entity/fsm @(:effect/target effect-ctx)))
-                               :effects.target/melee-damage (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
-                                                                                effect-ctx)
-                               :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
-                               :effects.target/stun (and (:effect/target effect-ctx)
-                                                         (:entity/fsm @(:effect/target effect-ctx)))))
-        raycaster (atom nil)
-        active-entities (atom nil)
         elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
@@ -3748,6 +3747,8 @@
                                           :button-text "OK"
                                           :on-click (fn [])}]]
                              [[:tx/swap eid assoc :entity/destroyed? true]])))
+        raycaster (atom nil)
+        active-entities (atom nil)
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]]
                                   (case k
