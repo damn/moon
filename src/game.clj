@@ -3642,66 +3642,6 @@
                                nil))
         ; TODO simple -> pass functions around instead of state!
         ; clear about state space 
-        stage (atom nil)
-        skin (atom nil)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-        entity-ids (atom {})
-        grid (atom nil)
-        content-grid (atom nil)
-        handle-txs! (fn [play-sound! txs]
-                      (let [k->txs {
-                                    :tx/swap swap!
-                                    :tx/spawn-entity 
-                                    (fn [entity]
-                                      (spawn-entity! entity-ids @content-grid @grid entity))
-                                    :tx/update-position
-                                    (fn [eid]
-                                      (update-entity-position! @content-grid @grid eid))
-                                    :tx/remove-entity
-                                    (fn [eid]
-                                      (remove-entity!* entity-ids @content-grid @grid eid))
-                                    :tx/modal
-                                    (fn [opts]
-                                      (show-modal! @skin @stage opts))
-                                    :tx/set-item 
-                                    (fn [cell item]
-                                      (-> (get-root @stage)
-                                          (find-actor "moon.ui.windows.inventory")
-                                          (set-item!* cell
-                                                      {:texture-region (image->texture-region (:entity/image item))
-                                                       :tooltip-text (item-info-text item)}
-                                                      @skin)))
-                                    :tx/sound play-sound! 
-                                    :tx/remove-item
-                                    (fn [cell] 
-                                      (remove-item! @stage cell))
-                                    :tx/toggle-inventory-visible
-                                    (fn []
-                                      (toggle-inventory-visible! @stage))
-                                    :tx/show-message
-                                    (fn [message]
-                                      (show-message! @stage message))
-                                    :tx/set-skill
-                                    (fn [skill-id image tooltip-text]
-                                      (-> (get-root @stage)
-                                          (find-actor "moon.ui.action-bar")
-                                          (add-skill! {:skill-id skill-id
-                                                       :texture-region (image->texture-region image)
-                                                       :tooltip-text tooltip-text}
-                                                      @skin)))
-                                    }]
-                        (doseq [[k & params] txs]
-                          (try (apply (safe-get k->txs k) params)
-                               (catch Throwable t
-                                 (throw (ex-info "handle-txs! error" 
-                                                 {:k k :params params}
-                                                 t)))))))
-        player-id (atom nil)
-        player-eid (fn []
-                     (let [eid (get @entity-ids @player-id)]
-                       (assert eid (str "player id not in entity-ids: " @player-id))
-                       eid))
         controls-info (str/join "\n"
                                 ["[W][A][S][D] - Move"
                                  "[ESCAPE] - Close windows"
@@ -3732,12 +3672,12 @@
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
+        stage (atom nil)
         paused? (atom false)
         mouseover-eid (atom nil)
         viewport (atom nil)
         elapsed-time (atom 0)
-        ; TODO maybe dev-menu/update-albels for every piece of state we can get some info
-        ; -> state space overview?
+        textures (atom nil)
         update-labels (fn [get-frames-per-second get-mouse-position]
                         (for [item [{:label "elapsed-time"
                                      :update-fn (fn [] 
@@ -3922,7 +3862,7 @@
                                                (filter (fn [e] (effect-applicable? e effect-ctx)))
                                                (some (fn [e] (effect-useful? e effect-ctx (partial raycaster-blocked? @raycaster)))))))
                             first))
-        ; FIXME many pure functions on entity map here
+        grid (atom nil)
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation [[:tx/swap eid animation-tick delta-time]]
@@ -3944,20 +3884,7 @@
         sounds (atom nil)
         play-sound!* (fn [sound-name]
                        (Sound/.play (safe-get @sounds sound-name)))
-        tick-game! (fn [delta-time]
-                     (when-not @paused?
-                       (let [delta-time (min delta-time max-delta)]
-                         (swap! elapsed-time + delta-time)
-                         (doseq [[faction max-iterations] factions-iterations]
-                           (update! @grid
-                                    potential-field-cache
-                                    faction
-                                    @active-entities
-                                    max-iterations))
-                         (doseq [eid @active-entities
-                                 component @eid]
-                           (handle-txs! play-sound!* (tick-component component eid delta-time @elapsed-time)))))
-                     (handle-txs! play-sound!* (destroy-entities game-db entity-ids entity*)))
+        image->texture-region #(get-texture-region @textures %)
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -3967,6 +3894,12 @@
                                          :textures @textures})]
                           {:tiled-map level-tiled-map
                            :start-position level-start}))
+        entity-ids (atom {})
+        player-id (atom nil)
+        player-eid (fn []
+                     (let [eid (get @entity-ids @player-id)]
+                       (assert eid (str "player id not in entity-ids: " @player-id))
+                       eid))
         create-interaction-state (fn [mouseover-actor world-mouse-position]
                                    (let [player-eid (player-eid)
                                          stage @stage
@@ -4146,16 +4079,6 @@
                                   (tx-event-txs player-eid :no-movement-input))
                                 nil))
         cursors (atom nil)
-        mouse-interaction! (fn [set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position]
-                             (let [player-eid (player-eid)
-                                   interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
-                               (set-cursor! (safe-get @cursors (cursor-key player-eid interaction-state)))
-                               (handle-txs! play-sound!* (handle-player-input player-eid
-                                                                              interaction-state
-                                                                              @stage
-                                                                              mouseover-actor
-                                                                              key-pressed?
-                                                                              button-just-pressed?))))
         update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
                                        (or #_error
@@ -4290,6 +4213,7 @@
                                                :visible-tile-color (float-bits 1 1 1 1)
                                                :invisible-tile-color (float-bits 0 0 0 1)})
                                             world-unit-scale)
+        content-grid (atom nil)
          update-active-entities! (fn []
                                    (reset! active-entities (active-entities* @content-grid @(player-eid))))
          update-mouseover-eid! (fn [mouseover-actor world-mouse-position]
@@ -4322,6 +4246,55 @@
                                  (image->texture-region {:image/file "images/items.png"
                                                          :image/bounds bounds})))
         shape-drawer-texture (atom nil)
+        skin (atom nil)
+        handle-txs! (fn [play-sound! txs]
+                      (let [k->txs {
+                                    :tx/swap swap!
+                                    :tx/spawn-entity 
+                                    (fn [entity]
+                                      (spawn-entity! entity-ids @content-grid @grid entity))
+                                    :tx/update-position
+                                    (fn [eid]
+                                      (update-entity-position! @content-grid @grid eid))
+                                    :tx/remove-entity
+                                    (fn [eid]
+                                      (remove-entity!* entity-ids @content-grid @grid eid))
+                                    :tx/modal
+                                    (fn [opts]
+                                      (show-modal! @skin @stage opts))
+                                    :tx/set-item 
+                                    (fn [cell item]
+                                      (-> (get-root @stage)
+                                          (find-actor "moon.ui.windows.inventory")
+                                          (set-item!* cell
+                                                      {:texture-region (image->texture-region (:entity/image item))
+                                                       :tooltip-text (item-info-text item)}
+                                                      @skin)))
+                                    :tx/sound play-sound! 
+                                    :tx/remove-item
+                                    (fn [cell] 
+                                      (remove-item! @stage cell))
+                                    :tx/toggle-inventory-visible
+                                    (fn []
+                                      (toggle-inventory-visible! @stage))
+                                    :tx/show-message
+                                    (fn [message]
+                                      (show-message! @stage message))
+                                    :tx/set-skill
+                                    (fn [skill-id image tooltip-text]
+                                      (-> (get-root @stage)
+                                          (find-actor "moon.ui.action-bar")
+                                          (add-skill! {:skill-id skill-id
+                                                       :texture-region (image->texture-region image)
+                                                       :tooltip-text tooltip-text}
+                                                      @skin)))
+                                    }]
+                        (doseq [[k & params] txs]
+                          (try (apply (safe-get k->txs k) params)
+                               (catch Throwable t
+                                 (throw (ex-info "handle-txs! error" 
+                                                 {:k k :params params}
+                                                 t)))))))
         ]
     {
      :create!
@@ -4512,13 +4485,31 @@
          (render-tiled-map!)
          (draw-world-layer! mouse-position)
          (.end ^Batch batch)
-
-         (mouse-interaction! set-cursor! key-pressed? button-just-pressed? mouseover-actor world-mouse-position)
+         (let [player-eid (player-eid)
+               interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
+           (set-cursor! (safe-get @cursors (cursor-key player-eid interaction-state)))
+           (handle-txs! play-sound!* (handle-player-input player-eid
+                                                          interaction-state
+                                                          stage
+                                                          mouseover-actor
+                                                          key-pressed?
+                                                          button-just-pressed?)))
          (update-paused-state! key-just-pressed? key-pressed?)
-         (tick-game! delta-time)
+         (when-not @paused?
+           (let [delta-time (min delta-time max-delta)]
+             (swap! elapsed-time + delta-time)
+             (doseq [[faction max-iterations] factions-iterations]
+               (update! @grid
+                        potential-field-cache
+                        faction
+                        @active-entities
+                        max-iterations))
+             (doseq [eid @active-entities
+                     component @eid]
+               (handle-txs! play-sound!* (tick-component component eid delta-time @elapsed-time)))))
+         (handle-txs! play-sound!* (destroy-entities game-db entity-ids entity*))
          (key-pressed-checks! key-pressed?)
          (key-just-pressed-checks! key-just-pressed?)
-
          (act! stage)
          (draw! stage)))
 
