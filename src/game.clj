@@ -3501,6 +3501,25 @@
 (defn set-camera-position! [viewport xy]
   (update-xy! (get-camera viewport) xy))
 
+(defn tx-event-txs* 
+  [create-entity-state entity-state-exit! eid event & [params]]
+  (let [fsm (:entity/fsm @eid)
+        _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
+        old-state-k (:state fsm)
+        new-fsm (fsm/fsm-event fsm event)
+        new-state-k (:state new-fsm)]
+    (when-not (= old-state-k new-state-k)
+      (let [old-state-obj (let [k (:state (:entity/fsm @eid))] 
+                            [k (k @eid)])
+            state-args (if params 
+                         [new-state-k params]
+                         [new-state-k nil])
+            new-state-obj [new-state-k (create-entity-state state-args @eid)]]
+        (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
+                 [:tx/swap eid assoc new-state-k (new-state-obj 1)]
+                 [:tx/swap eid dissoc old-state-k]]
+                (entity-state-exit! eid old-state-obj))))))
+
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -3602,24 +3621,13 @@
                   ([entity id]
                    (assoc (construct-entity entity create-timer*)
                           :entity/id id)))
-        fsm-event-txs (fn [eid event & [params]]
-                        (let [fsm (:entity/fsm @eid)
-                              _ (assert fsm (str "entity doesnt have fsm - keys: " (keys @eid)))
-                              old-state-k (:state fsm)
-                              new-fsm (fsm/fsm-event fsm event)
-                              new-state-k (:state new-fsm)]
-                          (when-not (= old-state-k new-state-k)
-                            (let [old-state-obj (let [k (:state (:entity/fsm @eid))] 
-                                                  [k (k @eid)])
-                                  state-args (if params 
-                                               [new-state-k params]
-                                               [new-state-k nil])
-                                  new-state-obj [new-state-k (create-entity-state state-args @eid create-timer*)]]
-                              (concat [[:tx/swap eid assoc :entity/fsm new-fsm]
-                                       [:tx/swap eid assoc new-state-k (new-state-obj 1)]
-                                       [:tx/swap eid dissoc old-state-k]]
-                                      (entity-state-exit! eid old-state-obj create-timer* entity*))))))
-        tx-event-txs fsm-event-txs
+        tx-event-txs (fn [& params]
+                       (apply tx-event-txs* 
+                              (fn [state-args entity]
+                                (create-entity-state state-args entity create-timer*)) 
+                              (fn [eid old-state-obj]
+                                (entity-state-exit! eid old-state-obj create-timer* entity*))
+                              params))
         kill-txs (fn [eid]
                    (concat (tx-event-txs eid :kill)
                            (if (:entity/player? @eid)
