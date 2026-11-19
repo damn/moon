@@ -4331,22 +4331,29 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
                                                   stage
                                                   viewport))
                :skin @skin})
+font-params {:path "fonts/films.EXL_____.ttf"
+             :size 16
+             :quality-scaling 2
+             :use-integer-positions? false}
         ]
     {
      :create!
-     (fn [{:keys [audio files graphics get-input-position set-input-processor! create-cursor]}]
+     (fn [{:keys [audio 
+                  files 
+                  graphics 
+                  get-input-position 
+                  set-input-processor! 
+                  create-cursor 
+                  create-sound
+                  create-font
+                  white-pixel-texture
+                  sprite-batch!]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (reset! state {:cursors (update-vals (:cursors game-config) create-cursor)})
-       (reset! sounds (into {}
-                            (for [path (:sounds game-config)]
-                              [path (new-sound audio (internal files path))])))
+       (reset! sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)])))
        (reset! batch (sprite-batch!))
-       (reset! default-font (create-default-font! files 
-                                                  {:path "fonts/films.EXL_____.ttf"
-                                                   :size 16
-                                                   :quality-scaling 2
-                                                   :use-integer-positions? false}))
+       (reset! default-font (create-font font-params))
        (reset! shape-drawer-texture (white-pixel-texture))
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal files (:skin game-config))))
@@ -5473,10 +5480,15 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
 (defn create-capabilities []
-  (let [files Gdx/files
+  (let [audio Gdx/audio
+        files Gdx/files
         input Gdx/input
         graphics Gdx/graphics]
     {
+     :sprite-batch! sprite-batch!
+     :white-pixel-texture white-pixel-texture
+     :create-font (fn [params] (create-default-font! files params))
+     :create-sound  (fn [path] (new-sound audio (internal files path)))
      :create-cursor (fn [[path [hotspot-x hotspot-y]]]
                       (let [pixmap (pixmap (internal files path))
                             cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
@@ -5495,7 +5507,7 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
      :key-pressed? #(.isKeyPressed input %)
      :key-just-pressed? #(key-just-pressed? input %)
      :button-just-pressed? #(.isButtonJustPressed input (int %))
-     :audio    Gdx/audio
+     :audio    audio
      :files    files
      :graphics graphics
      :input    input
