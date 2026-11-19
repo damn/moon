@@ -4247,9 +4247,6 @@
         default-font (atom nil)
         unit-scale (atom 1)
         shape-drawer (atom nil)
-        sounds (atom nil)
-        play-sound!* (fn [sound-name]
-                       (Sound/.play (safe-get @sounds sound-name)))
         viewport (atom nil)
         info-window-opts (fn [ui-viewport-width]
                            {:title "Entity Info"
@@ -4264,11 +4261,11 @@
                                                           @elapsed-time)
                                                ""))
                           :skin @skin})
-        inventory-window-opts (fn [get-input-position ui-viewport-width ui-viewport-height]
+        inventory-window-opts (fn [on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
                                 {:get-player-eid player-eid
                                :get-mouse-position get-input-position
                                :on-click-cell (fn [_event cell]
-                                                (handle-txs! play-sound!* (handle-clicked-inventory-cell (player-eid) cell)))
+                                                (on-click-cell! cell))
                                :draw-cell-rect! (fn [player-entity x y mouseover? cell]
                                                   (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
                                                   (when (and mouseover? (:entity/item-on-cursor player-entity))
@@ -4333,7 +4330,7 @@ font-params {:path "fonts/films.EXL_____.ttf"
              :size 16
              :quality-scaling 2
              :use-integer-positions? false}
-create-stage (fn [get-input-position get-frames-per-second]
+create-stage (fn [get-input-position get-frames-per-second on-click-cell!]
                (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                                   (float (:height (:stage game-config)))) 
                                     @batch)
@@ -4343,14 +4340,15 @@ create-stage (fn [get-input-position get-frames-per-second]
                                 (create-dev-menu (dev-menu-opts get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts ui-viewport-width))
                                 (windows-create [(create-info-window (info-window-opts ui-viewport-width))
-                                                 (build-inventory-window (inventory-window-opts get-input-position
+                                                 (build-inventory-window (inventory-window-opts on-click-cell!
+                                                                                                get-input-position
                                                                                                 ui-viewport-width 
                                                                                                 ui-viewport-height))])
                                 (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
                                 (player-message-actor-create @default-font unit-scale)]]
                    (add-actor! stage* actor))
                  stage*))
-init-game-state! (fn []
+init-game-state! (fn [handle-txs!]
                    (let [{:keys [^TiledMap tiled-map 
                                  start-position]} (create-level! @textures image->texture-region)]
                      (reset! tiled-map* tiled-map)
@@ -4368,8 +4366,7 @@ init-game-state! (fn []
                        (reset! raycaster (create-raycaster g)))
                      (reset! elapsed-time 0)
                      (reset! player-id (generate-id!*))
-                     (handle-txs! play-sound!*
-                                  (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                     (handle-txs! (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
                                                                          :creature-property (build-property :creatures/vampire)
                                                                          :components {:entity/fsm {:fsm (:player fsms)
                                                                                                    :initial-state :player-idle}
@@ -4386,6 +4383,11 @@ init-game-state! (fn []
 
         state (atom nil)
         shape-drawer-texture (atom nil)
+        sounds (atom nil)
+        play-sound!* (fn [sound-name]
+                       (Sound/.play (safe-get @sounds sound-name)))
+        handle-txs! (fn [txs]
+                      (handle-txs! play-sound!* txs))
         ]
     {
      :create!
@@ -4410,10 +4412,14 @@ init-game-state! (fn []
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
-       (reset! stage (create-stage get-input-position get-frames-per-second))
+       (reset! stage (create-stage get-input-position 
+                                   get-frames-per-second
+                                   (fn [cell]
+                                     (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))))
        (set-input-processor! @stage)
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
-       (init-game-state!))
+       (init-game-state! handle-txs!))
+
      :dispose!
      (fn []
        (let [batch @batch
@@ -4503,12 +4509,12 @@ init-game-state! (fn []
                                                            world-mouse-position 
                                                            get-selected-skill)]
            (set-cursor! (safe-get cursors (cursor-key player-eid interaction-state)))
-           (handle-txs! play-sound!* (handle-player-input player-eid
-                                                          interaction-state
-                                                          stage
-                                                          mouseover-actor
-                                                          key-pressed?
-                                                          button-just-pressed?)))
+           (handle-txs! (handle-player-input player-eid
+                                             interaction-state
+                                             stage
+                                             mouseover-actor
+                                             key-pressed?
+                                             button-just-pressed?)))
          (update-paused-state! key-just-pressed? key-pressed?)
          (when-not @paused?
            (let [delta-time (min delta-time max-delta)]
@@ -4521,8 +4527,8 @@ init-game-state! (fn []
                         max-iterations))
              (doseq [eid @active-entities
                      component @eid]
-               (handle-txs! play-sound!* (tick-component component eid delta-time @elapsed-time)))))
-         (handle-txs! play-sound!* (destroy-entities game-db entity-ids entity*))
+               (handle-txs! (tick-component component eid delta-time @elapsed-time)))))
+         (handle-txs! (destroy-entities game-db entity-ids entity*))
          (key-pressed-checks! viewport key-pressed?)
          (key-just-pressed-checks! stage key-just-pressed?)
          (act! stage)
