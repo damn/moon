@@ -4368,6 +4368,8 @@ init-game-state! (fn [handle-txs!]
                        (Sound/.play (safe-get @sounds sound-name)))
         handle-txs! (fn [txs]
                       (handle-txs! play-sound!* txs))
+clicked-inventory-cell! (fn [cell]
+                                     (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
         ]
     {
      :create!
@@ -4392,10 +4394,7 @@ init-game-state! (fn [handle-txs!]
        (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
-       (reset! stage (create-stage get-input-position 
-                                   get-frames-per-second
-                                   (fn [cell]
-                                     (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))))
+       (reset! stage (create-stage get-input-position get-frames-per-second clicked-inventory-cell!))
        (set-input-processor! @stage)
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
        (init-game-state! handle-txs!))
