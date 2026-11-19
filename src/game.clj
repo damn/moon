@@ -3670,9 +3670,7 @@
         content-grid (atom nil)
         handle-txs! (fn handle-txs! [world-mouse-position txs]
                       (let [k->txs {
-                                    :tx/swap 
-                                    (fn [eid f & params]
-                                      (apply swap! eid f params))
+                                    :tx/swap swap!
                                     :tx/sound 
                                     (fn [sound-name]
                                       (Sound/.play (safe-get @sounds sound-name)))
