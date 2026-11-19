@@ -4334,15 +4334,10 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
         ]
     {
      :create!
-     (fn [{:keys [audio files graphics get-input-position set-input-processor!]}]
+     (fn [{:keys [audio files graphics get-input-position set-input-processor! create-cursor]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! state {:cursors (update-vals (:cursors game-config)
-                                            (fn [[path [hotspot-x hotspot-y]]]
-                                              (let [pixmap (pixmap (internal files path))
-                                                    cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
-                                                (dispose! pixmap)
-                                                cursor)))})
+       (reset! state {:cursors (update-vals (:cursors game-config) create-cursor)})
        (reset! sounds (into {}
                             (for [path (:sounds game-config)]
                               [path (new-sound audio (internal files path))])))
@@ -5478,9 +5473,15 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
 (defn create-capabilities []
-  (let [input Gdx/input
+  (let [files Gdx/files
+        input Gdx/input
         graphics Gdx/graphics]
     {
+     :create-cursor (fn [[path [hotspot-x hotspot-y]]]
+                      (let [pixmap (pixmap (internal files path))
+                            cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
+                        (dispose! pixmap)
+                        cursor))
      :set-input-processor! (fn [processor]
                              (.setInputProcessor input processor))
      :clear-screen! (fn [r g b a]
@@ -5495,7 +5496,7 @@ dev-menu-opts (fn [get-input-position get-frames-per-second]
      :key-just-pressed? #(key-just-pressed? input %)
      :button-just-pressed? #(.isButtonJustPressed input (int %))
      :audio    Gdx/audio
-     :files    Gdx/files
+     :files    files
      :graphics graphics
      :input    input
      }))
