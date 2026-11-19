@@ -3520,6 +3520,37 @@
                  [:tx/swap eid dissoc old-state-k]]
                 (entity-state-exit! eid old-state-obj))))))
 
+(defn spawn-entity! [entity-ids content-grid grid entity]
+  (let [id (:entity/id entity)
+        eid (atom entity)]
+    (assert (number? id))
+    (assert (not (contains? @entity-ids id)))
+    (swap! entity-ids assoc id eid)
+    (assert (:entity/position @eid))
+    (update-entity! content-grid eid)
+    (assert (:entity/position @eid))
+    (when (:entity/collides? @eid)
+      (assert (valid-position? grid @eid id)))
+    (set-touched-cells! grid eid)
+    (when (:entity/collides? @eid)
+      (set-occupied-cells! grid eid))
+    eid))
+
+(defn update-entity-position! [content-grid grid eid]
+  (update-entity! content-grid eid)
+  (remove-from-touched-cells! grid eid)
+  (set-touched-cells! grid eid)
+  (when (:entity/collides? @eid)
+    (remove-from-occupied-cells! grid eid)
+    (set-occupied-cells! grid eid)))
+
+(defn remove-entity!* [entity-ids content-grid grid eid]
+  (swap! entity-ids dissoc (:entity/id @eid))
+  (remove-entity! content-grid eid)
+  (remove-from-touched-cells! grid eid)
+  (when (:entity/collides? @eid)
+    (remove-from-occupied-cells! grid eid)))
+
 (defn game-listener 
   [{:keys [game-schemas
            game-db
@@ -3610,33 +3641,6 @@
 
                                nil))
         elapsed-time (atom 0)
-        create-timer* (fn [duration]
-                        (timer-create duration @elapsed-time))
-        id-counter (atom 0)
-        generate-id!* #(swap! id-counter inc)
-        entity* (fn
-                  ([entity]
-                   (assoc (construct-entity entity create-timer*)
-                          :entity/id (generate-id!*)))
-                  ([entity id]
-                   (assoc (construct-entity entity create-timer*)
-                          :entity/id id)))
-        tx-event-txs (fn [& params]
-                       (apply tx-event-txs* 
-                              (fn [state-args entity]
-                                (create-entity-state state-args entity create-timer*)) 
-                              (fn [eid old-state-obj]
-                                (entity-state-exit! eid old-state-obj create-timer* entity*))
-                              params))
-        kill-txs (fn [eid]
-                   (concat (tx-event-txs eid :kill)
-                           (if (:entity/player? @eid)
-                             [[:tx/sound "bfxr_playerdeath.wav"]
-                              [:tx/modal {:title "YOU DIED - again!"
-                                          :text "Good luck next time!"
-                                          :button-text "OK"
-                                          :on-click (fn [])}]]
-                             [[:tx/swap eid assoc :entity/destroyed? true]])))
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
@@ -3644,26 +3648,19 @@
         entity-ids (atom {})
         grid (atom nil)
         content-grid (atom nil)
-        handle-txs! (fn handle-txs! [play-sound! txs]
+        handle-txs! (fn [play-sound! txs]
+                      ; okay ... like play-sound we can pass each dispatcher (world/ui too ?)
                       (let [k->txs {
                                     :tx/swap swap!
-                                    :tx/sound play-sound! 
                                     :tx/spawn-entity 
                                     (fn [entity]
-                                      (let [id (:entity/id entity)
-                                            eid (atom entity)]
-                                        (assert (number? id))
-                                        (assert (not (contains? @entity-ids id)))
-                                        (swap! entity-ids assoc id eid)
-                                        (assert (:entity/position @eid))
-                                        (update-entity! @content-grid eid)
-                                        (assert (:entity/position @eid))
-                                        (when (:entity/collides? @eid)
-                                          (assert (valid-position? @grid @eid id)))
-                                        (set-touched-cells! @grid eid)
-                                        (when (:entity/collides? @eid)
-                                          (set-occupied-cells! @grid eid))
-                                        eid))
+                                      (spawn-entity! entity-ids @content-grid @grid entity))
+                                    :tx/update-position
+                                    (fn [eid]
+                                      (update-entity-position! @content-grid @grid eid))
+                                    :tx/remove-entity
+                                    (fn [eid]
+                                      (remove-entity!* entity-ids @content-grid @grid eid))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
@@ -3675,6 +3672,7 @@
                                                       {:texture-region (image->texture-region (:entity/image item))
                                                        :tooltip-text (item-info-text item)}
                                                       @skin)))
+                                    :tx/sound play-sound! 
                                     :tx/remove-item
                                     (fn [cell] 
                                       (remove-item! @stage cell))
@@ -3692,21 +3690,6 @@
                                                        :texture-region (image->texture-region (:entity/image skill))
                                                        :tooltip-text (info-text skill @elapsed-time)}
                                                       @skin)))
-                                    :tx/update-position
-                                    (fn [eid]
-                                      (update-entity! @content-grid eid)
-                                      (remove-from-touched-cells! @grid eid)
-                                      (set-touched-cells! @grid eid)
-                                      (when (:entity/collides? @eid)
-                                        (remove-from-occupied-cells! @grid eid)
-                                        (set-occupied-cells! @grid eid)))
-                                    :tx/remove-entity
-                                    (fn [eid]
-                                      (swap! entity-ids dissoc (:entity/id @eid))
-                                      (remove-entity! @content-grid eid)
-                                      (remove-from-touched-cells! @grid eid)
-                                      (when (:entity/collides? @eid)
-                                        (remove-from-occupied-cells! @grid eid)))
                                     }]
                         (doseq [[k & params] txs]
                           (try (apply (safe-get k->txs k) params)
@@ -3846,6 +3829,33 @@
                                                          (:entity/fsm @(:effect/target effect-ctx)))))
         raycaster (atom nil)
         active-entities (atom nil)
+        create-timer* (fn [duration]
+                        (timer-create duration @elapsed-time))
+        id-counter (atom 0)
+        generate-id!* #(swap! id-counter inc)
+        entity* (fn
+                  ([entity]
+                   (assoc (construct-entity entity create-timer*)
+                          :entity/id (generate-id!*)))
+                  ([entity id]
+                   (assoc (construct-entity entity create-timer*)
+                          :entity/id id)))
+        tx-event-txs (fn [& params]
+                       (apply tx-event-txs* 
+                              (fn [state-args entity]
+                                (create-entity-state state-args entity create-timer*)) 
+                              (fn [eid old-state-obj]
+                                (entity-state-exit! eid old-state-obj create-timer* entity*))
+                              params))
+        kill-txs (fn [eid]
+                   (concat (tx-event-txs eid :kill)
+                           (if (:entity/player? @eid)
+                             [[:tx/sound "bfxr_playerdeath.wav"]
+                              [:tx/modal {:title "YOU DIED - again!"
+                                          :text "Good luck next time!"
+                                          :button-text "OK"
+                                          :on-click (fn [])}]]
+                             [[:tx/swap eid assoc :entity/destroyed? true]])))
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]]
                                   (case k
