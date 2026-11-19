@@ -3660,7 +3660,6 @@
                                        [:tx/swap eid dissoc old-state-k]]
                                       (entity-state-exit! eid old-state-obj world-mouse-position create-timer*)
                                       (entity-state-enter! eid new-state-obj create-timer*))))))
-        sounds (atom nil)
         stage (atom nil)
         skin (atom nil)
         textures (atom nil)
@@ -3668,12 +3667,10 @@
         entity-ids (atom {})
         grid (atom nil)
         content-grid (atom nil)
-        handle-txs! (fn handle-txs! [world-mouse-position txs]
+        handle-txs! (fn handle-txs! [play-sound! world-mouse-position txs]
                       (let [k->txs {
                                     :tx/swap swap!
-                                    :tx/sound 
-                                    (fn [sound-name]
-                                      (Sound/.play (safe-get @sounds sound-name)))
+                                    :tx/sound play-sound! 
                                     :tx/spawn-entity 
                                     (fn [entity]
                                       (let [id (:entity/id entity)
@@ -3696,7 +3693,7 @@
                                     ; at player-item-on-cursor inventory/world/ui magic.
                                     ; => handle-clicked-inventory-cell (player-item-on-cursor)
                                     (fn [& params]
-                                      (handle-txs! world-mouse-position (apply fsm-event-txs world-mouse-position params)))
+                                      (handle-txs! play-sound! world-mouse-position (apply fsm-event-txs world-mouse-position params)))
                                     :tx/modal
                                     (fn [opts]
                                       (show-modal! @skin @stage opts))
@@ -3966,6 +3963,9 @@
                            nil))
         factions-iterations {:good 15 :evil 5}
         potential-field-cache (atom nil)
+        sounds (atom nil)
+        play-sound!* (fn [sound-name]
+                       (Sound/.play (safe-get @sounds sound-name)))
         tick-game! (fn [delta-time world-mouse-position]
                      (when-not @paused?
                        (let [delta-time (min delta-time max-delta)]
@@ -3978,8 +3978,8 @@
                                     max-iterations))
                          (doseq [eid @active-entities
                                  component @eid]
-                           (handle-txs! world-mouse-position (tick-component component eid delta-time @elapsed-time)))))
-                     (handle-txs! world-mouse-position (destroy-entities game-db entity-ids entity*)))
+                           (handle-txs! play-sound!* world-mouse-position (tick-component component eid delta-time @elapsed-time)))))
+                     (handle-txs! play-sound!* world-mouse-position (destroy-entities game-db entity-ids entity*)))
         create-level! (fn []
                         (let [{level-tiled-map :tiled-map
                                level-start :start-position}
@@ -4160,7 +4160,7 @@
                              (let [player-eid (player-eid)
                                    interaction-state (create-interaction-state mouseover-actor world-mouse-position)]
                                (set-cursor! (safe-get @cursors (cursor-key player-eid interaction-state)))
-                               (handle-txs! world-mouse-position (handle-player-input player-eid
+                               (handle-txs! play-sound!* world-mouse-position (handle-player-input player-eid
                                                                                       interaction-state
                                                                                       @stage
                                                                                       mouseover-actor
@@ -4452,7 +4452,7 @@
                                             :get-mouse-position get-input-position
                                             :on-click-cell (fn [_event cell]
                                                              (let [world-mouse-position (unproject @viewport (get-input-position))]
-                                                               (handle-txs! world-mouse-position (handle-clicked-inventory-cell (player-eid) cell))))
+                                                               (handle-txs! play-sound!* world-mouse-position (handle-clicked-inventory-cell (player-eid) cell))))
                                             :draw-cell-rect! (fn [player-entity x y mouseover? cell]
                                                                (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
                                                                (when (and mouseover?
@@ -4481,11 +4481,11 @@
                                                              :entity/clickable {:type :clickable/player}
                                                              :entity/click-distance-tiles 1.5}})
                                @player-id)]
-           (handle-txs! world-mouse-position
+           (handle-txs! play-sound!* world-mouse-position
                         (concat [[:tx/spawn-entity entity]]
                                 (player-ui-txs entity)))
            (assert (:entity/player? @(player-eid)))
-           (handle-txs! world-mouse-position (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
+           (handle-txs! play-sound!* world-mouse-position (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
      :dispose!
      (fn []
        (let [batch @batch
