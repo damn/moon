@@ -4304,14 +4304,14 @@ dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-pe
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-create-stage (fn [batch skin default-font get-input-position get-frames-per-second on-click-cell!]
+create-stage (fn [batch skin textures default-font get-input-position get-frames-per-second on-click-cell!]
                (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                                   (float (:height (:stage game-config)))) 
                                     batch)
                      ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))]
                  (doseq [actor [(create-action-bar)
-                                (create-dev-menu (dev-menu-opts @textures stage skin viewport get-input-position get-frames-per-second))
+                                (create-dev-menu (dev-menu-opts textures stage skin viewport get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts default-font ui-viewport-width))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts skin
@@ -4386,6 +4386,7 @@ init-game-state! (fn [handle-txs! textures]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
          (reset! stage (create-stage batch 
                                      skin 
+                                     @textures
                                      default-font 
                                      get-input-position 
                                      get-frames-per-second 
