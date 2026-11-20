@@ -2851,7 +2851,7 @@
        [:tx/remove-item cell]
        [:tx/set-item cell item-on-cursor]])))
 
-(defn player-message-actor-create [default-font unit-scale]
+(defn player-message-actor-create [default-font get-unit-scale]
   (let [message-duration-seconds 0.5]
     (doto (proxy [Actor] []
             (act [delta]
@@ -2870,7 +2870,7 @@
                   (when-let [text (:text @state)]
                     (draw-text! batch 
                                 default-font 
-                                @unit-scale 
+                                (get-unit-scale) 
                                 {:x (/ vp-width 2)
                                  :y (+ (/ vp-height 2) 200)
                                  :text text
@@ -2884,12 +2884,12 @@
   [[k _v] eid batch unit-scale image->texture-region mouseover-actor* ui-mouse-pos]
   (when-let [item (:entity/item-on-cursor @eid)]
     (draw-texture-region! batch
-                          @unit-scale
+                          unit-scale
                           (image->texture-region (:entity/image item))
                           ui-mouse-pos
                           {:center? true})))
 
-(defn player-state-draw-create [get-player-eid unit-scale image->texture-region get-mouse-position]
+(defn player-state-draw-create [get-player-eid get-unit-scale image->texture-region get-mouse-position]
   (proxy [Actor] []
     (act [delta]
       (let [^Actor this this]
@@ -2904,7 +2904,7 @@
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
                                    batch
-                                   unit-scale
+                                   (get-unit-scale)
                                    image->texture-region
                                    (stage-hit stage x y)
                                    mouse-pos)))))
@@ -4298,15 +4298,14 @@ dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position 
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-        unit-scale (atom 1)
-add-stage-actors! (fn [shape-drawer stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
+add-stage-actors! (fn [get-unit-scale shape-drawer stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))
                      ui-mouse-info-text (fn []
                                           (mapv int (unproject (get-viewport stage*) (get-input-position))))]
                  (doseq [actor [(create-action-bar)
                                 (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second))
-                                (create-actor (hp-mana-bar-opts (fn get-unit-scale [] @unit-scale) default-font ui-viewport-width image->texture-region))
+                                (create-actor (hp-mana-bar-opts get-unit-scale default-font ui-viewport-width image->texture-region))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts shape-drawer
                                                                                                 slot->texture-region*
@@ -4315,8 +4314,8 @@ add-stage-actors! (fn [shape-drawer stage* skin textures default-font get-input-
                                                                                                 get-input-position
                                                                                                 ui-viewport-width 
                                                                                                 ui-viewport-height))])
-                                (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
-                                (player-message-actor-create default-font unit-scale)]]
+                                (player-state-draw-create player-eid get-unit-scale image->texture-region get-input-position)
+                                (player-message-actor-create default-font get-unit-scale)]]
                    (add-actor! stage* actor))))
 init-game-state! (fn [handle-txs! textures image->texture-region]
                    (let [{:keys [^TiledMap tiled-map 
@@ -4383,8 +4382,11 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                            (handle-txs! stage image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
-             shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))]
-         (add-stage-actors! shape-drawer
+             shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))
+             unit-scale (atom 1)
+             get-unit-scale (fn [] @unit-scale)]
+         (add-stage-actors! get-unit-scale
+                            shape-drawer
                             stage 
                             skin 
                             textures
@@ -4405,7 +4407,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         :skin skin
                         :sounds sounds
                         :stage stage
-                        :textures textures})
+                        :textures textures
+                        :unit-scale unit-scale})
          (reset! viewport (create-viewport! 1440 900 world-unit-scale))
          (init-game-state! handle-txs! textures image->texture-region)))
 
@@ -4442,21 +4445,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      image->texture-region
                      handle-txs!
                      shape-drawer
-                     stage]} @state
+                     stage
+                     unit-scale]} @state
              viewport @viewport
              mouse-position (get-input-position)
              delta-time (get-delta-time)
              camera-position (:entity/position @(player-eid))
              mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
                                (stage-hit stage x y))
-             world-mouse-position (unproject viewport mouse-position)
-             ]
+             world-mouse-position (unproject viewport mouse-position)]
          (clear-screen! 0 0 0 0)
-
          (update-mouseover-eid! mouseover-actor world-mouse-position)
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
-
          (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
          (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
          (.begin ^Batch batch)
