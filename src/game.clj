@@ -4359,7 +4359,6 @@ init-game-state! (fn [handle-txs!]
 
 
         state (atom nil)
-        shape-drawer-texture (atom nil)
         sounds (atom nil)
         play-sound!* (fn [sound-name]
                        (Sound/.play (safe-get @sounds sound-name)))
@@ -4385,12 +4384,13 @@ clicked-inventory-cell! (fn [cell]
                   get-frames-per-second]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! state {:cursors (update-vals (:cursors game-config) create-cursor)})
-       (reset! sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)])))
        (reset! batch (sprite-batch!))
+       (let [shape-drawer-texture (white-pixel-texture)]
+         (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
+         (reset! state {:cursors (update-vals (:cursors game-config) create-cursor)
+                        :shape-drawer-texture shape-drawer-texture}))
+       (reset! sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)])))
        (reset! default-font (create-font font-params))
-       (reset! shape-drawer-texture (white-pixel-texture))
-       (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
        (reset! stage (create-stage @batch get-input-position get-frames-per-second clicked-inventory-cell!))
@@ -4401,9 +4401,9 @@ clicked-inventory-cell! (fn [cell]
      :dispose!
      (fn []
        (let [batch @batch
-             {:keys [cursors]} @state
+             {:keys [cursors
+                     shape-drawer-texture]} @state
              default-font @default-font
-             shape-drawer-texture @shape-drawer-texture
              skin @skin
              sounds @sounds
              textures @textures
