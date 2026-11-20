@@ -4218,9 +4218,7 @@
         unit-scale (atom 1)
         default-font (atom nil)
 hp-mana-bar-opts (fn [ui-viewport-width]
-                   (let [x (/ ui-viewport-width 2)
-                         bar-x (- x (/ rahmenw 2))
-                         draw-bar! (fn [batch x y content-file minmaxval name]
+                   (let [draw-bar! (fn [batch x y content-file minmaxval name]
                                      (draw-texture-region! batch
                                                            @unit-scale
                                                            (image->texture-region {:image/file rahmen-file})
@@ -4244,7 +4242,8 @@ hp-mana-bar-opts (fn [ui-viewport-width]
                                                   :up? true}))]
                      {:draw!
                       (fn [batch _parent-alpha]
-                        (let [stats (:entity/stats @(player-eid))]
+                        (let [stats (:entity/stats @(player-eid))
+                              bar-x (- (/ ui-viewport-width 2) (/ rahmenw 2))]
                           (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
                           (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
         show-potential-field-colors? (atom nil)
