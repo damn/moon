@@ -4323,9 +4323,9 @@ create-stage (fn [batch skin default-font get-input-position get-frames-per-seco
                                 (player-message-actor-create default-font unit-scale)]]
                    (add-actor! stage* actor))
                  stage*))
-init-game-state! (fn [handle-txs!]
+init-game-state! (fn [handle-txs! textures]
                    (let [{:keys [^TiledMap tiled-map 
-                                 start-position]} (create-level! @textures image->texture-region)]
+                                 start-position]} (create-level! textures image->texture-region)]
                      (reset! tiled-map* tiled-map)
                      (reset! id-counter 0)
                      (reset! entity-ids {})
@@ -4400,7 +4400,7 @@ init-game-state! (fn [handle-txs!]
                         :sounds sounds})
          (set-input-processor! @stage)
          (reset! viewport (create-viewport! 1440 900 world-unit-scale))
-         (init-game-state! handle-txs!)))
+         (init-game-state! handle-txs! @textures)))
 
      :dispose!
      (fn []
