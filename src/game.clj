@@ -4266,7 +4266,7 @@ menus [{:label "Debug"
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
+update-labels (fn [get-frames-per-second get-mouse-position ui-mouse-info-text viewport]
                         [{:label "elapsed-time"
                           :update-fn (fn [] 
                                        (str (readable @elapsed-time) " seconds"))
@@ -4282,8 +4282,7 @@ update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
                          {:label "paused?"
                           :update-fn (fn [] @paused?)}
                          {:label "GUI"
-                          :update-fn (fn []
-                                       (mapv int (unproject (get-viewport @stage) (get-mouse-position))))}
+                          :update-fn ui-mouse-info-text}
                          {:label "World"
                           :update-fn (fn []
                                        (mapv int (unproject @viewport (get-mouse-position))))}
@@ -4291,7 +4290,7 @@ update-labels (fn [get-frames-per-second get-mouse-position stage viewport]
                           :update-fn (fn []
                                        (.zoom ^OrthographicCamera (get-camera @viewport)))
                           :icon "images/zoom.png"}])
-dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-per-second]
+dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second]
                 {:menus menus
                :update-labels (map (fn [item]
                                      (if (:icon item)
@@ -4299,16 +4298,18 @@ dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-pe
                                        item))
                                    (update-labels get-frames-per-second
                                                   get-input-position
-                                                  stage
+                                                  ui-mouse-info-text
+                                                  
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-        stage (atom nil)
-create-stage (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell!]
+add-stage-actors! (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell!]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
-                     ui-viewport-height (get-world-height (get-viewport stage*))]
+                     ui-viewport-height (get-world-height (get-viewport stage*))
+                     ui-mouse-info-text (fn []
+                                          (mapv int (unproject (get-viewport stage*) (get-input-position))))]
                  (doseq [actor [(create-action-bar)
-                                (create-dev-menu (dev-menu-opts textures stage skin viewport get-input-position get-frames-per-second))
+                                (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts default-font ui-viewport-width))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts skin
@@ -4318,8 +4319,7 @@ create-stage (fn [stage* skin textures default-font get-input-position get-frame
                                                                                                 ui-viewport-height))])
                                 (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
                                 (player-message-actor-create default-font unit-scale)]]
-                   (add-actor! stage* actor))
-                 stage*))
+                   (add-actor! stage* actor))))
 init-game-state! (fn [handle-txs! textures]
                    (let [{:keys [^TiledMap tiled-map 
                                  start-position]} (create-level! textures image->texture-region)]
@@ -4377,29 +4377,30 @@ init-game-state! (fn [handle-txs! textures]
              sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
              play-sound!* (fn [sound-name]
                             (Sound/.play (safe-get sounds sound-name)))
-             stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
-                                          (float (:height (:stage game-config)))) 
-                            batch)
+             stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
+                                         (float (:height (:stage game-config)))) 
+                           batch)
              handle-txs! (fn [txs]
-                           (handle-txs! stage* image->texture-region skin play-sound!* txs))
+                           (handle-txs! stage image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
-         (reset! stage (create-stage stage* 
-                                     skin 
-                                     @textures
-                                     default-font 
-                                     get-input-position 
-                                     get-frames-per-second 
-                                     clicked-inventory-cell!))
+         (add-stage-actors! stage 
+                            skin 
+                            @textures
+                            default-font 
+                            get-input-position 
+                            get-frames-per-second 
+                            clicked-inventory-cell!)
          (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
+         (set-input-processor! stage)
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
                         :default-font default-font
                         :handle-txs! handle-txs!
                         :shape-drawer-texture shape-drawer-texture
                         :skin skin
-                        :sounds sounds})
-         (set-input-processor! @stage)
+                        :sounds sounds
+                        :stage stage})
          (reset! viewport (create-viewport! 1440 900 world-unit-scale))
          (init-game-state! handle-txs! @textures)))
 
@@ -4433,8 +4434,8 @@ init-game-state! (fn [handle-txs! textures]
        (let [{:keys [batch
                      cursors
                      default-font
-                     handle-txs!]} @state
-             stage @stage
+                     handle-txs!
+                     stage]} @state
              viewport @viewport
              mouse-position (get-input-position)
              delta-time (get-delta-time)
@@ -4521,7 +4522,7 @@ init-game-state! (fn [handle-txs! textures]
 
      :resize!
      (fn [width height]
-       (let [stage @stage
+       (let [{:keys [stage]} @state
              viewport @viewport]
          (resize! (get-viewport stage) width height true)
          (resize! viewport width height false)))
