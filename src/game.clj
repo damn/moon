@@ -4306,7 +4306,7 @@ dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-pe
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-create-stage (fn [batch skin get-input-position get-frames-per-second on-click-cell!]
+create-stage (fn [batch skin default-font get-input-position get-frames-per-second on-click-cell!]
                (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                                   (float (:height (:stage game-config)))) 
                                     batch)
@@ -4322,7 +4322,7 @@ create-stage (fn [batch skin get-input-position get-frames-per-second on-click-c
                                                                                                 ui-viewport-width 
                                                                                                 ui-viewport-height))])
                                 (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
-                                (player-message-actor-create @default-font unit-scale)]]
+                                (player-message-actor-create default-font unit-scale)]]
                    (add-actor! stage* actor))
                  stage*))
 init-game-state! (fn [handle-txs!]
@@ -4386,7 +4386,12 @@ init-game-state! (fn [handle-txs!]
                            (handle-txs! skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
-         (reset! stage (create-stage batch skin get-input-position get-frames-per-second clicked-inventory-cell!))
+         (reset! stage (create-stage batch 
+                                     skin 
+                                     @default-font 
+                                     get-input-position 
+                                     get-frames-per-second 
+                                     clicked-inventory-cell!))
          (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
