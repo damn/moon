@@ -4216,8 +4216,7 @@
                                  :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
                                  :cell-size inventory-cell-size})
         unit-scale (atom 1)
-        default-font (atom nil)
-hp-mana-bar-opts (fn [ui-viewport-width]
+hp-mana-bar-opts (fn [default-font ui-viewport-width]
                    (let [draw-bar! (fn [batch x y content-file minmaxval name]
                                      (draw-texture-region! batch
                                                            @unit-scale
@@ -4230,7 +4229,7 @@ hp-mana-bar-opts (fn [ui-viewport-width]
                                                               :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
                                                            [x y])
                                      (draw-text! batch
-                                                 @default-font
+                                                 default-font
                                                  @unit-scale
                                                  {:text (str (readable (minmaxval 0))
                                                              "/"
@@ -4313,7 +4312,7 @@ create-stage (fn [batch skin default-font get-input-position get-frames-per-seco
                      ui-viewport-height (get-world-height (get-viewport stage*))]
                  (doseq [actor [(create-action-bar)
                                 (create-dev-menu (dev-menu-opts @textures stage skin viewport get-input-position get-frames-per-second))
-                                (create-actor (hp-mana-bar-opts ui-viewport-width))
+                                (create-actor (hp-mana-bar-opts default-font ui-viewport-width))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts skin
                                                                                                 on-click-cell!
@@ -4373,9 +4372,9 @@ init-game-state! (fn [handle-txs!]
                   get-frames-per-second]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! default-font (create-font font-params))
        (reset! textures (create-textures files (:textures game-config)))
        (let [batch (sprite-batch!)
+             default-font (create-font font-params)
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (internal files (:skin game-config)))
              sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
@@ -4387,13 +4386,14 @@ init-game-state! (fn [handle-txs!]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
          (reset! stage (create-stage batch 
                                      skin 
-                                     @default-font 
+                                     default-font 
                                      get-input-position 
                                      get-frames-per-second 
                                      clicked-inventory-cell!))
          (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
+                        :default-font default-font
                         :handle-txs! handle-txs!
                         :shape-drawer-texture shape-drawer-texture
                         :skin skin
@@ -4406,10 +4406,10 @@ init-game-state! (fn [handle-txs!]
      (fn []
        (let [{:keys [batch
                      cursors
+                     default-font
                      shape-drawer-texture
                      skin
                      sounds]} @state
-             default-font @default-font
              textures @textures
              tiled-map @tiled-map*]
          (dispose! batch)
@@ -4431,6 +4431,7 @@ init-game-state! (fn [handle-txs!]
                   get-input-position]}]
        (let [{:keys [batch
                      cursors
+                     default-font
                      handle-txs!]} @state
              stage @stage
              viewport @viewport
@@ -4473,7 +4474,7 @@ init-game-state! (fn [handle-txs!]
                             @show-potential-field-colors?
                             @grid)
            (draw-entities! (fn [& params]
-                             (apply draw-component! image->texture-region @unit-scale batch @default-font @shape-drawer mouse-position params))
+                             (apply draw-component! image->texture-region @unit-scale batch default-font @shape-drawer mouse-position params))
                            @shape-drawer
                            @raycaster
                            @active-entities
