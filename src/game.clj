@@ -4126,11 +4126,10 @@
                                    (when new-eid
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
-        skin (atom nil)
         stage (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
-        handle-txs! (fn [play-sound! txs]
+        handle-txs! (fn [skin play-sound! txs]
                       (let [k->txs {
                                     :tx/swap swap!
                                     :tx/spawn-entity 
@@ -4144,7 +4143,7 @@
                                       (remove-entity!* entity-ids @content-grid @grid eid))
                                     :tx/modal
                                     (fn [opts]
-                                      (show-modal! @skin @stage opts))
+                                      (show-modal! skin @stage opts))
                                     :tx/set-item 
                                     (fn [cell item]
                                       (-> (get-root @stage)
@@ -4152,7 +4151,7 @@
                                           (set-item!* cell
                                                       {:texture-region (image->texture-region (:entity/image item))
                                                        :tooltip-text (item-info-text item)}
-                                                      @skin)))
+                                                      skin)))
                                     :tx/sound play-sound! 
                                     :tx/remove-item
                                     (fn [cell] 
@@ -4170,7 +4169,7 @@
                                           (add-skill! {:skill-id skill-id
                                                        :texture-region (image->texture-region image)
                                                        :tooltip-text tooltip-text}
-                                                      @skin)))
+                                                      skin)))
                                     }]
                         (doseq [[k & params] txs]
                           (try (apply (safe-get k->txs k) params)
@@ -4178,7 +4177,7 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
-        info-window-opts (fn [ui-viewport-width]
+        info-window-opts (fn [skin ui-viewport-width]
                            {:title "Entity Info"
                           :actor-name "moon.ui.windows.entity-info"
                           :visible? false
@@ -4190,9 +4189,9 @@
                                                                               :active-skill])
                                                           @elapsed-time)
                                                ""))
-                          :skin @skin})
+                          :skin skin})
         shape-drawer (atom nil)
-        inventory-window-opts (fn [on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
+        inventory-window-opts (fn [skin on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
                                 {:get-mouse-position get-input-position
                                  :on-click-cell (fn [_event cell]
                                                   (on-click-cell! cell))
@@ -4205,7 +4204,7 @@
                                                                       (float-bits 0 0.6 0 0.8)
                                                                       (float-bits 0.6 0 0 0.8))]
                                                           (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
-                                 :skin @skin
+                                 :skin skin
                                  :position [ui-viewport-width ui-viewport-height]
                                  :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
                                  :cell-size inventory-cell-size})
@@ -4307,17 +4306,18 @@ dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-pe
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-create-stage (fn [batch get-input-position get-frames-per-second on-click-cell!]
+create-stage (fn [batch skin get-input-position get-frames-per-second on-click-cell!]
                (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                                   (float (:height (:stage game-config)))) 
                                     batch)
                      ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))]
                  (doseq [actor [(create-action-bar)
-                                (create-dev-menu (dev-menu-opts @textures stage @skin viewport get-input-position get-frames-per-second))
+                                (create-dev-menu (dev-menu-opts @textures stage skin viewport get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts ui-viewport-width))
-                                (windows-create [(create-info-window (info-window-opts ui-viewport-width))
-                                                 (build-inventory-window (inventory-window-opts on-click-cell!
+                                (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
+                                                 (build-inventory-window (inventory-window-opts skin
+                                                                                                on-click-cell!
                                                                                                 get-input-position
                                                                                                 ui-viewport-width 
                                                                                                 ui-viewport-height))])
@@ -4356,16 +4356,10 @@ init-game-state! (fn [handle-txs!]
                                     (concat [[:tx/spawn-entity entity]]
                                             (player-ui-txs #(info-text % @elapsed-time) entity)
                                             (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
-
-
         state (atom nil)
         sounds (atom nil)
         play-sound!* (fn [sound-name]
                        (Sound/.play (safe-get @sounds sound-name)))
-        handle-txs! (fn [txs]
-                      (handle-txs! play-sound!* txs))
-clicked-inventory-cell! (fn [cell]
-                                     (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
         potential-field-cache (atom nil)
         ]
     {
@@ -4385,26 +4379,32 @@ clicked-inventory-cell! (fn [cell]
        (set! (.initialTime (TooltipManager/getInstance)) 0)
        (reset! sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)])))
        (reset! default-font (create-font font-params))
-       (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
        (let [batch (sprite-batch!)
-             shape-drawer-texture (white-pixel-texture)]
-         (reset! stage (create-stage batch get-input-position get-frames-per-second clicked-inventory-cell!))
+             shape-drawer-texture (white-pixel-texture)
+             skin (create-skin! (internal files (:skin game-config)))
+             handle-txs! (fn [txs]
+                           (handle-txs! skin play-sound!* txs))
+             clicked-inventory-cell! (fn [cell]
+                                       (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
+         (reset! stage (create-stage batch skin get-input-position get-frames-per-second clicked-inventory-cell!))
          (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
-                        :shape-drawer-texture shape-drawer-texture}))
-       (set-input-processor! @stage)
-       (reset! viewport (create-viewport! 1440 900 world-unit-scale))
-       (init-game-state! handle-txs!))
+                        :handle-txs! handle-txs!
+                        :shape-drawer-texture shape-drawer-texture
+                        :skin skin})
+         (set-input-processor! @stage)
+         (reset! viewport (create-viewport! 1440 900 world-unit-scale))
+         (init-game-state! handle-txs!)))
 
      :dispose!
      (fn []
        (let [{:keys [batch
                      cursors
-                     shape-drawer-texture]} @state
+                     shape-drawer-texture
+                     skin]} @state
              default-font @default-font
-             skin @skin
              sounds @sounds
              textures @textures
              tiled-map @tiled-map*]
@@ -4426,7 +4426,8 @@ clicked-inventory-cell! (fn [cell]
                   get-delta-time 
                   get-input-position]}]
        (let [{:keys [batch
-                     cursors]} @state
+                     cursors
+                     handle-txs!]} @state
              stage @stage
              viewport @viewport
              mouse-position (get-input-position)
