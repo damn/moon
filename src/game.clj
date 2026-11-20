@@ -4262,7 +4262,7 @@ menus [{:label "Debug"
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-update-labels (fn [get-frames-per-second get-mouse-position ui-mouse-info-text viewport]
+update-labels (fn [get-frames-per-second get-mouse-position ui-mouse-info-text unproject-viewport camera-zoom]
                 [{:label "elapsed-time"
                   :update-fn (fn [] 
                                (str (readable @elapsed-time) " seconds"))
@@ -4281,12 +4281,11 @@ update-labels (fn [get-frames-per-second get-mouse-position ui-mouse-info-text v
                   :update-fn ui-mouse-info-text}
                  {:label "World"
                   :update-fn (fn []
-                               (mapv int (unproject @viewport (get-mouse-position))))}
+                               (mapv int (unproject-viewport (get-mouse-position))))}
                  {:label "Zoom"
-                  :update-fn (fn []
-                               (.zoom ^OrthographicCamera (get-camera @viewport)))
+                  :update-fn camera-zoom 
                   :icon "images/zoom.png"}])
-dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second]
+dev-menu-opts (fn [textures ui-mouse-info-text skin unproject-viewport camera-zoom get-input-position get-frames-per-second]
                 {:menus menus
                :update-labels (map (fn [item]
                                      (if (:icon item)
@@ -4295,16 +4294,16 @@ dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position 
                                    (update-labels get-frames-per-second
                                                   get-input-position
                                                   ui-mouse-info-text
-                                                  viewport))
+                                                  unproject-viewport 
+                                                  camera-zoom))
                :skin skin})
-        viewport (atom nil)
-add-stage-actors! (fn [get-unit-scale shape-drawer stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
+add-stage-actors! (fn [unproject-viewport camera-zoom get-unit-scale shape-drawer stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))
                      ui-mouse-info-text (fn []
                                           (mapv int (unproject (get-viewport stage*) (get-input-position))))]
                  (doseq [actor [(create-action-bar)
-                                (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second))
+                                (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin unproject-viewport camera-zoom get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts get-unit-scale default-font ui-viewport-width image->texture-region))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts shape-drawer
@@ -4384,8 +4383,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
              shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
-             get-unit-scale (fn [] @unit-scale)]
-         (add-stage-actors! get-unit-scale
+             get-unit-scale (fn [] @unit-scale)
+             viewport (create-viewport! 1440 900 world-unit-scale)
+             unproject-viewport #(unproject viewport %)
+             camera-zoom (fn [] (.zoom ^OrthographicCamera (get-camera viewport)))]
+         (add-stage-actors! unproject-viewport
+                            camera-zoom
+                            get-unit-scale
                             shape-drawer
                             stage 
                             skin 
@@ -4408,8 +4412,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         :sounds sounds
                         :stage stage
                         :textures textures
-                        :unit-scale unit-scale})
-         (reset! viewport (create-viewport! 1440 900 world-unit-scale))
+                        :unit-scale unit-scale
+                        :viewport viewport})
          (init-game-state! handle-txs! textures image->texture-region)))
 
      :dispose!
@@ -4446,8 +4450,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      handle-txs!
                      shape-drawer
                      stage
-                     unit-scale]} @state
-             viewport @viewport
+                     unit-scale
+                     viewport]} @state
              mouse-position (get-input-position)
              delta-time (get-delta-time)
              camera-position (:entity/position @(player-eid))
@@ -4530,8 +4534,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 
      :resize!
      (fn [width height]
-       (let [{:keys [stage]} @state
-             viewport @viewport]
+       (let [{:keys [stage
+                     viewport]} @state]
          (resize! (get-viewport stage) width height true)
          (resize! viewport width height false)))
      }))
