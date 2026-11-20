@@ -3718,74 +3718,167 @@
                          :on-click (fn [])}]]
             [[:tx/swap eid assoc :entity/destroyed? true]])))
 
+; small functions is the win ! just extract ! its all simple !
+(defn interaction-state->txs [[k params] stage player-eid entity* create-timer* tx-event-txs]
+  (case k
+    :interaction-state/mouseover-actor
+    nil
+
+    :interaction-state/drop-item-on-cursor
+    (let [item params]
+      [[:tx/swap player-eid dissoc :entity/item-on-cursor]
+       [:tx/sound "bfxr_itemputground.wav"]
+       [:tx/spawn-entity (entity* (spawn-item (:entity/position @player-eid) item))]])
+
+    :interaction-state/clickable-mouseover-eid
+    (let [{:keys [clicked-eid in-click-range?]} params]
+      (if in-click-range?
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/player
+          [[:tx/toggle-inventory-visible]]
+
+          :clickable/item
+          (let [item (:entity/item @clicked-eid)]
+            (cond
+              (-> (get-root stage)
+                  (find-actor "moon.ui.windows.inventory")
+                  visible?)
+              ; beacuse of this case destroy entities havs to run after paused
+              ; otherwise game pauses and we just mark destryoted 
+              ; maybe transactions shouldnt be allowed to return partial valid state
+              ; then can destroy immediately?
+              [[:tx/swap clicked-eid assoc :entity/destroyed? true]
+               [:tx/swap player-eid assoc :entity/item-on-cursor item]
+               [:tx/sound "bfxr_takeit.wav"]]
+
+              (can-pickup-item? (:entity/inventory @player-eid) item)
+              (do
+                (assert (valid-item? item))
+                (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
+                  (assert cell)
+                  (assert (nil? cell-item))
+                  [[:tx/swap clicked-eid assoc :entity/destroyed? true]
+                   [:tx/sound "bfxr_pickup.wav"]
+                   [:tx/swap player-eid set-item cell item]
+                   [:tx/set-item cell item]]))
+
+
+              :else
+              [[:tx/sound "bfxr_denied.wav"]
+               [:tx/show-message "Your Inventory is full"]])))
+        [[:tx/sound "bfxr_denied.wav"]
+         [:tx/show-message "Too far away"]]))
+
+    :interaction-state.skill/usable
+    (let [[skill effect-ctx] params]
+      (start-action-txs player-eid skill effect-ctx create-timer* tx-event-txs))
+
+    :interaction-state.skill/not-usable
+    (let [state params]
+      [[:tx/sound "bfxr_denied.wav"]
+       [:tx/show-message (case state
+                           :cooldown "Skill is still on cooldown"
+                           :not-enough-mana "Not enough mana"
+                           :invalid-params "Cannot use this here")]])
+
+    :interaction-state/no-skill-selected
+    [[:tx/sound "bfxr_denied.wav"]
+     [:tx/show-message "No selected skill"]]))
+
+(defn get-cursor-key [player-eid interaction-state] ; doesnt handle item on cursor swap/place/etc. cases?
+  (let [eid player-eid
+        entity @eid
+        state-k (:state (:entity/fsm entity))
+        cursor-fn (get {
+                        :player-dead :cursors/black-x
+                        :active-skill :cursors/sandclock
+                        :stunned :cursors/denied
+                        :player-moving :cursors/walking
+                        :player-idle (fn
+                                       [eid]
+                                       (let [[k params] interaction-state]
+                                         (case k
+                                           :interaction-state/mouseover-actor
+                                           (let [[actor-type params] params
+                                                 inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
+                                                                                (let [inventory-slot params]
+                                                                                  (item-at (:entity/inventory @eid) inventory-slot)))]
+                                             (cond
+                                               inventory-cell-with-item?
+                                               :cursors/hand-before-grab
+
+                                               (= actor-type :mouseover-actor/window-title-bar)
+                                               :cursors/move-window
+
+                                               (= actor-type :mouseover-actor/button)
+                                               :cursors/over-button
+
+                                               (= actor-type :mouseover-actor/unspecified)
+                                               :cursors/default
+
+                                               :else
+                                               :cursors/default))
+
+                                           :interaction-state/drop-item-on-cursor
+                                           :cursors/hand-grab ; FIXME better cursor ? or no different cursor?
+                                           ; text what is current interaction state?
+
+                                           :interaction-state/clickable-mouseover-eid
+                                           (let [{:keys [clicked-eid
+                                                         in-click-range?]} params]
+                                             (case (:type (:entity/clickable @clicked-eid))
+                                               :clickable/item (if in-click-range?
+                                                                 :cursors/hand-before-grab
+                                                                 :cursors/hand-before-grab-gray)
+                                               :clickable/player :cursors/bag))
+
+                                           :interaction-state.skill/usable
+                                           :cursors/use-skill
+
+                                           :interaction-state.skill/not-usable
+                                           :cursors/skill-not-usable
+
+                                           :interaction-state/no-skill-selected
+                                           :cursors/no-skill-selected)))}
+                       state-k)]
+    (if (keyword? cursor-fn)
+      cursor-fn
+      (cursor-fn eid))))
+
+; 645
+; too many states to keep in sync ! one state persistent ? non platform data?
+; with functions keeping it proper
 (defn game-listener 
-  [{:keys [game-schemas
-           game-db
+  [{:keys [game-db
            build-property
            info-text
            pausing?
            state->pause-game?
-           level-fn
            controls
            world-unit-scale
            slot->y-sprite-idx
-           z-orders
-           minimum-size
            controls-info 
            max-delta
            max-speed
            fsms
+           inventory-cell-size
+           slot->texture-region
+           factions-iterations
+           construct-entity
+           create-level!
+           render-z-order
+           render-layers
+           font-params
+           y-mana
+           rahmenw
+           rahmenh
+           y-hp
+           rahmen-file
+           hpcontent-file
+           manacontent-file
            ]
     :as game-config}]
   (let [
-        
-        inventory-cell-size 48
-        slot->texture-region (fn [slot]
-                               (let [width 48
-                                     height 48
-                                     sprite-x 21
-                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
-                                     bounds [(* sprite-x width)
-                                             (* sprite-y height)
-                                             width
-                                             height]]
-                                 {:image/file "images/items.png"
-                                  :image/bounds bounds}))
-        factions-iterations {:good 15 :evil 5}
-        construct-entity (fn [entity create-timer*]
-                           (construct-entity entity create-timer* minimum-size z-orders))
-        create-level! (fn [textures image->texture-region]
-                        (let [{level-tiled-map :tiled-map
-                               level-start :start-position}
-                              (level-fn {:level/creature-properties (prepare-creature-tiles
-                                                                      (all-raw game-db :properties/creatures)
-                                                                      image->texture-region)
-                                         :textures textures})]
-                          {:tiled-map level-tiled-map
-                           :start-position level-start}))
-        render-z-order (apply hash-map (interleave z-orders (range)))
-        render-layers [#{:entity/mouseover?
-                         :stunned}
-                       #{:entity/clickable
-                         :entity/animation
-                         :entity/image
-                         :entity/line-render}
-                       #{:npc-sleeping
-                         :entity/temp-modifier
-                         :entity/string-effect}
-                       #{:entity/stats
-                         :active-skill}]
-        font-params {:path "fonts/films.EXL_____.ttf"
-                     :size 16
-                     :quality-scaling 2
-                     :use-integer-positions? false}
-        y-mana 80
-        rahmenw 150
-        rahmenh 26
-        y-hp (+ y-mana rahmenh)
-        rahmen-file "images/rahmen.png"
-        hpcontent-file "images/hp.png"
-        manacontent-file "images/mana.png"
         elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
@@ -3889,137 +3982,13 @@
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
-        interaction-state->txs (fn [[k params] stage player-eid]
-                                 (case k
-                                   :interaction-state/mouseover-actor
-                                   nil
-
-                                   :interaction-state/drop-item-on-cursor
-                                   (let [item params]
-                                     [[:tx/swap player-eid dissoc :entity/item-on-cursor]
-                                      [:tx/sound "bfxr_itemputground.wav"]
-                                      [:tx/spawn-entity (entity* (spawn-item (:entity/position @player-eid) item))]])
-
-                                   :interaction-state/clickable-mouseover-eid
-                                   (let [{:keys [clicked-eid in-click-range?]} params]
-                                     (if in-click-range?
-                                       (case (:type (:entity/clickable @clicked-eid))
-                                         :clickable/player
-                                         [[:tx/toggle-inventory-visible]]
-
-                                         :clickable/item
-                                         (let [item (:entity/item @clicked-eid)]
-                                           (cond
-                                             (-> (get-root stage)
-                                                 (find-actor "moon.ui.windows.inventory")
-                                                 visible?)
-                                             ; beacuse of this case destroy entities havs to run after paused
-                                             ; otherwise game pauses and we just mark destryoted 
-                                             ; maybe transactions shouldnt be allowed to return partial valid state
-                                             ; then can destroy immediately?
-                                             [[:tx/swap clicked-eid assoc :entity/destroyed? true]
-                                              [:tx/swap player-eid assoc :entity/item-on-cursor item]
-                                              [:tx/sound "bfxr_takeit.wav"]]
-
-                                             (can-pickup-item? (:entity/inventory @player-eid) item)
-                                             (do
-                                               (assert (valid-item? item))
-                                               (let [[cell cell-item] (can-pickup-item? (:entity/inventory @player-eid) item)]
-                                                 (assert cell)
-                                                 (assert (nil? cell-item))
-                                                 [[:tx/swap clicked-eid assoc :entity/destroyed? true]
-                                                  [:tx/sound "bfxr_pickup.wav"]
-                                                  [:tx/swap player-eid set-item cell item]
-                                                  [:tx/set-item cell item]]))
-
-
-                                             :else
-                                             [[:tx/sound "bfxr_denied.wav"]
-                                              [:tx/show-message "Your Inventory is full"]])))
-                                       [[:tx/sound "bfxr_denied.wav"]
-                                        [:tx/show-message "Too far away"]]))
-
-                                   :interaction-state.skill/usable
-                                   (let [[skill effect-ctx] params]
-                                     (start-action-txs player-eid skill effect-ctx create-timer* tx-event-txs))
-
-                                   :interaction-state.skill/not-usable
-                                   (let [state params]
-                                     [[:tx/sound "bfxr_denied.wav"]
-                                      [:tx/show-message (case state
-                                                          :cooldown "Skill is still on cooldown"
-                                                          :not-enough-mana "Not enough mana"
-                                                          :invalid-params "Cannot use this here")]])
-
-                                   :interaction-state/no-skill-selected
-                                   [[:tx/sound "bfxr_denied.wav"]
-                                    [:tx/show-message "No selected skill"]]))
-        cursor-key (fn [player-eid interaction-state] ; doesnt handle item on cursor swap/place/etc. cases?
-                     (let [eid player-eid
-                           entity @eid
-                           state-k (:state (:entity/fsm entity))
-                           cursor-fn (get {
-                                           :player-dead :cursors/black-x
-                                           :active-skill :cursors/sandclock
-                                           :stunned :cursors/denied
-                                           :player-moving :cursors/walking
-                                           :player-idle (fn
-                                                          [eid]
-                                                          (let [[k params] interaction-state]
-                                                            (case k
-                                                              :interaction-state/mouseover-actor
-                                                              (let [[actor-type params] params
-                                                                    inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
-                                                                                                   (let [inventory-slot params]
-                                                                                                     (item-at (:entity/inventory @eid) inventory-slot)))]
-                                                                (cond
-                                                                  inventory-cell-with-item?
-                                                                  :cursors/hand-before-grab
-
-                                                                  (= actor-type :mouseover-actor/window-title-bar)
-                                                                  :cursors/move-window
-
-                                                                  (= actor-type :mouseover-actor/button)
-                                                                  :cursors/over-button
-
-                                                                  (= actor-type :mouseover-actor/unspecified)
-                                                                  :cursors/default
-
-                                                                  :else
-                                                                  :cursors/default))
-
-                                                              :interaction-state/drop-item-on-cursor
-                                                              :cursors/hand-grab ; FIXME better cursor ? or no different cursor?
-                                                              ; text what is current interaction state?
-
-                                                              :interaction-state/clickable-mouseover-eid
-                                                              (let [{:keys [clicked-eid
-                                                                            in-click-range?]} params]
-                                                                (case (:type (:entity/clickable @clicked-eid))
-                                                                  :clickable/item (if in-click-range?
-                                                                                    :cursors/hand-before-grab
-                                                                                    :cursors/hand-before-grab-gray)
-                                                                  :clickable/player :cursors/bag))
-
-                                                              :interaction-state.skill/usable
-                                                              :cursors/use-skill
-
-                                                              :interaction-state.skill/not-usable
-                                                              :cursors/skill-not-usable
-
-                                                              :interaction-state/no-skill-selected
-                                                              :cursors/no-skill-selected)))}
-                                          state-k)]
-                       (if (keyword? cursor-fn)
-                         cursor-fn
-                         (cursor-fn eid))))
         handle-player-input (fn [player-eid interaction-state stage mouseover-actor key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
                                   (tx-event-txs player-eid :movement-input move-v)
                                   (when (button-just-pressed? Input$Buttons/LEFT)
-                                    (interaction-state->txs interaction-state stage player-eid)))
+                                    (interaction-state->txs interaction-state stage player-eid entity* create-timer* tx-event-txs)))
 
                                 :player-moving
                                 (if-let [move-v (movement-vector key-pressed?)]
@@ -4487,7 +4456,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                interaction-state (create-interaction-state mouseover-actor 
                                                            world-mouse-position 
                                                            get-selected-skill)]
-           (set-cursor! (safe-get cursors (cursor-key player-eid interaction-state)))
+           (set-cursor! (safe-get cursors (get-cursor-key player-eid interaction-state)))
            (handle-txs! (handle-player-input player-eid
                                              interaction-state
                                              stage
@@ -5849,8 +5818,74 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                           :kill -> :player-dead
                           :effect-wears-off -> :player-idle]
                          [:player-dead]])}
+        inventory-cell-size 48
+        slot->texture-region (fn [slot]
+                               (let [width 48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 {:image/file "images/items.png"
+                                  :image/bounds bounds}))
+        factions-iterations {:good 15 :evil 5}
+        construct-entity (fn [entity create-timer*]
+                           (construct-entity entity create-timer* minimum-size z-orders))
+        level-fn create-vampire-level
+                    ;create-uf-caves
+                    ;create-modules-level
+        create-level! (fn [textures image->texture-region]
+                        (let [{level-tiled-map :tiled-map
+                               level-start :start-position}
+                              (level-fn {:level/creature-properties (prepare-creature-tiles
+                                                                      (all-raw game-db :properties/creatures)
+                                                                      image->texture-region)
+                                         :textures textures})]
+                          {:tiled-map level-tiled-map
+                           :start-position level-start}))
+        render-z-order (apply hash-map (interleave z-orders (range)))
+        render-layers [#{:entity/mouseover?
+                         :stunned}
+                       #{:entity/clickable
+                         :entity/animation
+                         :entity/image
+                         :entity/line-render}
+                       #{:npc-sleeping
+                         :entity/temp-modifier
+                         :entity/string-effect}
+                       #{:entity/stats
+                         :active-skill}]
+        font-params {:path "fonts/films.EXL_____.ttf"
+                     :size 16
+                     :quality-scaling 2
+                     :use-integer-positions? false}
+        y-mana 80
+        rahmenw 150
+        rahmenh 26
+        y-hp (+ y-mana rahmenh)
+        rahmen-file "images/rahmen.png"
+        hpcontent-file "images/hp.png"
+        manacontent-file "images/mana.png"
         listener (game-listener
-                   {:fsms fsms
+                   {
+                    :render-z-order render-z-order
+                    :render-layers render-layers
+                    :font-params font-params
+                    :y-mana y-mana
+                    :rahmenw rahmenw
+                    :rahmenh rahmenh
+                    :y-hp y-hp
+                    :rahmen-file rahmen-file
+                    :hpcontent-file hpcontent-file
+                    :manacontent-file manacontent-file
+                    :create-level! create-level!
+                    :construct-entity construct-entity
+                    :inventory-cell-size inventory-cell-size
+                    :factions-iterations factions-iterations
+                    :slot->texture-region slot->texture-region
+                    :fsms fsms
                     :max-speed max-speed
                     :max-delta max-delta
                     :controls-info (str/join "\n"
@@ -5868,9 +5903,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                     :build-property (fn [property-id]
                                       (build-values (safe-get game-db property-id)))
                     :info-text info-text
-                    :level-fn create-vampire-level
-                    ;create-uf-caves
-                    ;create-modules-level
+                    :level-fn level-fn
                     :pausing? true
                     :state->pause-game? {:active-skill false
                                          :stunned false
