@@ -4133,8 +4133,7 @@
                                    (when new-eid
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
-        stage (atom nil)
-        handle-txs! (fn [image->texture-region skin play-sound! txs]
+        handle-txs! (fn [stage image->texture-region skin play-sound! txs]
                       (let [k->txs {
                                     :tx/swap swap!
                                     :tx/spawn-entity 
@@ -4148,10 +4147,10 @@
                                       (remove-entity!* entity-ids @content-grid @grid eid))
                                     :tx/modal
                                     (fn [opts]
-                                      (show-modal! skin @stage opts))
+                                      (show-modal! skin stage opts))
                                     :tx/set-item 
                                     (fn [cell item]
-                                      (-> (get-root @stage)
+                                      (-> (get-root stage)
                                           (find-actor "moon.ui.windows.inventory")
                                           (set-item!* cell
                                                       {:texture-region (image->texture-region (:entity/image item))
@@ -4160,16 +4159,16 @@
                                     :tx/sound play-sound! 
                                     :tx/remove-item
                                     (fn [cell] 
-                                      (remove-item! @stage cell))
+                                      (remove-item! stage cell))
                                     :tx/toggle-inventory-visible
                                     (fn []
-                                      (toggle-inventory-visible! @stage))
+                                      (toggle-inventory-visible! stage))
                                     :tx/show-message
                                     (fn [message]
-                                      (show-message! @stage message))
+                                      (show-message! stage message))
                                     :tx/set-skill
                                     (fn [skill-id image tooltip-text]
-                                      (-> (get-root @stage)
+                                      (-> (get-root stage)
                                           (find-actor "moon.ui.action-bar")
                                           (add-skill! {:skill-id skill-id
                                                        :texture-region (image->texture-region image)
@@ -4304,6 +4303,7 @@ dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-pe
                                                   viewport))
                :skin skin})
         viewport (atom nil)
+        stage (atom nil)
 create-stage (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell!]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))]
@@ -4381,7 +4381,7 @@ init-game-state! (fn [handle-txs! textures]
                                           (float (:height (:stage game-config)))) 
                             batch)
              handle-txs! (fn [txs]
-                           (handle-txs! image->texture-region skin play-sound!* txs))
+                           (handle-txs! stage* image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
          (reset! stage (create-stage stage* 
