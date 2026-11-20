@@ -4194,40 +4194,38 @@
                                                           @elapsed-time)
                                                ""))
                           :skin skin})
-        shape-drawer (atom nil)
-        inventory-window-opts (fn [slot->texture-region* skin on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
+        inventory-window-opts (fn [shape-drawer slot->texture-region* skin on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
                                 {:get-mouse-position get-input-position
                                  :on-click-cell (fn [_event cell]
                                                   (on-click-cell! cell))
                                  :draw-cell-rect! (fn [x y mouseover? cell]
-                                                    (rectangle! @shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
+                                                    (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
                                                     (let [player-entity @(player-eid)]
                                                       (when (and mouseover? (:entity/item-on-cursor player-entity))
                                                         (let [item (:entity/item-on-cursor player-entity)
                                                               color (if (valid-slot? cell item)
                                                                       (float-bits 0 0.6 0 0.8)
                                                                       (float-bits 0.6 0 0 0.8))]
-                                                          (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
+                                                          (filled-rectangle! shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
                                  :skin skin
                                  :position [ui-viewport-width ui-viewport-height]
                                  :slot->texture-region slot->texture-region*
                                  :cell-size inventory-cell-size})
-        unit-scale (atom 1)
-hp-mana-bar-opts (fn [default-font ui-viewport-width image->texture-region]
+hp-mana-bar-opts (fn [get-unit-scale default-font ui-viewport-width image->texture-region]
                    (let [draw-bar! (fn [batch x y content-file minmaxval name]
                                      (draw-texture-region! batch
-                                                           @unit-scale
+                                                           (get-unit-scale)
                                                            (image->texture-region {:image/file rahmen-file})
                                                            [x y])
                                      (draw-texture-region! batch
-                                                           @unit-scale
+                                                           (get-unit-scale)
                                                            (image->texture-region
                                                              {:image/file content-file
                                                               :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
                                                            [x y])
                                      (draw-text! batch
                                                  default-font
-                                                 @unit-scale
+                                                 (get-unit-scale)
                                                  {:text (str (readable (minmaxval 0))
                                                              "/"
                                                              (minmaxval 1)
@@ -4265,29 +4263,29 @@ menus [{:label "Debug"
                {:label "Help"
                 :items [{:label controls-info}]}]
 update-labels (fn [get-frames-per-second get-mouse-position ui-mouse-info-text viewport]
-                        [{:label "elapsed-time"
-                          :update-fn (fn [] 
-                                       (str (readable @elapsed-time) " seconds"))
-                          :icon "images/clock.png"}
-                         {:label "FPS"
-                          :update-fn get-frames-per-second
-                          :icon "images/fps.png"}
-                         {:label "Mouseover-entity id"
-                          :update-fn (fn []
-                                       (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                         (:entity/id entity)))
-                          :icon "images/mouseover.png"}
-                         {:label "paused?"
-                          :update-fn (fn [] @paused?)}
-                         {:label "GUI"
-                          :update-fn ui-mouse-info-text}
-                         {:label "World"
-                          :update-fn (fn []
-                                       (mapv int (unproject @viewport (get-mouse-position))))}
-                         {:label "Zoom"
-                          :update-fn (fn []
-                                       (.zoom ^OrthographicCamera (get-camera @viewport)))
-                          :icon "images/zoom.png"}])
+                [{:label "elapsed-time"
+                  :update-fn (fn [] 
+                               (str (readable @elapsed-time) " seconds"))
+                  :icon "images/clock.png"}
+                 {:label "FPS"
+                  :update-fn get-frames-per-second
+                  :icon "images/fps.png"}
+                 {:label "Mouseover-entity id"
+                  :update-fn (fn []
+                               (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                                 (:entity/id entity)))
+                  :icon "images/mouseover.png"}
+                 {:label "paused?"
+                  :update-fn (fn [] @paused?)}
+                 {:label "GUI"
+                  :update-fn ui-mouse-info-text}
+                 {:label "World"
+                  :update-fn (fn []
+                               (mapv int (unproject @viewport (get-mouse-position))))}
+                 {:label "Zoom"
+                  :update-fn (fn []
+                               (.zoom ^OrthographicCamera (get-camera @viewport)))
+                  :icon "images/zoom.png"}])
 dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second]
                 {:menus menus
                :update-labels (map (fn [item]
@@ -4297,20 +4295,21 @@ dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position 
                                    (update-labels get-frames-per-second
                                                   get-input-position
                                                   ui-mouse-info-text
-                                                  
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-add-stage-actors! (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
+        unit-scale (atom 1)
+add-stage-actors! (fn [shape-drawer stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))
                      ui-mouse-info-text (fn []
                                           (mapv int (unproject (get-viewport stage*) (get-input-position))))]
                  (doseq [actor [(create-action-bar)
                                 (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second))
-                                (create-actor (hp-mana-bar-opts default-font ui-viewport-width image->texture-region))
+                                (create-actor (hp-mana-bar-opts (fn get-unit-scale [] @unit-scale) default-font ui-viewport-width image->texture-region))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
-                                                 (build-inventory-window (inventory-window-opts slot->texture-region*
+                                                 (build-inventory-window (inventory-window-opts shape-drawer
+                                                                                                slot->texture-region*
                                                                                                 skin
                                                                                                 on-click-cell!
                                                                                                 get-input-position
@@ -4383,8 +4382,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              handle-txs! (fn [txs]
                            (handle-txs! stage image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
-                                       (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
-         (add-stage-actors! stage 
+                                       (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
+             shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))]
+         (add-stage-actors! shape-drawer
+                            stage 
                             skin 
                             textures
                             default-font 
@@ -4393,13 +4394,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                             clicked-inventory-cell!
                             (fn [slot] (image->texture-region (slot->texture-region slot)))
                             image->texture-region)
-         (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
          (set-input-processor! stage)
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
                         :default-font default-font
                         :image->texture-region image->texture-region
                         :handle-txs! handle-txs!
+                        :shape-drawer shape-drawer
                         :shape-drawer-texture shape-drawer-texture
                         :skin skin
                         :sounds sounds
@@ -4440,6 +4441,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      default-font
                      image->texture-region
                      handle-txs!
+                     shape-drawer
                      stage]} @state
              viewport @viewport
              mouse-position (get-input-position)
@@ -4471,25 +4473,25 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                              :visible-tile-color (float-bits 1 1 1 1)
                              :invisible-tile-color (float-bits 0 0 0 1)})
                           world-unit-scale)
-         (with-line-width @shape-drawer world-unit-scale
+         (with-line-width shape-drawer world-unit-scale
            (reset! unit-scale world-unit-scale)
-           (draw-tile-grid @shape-drawer viewport @show-tile-grid?)
+           (draw-tile-grid shape-drawer viewport @show-tile-grid?)
            (draw-cell-debug factions-iterations
-                            @shape-drawer viewport
+                            shape-drawer viewport
                             @show-cell-entities?
                             @show-cell-occupied?
                             @show-potential-field-colors?
                             @grid)
            (draw-entities! (fn [& params]
-                             (apply draw-component! image->texture-region @unit-scale batch default-font @shape-drawer mouse-position params))
-                           @shape-drawer
+                             (apply draw-component! image->texture-region @unit-scale batch default-font shape-drawer mouse-position params))
+                           shape-drawer
                            @raycaster
                            @active-entities
                            @(player-eid)
                            @show-body-bounds?
                            render-z-order
                            render-layers)
-           (highlight-mouseover-tile @shape-drawer (unproject viewport mouse-position) @grid)
+           (highlight-mouseover-tile shape-drawer (unproject viewport mouse-position) @grid)
            (reset! unit-scale 1))
          (.end ^Batch batch)
          (let [player-eid (player-eid)
