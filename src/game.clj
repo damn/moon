@@ -4357,9 +4357,6 @@ init-game-state! (fn [handle-txs!]
                                             (player-ui-txs #(info-text % @elapsed-time) entity)
                                             (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
         state (atom nil)
-        sounds (atom nil)
-        play-sound!* (fn [sound-name]
-                       (Sound/.play (safe-get @sounds sound-name)))
         potential-field-cache (atom nil)
         ]
     {
@@ -4377,12 +4374,14 @@ init-game-state! (fn [handle-txs!]
                   get-frames-per-second]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)])))
        (reset! default-font (create-font font-params))
        (reset! textures (create-textures files (:textures game-config)))
        (let [batch (sprite-batch!)
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (internal files (:skin game-config)))
+             sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
+             play-sound!* (fn [sound-name]
+                            (Sound/.play (safe-get sounds sound-name)))
              handle-txs! (fn [txs]
                            (handle-txs! skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
@@ -4393,7 +4392,8 @@ init-game-state! (fn [handle-txs!]
                         :cursors (update-vals (:cursors game-config) create-cursor)
                         :handle-txs! handle-txs!
                         :shape-drawer-texture shape-drawer-texture
-                        :skin skin})
+                        :skin skin
+                        :sounds sounds})
          (set-input-processor! @stage)
          (reset! viewport (create-viewport! 1440 900 world-unit-scale))
          (init-game-state! handle-txs!)))
@@ -4403,9 +4403,9 @@ init-game-state! (fn [handle-txs!]
        (let [{:keys [batch
                      cursors
                      shape-drawer-texture
-                     skin]} @state
+                     skin
+                     sounds]} @state
              default-font @default-font
-             sounds @sounds
              textures @textures
              tiled-map @tiled-map*]
          (dispose! batch)
