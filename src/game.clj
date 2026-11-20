@@ -3779,6 +3779,13 @@
                      :size 16
                      :quality-scaling 2
                      :use-integer-positions? false}
+        y-mana 80
+        rahmenw 150
+        rahmenh 26
+        y-hp (+ y-mana rahmenh)
+        rahmen-file "images/rahmen.png"
+        hpcontent-file "images/hp.png"
+        manacontent-file "images/mana.png"
         elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
@@ -4211,42 +4218,35 @@
         unit-scale (atom 1)
         default-font (atom nil)
 hp-mana-bar-opts (fn [ui-viewport-width]
-                   (let [y-mana 80
-                                rahmenw 150
-                                rahmenh 26
-                                x (/ ui-viewport-width 2)
-                                rahmen-file "images/rahmen.png"
-                                hpcontent-file "images/hp.png"
-                                manacontent-file "images/mana.png"
-                                y-hp (+ y-mana rahmenh)
-                                bar-x (- x (/ rahmenw 2))
-                                draw-bar! (fn [batch x y content-file minmaxval name]
-                                            (draw-texture-region! batch
-                                                                  @unit-scale
-                                                                  (image->texture-region {:image/file rahmen-file})
-                                                                  [x y])
-                                            (draw-texture-region! batch
-                                                                  @unit-scale
-                                                                  (image->texture-region
-                                                                    {:image/file content-file
-                                                                     :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
-                                                                  [x y])
-                                            (draw-text! batch
-                                                        @default-font
-                                                        @unit-scale
-                                                        {:text (str (readable (minmaxval 0))
-                                                                    "/"
-                                                                    (minmaxval 1)
-                                                                    " "
-                                                                    name)
-                                                         :x (+ x 75)
-                                                         :y (+ y 2)
-                                                         :up? true}))]
-                            {:draw!
-                             (fn [batch _parent-alpha]
-                               (let [stats (:entity/stats @(player-eid))]
-                                 (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
-                                 (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
+                   (let [x (/ ui-viewport-width 2)
+                         bar-x (- x (/ rahmenw 2))
+                         draw-bar! (fn [batch x y content-file minmaxval name]
+                                     (draw-texture-region! batch
+                                                           @unit-scale
+                                                           (image->texture-region {:image/file rahmen-file})
+                                                           [x y])
+                                     (draw-texture-region! batch
+                                                           @unit-scale
+                                                           (image->texture-region
+                                                             {:image/file content-file
+                                                              :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
+                                                           [x y])
+                                     (draw-text! batch
+                                                 @default-font
+                                                 @unit-scale
+                                                 {:text (str (readable (minmaxval 0))
+                                                             "/"
+                                                             (minmaxval 1)
+                                                             " "
+                                                             name)
+                                                  :x (+ x 75)
+                                                  :y (+ y 2)
+                                                  :up? true}))]
+                     {:draw!
+                      (fn [batch _parent-alpha]
+                        (let [stats (:entity/stats @(player-eid))]
+                          (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
+                          (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}))
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
