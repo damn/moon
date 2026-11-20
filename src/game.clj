@@ -4366,7 +4366,6 @@ init-game-state! (fn [handle-txs!]
                       (handle-txs! play-sound!* txs))
 clicked-inventory-cell! (fn [cell]
                                      (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
-        batch (atom nil)
         potential-field-cache (atom nil)
         ]
     {
@@ -4384,24 +4383,25 @@ clicked-inventory-cell! (fn [cell]
                   get-frames-per-second]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! batch (sprite-batch!))
-       (let [shape-drawer-texture (white-pixel-texture)]
-         (reset! shape-drawer (ShapeDrawer. @batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
-         (reset! state {:cursors (update-vals (:cursors game-config) create-cursor)
-                        :shape-drawer-texture shape-drawer-texture}))
        (reset! sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)])))
        (reset! default-font (create-font font-params))
        (reset! skin (create-skin! (internal files (:skin game-config))))
        (reset! textures (create-textures files (:textures game-config)))
-       (reset! stage (create-stage @batch get-input-position get-frames-per-second clicked-inventory-cell!))
+       (let [batch (sprite-batch!)
+             shape-drawer-texture (white-pixel-texture)]
+         (reset! stage (create-stage batch get-input-position get-frames-per-second clicked-inventory-cell!))
+         (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
+         (reset! state {:batch batch
+                        :cursors (update-vals (:cursors game-config) create-cursor)
+                        :shape-drawer-texture shape-drawer-texture}))
        (set-input-processor! @stage)
        (reset! viewport (create-viewport! 1440 900 world-unit-scale))
        (init-game-state! handle-txs!))
 
      :dispose!
      (fn []
-       (let [batch @batch
-             {:keys [cursors
+       (let [{:keys [batch
+                     cursors
                      shape-drawer-texture]} @state
              default-font @default-font
              skin @skin
@@ -4425,8 +4425,8 @@ clicked-inventory-cell! (fn [cell]
                   button-just-pressed? 
                   get-delta-time 
                   get-input-position]}]
-       (let [{:keys [cursors]} @state
-             batch @batch
+       (let [{:keys [batch
+                     cursors]} @state
              stage @stage
              viewport @viewport
              mouse-position (get-input-position)
