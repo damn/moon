@@ -4213,9 +4213,7 @@
                                  :slot->texture-region slot->texture-region*
                                  :cell-size inventory-cell-size})
         unit-scale (atom 1)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-hp-mana-bar-opts (fn [default-font ui-viewport-width]
+hp-mana-bar-opts (fn [default-font ui-viewport-width image->texture-region]
                    (let [draw-bar! (fn [batch x y content-file minmaxval name]
                                      (draw-texture-region! batch
                                                            @unit-scale
@@ -4303,14 +4301,14 @@ dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position 
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-add-stage-actors! (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region*]
+add-stage-actors! (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))
                      ui-mouse-info-text (fn []
                                           (mapv int (unproject (get-viewport stage*) (get-input-position))))]
                  (doseq [actor [(create-action-bar)
                                 (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second))
-                                (create-actor (hp-mana-bar-opts default-font ui-viewport-width))
+                                (create-actor (hp-mana-bar-opts default-font ui-viewport-width image->texture-region))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
                                                  (build-inventory-window (inventory-window-opts slot->texture-region*
                                                                                                 skin
@@ -4321,7 +4319,7 @@ add-stage-actors! (fn [stage* skin textures default-font get-input-position get-
                                 (player-state-draw-create player-eid unit-scale image->texture-region get-input-position)
                                 (player-message-actor-create default-font unit-scale)]]
                    (add-actor! stage* actor))))
-init-game-state! (fn [handle-txs! textures]
+init-game-state! (fn [handle-txs! textures image->texture-region]
                    (let [{:keys [^TiledMap tiled-map 
                                  start-position]} (create-level! textures image->texture-region)]
                      (reset! tiled-map* tiled-map)
@@ -4370,8 +4368,8 @@ init-game-state! (fn [handle-txs! textures]
                   get-frames-per-second]}]
        (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (reset! textures (create-textures files (:textures game-config)))
        (let [batch (sprite-batch!)
+             textures (create-textures files (:textures game-config))
              default-font (create-font font-params)
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (internal files (:skin game-config)))
@@ -4381,30 +4379,34 @@ init-game-state! (fn [handle-txs! textures]
              stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
                                          (float (:height (:stage game-config)))) 
                            batch)
+             image->texture-region #(get-texture-region textures %)
              handle-txs! (fn [txs]
                            (handle-txs! stage image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
          (add-stage-actors! stage 
                             skin 
-                            @textures
+                            textures
                             default-font 
                             get-input-position 
                             get-frames-per-second 
                             clicked-inventory-cell!
-                            (fn [slot] (image->texture-region (slot->texture-region slot))))
+                            (fn [slot] (image->texture-region (slot->texture-region slot)))
+                            image->texture-region)
          (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
          (set-input-processor! stage)
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
                         :default-font default-font
+                        :image->texture-region image->texture-region
                         :handle-txs! handle-txs!
                         :shape-drawer-texture shape-drawer-texture
                         :skin skin
                         :sounds sounds
-                        :stage stage})
+                        :stage stage
+                        :textures textures})
          (reset! viewport (create-viewport! 1440 900 world-unit-scale))
-         (init-game-state! handle-txs! @textures)))
+         (init-game-state! handle-txs! textures image->texture-region)))
 
      :dispose!
      (fn []
@@ -4413,8 +4415,8 @@ init-game-state! (fn [handle-txs! textures]
                      default-font
                      shape-drawer-texture
                      skin
-                     sounds]} @state
-             textures @textures
+                     sounds
+                     textures]} @state
              tiled-map @tiled-map*]
          (dispose! batch)
          (run! dispose! (vals cursors))
@@ -4436,6 +4438,7 @@ init-game-state! (fn [handle-txs! textures]
        (let [{:keys [batch
                      cursors
                      default-font
+                     image->texture-region
                      handle-txs!
                      stage]} @state
              viewport @viewport
