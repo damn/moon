@@ -4195,9 +4195,7 @@
                                                ""))
                           :skin skin})
         shape-drawer (atom nil)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-        inventory-window-opts (fn [skin on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
+        inventory-window-opts (fn [slot->texture-region* skin on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
                                 {:get-mouse-position get-input-position
                                  :on-click-cell (fn [_event cell]
                                                   (on-click-cell! cell))
@@ -4212,9 +4210,11 @@
                                                           (filled-rectangle! @shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
                                  :skin skin
                                  :position [ui-viewport-width ui-viewport-height]
-                                 :slot->texture-region (fn [slot] (image->texture-region (slot->texture-region slot)))
+                                 :slot->texture-region slot->texture-region*
                                  :cell-size inventory-cell-size})
         unit-scale (atom 1)
+        textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
 hp-mana-bar-opts (fn [default-font ui-viewport-width]
                    (let [draw-bar! (fn [batch x y content-file minmaxval name]
                                      (draw-texture-region! batch
@@ -4303,7 +4303,7 @@ dev-menu-opts (fn [textures ui-mouse-info-text skin viewport get-input-position 
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-add-stage-actors! (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell!]
+add-stage-actors! (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region*]
                (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))
                      ui-mouse-info-text (fn []
@@ -4312,7 +4312,8 @@ add-stage-actors! (fn [stage* skin textures default-font get-input-position get-
                                 (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin viewport get-input-position get-frames-per-second))
                                 (create-actor (hp-mana-bar-opts default-font ui-viewport-width))
                                 (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
-                                                 (build-inventory-window (inventory-window-opts skin
+                                                 (build-inventory-window (inventory-window-opts slot->texture-region*
+                                                                                                skin
                                                                                                 on-click-cell!
                                                                                                 get-input-position
                                                                                                 ui-viewport-width 
@@ -4390,7 +4391,8 @@ init-game-state! (fn [handle-txs! textures]
                             default-font 
                             get-input-position 
                             get-frames-per-second 
-                            clicked-inventory-cell!)
+                            clicked-inventory-cell!
+                            (fn [slot] (image->texture-region (slot->texture-region slot))))
          (reset! shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
          (set-input-processor! stage)
          (reset! state {:batch batch
