@@ -4304,11 +4304,8 @@ dev-menu-opts (fn [textures stage skin viewport get-input-position get-frames-pe
                                                   viewport))
                :skin skin})
         viewport (atom nil)
-create-stage (fn [batch skin textures default-font get-input-position get-frames-per-second on-click-cell!]
-               (let [stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
-                                                  (float (:height (:stage game-config)))) 
-                                    batch)
-                     ui-viewport-width (get-world-width (get-viewport stage*))
+create-stage (fn [stage* skin textures default-font get-input-position get-frames-per-second on-click-cell!]
+               (let [ui-viewport-width (get-world-width (get-viewport stage*))
                      ui-viewport-height (get-world-height (get-viewport stage*))]
                  (doseq [actor [(create-action-bar)
                                 (create-dev-menu (dev-menu-opts textures stage skin viewport get-input-position get-frames-per-second))
@@ -4380,11 +4377,14 @@ init-game-state! (fn [handle-txs! textures]
              sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
              play-sound!* (fn [sound-name]
                             (Sound/.play (safe-get sounds sound-name)))
+             stage* (Stage. (FitViewport. (float (:width (:stage game-config))) 
+                                          (float (:height (:stage game-config)))) 
+                            batch)
              handle-txs! (fn [txs]
                            (handle-txs! image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
-         (reset! stage (create-stage batch 
+         (reset! stage (create-stage stage* 
                                      skin 
                                      @textures
                                      default-font 
