@@ -4297,25 +4297,6 @@ dev-menu-opts (fn [textures ui-mouse-info-text skin unproject-viewport camera-zo
                                                   unproject-viewport 
                                                   camera-zoom))
                :skin skin})
-add-stage-actors! (fn [unproject-viewport camera-zoom get-unit-scale shape-drawer stage* skin textures default-font get-input-position get-frames-per-second on-click-cell! slot->texture-region* image->texture-region]
-               (let [ui-viewport-width (get-world-width (get-viewport stage*))
-                     ui-viewport-height (get-world-height (get-viewport stage*))
-                     ui-mouse-info-text (fn []
-                                          (mapv int (unproject (get-viewport stage*) (get-input-position))))]
-                 (doseq [actor [(create-action-bar)
-                                (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin unproject-viewport camera-zoom get-input-position get-frames-per-second))
-                                (create-actor (hp-mana-bar-opts get-unit-scale default-font ui-viewport-width image->texture-region))
-                                (windows-create [(create-info-window (info-window-opts skin ui-viewport-width))
-                                                 (build-inventory-window (inventory-window-opts shape-drawer
-                                                                                                slot->texture-region*
-                                                                                                skin
-                                                                                                on-click-cell!
-                                                                                                get-input-position
-                                                                                                ui-viewport-width 
-                                                                                                ui-viewport-height))])
-                                (player-state-draw-create player-eid get-unit-scale image->texture-region get-input-position)
-                                (player-message-actor-create default-font get-unit-scale)]]
-                   (add-actor! stage* actor))))
 init-game-state! (fn [handle-txs! textures image->texture-region]
                    (let [{:keys [^TiledMap tiled-map 
                                  start-position]} (create-level! textures image->texture-region)]
@@ -4386,20 +4367,34 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              get-unit-scale (fn [] @unit-scale)
              viewport (create-viewport! 1440 900 world-unit-scale)
              unproject-viewport #(unproject viewport %)
-             camera-zoom (fn [] (.zoom ^OrthographicCamera (get-camera viewport)))]
-         (add-stage-actors! unproject-viewport
-                            camera-zoom
-                            get-unit-scale
-                            shape-drawer
-                            stage 
-                            skin 
-                            textures
-                            default-font 
-                            get-input-position 
-                            get-frames-per-second 
-                            clicked-inventory-cell!
-                            (fn [slot] (image->texture-region (slot->texture-region slot)))
-                            image->texture-region)
+             camera-zoom (fn [] (.zoom ^OrthographicCamera (get-camera viewport)))
+             ui-viewport-width (get-world-width (get-viewport stage))
+             ui-viewport-height (get-world-height (get-viewport stage))
+             ui-mouse-info-text (fn []
+                                  (mapv int (unproject (get-viewport stage) (get-input-position))))
+             slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
+             action-bar (create-action-bar)
+             dev-menu (create-dev-menu (dev-menu-opts textures ui-mouse-info-text skin unproject-viewport camera-zoom get-input-position get-frames-per-second))
+             hp-mana-bars (create-actor (hp-mana-bar-opts get-unit-scale default-font ui-viewport-width image->texture-region))
+             info-window (create-info-window (info-window-opts skin ui-viewport-width))
+             inventory-window (build-inventory-window (inventory-window-opts shape-drawer
+                                                                             slot->texture-region*
+                                                                             skin
+                                                                             clicked-inventory-cell!
+                                                                             get-input-position
+                                                                             ui-viewport-width 
+                                                                             ui-viewport-height))
+             windows (windows-create [info-window
+                                      inventory-window])
+             player-state-draw-actor (player-state-draw-create player-eid get-unit-scale image->texture-region get-input-position)
+             player-message-actor (player-message-actor-create default-font get-unit-scale)]
+         (doseq [actor [action-bar
+                        dev-menu
+                        hp-mana-bars
+                        windows
+                        player-state-draw-actor
+                        player-message-actor]]
+           (add-actor! stage actor))
          (set-input-processor! stage)
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
