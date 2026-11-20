@@ -4134,9 +4134,7 @@
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
         stage (atom nil)
-        textures (atom nil)
-        image->texture-region #(get-texture-region @textures %)
-        handle-txs! (fn [skin play-sound! txs]
+        handle-txs! (fn [image->texture-region skin play-sound! txs]
                       (let [k->txs {
                                     :tx/swap swap!
                                     :tx/spawn-entity 
@@ -4198,6 +4196,8 @@
                                                ""))
                           :skin skin})
         shape-drawer (atom nil)
+        textures (atom nil)
+        image->texture-region #(get-texture-region @textures %)
         inventory-window-opts (fn [skin on-click-cell! get-input-position ui-viewport-width ui-viewport-height]
                                 {:get-mouse-position get-input-position
                                  :on-click-cell (fn [_event cell]
@@ -4381,7 +4381,7 @@ init-game-state! (fn [handle-txs! textures]
              play-sound!* (fn [sound-name]
                             (Sound/.play (safe-get sounds sound-name)))
              handle-txs! (fn [txs]
-                           (handle-txs! skin play-sound!* txs))
+                           (handle-txs! image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))]
          (reset! stage (create-stage batch 
