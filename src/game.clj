@@ -2545,22 +2545,6 @@
       (actor/set-name! "player-message")
       (actor/set-user-object! (atom nil)))))
 
-(defn player-state-draw-create [get-player-eid get-unit-scale image->texture-region get-mouse-position]
-  (actor/create
-    {:act!
-     (fn [_this _delta])
-     :draw!
-     (fn [this batch _parent-alpha]
-       (let [stage (actor/stage this)
-             player-eid (get-player-eid)
-             mouse-pos (unproject (stage/viewport stage) (get-mouse-position))]
-         (when-let [item (:entity/item-on-cursor @player-eid)]
-           (draw-texture-region! batch
-                                 (get-unit-scale)
-                                 (image->texture-region (:entity/image item))
-                                 mouse-pos
-                                 {:center? true}))))}))
-
 (defn windows-create [actors]
   (doto (group/create)
     (add-actors! actors)
@@ -3949,7 +3933,16 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              inventory-window (build-inventory-window inventory-window-opts)
              windows (windows-create [info-window
                                       inventory-window])
-             player-state-draw-actor (player-state-draw-create player-eid get-unit-scale image->texture-region get-input-position)
+             player-state-draw-actor
+             (actor/create
+               {:act! (fn [_this _delta])
+                :draw! (fn [_this _batch _parent-alpha]
+                         (when-let [item (:entity/item-on-cursor @(player-eid))]
+                           (draw-texture-region! batch
+                                                 (get-unit-scale)
+                                                 (image->texture-region (:entity/image item))
+                                                 (unproject (stage/viewport stage) (get-input-position))
+                                                 {:center? true})))})
              player-message-actor (player-message-actor-create default-font get-unit-scale)]
          (doseq [actor [action-bar
                         dev-menu
