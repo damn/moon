@@ -3532,6 +3532,38 @@
       (tx-event-txs player-eid :no-movement-input))
     nil))
 
+(defn primary-interaction! 
+  [handle-txs!
+   player-eid
+   mouseover-eid
+   tx-event-txs
+   entity*
+   create-timer*
+   {:keys [set-cursor!
+           get-selected-skill
+           mouseover-actor-info
+           world-mouse-position
+           inventory-visible?
+           key-pressed?
+           button-just-pressed?]
+    :as capabilities}]
+  (let [interaction-state (create-interaction-state (mouseover-actor-info) 
+                                                    (world-mouse-position) 
+                                                    get-selected-skill
+                                                    player-eid
+                                                    mouseover-eid)
+        cursor-key (get-cursor-key player-eid interaction-state)
+        txs (handle-player-input player-eid
+                                 interaction-state
+                                 inventory-visible?
+                                 key-pressed?
+                                 button-just-pressed?
+                                 tx-event-txs
+                                 entity* 
+                                 create-timer*)]
+    (set-cursor! cursor-key)
+    (handle-txs! capabilities txs)))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3776,31 +3808,14 @@ menus [{:label "Debug"
                                       (throw (ex-info "handle-txs! error" 
                                                       {:k k :params params}
                                                       t)))))))
-primary-interaction! (fn [{:keys [set-cursor!
-                                  get-selected-skill
-                                  mouseover-actor-info
-                                  world-mouse-position
-                                  inventory-visible?
-                                  key-pressed?
-                                  button-just-pressed?]
-                           :as capabilities}]
-                       (let [player-eid (player-eid)
-                             interaction-state (create-interaction-state (mouseover-actor-info) 
-                                                                         (world-mouse-position) 
-                                                                         get-selected-skill
-                                                                         player-eid
-                                                                         @mouseover-eid)
-                             cursor-key (get-cursor-key player-eid interaction-state)
-                             txs (handle-player-input player-eid
-                                                      interaction-state
-                                                      inventory-visible?
-                                                      key-pressed?
-                                                      button-just-pressed?
-                                                      tx-event-txs
-                                                      entity* 
-                                                      create-timer*)]
-                         (set-cursor! cursor-key)
-                         (handle-txs! capabilities txs)))
+primary-interaction! (fn [caps]
+                       (primary-interaction! handle-txs! 
+                                             (player-eid)
+                                             @mouseover-eid
+                                             tx-event-txs
+                                             entity*
+                                             create-timer*
+                                             caps))
 init-game-state! (fn [capabilities textures image->texture-region]
                    (let [{:keys [tiled-map
                                  start-position]} (create-level! textures image->texture-region)]
