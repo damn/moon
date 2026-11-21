@@ -229,12 +229,12 @@
 (defprotocol GetHeight
   (get-height [_]))
 
-(require '[clojure.com.badlogic.gdx.maps.map-properties :as map-properties])
-(import '(com.badlogic.gdx.maps MapLayer MapLayers)
-        '(com.badlogic.gdx.maps.tiled TiledMap
+(require '[clojure.com.badlogic.gdx.maps.map-layers :as map-layers]
+         '[clojure.com.badlogic.gdx.maps.map-properties :as map-properties]
+         '[clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+         '[clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as tiled-map-tile-layer-cell])
+(import '(com.badlogic.gdx.maps.tiled TiledMap
                                       TiledMapTile
-                                      TiledMapTileLayer
-                                      TiledMapTileLayer$Cell
                                       TmxMapLoader)
         '(com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile))
 
@@ -254,33 +254,6 @@
   (get-properties [this]
     (.getProperties this)))
 
-(extend-type TiledMapTileLayer
-  GetProperties
-  (get-properties [this]
-    (.getProperties this))
-  GetWidth
-  (get-width [this]
-    (.getWidth this))
-  GetHeight
-  (get-height [this]
-    (.getHeight this)))
-
-(defn layers-get [^MapLayers map-layers ^String layer-name]
-  (.get map-layers layer-name))
-
-(defn get-cell [^TiledMapTileLayer layer x y]
-  (.getCell layer (int x) (int y)))
-
-(defn set-cell! [^TiledMapTileLayer layer x y tile]
-  (.setCell layer 
-            (int x)
-            (int y) 
-            (doto (TiledMapTileLayer$Cell.)
-              (.setTile ^TiledMapTile tile))))
-
-(defn get-tile [^TiledMapTileLayer$Cell cell]
-  (.getTile cell))
-
 (import '(com.badlogic.gdx.graphics.g2d Batch
                                         BitmapFont
                                         BitmapFont$BitmapFontData
@@ -291,24 +264,24 @@
 (defn tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
-    (when-let [cell (get-cell layer (int x) (int y))]
-      (let [value (map-properties/get (get-properties (get-tile cell)) "movement")]
+    (when-let [cell (tiled-map-tile-layer/get-cell layer (int x) (int y))]
+      (let [value (map-properties/get (get-properties (tiled-map-tile-layer-cell/get-tile cell)) "movement")]
         (assert value
                 (str "Value for :movement at position "
                      position " / mapeditor inverted position: " [(position 0)
                                                                  (- (dec (map-properties/get (get-properties tiled-map) "height"))
                                                                     (position 1))]
-                     " and layer " (get-name layer) " is undefined."))
+                     " and layer " (tiled-map-tile-layer/name layer) " is undefined."))
         value))))
 
 (defn movement-property-layers [tiled-map]
   (->> (get-layers tiled-map)
        reverse
-       (filter #(map-properties/get (get-properties %) "movement-properties"))))
+       (filter #(map-properties/get (tiled-map-tile-layer/properties %) "movement-properties"))))
 
 (defn movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
-    [(get-name layer)
+    [(tiled-map-tile-layer/name layer)
      (tile-movement-property tiled-map layer position)]))
 
 (defn movement-property [tiled-map position]
@@ -334,23 +307,17 @@
   (visible? [_])
   (set-visible! [_ v]))
 
-(extend-type TiledMapTileLayer
-  Visible
-  (visible? [this]
-    (.isVisible this))
-  (set-visible! [this v]
-    (.setVisible this v)))
-
 (defn tiled-map-tile-layer [width height tilewidth tileheight name visible?]
-  (doto (TiledMapTileLayer. (int width)
-                            (int height)
-                            (int tilewidth)
-                            (int tileheight))
-    (.setName name)
-    (set-visible! visible?)))
+  (doto (tiled-map-tile-layer/create width height tilewidth tileheight)
+    (tiled-map-tile-layer/set-name! name)
+    (tiled-map-tile-layer/set-visible! visible?)))
 
-(defn add-map-layer! [^MapLayers map-layers ^MapLayer layer]
-  (.add map-layers layer))
+(defn set-cell! [layer x y tile]
+  (tiled-map-tile-layer/set-cell! layer
+                                  x
+                                  y
+                                  (doto (tiled-map-tile-layer-cell/create)
+                                    (tiled-map-tile-layer-cell/set-tile! tile))))
 
 (defn create-static-tiled-map-tile
   [{:keys [tile/id
@@ -374,7 +341,7 @@
                            [position (creature-tile creature-property)])
             :when tile]
       (set-cell! layer x y tile))
-    (add-map-layer! (get-layers tiled-map) layer)))
+    (map-layers/add! (get-layers tiled-map) layer)))
 
 (import '(com.badlogic.gdx.graphics Color
                                     Colors
@@ -434,7 +401,7 @@
            (int num-vertices))))
 
 (defn- draw-tile-layer!
-  [^TiledMapTileLayer layer
+  [layer
    ^Batch batch
    view-bounds
    color-setter
@@ -442,12 +409,12 @@
   (let [num-vertices 20
         vertices (float-array num-vertices)
         batch-color (.getColor batch)
-        layer-width (get-width layer)
-        layer-height (get-height layer)
-        layer-tile-width (* (.getTileWidth layer) world-unit-scale)
-        layer-tile-height (* (.getTileHeight layer) world-unit-scale)
-        layer-offset-x (* (.getRenderOffsetX layer) world-unit-scale)
-        layer-offset-y (* (- (.getRenderOffsetY layer)) world-unit-scale)
+        layer-width (tiled-map-tile-layer/width layer)
+        layer-height (tiled-map-tile-layer/height layer)
+        layer-tile-width (* (tiled-map-tile-layer/tile-width layer) world-unit-scale)
+        layer-tile-height (* (tiled-map-tile-layer/tile-height layer) world-unit-scale)
+        layer-offset-x (* (tiled-map-tile-layer/render-offset-x layer) world-unit-scale)
+        layer-offset-y (* (- (tiled-map-tile-layer/render-offset-y layer)) world-unit-scale)
         col1 (max 0
                   (int (/ (- (:x view-bounds) layer-offset-x)
                           layer-tile-width)))
@@ -476,8 +443,8 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [cell (get-cell layer col row)]
-              (when-let [tile (get-tile cell)]
+            (when-let [cell (tiled-map-tile-layer/get-cell layer col row)]
+              (when-let [tile (tiled-map-tile-layer-cell/get-tile cell)]
                 (draw-tile! x
                             y
                             tile
@@ -508,7 +475,7 @@
 
 (defn draw-tiled-map!
   [tiled-map batch view-bounds color-setter world-unit-scale]
-  (doseq [layer (filter visible? (get-layers tiled-map))]
+  (doseq [layer (filter tiled-map-tile-layer/visible? (get-layers tiled-map))]
     (draw-tile-layer! layer
                       batch
                       view-bounds
@@ -1469,9 +1436,9 @@
                         {"width" (count grid)
                          "height" (count (grid 0))})
      :layers (for [layer (get-layers schema-tiled-map)]
-               {:name (get-name layer)
-                :visible? (visible? layer)
-                :properties (let [props (get-properties layer)]
+               {:name (tiled-map-tile-layer/name layer)
+                :visible? (tiled-map-tile-layer/visible? layer)
+                :properties (let [props (tiled-map-tile-layer/properties layer)]
                               (zipmap (map-properties/get-keys props)
                                       (map-properties/get-values props)))
                 :tiles (for [x (range (count grid))
@@ -1480,8 +1447,8 @@
                                    local-position (get-in grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (get-cell layer (local-position 0) (local-position 1))]
-                             [position (copy-tile (get-tile cell))])))})}))
+                           (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
+                             [position (copy-tile (tiled-map-tile-layer-cell/get-tile cell))])))})}))
 
 (defn- create-tiled-map* [schema-tiled-map scaled-grid]
   (let [{:keys [properties layers]} (grid->tiled-map schema-tiled-map scaled-grid)
@@ -1497,15 +1464,15 @@
                                         (map-properties/get props "height")
                                         (map-properties/get props "tilewidth")
                                         (map-properties/get props "tileheight")
-                                        name 
+                                        name
                                         visible?)]
         (doseq [[k v] properties]
           (assert (string? k))
-          (map-properties/put! (get-properties layer) k v))
+          (map-properties/put! (tiled-map-tile-layer/properties layer) k v))
         (doseq [[[x y] tile] tiles
                 :when tile]
           (set-cell! layer x y tile))
-        (add-map-layer! (get-layers tiled-map) layer)))
+        (map-layers/add! (get-layers tiled-map) layer)))
     tiled-map))
 
 (defn create-modules-level
@@ -1642,15 +1609,15 @@
                                         (map-properties/get props "height")
                                         (map-properties/get props "tilewidth")
                                         (map-properties/get props "tileheight")
-                                        name 
+                                        name
                                         visible?)]
         (doseq [[k v] properties]
           (assert (string? k))
-          (map-properties/put! (get-properties layer) k v))
+          (map-properties/put! (tiled-map-tile-layer/properties layer) k v))
         (doseq [[[x y] tile] tiles
                 :when tile]
           (set-cell! layer x y tile))
-        (add-map-layer! (get-layers tiled-map) layer)))
+        (map-layers/add! (get-layers tiled-map) layer)))
     tiled-map))
 
 (defn create-uf-caves
@@ -2764,12 +2731,12 @@
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (layers-get (get-layers tiled-map) layer-name)]
-    (for [x (range (get-width layer))
-          y (range (get-height layer))
-          :let [cell (get-cell layer x y)]
+        layer (map-layers/get (get-layers tiled-map) layer-name)]
+    (for [x (range (tiled-map-tile-layer/width layer))
+          y (range (tiled-map-tile-layer/height layer))
+          :let [cell (tiled-map-tile-layer/get-cell layer x y)]
           :when cell
-          :let [value (map-properties/get (get-properties (get-tile cell)) property-key)]
+          :let [value (map-properties/get (get-properties (tiled-map-tile-layer-cell/get-tile cell)) property-key)]
           :when value]
       [[x y] value])))
 
@@ -4504,7 +4471,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                  (all-raw db :properties/creatures)
                                  #(get-texture-region textures %))
                                :textures textures}))]
-    (set-visible! (layers-get (get-layers tiled-map) "creatures") true)
+    (tiled-map-tile-layer/set-visible! (map-layers/get (get-layers tiled-map) "creatures") true)
     tiled-map))
 
 (require '[clojure.edn :as edn])
@@ -5409,11 +5376,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      (fn [width height]
        (resize! (get-viewport @editor-stage) width height true))
      }))
-
-(extend-type TiledMapTileLayer
-  GetName
-  (get-name [this]
-    (.getName this)))
 
 (extend-type Actor
   GetName
