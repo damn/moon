@@ -3683,37 +3683,7 @@ menus [{:label "Debug"
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-init-game-state! (fn [textures image->texture-region]
-                   (let [{:keys [tiled-map
-                                 start-position]} (create-level! textures image->texture-region)]
-                     (reset! tiled-map* tiled-map)
-                     (reset! id-counter 0)
-                     (reset! entity-ids {})
-                     (let [props (tiled-map/properties tiled-map)
-                           width (map-properties/get props "width")
-                           height (map-properties/get props "height")
-                           g (create-grid tiled-map)]
-                       (reset! grid g) 
-                       (reset! content-grid (create-content-grid width height 16))
-                       (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
-                                                                         (range height)))
-                                                           (range width)))
-                       (reset! raycaster (create-raycaster g)))
-                     (reset! elapsed-time 0)
-                     (reset! player-id (generate-id!*))
-                     (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                            :creature-property (build-property :creatures/vampire)
-                                                            :components {:entity/fsm {:fsm (:player fsms)
-                                                                                      :initial-state :player-idle}
-                                                                         :entity/faction :good
-                                                                         :entity/player? true
-                                                                         :entity/free-skill-points 3
-                                                                         :entity/clickable {:type :clickable/player}
-                                                                         :entity/click-distance-tiles 1.5}})
-                                           @player-id)]
-                       (concat [[:tx/spawn-entity entity]]
-                               (player-ui-txs #(info-text % @elapsed-time) entity)
-                               (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
+
         potential-field-cache (atom nil)
         when-not-paused-updates!* (fn [delta-time]
                                     (when-not @paused?
@@ -3766,6 +3736,44 @@ init-game-state! (fn [textures image->texture-region]
                                       (throw (ex-info "handle-txs! error" 
                                                       {:k k :params params}
                                                       t)))))))
+init-game-state! (fn [capabilities textures image->texture-region]
+                   (let [{:keys [tiled-map
+                                 start-position]} (create-level! textures image->texture-region)]
+                     (reset! tiled-map* tiled-map)
+                     (reset! id-counter 0)
+                     (reset! entity-ids {})
+                     (let [props (tiled-map/properties tiled-map)
+                           width (map-properties/get props "width")
+                           height (map-properties/get props "height")
+                           g (create-grid tiled-map)]
+                       (reset! grid g) 
+                       (reset! content-grid (create-content-grid width height 16))
+                       (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
+                                                                         (range height)))
+                                                           (range width)))
+                       (reset! raycaster (create-raycaster g)))
+                     (reset! elapsed-time 0)
+                     (reset! player-id (generate-id!*))
+                     (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                            :creature-property (build-property :creatures/vampire)
+                                                            :components {:entity/fsm {:fsm (:player fsms)
+                                                                                      :initial-state :player-idle}
+                                                                         :entity/faction :good
+                                                                         :entity/player? true
+                                                                         :entity/free-skill-points 3
+                                                                         :entity/clickable {:type :clickable/player}
+                                                                         :entity/click-distance-tiles 1.5}})
+                                           @player-id)]
+                       (handle-txs! capabilities 
+                                    (concat [[:tx/spawn-entity entity]]
+                                            (player-ui-txs #(info-text % @elapsed-time) entity)
+                                            (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
+      clicked-inventory-cell! (fn [capabilities cell]
+                                (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
+    when-not-paused-updates! (fn [capabilities delta-time]
+                               (handle-txs! capabilities (when-not-paused-updates!* delta-time)))
+remove-destroyed-entities! (fn [capabilities]
+                             (handle-txs! capabilities (destroy-entities game-db entity-ids entity*)))
         state (atom nil)
         ]
     {
@@ -3782,12 +3790,6 @@ init-game-state! (fn [textures image->texture-region]
                   new-sound
                   frames-per-second
                   new-cursor]}]
-       ;       clojure.com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/instance  tooltip_manager.clj:    4
-       ;      com.badlogic.gdx.scenes.scene2d.ui.TooltipManager.getInstance  TooltipManager.java:  154
-       ;           com.badlogic.gdx.scenes.scene2d.ui.TooltipManager.<init>  TooltipManager.java:   58
-       ;         com.badlogic.gdx.scenes.scene2d.ui.TooltipManager$1.<init>  TooltipManager.java:   58
-       ;                           com.badlogic.gdx.utils.Timer$Task.<init>           Timer.java:  212
-       ;java.lang.IllegalStateException: Gdx.app not available.
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [batch (sprite-batch/create)
              textures (create-textures internal (:textures game-config))
@@ -3825,8 +3827,6 @@ init-game-state! (fn [textures image->texture-region]
                                                           :tooltip-text tooltip-text}
                                                          skin)))
                            }
-             clicked-inventory-cell! (fn [cell]
-                                       (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
              shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
              get-unit-scale (fn [] @unit-scale)
@@ -3901,7 +3901,7 @@ init-game-state! (fn [textures image->texture-region]
                                :skin skin}
              inventory-window-opts {:get-mouse-position get-input-position
                                     :on-click-cell (fn [_event cell]
-                                                     (clicked-inventory-cell! cell))
+                                                     (clicked-inventory-cell! capabilities cell))
                                     :draw-cell-rect! (fn [x y mouseover? cell]
                                                        (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (color/float-bits 0.5 0.5 0.5 1))
                                                        (let [player-entity @(player-eid)]
@@ -3932,8 +3932,6 @@ init-game-state! (fn [textures image->texture-region]
                                                    :text text
                                                    :scale 2.5
                                                    :up? true})))
-             when-not-paused-updates! (fn [delta-time]
-                                        (handle-txs! capabilities (when-not-paused-updates!* delta-time)))
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
              draw-world-unit-scale! (fn []
@@ -4024,7 +4022,7 @@ init-game-state! (fn [textures image->texture-region]
                                                 (draw-player-message!))})]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
-         (handle-txs! capabilities (init-game-state! textures image->texture-region))
+         (init-game-state! capabilities textures image->texture-region)
          (reset! state {:dispose! (fn []
                                     (disposable/dispose! batch)
                                     (run! disposable/dispose! (vals cursors))
@@ -4043,8 +4041,8 @@ init-game-state! (fn [textures image->texture-region]
                                    (set-camera-position! viewport (:entity/position @(player-eid)))
                                    (primary-interaction!)
                                    (update-paused-state! key-just-pressed? key-pressed?)
-                                   (when-not-paused-updates! (get-delta-time))
-                                   (handle-txs! capabilities (destroy-entities game-db entity-ids entity*))
+                                   (when-not-paused-updates! capabilities (get-delta-time))
+                                   (remove-destroyed-entities! capabilities)
                                    (key-pressed-checks! viewport key-pressed?)
                                    (key-just-pressed-checks! stage key-just-pressed?)
                                    (update-message-counter!)
