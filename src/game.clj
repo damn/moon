@@ -3877,7 +3877,6 @@
                           (timer-stopped? timer @elapsed-time))
 
         id-counter (atom 0)
-
         generate-id!* #(swap! id-counter inc)
 
         entity* (fn
@@ -3887,9 +3886,9 @@
                   ([entity id]
                    (assoc (construct-entity entity create-timer*)
                           :entity/id id)))
-
         create-projectile (fn [foo bar]
                             (entity* (spawn-projectile foo bar)))
+
         create-entity-state (fn [state-args entity]
                                 (create-entity-state state-args entity create-timer*))
         entity-state-exit! (fn [eid old-state-obj]
@@ -4181,7 +4180,6 @@
          (let [{:keys [tiled-map
                        start-position]} (create-level! textures image->texture-region)]
            (reset! tiled-map* tiled-map)
-           (reset! id-counter 0)
            (reset! entity-ids {})
            (let [props (tiled-map/properties tiled-map)
                  width (map-properties/get props "width")
