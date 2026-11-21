@@ -14,7 +14,7 @@
    [clojure.com.badlogic.gdx.graphics.colors :as colors]
    [clojure.com.badlogic.gdx.graphics.g2d.batch :as batch]
    [clojure.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-   [clojure.com.badlogic.gdx.graphics.g2d.bitmap-font-bitmap-font-data :as bitmap-font-bitmap-font-data]
+   [clojure.com.badlogic.gdx.graphics.g2d.bitmap-font-bitmap-font-data :as bitmap-font-data]
    [clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
    [clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator-free-type-font-parameter :as font-parameter]
    [clojure.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -23,7 +23,7 @@
    [clojure.com.badlogic.gdx.graphics.pixmap :as pixmap]
    [clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
    [clojure.com.badlogic.gdx.graphics.texture :as texture]
-   [clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter]
+   [clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-filter]
    [clojure.com.badlogic.gdx.input :as input]
    [clojure.com.badlogic.gdx.input-buttons :as input-buttons]
    [clojure.com.badlogic.gdx.input-keys :as input-keys]
@@ -2106,12 +2106,12 @@
   (let [font (or font default-font)
         scale (or scale 1)
         font-data (bitmap-font/data font)
-        old-scale (bitmap-font-bitmap-font-data/scale-x font-data)
+        old-scale (bitmap-font-data/scale-x font-data)
         target-width 0
         wrap? false
         scale (* (float unit-scale)
                  (float scale))]
-    (bitmap-font-bitmap-font-data/set-scale! font-data (* old-scale scale))
+    (bitmap-font-data/set-scale! font-data (* old-scale scale))
     (bitmap-font/draw font
                       batch
                       text
@@ -2125,7 +2125,7 @@
                       (float target-width)
                       align/center
                       wrap?)
-    (bitmap-font-bitmap-font-data/set-scale! font-data old-scale)))
+    (bitmap-font-data/set-scale! font-data old-scale)))
 
 (defn- draw-texture-region! [batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
   (let [[w h] (let [dimensions [(texture-region/region-width texture-region)
@@ -2418,7 +2418,7 @@
 
 (defn create-skin! [file-handle]
   (let [s (skin/create file-handle)]
-    (bitmap-font-bitmap-font-data/set-markup-enabled!
+    (bitmap-font-data/set-markup-enabled!
      (bitmap-font/data (skin/font s "default-font"))
      true)
     s))
@@ -2438,13 +2438,13 @@
   (let [generator (free-type-font-generator/create (files/internal files path))
         parameter (doto (font-parameter/create)
                     (font-parameter/set-size! (* size quality-scaling))
-                    (font-parameter/set-min-filter! texture-texture-filter/Linear)
-                    (font-parameter/set-mag-filter! texture-texture-filter/Linear))
+                    (font-parameter/set-min-filter! texture-filter/linear)
+                    (font-parameter/set-mag-filter! texture-filter/linear))
         font (free-type-font-generator/generate-font generator parameter)
         font-data (bitmap-font/data font)]
     (disposable/dispose! generator)
-    (bitmap-font-bitmap-font-data/set-scale! font-data (/ quality-scaling))
-    (bitmap-font-bitmap-font-data/set-markup-enabled! font-data true)
+    (bitmap-font-data/set-scale! font-data (/ quality-scaling))
+    (bitmap-font-data/set-markup-enabled! font-data true)
     (bitmap-font/set-use-integer-positions! font use-integer-positions?)
     font))
 
@@ -4996,7 +4996,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (reset! input (:input capabilities))
        (reset! batch (sprite-batch/create))
        (reset! skin (skin/create (files/internal files (:skin editor-config))))
-       (bitmap-font-bitmap-font-data/set-markup-enabled!
+       (bitmap-font-data/set-markup-enabled!
         (bitmap-font/data (skin/font @skin "default-font"))
         true)
        (reset! editor-stage (stage/create (fit-viewport/create 1440 900) @batch))
