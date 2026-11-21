@@ -1684,9 +1684,6 @@
       (applies-modifiers? cell)
       (update :entity/stats remove-mods (:stats/modifiers item)))))
 
-(defn float-bits [r g b a]
-  (color/to-float-bits r g b a))
-
 (defrecord GridCell 
   [position
    middle
@@ -2334,7 +2331,7 @@
                      (entity* (spawn-line {:start (:entity/position source*)
                                            :end (:entity/position @target)
                                            :duration 0.05
-                                           :color (float-bits 1 0 0 0.75)
+                                           :color (color/float-bits 1 0 0 0.75)
                                            :thick? true}))]
                     (applicable-effect-txs {:effect/source source
                                             :effect/target target}
@@ -2360,7 +2357,7 @@
                         {:start (start-point body target-body)
                          :end (:entity/position target-body)
                          :duration 0.05
-                         :color (float-bits 1 0 0 0.75)
+                         :color (color/float-bits 1 0 0 0.75)
                          :thick? true}))]
             (applicable-effect-txs effect-ctx entity-effects))
       [[:tx/sound "bfxr_fisthit.wav"]
@@ -2605,14 +2602,14 @@
             :when cell-atom
             :let [cell* @cell-atom]]
       (when (and show-cell-entities? (seq (:entities cell*)))
-        (filled-rectangle! shape-drawer x y 1 1 (float-bits 1 0 0 0.6)))
+        (filled-rectangle! shape-drawer x y 1 1 (color/float-bits 1 0 0 0.6)))
       (when (and show-cell-occupied? (seq (:occupied cell*)))
-        (filled-rectangle! shape-drawer x y 1 1 (float-bits 0 0 1 0.6)))
+        (filled-rectangle! shape-drawer x y 1 1 (color/float-bits 0 0 1 0.6)))
       (when-let [faction show-potential-field-colors?]
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
-              (filled-rectangle! shape-drawer x y 1 1 (float-bits ratio (- 1 ratio) ratio 0.6)))))))))
+              (filled-rectangle! shape-drawer x y 1 1 (color/float-bits ratio (- 1 ratio) ratio 0.6)))))))))
 
 (defn- draw-fn-grid [shape-drawer leftx bottomy gridw gridh cellw cellh color-float-bits]
   (let [w (* (float gridw) (float cellw))
@@ -2643,7 +2640,7 @@
                     (+ 2 (int (viewport/world-height viewport)))
                     1
                     1
-                    (float-bits 1 1 1 0.8)))))
+                    (color/float-bits 1 1 1 0.8)))))
 
 (defn highlight-mouseover-tile
   [shape-drawer world-mouse-position grid]
@@ -2653,8 +2650,8 @@
     (when (and cell (#{:air :none} (:movement cell)))
       (rectangle! shape-drawer x y 1 1
                          (case (:movement cell)
-                           :air (float-bits 1 1 0 0.5)
-                           :none (float-bits 1 0 0 0.5))))))
+                           :air (color/float-bits 1 1 0 0.5)
+                           :none (color/float-bits 1 0 0 0.5))))))
 
 (defn clickable-draw
   [v entity batch default-font unit-scale]
@@ -2721,11 +2718,11 @@
   [entity shape-drawer player]
   (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
         color (cond (= faction (enemy (:entity/faction player)))
-                    (float-bits 1 0 0 0.4)
+                    (color/float-bits 1 0 0 0.4)
                     (= faction (:entity/faction player))
-                    (float-bits 0 1 0 0.4)
+                    (color/float-bits 0 1 0 0.4)
                     :else
-                    (float-bits 1 1 1 0.4))]
+                    (color/float-bits 1 1 1 0.4))]
     (with-line-width shape-drawer 5
       (ellipse! shape-drawer position
                 (/ width 2)
@@ -2742,17 +2739,17 @@
             y (+ y (/ height 2))
             height (* 5 unit-scale)
             border (* 1 unit-scale)]
-        (filled-rectangle! shape-drawer x y width height (float-bits 0 0 0 1))
+        (filled-rectangle! shape-drawer x y width height (color/float-bits 0 0 0 1))
         (filled-rectangle! shape-drawer
                            (+ x border)
                            (+ y border)
                            (- (* width ratio) (* 2 border))
                            (- height (* 2 border))
                            (cond
-                             (> ratio 0.75) (float-bits 0 0.8 0 1)
-                             (> ratio 0.5) (float-bits 0 0.5 0 1)
-                             (> ratio 0.25) (float-bits 0.5 0.5 0 1)
-                             :else (float-bits 0.5 0 0 1)))))))
+                             (> ratio 0.75) (color/float-bits 0 0.8 0 1)
+                             (> ratio 0.5) (color/float-bits 0 0.5 0 1)
+                             (> ratio 0.25) (color/float-bits 0.5 0.5 0 1)
+                             :else (color/float-bits 0.5 0 0 1)))))))
 
 (defn string-effect-draw
   [v entity batch default-font unit-scale]
@@ -2771,7 +2768,7 @@
 
 (defn temp-modifier-draw
   [entity shape-drawer]
-  (filled-circle! shape-drawer (:entity/position entity) 0.5 (float-bits 0.5 0.5 0.5 0.4)))
+  (filled-circle! shape-drawer (:entity/position entity) 0.5 (color/float-bits 0.5 0.5 0.5 0.4)))
 
 (defn active-skill-draw
   [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius effects-render]
@@ -2784,13 +2781,13 @@
              (float (/ (:entity/height entity) 2))
              (float 0.15))
         center [x (+ y radius)]]
-    (filled-circle! shape-drawer center radius (float-bits 1 1 1 0.125))
+    (filled-circle! shape-drawer center radius (color/float-bits 1 1 1 0.125))
     (sector! shape-drawer
              center
              radius
              (math/to-radians 90)
              (math/to-radians (* (float action-counter-ratio) 360))
-             (float-bits 1 1 1 0.5))
+             (color/float-bits 1 1 1 0.5))
     (draw-texture-region! batch unit-scale (image->texture-region image) [(- (float x) radius) y])
     (effects-render effects effect-ctx shape-drawer active-entities raycaster)))
 
@@ -2808,7 +2805,7 @@
 
 (defn stunned-draw
   [entity shape-drawer]
-  (circle! shape-drawer (:entity/position entity) 0.5 (float-bits 1 1 1 0.6)))
+  (circle! shape-drawer (:entity/position entity) 0.5 (color/float-bits 1 1 1 0.6)))
 
 (defn- draw-entity-rectangle!
   [shape-drawer entity color-float-bits]
@@ -2829,8 +2826,8 @@
       (draw-entity-rectangle! shape-drawer
                               entity
                               (if (:entity/collides? entity)
-                                (float-bits 1 1 1 1)
-                                (float-bits 0.5 0.5 0.5 1))))
+                                (color/float-bits 1 1 1 1)
+                                (color/float-bits 0.5 0.5 0.5 1))))
     (doseq [[k v] entity
             :when (get render-layer k)]
       (draw-component! k v entity))))
@@ -3670,7 +3667,7 @@
                               (line! shape-drawer
                                      (:entity/position source*)
                                      (:entity/position target*)
-                                     (float-bits 1 0 0 0.5))))
+                                     (color/float-bits 1 0 0 0.5))))
 
                           :effects/target-entity
                           (when-let [target (:effect/target effect-ctx)]
@@ -3682,8 +3679,8 @@
                                      (start-point body target-body)
                                      (end-point body target-body maxrange)
                                      (if (in-range? body target-body maxrange)
-                                       (float-bits 1 0 0 0.5)
-                                       (float-bits 1 1 0 0.5)))))
+                                       (color/float-bits 1 0 0 0.5)
+                                       (color/float-bits 1 1 0 0.5)))))
 
                           nil))
         effects-render (fn [effects effect-ctx shape-drawer active-entities raycaster] 
@@ -3959,13 +3956,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                     :on-click-cell (fn [_event cell]
                                                      (clicked-inventory-cell! cell))
                                     :draw-cell-rect! (fn [x y mouseover? cell]
-                                                       (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (float-bits 0.5 0.5 0.5 1))
+                                                       (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (color/float-bits 0.5 0.5 0.5 1))
                                                        (let [player-entity @(player-eid)]
                                                          (when (and mouseover? (:entity/item-on-cursor player-entity))
                                                            (let [item (:entity/item-on-cursor player-entity)
                                                                  color (if (valid-slot? cell item)
-                                                                         (float-bits 0 0.6 0 0.8)
-                                                                         (float-bits 0.6 0 0 0.8))]
+                                                                         (color/float-bits 0 0.6 0 0.8)
+                                                                         (color/float-bits 0.6 0 0 0.8))]
                                                              (filled-rectangle! shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
                                     :skin skin
                                     :position [ui-viewport-width ui-viewport-height]
@@ -4057,9 +4054,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                              :light-position (let [pos (orthographic-camera/position (viewport/camera viewport))]
                                                [(vector3/x pos) (vector3/y pos) (vector3/z pos)])
                              :see-all-tiles? false
-                             :explored-tile-color (float-bits 0.5 0.5 0.5 1)
-                             :visible-tile-color (float-bits 1 1 1 1)
-                             :invisible-tile-color (float-bits 0 0 0 1)})
+                             :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
+                             :visible-tile-color (color/float-bits 1 1 1 1)
+                             :invisible-tile-color (color/float-bits 0 0 0 1)})
                           world-unit-scale)
          (with-line-width shape-drawer world-unit-scale
            (reset! unit-scale world-unit-scale)
@@ -4164,7 +4161,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         world-unit-scale (/ tile-size)
         world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
-        tiled-map-color-setter (constantly (color/to-float-bits color/WHITE))
+        tiled-map-color-setter (constantly (color/float-bits color/white))
         state (atom nil)]
     {:create!
      (fn [{:keys [files input set-input-processor!]}]
@@ -5152,8 +5149,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              f @font
              us @unit-scale
              sd @shape-drawer
-             marker-color (float-bits 1 0.3 0.3 1)
-             guide-color (float-bits 0.35 0.35 0.45 1)]
+             marker-color (color/float-bits 1 0.3 0.3 1)
+             guide-color (color/float-bits 0.35 0.35 0.45 1)]
          (doseq [{:keys [title x y opts]} samples]
            (line! sd [(- x 20) y] [(+ x 20) y] guide-color)
            (line! sd [x (- y 20)] [x (+ y 20)] guide-color)

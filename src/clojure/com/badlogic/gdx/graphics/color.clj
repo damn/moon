@@ -1,12 +1,12 @@
 (ns clojure.com.badlogic.gdx.graphics.color
   (:import (com.badlogic.gdx.graphics Color)))
 
-(def WHITE Color/WHITE)
+(def white Color/WHITE)
 
 (defn create [r g b a]
   (Color. (float r) (float g) (float b) (float a)))
 
-(defn to-float-bits
+(defn float-bits
   ([^Color color]
    (.toFloatBits color))
   ([r g b a]
