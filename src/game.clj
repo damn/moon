@@ -3481,6 +3481,41 @@
     :npc-idle (npc-idle-tick v eid delta-time line-of-sight?* grid choose-skill create-timer* tx-event-txs)
     nil))
 
+(defn create-interaction-state [mouseover-actor-info world-mouse-position get-selected-skill player-eid mouseover-eid]
+  (let [item-on-cursor (:entity/item-on-cursor @player-eid)]
+    (cond
+      mouseover-actor-info
+      [:interaction-state/mouseover-actor mouseover-actor-info]
+
+      item-on-cursor
+      [:interaction-state/drop-item-on-cursor item-on-cursor]
+
+      (and mouseover-eid
+           (:entity/clickable @mouseover-eid))
+      [:interaction-state/clickable-mouseover-eid
+       {:clicked-eid mouseover-eid
+        :in-click-range? (< (v2-distance (:entity/position @player-eid)
+                                         (:entity/position @mouseover-eid))
+                            (:entity/click-distance-tiles @player-eid))}]
+
+      :else
+      (if-let [skill-id (get-selected-skill)]
+        (let [entity @player-eid
+              skill (skill-id (:entity/skills entity))
+              target-position (or (and mouseover-eid
+                                       (:entity/position @mouseover-eid))
+                                  world-mouse-position)
+              effect-ctx {:effect/source player-eid
+                          :effect/target mouseover-eid
+                          :effect/target-position target-position
+                          :effect/target-direction (v2-direction (:entity/position @player-eid)
+                                                                 target-position)}
+              state (usable-state skill entity effect-ctx)]
+          (if (= state :usable)
+            [:interaction-state.skill/usable [skill effect-ctx]]
+            [:interaction-state.skill/not-usable state]))
+        [:interaction-state/no-skill-selected]))))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3563,42 +3598,6 @@
                                     (swap! player-message update :counter + (get-delta-time))
                                     (when (>= (:counter @player-message) message-duration-seconds)
                                       (reset! player-message nil))))
-        create-interaction-state (fn [mouseover-actor-info world-mouse-position get-selected-skill]
-                                   (let [player-eid (player-eid)
-                                         mouseover-eid @mouseover-eid
-                                         item-on-cursor (:entity/item-on-cursor @player-eid)]
-                                     (cond
-                                       mouseover-actor-info
-                                       [:interaction-state/mouseover-actor mouseover-actor-info]
-
-                                       item-on-cursor
-                                       [:interaction-state/drop-item-on-cursor item-on-cursor]
-
-                                       (and mouseover-eid
-                                            (:entity/clickable @mouseover-eid))
-                                       [:interaction-state/clickable-mouseover-eid
-                                        {:clicked-eid mouseover-eid
-                                         :in-click-range? (< (v2-distance (:entity/position @player-eid)
-                                                                          (:entity/position @mouseover-eid))
-                                                             (:entity/click-distance-tiles @player-eid))}]
-
-                                       :else
-                                       (if-let [skill-id (get-selected-skill)]
-                                         (let [entity @player-eid
-                                               skill (skill-id (:entity/skills entity))
-                                               target-position (or (and mouseover-eid
-                                                                        (:entity/position @mouseover-eid))
-                                                                   world-mouse-position)
-                                               effect-ctx {:effect/source player-eid
-                                                           :effect/target mouseover-eid
-                                                           :effect/target-position target-position
-                                                           :effect/target-direction (v2-direction (:entity/position @player-eid)
-                                                                                                  target-position)}
-                                               state (usable-state skill entity effect-ctx)]
-                                           (if (= state :usable)
-                                             [:interaction-state.skill/usable [skill effect-ctx]]
-                                             [:interaction-state.skill/not-usable state]))
-                                         [:interaction-state/no-skill-selected]))))
         handle-player-input (fn [player-eid interaction-state inventory-visible? key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
@@ -3787,7 +3786,9 @@ primary-interaction! (fn [{:keys [set-cursor!
                        (let [player-eid (player-eid)
                              interaction-state (create-interaction-state (mouseover-actor-info) 
                                                                          (world-mouse-position) 
-                                                                         get-selected-skill)
+                                                                         get-selected-skill
+                                                                         player-eid
+                                                                         @mouseover-eid)
                              cursor-key (get-cursor-key player-eid interaction-state)
                              txs (handle-player-input player-eid
                                                       interaction-state
