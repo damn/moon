@@ -3638,6 +3638,195 @@
     :stunned
     (stunned-draw entity shape-drawer)))
 
+(defn update-mouseover-eid! [render-z-order raycaster grid player-eid mouseover-eid mouseover-actor world-mouse-position]
+  (let [old-mouseover-eid @mouseover-eid
+        new-eid (if mouseover-actor
+                  nil
+                  (let [player @(player-eid)
+                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
+                                     (point->entities @grid world-mouse-position))]
+                    (->> hits
+                         (sort-by #((:entity/z-order @%) render-z-order) <)
+                         reverse
+                         (filter #(line-of-sight? @raycaster player @%))
+                         first)))]
+    (when old-mouseover-eid
+      (swap! old-mouseover-eid dissoc :entity/mouseover?))
+    (when new-eid
+      (swap! new-eid assoc :entity/mouseover? true))
+    (reset! mouseover-eid new-eid)))
+
+(defn update-active-entities! [active-entities content-grid player-eid]
+  (reset! active-entities (active-entities* @content-grid @(player-eid))))
+
+(defn game-menus [show-tile-grid?
+                  show-cell-entities?
+                  show-cell-occupied?
+                  show-body-bounds?
+                  show-potential-field-colors?
+                  show-potential-field-colors?
+                  controls-info]
+  [{:label "Debug"
+    :items [{:label "Toggle show-tile-grid?"
+             :on-click #(swap! show-tile-grid? not)}
+            {:label "Toggle show-cell-entities?"
+             :on-click #(swap! show-cell-entities? not)}
+            {:label "Toggle show-cell-occupied?"
+             :on-click #(swap! show-cell-occupied? not)}
+            {:label "Toggle show-body-bounds?"
+             :on-click #(swap! show-body-bounds? not)}
+            {:label "Potential field colors: off"
+             :on-click #(reset! show-potential-field-colors? nil)}
+            {:label "Potential field colors: :good"
+             :on-click #(reset! show-potential-field-colors? :good)}
+            {:label "Potential field colors: :evil"
+             :on-click #(reset! show-potential-field-colors? :evil)}]}
+   {:label "Help"
+    :items [{:label controls-info}]}])
+
+(defn when-not-paused-updates!* 
+  [paused? 
+   max-delta
+   elapsed-time
+   factions-iterations
+   grid
+   potential-field-cache
+   active-entities
+   tx-event-txs 
+   mk-effect-txs
+   max-speed
+   create-timer*
+   choose-skill
+   line-of-sight?*
+   delta-time]
+  (when-not @paused?
+    (let [delta-time (min delta-time max-delta)]
+      (swap! elapsed-time + delta-time)
+      (doseq [[faction max-iterations] factions-iterations]
+        (update! @grid
+                 potential-field-cache
+                 faction
+                 @active-entities
+                 max-iterations))
+      (mapcat (fn [eid] 
+                (mapcat (fn [component]
+                          (tick-component-txs component 
+                                              eid 
+                                              delta-time 
+                                              @elapsed-time 
+                                              @grid 
+                                              tx-event-txs 
+                                              mk-effect-txs
+                                              max-speed
+                                              create-timer*
+                                              choose-skill
+                                              line-of-sight?*)) 
+                        @eid))
+              @active-entities))))
+
+(defn game-update-labels [frames-per-second elapsed-time mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom] 
+  [{:label "elapsed-time"
+    :update-fn (fn [] 
+                 (str (readable @elapsed-time) " seconds"))
+    :icon "images/clock.png"}
+   {:label "FPS"
+    :update-fn frames-per-second
+    :icon "images/fps.png"}
+   {:label "Mouseover-entity id"
+    :update-fn (fn []
+                 (when-let [entity (and @mouseover-eid @@mouseover-eid)]
+                   (:entity/id entity)))
+    :icon "images/mouseover.png"}
+   {:label "paused?"
+    :update-fn (fn [] @paused?)}
+   {:label "GUI"
+    :update-fn ui-mouse-info-text}
+   {:label "World"
+    :update-fn (fn []
+                 (mapv int (unproject-viewport (get-input-position))))}
+   {:label "Zoom"
+    :update-fn camera-zoom 
+    :icon "images/zoom.png"}])
+
+(defn draw-bar! [rahmenw rahmenh rahmen-file default-font image->texture-region get-unit-scale batch x y content-file minmaxval name]
+  (draw-texture-region! batch
+                        (get-unit-scale)
+                        (image->texture-region {:image/file rahmen-file})
+                        [x y])
+  (draw-texture-region! batch
+                        (get-unit-scale)
+                        (image->texture-region
+                          {:image/file content-file
+                           :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
+                        [x y])
+  (draw-text! batch
+              default-font
+              (get-unit-scale)
+              {:text (str (readable (minmaxval 0))
+                          "/"
+                          (minmaxval 1)
+                          " "
+                          name)
+               :x (+ x 75)
+               :y (+ y 2)
+               :up? true}))
+
+(defn draw-world-unit-scale! 
+  [[batch
+    default-font
+    shape-drawer 
+    world-unit-scale 
+    unit-scale 
+    viewport
+    show-tile-grid?
+    factions-iterations
+    show-cell-entities?
+    show-cell-occupied?
+    show-potential-field-colors?
+    grid
+    active-entities
+    raycaster
+    elapsed-time
+    active-skill-radius
+    player-eid
+    image->texture-region
+    show-body-bounds?
+    render-z-order
+    render-layers
+    get-input-position]]
+  (with-line-width shape-drawer world-unit-scale
+    (reset! unit-scale world-unit-scale)
+    (draw-tile-grid shape-drawer viewport @show-tile-grid?)
+    (draw-cell-debug factions-iterations
+                     shape-drawer 
+                     viewport
+                     @show-cell-entities?
+                     @show-cell-occupied?
+                     @show-potential-field-colors?
+                     @grid)
+    (draw-entities! (fn [& params]
+                      (apply draw-component! 
+                             @active-entities 
+                             @raycaster 
+                             @elapsed-time 
+                             active-skill-radius
+                             @(player-eid)
+                             image->texture-region 
+                             @unit-scale 
+                             batch 
+                             default-font 
+                             shape-drawer 
+                             params))
+                    shape-drawer
+                    @raycaster
+                    @active-entities
+                    @(player-eid)
+                    @show-body-bounds?
+                    render-z-order
+                    render-layers)
+    (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid)
+    (reset! unit-scale 1)))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3724,74 +3913,12 @@
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
         content-grid (atom nil)
-         update-active-entities! (fn []
-                                   (reset! active-entities (active-entities* @content-grid @(player-eid))))
-         update-mouseover-eid! (fn [mouseover-actor world-mouse-position]
-                                 (let [old-mouseover-eid @mouseover-eid
-                                       new-eid (if mouseover-actor
-                                                 nil
-                                                 (let [player @(player-eid)
-                                                       hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                                                    (point->entities @grid world-mouse-position))]
-                                                   (->> hits
-                                                        (sort-by #((:entity/z-order @%) render-z-order) <)
-                                                        reverse
-                                                        (filter #(line-of-sight? @raycaster player @%))
-                                                        first)))]
-                                   (when old-mouseover-eid
-                                     (swap! old-mouseover-eid dissoc :entity/mouseover?))
-                                   (when new-eid
-                                     (swap! new-eid assoc :entity/mouseover? true))
-                                   (reset! mouseover-eid new-eid)))
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
-menus [{:label "Debug"
-                :items [{:label "Toggle show-tile-grid?"
-                         :on-click #(swap! show-tile-grid? not)}
-                        {:label "Toggle show-cell-entities?"
-                         :on-click #(swap! show-cell-entities? not)}
-                        {:label "Toggle show-cell-occupied?"
-                         :on-click #(swap! show-cell-occupied? not)}
-                        {:label "Toggle show-body-bounds?"
-                         :on-click #(swap! show-body-bounds? not)}
-                        {:label "Potential field colors: off"
-                         :on-click #(reset! show-potential-field-colors? nil)}
-                        {:label "Potential field colors: :good"
-                         :on-click #(reset! show-potential-field-colors? :good)}
-                        {:label "Potential field colors: :evil"
-                         :on-click #(reset! show-potential-field-colors? :evil)}]}
-               {:label "Help"
-                :items [{:label controls-info}]}]
-
         potential-field-cache (atom nil)
-        when-not-paused-updates!* (fn [delta-time]
-                                    (when-not @paused?
-                                      (let [delta-time (min delta-time max-delta)]
-                                        (swap! elapsed-time + delta-time)
-                                        (doseq [[faction max-iterations] factions-iterations]
-                                          (update! @grid
-                                                   potential-field-cache
-                                                   faction
-                                                   @active-entities
-                                                   max-iterations))
-                                        (mapcat (fn [eid] 
-                                                  (mapcat (fn [component]
-                                                            (tick-component-txs component 
-                                                                            eid 
-                                                                            delta-time 
-                                                                            @elapsed-time 
-                                                                            @grid 
-                                                                            tx-event-txs 
-                                                                            mk-effect-txs
-                                                                            max-speed
-                                                                            create-timer*
-                                                                            choose-skill
-                                                                            line-of-sight?*)) 
-                                                          @eid))
-                                                @active-entities))))
       handle-txs! (fn [{:keys [play-sound!
                                show-modal!
                                set-item!
@@ -3871,7 +3998,20 @@ init-game-state! (fn [capabilities textures image->texture-region]
       clicked-inventory-cell! (fn [capabilities cell]
                                 (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
     when-not-paused-updates! (fn [{:keys [get-delta-time] :as capabilities}]
-                               (handle-txs! capabilities (when-not-paused-updates!* (get-delta-time))))
+                               (handle-txs! capabilities (when-not-paused-updates!* paused?
+                                                                                    max-delta
+                                                                                    elapsed-time
+                                                                                    factions-iterations
+                                                                                    grid
+                                                                                    potential-field-cache
+                                                                                    active-entities
+                                                                                    tx-event-txs 
+                                                                                    mk-effect-txs
+                                                                                    max-speed
+                                                                                    create-timer*
+                                                                                    choose-skill
+                                                                                    line-of-sight?*
+                                                                                    (get-delta-time))))
 remove-destroyed-entities! (fn [capabilities]
                              (handle-txs! capabilities (destroy-entities game-db entity-ids entity*)))
         state (atom nil)
@@ -3969,55 +4109,11 @@ remove-destroyed-entities! (fn [capabilities]
              ui-mouse-info-text (fn []
                                   (mapv int (unproject (stage/viewport stage) (get-input-position))))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
-             update-labels [{:label "elapsed-time"
-                             :update-fn (fn [] 
-                                          (str (readable @elapsed-time) " seconds"))
-                             :icon "images/clock.png"}
-                            {:label "FPS"
-                             :update-fn frames-per-second
-                             :icon "images/fps.png"}
-                            {:label "Mouseover-entity id"
-                             :update-fn (fn []
-                                          (when-let [entity (and @mouseover-eid @@mouseover-eid)]
-                                            (:entity/id entity)))
-                             :icon "images/mouseover.png"}
-                            {:label "paused?"
-                             :update-fn (fn [] @paused?)}
-                            {:label "GUI"
-                             :update-fn ui-mouse-info-text}
-                            {:label "World"
-                             :update-fn (fn []
-                                          (mapv int (unproject-viewport (get-input-position))))}
-                            {:label "Zoom"
-                             :update-fn camera-zoom 
-                             :icon "images/zoom.png"}]
              update-labels (map (fn [item]
                                   (if (:icon item)
                                     (update item :icon #(get textures %))
                                     item))
-                                update-labels)
-             draw-bar! (fn [batch x y content-file minmaxval name]
-                         (draw-texture-region! batch
-                                               (get-unit-scale)
-                                               (image->texture-region {:image/file rahmen-file})
-                                               [x y])
-                         (draw-texture-region! batch
-                                               (get-unit-scale)
-                                               (image->texture-region
-                                                 {:image/file content-file
-                                                  :image/bounds [0 0 (* rahmenw (val-max-ratio minmaxval)) rahmenh]})
-                                               [x y])
-                         (draw-text! batch
-                                     default-font
-                                     (get-unit-scale)
-                                     {:text (str (readable (minmaxval 0))
-                                                 "/"
-                                                 (minmaxval 1)
-                                                 " "
-                                                 name)
-                                      :x (+ x 75)
-                                      :y (+ y 2)
-                                      :up? true}))
+                                (game-update-labels frames-per-second elapsed-time mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom))
              info-window-opts {:title "Entity Info"
                                :actor-name "moon.ui.windows.entity-info"
                                :visible? false
@@ -4063,38 +4159,6 @@ remove-destroyed-entities! (fn [capabilities]
                                                    :text text
                                                    :scale 2.5
                                                    :up? true})))
-             draw-world-unit-scale! (fn []
-                                      (with-line-width shape-drawer world-unit-scale
-                                        (reset! unit-scale world-unit-scale)
-                                        (draw-tile-grid shape-drawer viewport @show-tile-grid?)
-                                        (draw-cell-debug factions-iterations
-                                                         shape-drawer viewport
-                                                         @show-cell-entities?
-                                                         @show-cell-occupied?
-                                                         @show-potential-field-colors?
-                                                         @grid)
-                                        (draw-entities! (fn [& params]
-                                                          (apply draw-component! 
-                                                                 @active-entities 
-                                                                 @raycaster 
-                                                                 @elapsed-time 
-                                                                 active-skill-radius
-                                                                 @(player-eid)
-                                                                 image->texture-region 
-                                                                 @unit-scale 
-                                                                 batch 
-                                                                 default-font 
-                                                                 shape-drawer 
-                                                                 params))
-                                                        shape-drawer
-                                                        @raycaster
-                                                        @active-entities
-                                                        @(player-eid)
-                                                        @show-body-bounds?
-                                                        render-z-order
-                                                        render-layers)
-                                        (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid)
-                                        (reset! unit-scale 1)))
              draw-tiled-map!* (fn []
                                 (draw-tiled-map! @tiled-map*
                                                  batch
@@ -4111,7 +4175,13 @@ remove-destroyed-entities! (fn [capabilities]
                                                  world-unit-scale))
              ]
          (doseq [actor [(create-action-bar)
-                        (create-dev-menu {:menus menus
+                        (create-dev-menu {:menus (game-menus show-tile-grid?
+                                                             show-cell-entities?
+                                                             show-cell-occupied?
+                                                             show-body-bounds?
+                                                             show-potential-field-colors?
+                                                             show-potential-field-colors?
+                                                             controls-info)
                                           :update-labels update-labels 
                                           :skin skin})
                         (actor/create {:act!
@@ -4120,8 +4190,30 @@ remove-destroyed-entities! (fn [capabilities]
                                        (fn [_this batch _parent-alpha]
                                          (let [stats (:entity/stats @(player-eid))
                                                bar-x (- (/ ui-viewport-width 2) (/ rahmenw 2))]
-                                           (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
-                                           (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))})
+                                           (draw-bar! rahmenw 
+                                                      rahmenh 
+                                                      rahmen-file 
+                                                      default-font 
+                                                      image->texture-region 
+                                                      get-unit-scale 
+                                                      batch 
+                                                      bar-x 
+                                                      y-hp 
+                                                      hpcontent-file 
+                                                      (get-hitpoints stats) 
+                                                      "HP")
+                                           (draw-bar! rahmenw 
+                                                      rahmenh 
+                                                      rahmen-file 
+                                                      default-font 
+                                                      image->texture-region 
+                                                      get-unit-scale 
+                                                      batch 
+                                                      bar-x 
+                                                      y-mana 
+                                                      manacontent-file 
+                                                      (get-mana stats)
+                                                      "MP")))})
                         (doto (group/create)
                           (add-actors! [(create-info-window info-window-opts)
                                         (build-inventory-window inventory-window-opts)])
@@ -4148,8 +4240,14 @@ remove-destroyed-entities! (fn [capabilities]
                                    (viewport/update! (stage/viewport stage) width height true)
                                    (viewport/update! viewport width height false))
                         :render! (fn []
-                                   (update-mouseover-eid! (get-mouseover-actor) (unproject viewport (get-input-position)))
-                                   (update-active-entities!)
+                                   (update-mouseover-eid! render-z-order 
+                                                          raycaster 
+                                                          grid 
+                                                          player-eid 
+                                                          mouseover-eid 
+                                                          (get-mouseover-actor)
+                                                          (unproject viewport (get-input-position)))
+                                   (update-active-entities! active-entities content-grid player-eid)
                                    (set-camera-position! viewport (:entity/position @(player-eid)))
                                    (primary-interaction! capabilities)
                                    (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
@@ -4164,7 +4262,28 @@ remove-destroyed-entities! (fn [capabilities]
                                    (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
                                    (batch/begin batch)
                                    (draw-tiled-map!*)
-                                   (draw-world-unit-scale!)
+                                   (draw-world-unit-scale! [batch
+                                                            default-font
+                                                            shape-drawer 
+                                                            world-unit-scale 
+                                                            unit-scale 
+                                                            viewport
+                                                            show-tile-grid?
+                                                            factions-iterations
+                                                            show-cell-entities?
+                                                            show-cell-occupied?
+                                                            show-potential-field-colors?
+                                                            grid
+                                                            active-entities
+                                                            raycaster
+                                                            elapsed-time
+                                                            active-skill-radius
+                                                            player-eid
+                                                            image->texture-region
+                                                            show-body-bounds?
+                                                            render-z-order
+                                                            render-layers
+                                                            get-input-position])
                                    (batch/end batch)
                                    (stage/draw! stage))})))
 
