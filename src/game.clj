@@ -3714,8 +3714,23 @@ init-game-state! (fn [textures image->texture-region]
                        (concat [[:tx/spawn-entity entity]]
                                (player-ui-txs #(info-text % @elapsed-time) entity)
                                (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
-        state (atom nil)
         potential-field-cache (atom nil)
+        when-not-paused-updates!* (fn [delta-time]
+                                    (when-not @paused?
+                                      (let [delta-time (min delta-time max-delta)]
+                                        (swap! elapsed-time + delta-time)
+                                        (doseq [[faction max-iterations] factions-iterations]
+                                          (update! @grid
+                                                   potential-field-cache
+                                                   faction
+                                                   @active-entities
+                                                   max-iterations))
+                                        (mapcat (fn [eid] 
+                                                  (mapcat (fn [component]
+                                                            (tick-component component eid delta-time @elapsed-time)) 
+                                                          @eid))
+                                                @active-entities))))
+        state (atom nil)
         ]
     {
      :create!
@@ -3904,18 +3919,7 @@ init-game-state! (fn [textures image->texture-region]
                                                    :scale 2.5
                                                    :up? true})))
              when-not-paused-updates! (fn [delta-time]
-                                        (when-not @paused?
-                                          (let [delta-time (min delta-time max-delta)]
-                                            (swap! elapsed-time + delta-time)
-                                            (doseq [[faction max-iterations] factions-iterations]
-                                              (update! @grid
-                                                       potential-field-cache
-                                                       faction
-                                                       @active-entities
-                                                       max-iterations))
-                                            (doseq [eid @active-entities
-                                                    component @eid]
-                                              (handle-txs! (tick-component component eid delta-time @elapsed-time))))))
+                                        (handle-txs! (when-not-paused-updates!* delta-time)))
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
              draw-world-unit-scale! (fn []
@@ -4008,15 +4012,14 @@ init-game-state! (fn [textures image->texture-region]
          (set-input-processor! stage)
          (handle-txs! (init-game-state! textures image->texture-region))
          (reset! state {:dispose! (fn []
-                                    (let [tiled-map @tiled-map*]
-                                      (disposable/dispose! batch)
-                                      (run! disposable/dispose! (vals cursors))
-                                      (disposable/dispose! default-font)
-                                      (disposable/dispose! shape-drawer-texture)
-                                      (disposable/dispose! skin)
-                                      (run! disposable/dispose! (vals sounds))
-                                      (run! disposable/dispose! (vals textures))
-                                      (disposable/dispose! tiled-map)))
+                                    (disposable/dispose! batch)
+                                    (run! disposable/dispose! (vals cursors))
+                                    (disposable/dispose! default-font)
+                                    (disposable/dispose! shape-drawer-texture)
+                                    (disposable/dispose! skin)
+                                    (run! disposable/dispose! (vals sounds))
+                                    (run! disposable/dispose! (vals textures))
+                                    (disposable/dispose! @tiled-map*))
                         :resize! (fn [width height]
                                    (viewport/update! (stage/viewport stage) width height true)
                                    (viewport/update! viewport width height false))
