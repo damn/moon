@@ -3505,13 +3505,13 @@
         mouseover-eid (atom nil)
         player-message (atom nil)
         message-duration-seconds 0.5
-        create-interaction-state (fn [mouseover-actor world-mouse-position get-selected-skill]
+        create-interaction-state (fn [mouseover-actor-info world-mouse-position get-selected-skill]
                                    (let [player-eid (player-eid)
                                          mouseover-eid @mouseover-eid
                                          item-on-cursor (:entity/item-on-cursor @player-eid)]
                                      (cond
-                                       mouseover-actor
-                                       [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+                                       mouseover-actor-info
+                                       [:interaction-state/mouseover-actor mouseover-actor-info]
 
                                        item-on-cursor
                                        [:interaction-state/drop-item-on-cursor item-on-cursor]
@@ -3541,7 +3541,7 @@
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
-        handle-player-input (fn [player-eid interaction-state stage mouseover-actor key-pressed? button-just-pressed?]
+        handle-player-input (fn [player-eid interaction-state stage key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
@@ -3986,15 +3986,16 @@ remove-destroyed-entities! (fn [capabilities]
              primary-interaction! (fn [{:keys [set-cursor!
                                                get-selected-skill]}]
                                     (let [player-eid (player-eid)
-                                          mouseover-actor (get-mouseover-actor)
-                                          interaction-state (create-interaction-state mouseover-actor 
+                                          mouseover-actor-info (if-let [actor (get-mouseover-actor)]
+                                                                 (mouseover-actor-info actor)
+                                                                 nil)
+                                          interaction-state (create-interaction-state mouseover-actor-info 
                                                                                       (unproject viewport (get-input-position)) 
                                                                                       get-selected-skill)
                                           cursor-key (get-cursor-key player-eid interaction-state)
                                           txs (handle-player-input player-eid
                                                                    interaction-state
                                                                    stage
-                                                                   mouseover-actor
                                                                    key-pressed?
                                                                    button-just-pressed?)]
                                       (set-cursor! cursor-key)
