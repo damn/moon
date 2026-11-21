@@ -2420,9 +2420,6 @@
      true)
     s))
 
-(defn new-cursor [graphics pixmap hotspot-x hotspot-y]
-  (graphics/new-cursor graphics pixmap hotspot-x hotspot-y))
-
 (defn create-viewport! [width height world-unit-scale]
   (let [world-width (* width world-unit-scale)
         world-height (* height world-unit-scale)]
@@ -3841,16 +3838,14 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      (fn [{:keys [internal
                   get-input-position 
                   set-input-processor! 
-                  create-cursor 
                   new-sound
-                  create-font
-                  white-pixel-texture
-                  get-frames-per-second]}]
+                  frames-per-second
+                  new-cursor]}]
        (colors/put "PRETTY_NAME" (color/create 0.84 0.8 0.52 1))
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [batch (sprite-batch/create)
              textures (create-textures internal (:textures game-config))
-             default-font (create-font font-params)
+             default-font (create-default-font! internal font-params)
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (internal (:skin game-config)))
              sounds (into {} (for [path (:sounds game-config)] [path (new-sound (internal path))]))
@@ -3881,7 +3876,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                           (str (readable @elapsed-time) " seconds"))
                              :icon "images/clock.png"}
                             {:label "FPS"
-                             :update-fn get-frames-per-second
+                             :update-fn frames-per-second
                              :icon "images/fps.png"}
                             {:label "Mouseover-entity id"
                              :update-fn (fn []
@@ -3981,7 +3976,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
          (reset! state {:batch batch
-                        :cursors (update-vals (:cursors game-config) create-cursor)
+                        :cursors (update-vals (:cursors game-config) 
+                                              (fn [[path [hotspot-x hotspot-y]]]
+                                                (let [pixmap (pixmap/create (internal path))
+                                                      cursor (new-cursor pixmap hotspot-x hotspot-y)]
+                                                  (disposable/dispose! pixmap)
+                                                  cursor)))
                         :default-font default-font
                         :image->texture-region image->texture-region
                         :handle-txs! handle-txs!
@@ -4787,7 +4787,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
         skin (atom nil)
-        input (atom nil)
         sounds (atom nil)
         editor {:editor/all-raw
                 (fn [property-type]
@@ -4965,7 +4964,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                    (group/add-actor! window (actor/create
                                                               {:act!
                                                                (fn [this _delta]
-                                                                 (when (input/key-just-pressed? @input input-keys/ENTER)
+                                                                 (when (input/key-just-pressed? (gdx/input) input-keys/ENTER)
                                                                    (on-save this)))
                                                                :draw!
                                                                (fn [_this _batch _parent-alpha])}))
@@ -4989,7 +4988,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         window))]
     {:create!
      (fn [{:keys [new-sound internal set-input-processor!] :as capabilities}]
-       (reset! input (:input capabilities))
        (reset! batch (sprite-batch/create))
        (reset! skin (skin/create (internal (:skin editor-config))))
        (bitmap-font-data/set-markup-enabled!
@@ -5021,22 +5019,17 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 (defn create-capabilities []
   (let [audio (gdx/audio)
         files (gdx/files)
-        input (gdx/input)
         graphics (gdx/graphics)
-        internal (fn [path] (files/internal files path))]
+        input (gdx/input)]
     {
-     :get-frames-per-second (fn [] (graphics/frames-per-second graphics))
-     :sprite-batch! sprite-batch/create
-     :white-pixel-texture white-pixel-texture
-     :internal internal
-     :create-font (fn [params] (create-default-font! internal params))
+     :frames-per-second (fn [] 
+                          (graphics/frames-per-second graphics))
+     :internal (fn [path] 
+                 (files/internal files path))
      :new-sound (fn [file-handle]
                   (audio/new-sound audio file-handle))
-     :create-cursor (fn [[path [hotspot-x hotspot-y]]]
-                      (let [pixmap (pixmap/create (internal path))
-                            cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
-                        (disposable/dispose! pixmap)
-                        cursor))
+     :new-cursor (fn [pixmap hotspot-x hotspot-y]
+                   (graphics/new-cursor graphics pixmap hotspot-x hotspot-y))
      :set-input-processor! (fn [processor]
                              (input/set-input-processor! input processor))
      :clear-screen! (fn [r g b a]
@@ -5050,9 +5043,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :key-pressed? #(input/key-pressed? input %)
      :key-just-pressed? #(input/key-just-pressed? input %)
      :button-just-pressed? #(input/button-just-pressed? input %)
-     :audio    audio
-     :graphics graphics
-     :input    input
      }))
 
 (defn lwjgl3-application! 
