@@ -3503,6 +3503,11 @@
         mouseover-eid (atom nil)
         player-message (atom nil)
         message-duration-seconds 0.5
+        update-message-counter! (fn [{:keys [get-delta-time]}]
+                                  (when (:text @player-message)
+                                    (swap! player-message update :counter + (get-delta-time))
+                                    (when (>= (:counter @player-message) message-duration-seconds)
+                                      (reset! player-message nil))))
         create-interaction-state (fn [mouseover-actor-info world-mouse-position get-selected-skill]
                                    (let [player-eid (player-eid)
                                          mouseover-eid @mouseover-eid
@@ -3788,8 +3793,8 @@ init-game-state! (fn [capabilities textures image->texture-region]
                                             (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
       clicked-inventory-cell! (fn [capabilities cell]
                                 (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
-    when-not-paused-updates! (fn [capabilities delta-time]
-                               (handle-txs! capabilities (when-not-paused-updates!* delta-time)))
+    when-not-paused-updates! (fn [{:keys [get-delta-time] :as capabilities}]
+                               (handle-txs! capabilities (when-not-paused-updates!* (get-delta-time))))
 remove-destroyed-entities! (fn [capabilities]
                              (handle-txs! capabilities (destroy-entities game-db entity-ids entity*)))
         state (atom nil)
@@ -3809,19 +3814,28 @@ remove-destroyed-entities! (fn [capabilities]
                   frames-per-second
                   new-cursor]}]
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
-       (let [batch (sprite-batch/create)
-             textures (create-textures internal (:textures game-config))
+       (let [
+             
+             textures (:textures game-config)
+             skin (:skin game-config)
+             sounds (:sounds game-config)
+             stage (:stage game-config)
+             cursors (:cursors game-config)
+
+             batch (sprite-batch/create)
+             textures (create-textures internal textures)
              default-font (create-default-font! internal font-params)
              shape-drawer-texture (white-pixel-texture)
-             skin (create-skin! (internal (:skin game-config)))
-             sounds (into {} (for [path (:sounds game-config)] [path (new-sound (internal path))]))
+             skin (create-skin! (internal skin))
+             sounds (into {} 
+                          (for [path sounds] 
+                            [path (new-sound (internal path))]))
              play-sound! (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
-             stage (stage/create (fit-viewport/create (:width (:stage game-config))
-                                                      (:height (:stage game-config)))
+             stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
              image->texture-region #(get-texture-region textures %)
-             cursors (update-vals (:cursors game-config) 
+             cursors (update-vals cursors
                                   (fn [[path [hotspot-x hotspot-y]]]
                                     (let [pixmap (pixmap/create (internal path))
                                           cursor (new-cursor pixmap hotspot-x hotspot-y)]
@@ -3831,6 +3845,7 @@ remove-destroyed-entities! (fn [capabilities]
                                     (stage/hit stage x y))
              viewport (create-viewport! 1440 900 world-unit-scale)
              capabilities {
+                           :get-delta-time get-delta-time
                            :key-pressed? key-pressed?
                            :button-just-pressed? button-just-pressed?
                            :inventory-visible? #(-> (stage/root stage)
@@ -4006,10 +4021,6 @@ remove-destroyed-entities! (fn [capabilities]
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
-             update-message-counter! #(when (:text @player-message)
-                                        (swap! player-message update :counter + (get-delta-time))
-                                        (when (>= (:counter @player-message) message-duration-seconds)
-                                          (reset! player-message nil)))
              ]
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
@@ -4054,11 +4065,11 @@ remove-destroyed-entities! (fn [capabilities]
                                    (set-camera-position! viewport (:entity/position @(player-eid)))
                                    (primary-interaction! capabilities)
                                    (update-paused-state! key-just-pressed? key-pressed?)
-                                   (when-not-paused-updates! capabilities (get-delta-time))
+                                   (when-not-paused-updates! capabilities)
                                    (remove-destroyed-entities! capabilities)
                                    (key-pressed-checks! viewport key-pressed?)
                                    (key-just-pressed-checks! stage key-just-pressed?)
-                                   (update-message-counter!)
+                                   (update-message-counter! capabilities)
                                    (stage/act! stage)
                                    (clear-screen! 0 0 0 0)
                                    (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
