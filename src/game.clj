@@ -3719,8 +3719,10 @@ init-game-state! (fn [textures image->texture-region]
         ]
     {
      :create!
-     (fn [{:keys [get-delta-time
+     (fn [{:keys [clear-screen!
+                  get-delta-time
                   key-pressed?
+                  key-just-pressed? 
                   button-just-pressed?
                   set-cursor!
                   internal
@@ -4004,96 +4006,52 @@ init-game-state! (fn [textures image->texture-region]
                                                 (draw-player-message!))})]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
-         (reset! state {:batch batch
-                        :cursors cursors
-                        :default-font default-font
-                        :image->texture-region image->texture-region
-                        :handle-txs! handle-txs!
-                        :draw-tiled-map!* draw-tiled-map!*
-                        :draw-world-unit-scale! draw-world-unit-scale!
-                        :when-not-paused-updates! when-not-paused-updates!
-                        :get-mouseover-actor get-mouseover-actor
-                        :shape-drawer shape-drawer
-                        :shape-drawer-texture shape-drawer-texture
-                        :skin skin
-                        :update-message-counter! update-message-counter!
-                        :sounds sounds
-                        :stage stage
-                        :primary-interaction! primary-interaction!
-                        :textures textures
-                        :unit-scale unit-scale
-                        :viewport viewport})
-         (handle-txs! (init-game-state! textures image->texture-region))))
+         (handle-txs! (init-game-state! textures image->texture-region))
+         (reset! state {:dispose! (fn []
+                                    (let [tiled-map @tiled-map*]
+                                      (disposable/dispose! batch)
+                                      (run! disposable/dispose! (vals cursors))
+                                      (disposable/dispose! default-font)
+                                      (disposable/dispose! shape-drawer-texture)
+                                      (disposable/dispose! skin)
+                                      (run! disposable/dispose! (vals sounds))
+                                      (run! disposable/dispose! (vals textures))
+                                      (disposable/dispose! tiled-map)))
+                        :resize! (fn [width height]
+                                   (viewport/update! (stage/viewport stage) width height true)
+                                   (viewport/update! viewport width height false))
+                        :render! (fn []
+                                   (update-mouseover-eid! (get-mouseover-actor) (unproject viewport (get-input-position)))
+                                   (update-active-entities!)
+                                   (set-camera-position! viewport (:entity/position @(player-eid)))
+                                   (primary-interaction!)
+                                   (update-paused-state! key-just-pressed? key-pressed?)
+                                   (when-not-paused-updates! (get-delta-time))
+                                   (handle-txs! (destroy-entities game-db entity-ids entity*))
+                                   (key-pressed-checks! viewport key-pressed?)
+                                   (key-just-pressed-checks! stage key-just-pressed?)
+                                   (update-message-counter!)
+                                   (stage/act! stage)
+                                   (clear-screen! 0 0 0 0)
+                                   (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
+                                   (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
+                                   (batch/begin batch)
+                                   (draw-tiled-map!*)
+                                   (draw-world-unit-scale!)
+                                   (batch/end batch)
+                                   (stage/draw! stage))})))
 
      :dispose!
      (fn []
-       (let [{:keys [batch
-                     cursors
-                     default-font
-                     shape-drawer-texture
-                     skin
-                     sounds
-                     textures]} @state
-             tiled-map @tiled-map*]
-         (disposable/dispose! batch)
-         (run! disposable/dispose! (vals cursors))
-         (disposable/dispose! default-font)
-         (disposable/dispose! shape-drawer-texture)
-         (disposable/dispose! skin)
-         (run! disposable/dispose! (vals sounds))
-         (run! disposable/dispose! (vals textures))
-         (disposable/dispose! tiled-map)))
+       ((:dispose! @state)))
 
      :render!
-; TODO capabilities not pass here create is enough
-     (fn [{:keys [clear-screen! 
-                  set-cursor! 
-                  key-pressed? 
-                  key-just-pressed? 
-                  button-just-pressed? 
-                  get-delta-time 
-                  get-input-position]}]
-       (let [{:keys [batch
-                     cursors
-                     default-font
-                     image->texture-region
-                     handle-txs!
-                     shape-drawer
-                     stage
-                     unit-scale
-                     viewport
-                     when-not-paused-updates!
-                     get-mouseover-actor
-                     draw-world-unit-scale!
-                     draw-tiled-map!*
-                     update-message-counter!
-                     primary-interaction!]} @state]
-         (update-mouseover-eid! (get-mouseover-actor) (unproject viewport (get-input-position)))
-         (update-active-entities!)
-         (set-camera-position! viewport (:entity/position @(player-eid)))
-         (primary-interaction!)
-         (update-paused-state! key-just-pressed? key-pressed?)
-         (when-not-paused-updates! (get-delta-time))
-         (handle-txs! (destroy-entities game-db entity-ids entity*))
-         (key-pressed-checks! viewport key-pressed?)
-         (key-just-pressed-checks! stage key-just-pressed?)
-         (update-message-counter!)
-         (stage/act! stage)
-         (clear-screen! 0 0 0 0)
-         (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
-         (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
-         (batch/begin batch)
-         (draw-tiled-map!*)
-         (draw-world-unit-scale!)
-         (batch/end batch)
-         (stage/draw! stage)))
+     (fn [_]
+       ((:render! @state)))
 
      :resize!
      (fn [width height]
-       (let [{:keys [stage
-                     viewport]} @state]
-         (viewport/update! (stage/viewport stage) width height true)
-         (viewport/update! viewport width height false)))
+       ((:resize! @state) width height))
      }))
 
 (defn- text-button [skin label on-click!]
