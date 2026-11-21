@@ -330,7 +330,9 @@
          '[clojure.com.badlogic.gdx.graphics.pixmap :as pixmap]
          '[clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
          '[clojure.com.badlogic.gdx.graphics.texture :as texture]
-         '[clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter])
+         '[clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter]
+         '[clojure.com.badlogic.gdx.math.frustum :as frustum]
+         '[clojure.com.badlogic.gdx.math.vector3 :as vector3])
 
 (defn- draw-tile!
   [x
@@ -444,13 +446,13 @@
   (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
         height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
         up (orthographic-camera/up camera)
-        w (+ (* width  (Math/abs (float (.y up))))
-             (* height (Math/abs (float (.x up)))))
-        h (+ (* height (Math/abs (float (.y up))))
-             (* width  (Math/abs (float (.x up)))))
+        w (+ (* width  (Math/abs (float (vector3/y up))))
+             (* height (Math/abs (float (vector3/x up)))))
+        h (+ (* height (Math/abs (float (vector3/y up))))
+             (* width  (Math/abs (float (vector3/x up)))))
         pos (orthographic-camera/position camera)]
-    {:x (- (.x pos) (/ w 2))
-     :y (- (.y pos) (/ h 2))
+    {:x (- (vector3/x pos) (/ w 2))
+     :y (- (vector3/y pos) (/ h 2))
      :width w
      :height h}))
 
@@ -662,24 +664,23 @@
   (and (not= x1 x2)
        (not= y1 y2)))
 
-(import '(com.badlogic.gdx.scenes.scene2d.ui Button 
+(import '(com.badlogic.gdx.scenes.scene2d.ui Button
                                              ButtonGroup
                                              Cell
-                                             CheckBox 
-                                             HorizontalGroup 
-                                             Image 
-                                             ImageButton 
-                                             Label 
+                                             CheckBox
+                                             HorizontalGroup
+                                             Image
+                                             Label
                                              ScrollPane
                                              SelectBox
-                                             Skin 
-                                             Stack 
-                                             Table 
-                                             TextButton 
+                                             Skin
+                                             Stack
+                                             Table
+                                             TextButton
                                              TextField
-                                             TextTooltip 
+                                             TextTooltip
                                              TooltipManager
-                                             Widget 
+                                             Widget
                                              Window))
 
 (defn text-tooltip [^String text ^Skin skin]
@@ -691,10 +692,13 @@
                                           Stage
                                           Touchable))
 
+(require '[clojure.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
 (import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener
                                                 ClickListener
                                                 Drawable
-                                                TextureRegionDrawable
                                                 Layout))
 
 (extend-type Actor
@@ -745,18 +749,6 @@
   (add-actor! [this actor]
     (.addActor this actor)))
 
-(defn texture-image
-  [texture]
-  (Image. texture))
-
-(defn drawable-image
-  [^Drawable drawable]
-  (Image. drawable))
-
-(defn texture-region-image
-  [texture-region]
-  (Image. texture-region))
-
 (defn add! [^Table table ^Actor actor]
   (.add table actor))
 
@@ -785,7 +777,7 @@
   ([skin table text-fn icon]
    (let [label (label-create "" skin)
          sub-table (table-create)]
-     (doseq [cell [{:actor (texture-image icon)}
+     (doseq [cell [{:actor (image/create-from-texture icon)}
                    {:actor label}]]
        (add! sub-table (:actor cell)))
      (row! sub-table)
@@ -987,7 +979,7 @@
   (->> (vals db)
        (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
 
-(import '(com.badlogic.gdx.math Circle Intersector Rectangle Vector2 Vector3))
+(import '(com.badlogic.gdx.math Circle Intersector Rectangle Vector2))
 
 (defn create-stack []
   (Stack.))
@@ -1054,7 +1046,7 @@
   (.setName actor name))
 
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
-  (doto (drawable-image background-drawable)
+  (doto (image/create-from-drawable background-drawable)
     (set-name! "image-widget")
     (set-user-object! {:background-drawable background-drawable
                        :cell-size cell-size})))
@@ -1111,9 +1103,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (doto (TextureRegionDrawable. (slot->texture-region slot))
-                           (.setMinSize cell-size cell-size)
-                           (.tint (color/create 1 1 1 0.4))))
+                         (doto (texture-region-drawable/create (slot->texture-region slot))
+                           (texture-region-drawable/set-min-size! cell-size cell-size)
+                           (texture-region-drawable/tint (color/create 1 1 1 0.4))))
         ->cell (partial inv-window-cell get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (table-create)
         window (create-window "Inventory" skin)]
@@ -1719,8 +1711,8 @@
   (let [cell-widget (inv-get-cell inventory-window cell)
         image-widget (find-actor cell-widget "image-widget")
         cell-size (:cell-size (get-user-object image-widget))]
-    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. texture-region)
-                                                  (.setMinSize cell-size cell-size)))
+    (.setDrawable ^Image image-widget ^Drawable (doto (texture-region-drawable/create texture-region)
+                                                  (texture-region-drawable/set-min-size! cell-size cell-size)))
     (add-listener! cell-widget (text-tooltip tooltip-text skin))
     nil))
 
@@ -1745,10 +1737,10 @@
   (let [scale 2
         horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
         button-group (get-user-object horizontal-group)
-        button (doto (ImageButton.
-                      (doto (TextureRegionDrawable. texture-region)
-                        (.setMinSize (* scale (texture-region/region-width texture-region))
-                                     (* scale (texture-region/region-height texture-region)))))
+        button (doto (image-button/create
+                      (doto (texture-region-drawable/create texture-region)
+                        (texture-region-drawable/set-min-size! (* scale (texture-region/region-width texture-region))
+                                                               (* scale (texture-region/region-height texture-region)))))
                  (add-listener! (text-tooltip tooltip-text skin))
                  (set-user-object! skill-id))]
     (add-actor! horizontal-group ^Actor button)
@@ -2636,13 +2628,10 @@
                                                      :counter (timer-create spiderweb-duration elapsed-time)}]
        [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
-(defn create-skin [file-handle]
-  (Skin. file-handle))
-
 (defn create-skin! [file-handle]
-  (let [s (create-skin file-handle)]
+  (let [s (skin/create file-handle)]
     (bitmap-font-bitmap-font-data/set-markup-enabled!
-     (bitmap-font/data (.getFont ^Skin s "default-font"))
+     (bitmap-font/data (skin/font s "default-font"))
      true)
     s))
 
@@ -2820,9 +2809,9 @@
 (defn draw-cell-debug
   [factions-iterations shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
   (let [camera (get-camera viewport)
-        plane-points (mapv (fn [^Vector3 v3]
-                             [(.x v3) (.y v3) (.z v3)])
-                           (.planePoints (orthographic-camera/frustum camera)))
+        plane-points (mapv (fn [v3]
+                             [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
+                           (frustum/plane-points (orthographic-camera/frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
@@ -2859,9 +2848,9 @@
   [shape-drawer viewport show-tile-grid?]
   (when show-tile-grid?
     (let [camera (get-camera viewport)
-          plane-points (mapv (fn [^Vector3 v3]
-                               [(.x v3) (.y v3) (.z v3)])
-                             (.planePoints (orthographic-camera/frustum camera)))
+          plane-points (mapv (fn [v3]
+                               [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
+                             (frustum/plane-points (orthographic-camera/frustum camera)))
           frustum-points (take 4 plane-points)
           left-x   (apply min (map first  frustum-points))
           bottom-y (apply min (map second frustum-points))]
@@ -3384,8 +3373,8 @@
 
 (defn update-xy! [camera [x y]]
   (let [pos (orthographic-camera/position camera)]
-    (set! (.x pos) x)
-    (set! (.y pos) y)
+    (vector3/set-x! pos x)
+    (vector3/set-y! pos y)
     (orthographic-camera/update! camera)))
 
 (defn set-camera-position! [viewport xy]
@@ -4303,7 +4292,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                             {:ray-blocked? (partial raycaster-blocked? @raycaster)
                              :explored-tile-corners explored-tile-corners
                              :light-position (let [pos (orthographic-camera/position (get-camera viewport))]
-                                               [(.x pos) (.y pos) (.z pos)])
+                                               [(vector3/x pos) (vector3/y pos) (vector3/z pos)])
                              :see-all-tiles? false
                              :explored-tile-color (float-bits 0.5 0.5 0.5 1)
                              :visible-tile-color (float-bits 1 1 1 1)
@@ -4385,8 +4374,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         y-diff (max (- (float height) py) (- py (float 0)))
         vp-ratio-w (/ (* x-diff 2) (orthographic-camera/viewport-width camera))
         vp-ratio-h (/ (* y-diff 2) (orthographic-camera/viewport-height camera))]
-    (set! (.x pos) px)
-    (set! (.y pos) py)
+    (vector3/set-x! pos px)
+    (vector3/set-y! pos py)
     (orthographic-camera/set-zoom! camera (max vp-ratio-w vp-ratio-h))
     (orthographic-camera/update! camera)))
 
@@ -4420,7 +4409,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     {:create!
      (fn [{:keys [files input set-input-processor!]}]
        (let [batch (sprite-batch/create)
-             skin (create-skin (files/internal files "skin/uiskin.json"))
+             skin (skin/create (files/internal files "skin/uiskin.json"))
              textures (create-textures files
                                        {:folder "resources/"
                                         :extensions #{"png" "bmp"}})
@@ -4485,19 +4474,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                             (orthographic-camera/update! camera))
                         input-keys/LEFT (fn [camera]
                                           (let [pos (orthographic-camera/position camera)]
-                                            (set! (.x pos) (- (.x pos) 1))
+                                            (vector3/set-x! pos (- (vector3/x pos) 1))
                                             (orthographic-camera/update! camera)))
                         input-keys/RIGHT (fn [camera]
                                            (let [pos (orthographic-camera/position camera)]
-                                             (set! (.x pos) (+ (.x pos) 1))
+                                             (vector3/set-x! pos (+ (vector3/x pos) 1))
                                              (orthographic-camera/update! camera)))
                         input-keys/UP (fn [camera]
                                         (let [pos (orthographic-camera/position camera)]
-                                          (set! (.y pos) (+ (.y pos) 1))
+                                          (vector3/set-y! pos (+ (vector3/y pos) 1))
                                           (orthographic-camera/update! camera)))
                         input-keys/DOWN (fn [camera]
                                           (let [pos (orthographic-camera/position camera)]
-                                            (set! (.y pos) (- (.y pos) 1))
+                                            (vector3/set-y! pos (- (vector3/y pos) 1))
                                             (orthographic-camera/update! camera)))}]
            (when (key-pressed? k)
              (f (get-camera viewport))))
@@ -4613,10 +4602,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
               texture-region (get-texture-region (or (:entity/image property)
                                                      (first (:animation/frames (:entity/animation property)))))]
           (run! #(add-actor! stack %)
-                [(doto (ImageButton.
-                         (doto (TextureRegionDrawable. texture-region)
-                           (.setMinSize (* image-scale (texture-region/region-width texture-region))
-                                        (* image-scale (texture-region/region-height texture-region)))))
+                [(doto (image-button/create
+                         (doto (texture-region-drawable/create texture-region)
+                           (texture-region-drawable/set-min-size! (* image-scale (texture-region/region-width texture-region))
+                                                                  (* image-scale (texture-region/region-height texture-region)))))
                    (add-listener! (create-change-listener
                                     (fn [event actor]
                                       (clicked-id-fn actor (:property/id property)))))
@@ -4644,10 +4633,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     window))
 
 (defn scaled-image-button [texture-region scale]
-  (ImageButton.
-   (doto (TextureRegionDrawable. texture-region)
-     (.setMinSize (* scale (texture-region/region-width texture-region))
-                  (* scale (texture-region/region-height texture-region))))))
+  (image-button/create
+   (doto (texture-region-drawable/create texture-region)
+     (texture-region-drawable/set-min-size! (* scale (texture-region/region-width texture-region))
+                                            (* scale (texture-region/region-height texture-region))))))
 
 (defn create-image-widget [image get-texture-region]
   (scaled-image-button (get-texture-region image) 2))
@@ -4834,7 +4823,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                               ; duplicated property-display-widget for a property ...
                               ; with one-to-many
                               (conj [{:actor (let [property ((:editor/get-property editor) property-id)]
-                                               (doto (texture-region-image ((:editor/get-texture-region editor) 
+                                               (doto (image/create-from-texture-region ((:editor/get-texture-region editor) 
                                                                             (or (:entity/image property)
                                                                                 (first (:animation/frames (:entity/animation property))))))
                                                  (add-listener! ((:editor/text-tooltip editor) 
@@ -4881,7 +4870,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                           editor))))))}]
                          (for [property-id property-ids]
                            (let [property ((:editor/get-property editor) property-id)]
-                             {:actor (doto (texture-region-image ((:editor/get-texture-region editor) 
+                             {:actor (doto (image/create-from-texture-region ((:editor/get-texture-region editor) 
                                                                   (or (:entity/image property)
                                                                       (first (:animation/frames (:entity/animation property))))))
                                        (add-listener! (text-tooltip (binding [*print-level* 2]
@@ -5280,9 +5269,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      (fn [{:keys [audio files set-input-processor!] :as capabilities}] 
        (reset! input (:input capabilities))
        (reset! batch (sprite-batch/create))
-       (reset! skin (create-skin (files/internal files (:skin editor-config))))
+       (reset! skin (skin/create (files/internal files (:skin editor-config))))
        (bitmap-font-bitmap-font-data/set-markup-enabled!
-        (bitmap-font/data (.getFont ^Skin @skin "default-font"))
+        (bitmap-font/data (skin/font @skin "default-font"))
         true)
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
