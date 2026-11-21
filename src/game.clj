@@ -3277,7 +3277,7 @@
             [[:tx/swap eid assoc :entity/destroyed? true]])))
 
 ; small functions is the win ! just extract ! its all simple !
-(defn interaction-state->txs [[k params] stage player-eid entity* create-timer* tx-event-txs]
+(defn interaction-state->txs [[k params] inventory-visible? player-eid entity* create-timer* tx-event-txs]
   (case k
     :interaction-state/mouseover-actor
     nil
@@ -3298,9 +3298,7 @@
           :clickable/item
           (let [item (:entity/item @clicked-eid)]
             (cond
-              (-> (stage/root stage)
-                  (group/find-actor "moon.ui.windows.inventory")
-                  actor/visible?)
+              (inventory-visible?)
               ; beacuse of this case destroy entities havs to run after paused
               ; otherwise game pauses and we just mark destryoted 
               ; maybe transactions shouldnt be allowed to return partial valid state
@@ -3541,13 +3539,13 @@
                                              [:interaction-state.skill/usable [skill effect-ctx]]
                                              [:interaction-state.skill/not-usable state]))
                                          [:interaction-state/no-skill-selected]))))
-        handle-player-input (fn [player-eid interaction-state stage key-pressed? button-just-pressed?]
+        handle-player-input (fn [player-eid interaction-state inventory-visible? key-pressed? button-just-pressed?]
                               (case (:state (:entity/fsm @player-eid))
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
                                   (tx-event-txs player-eid :movement-input move-v)
                                   (when (button-just-pressed? :buttons/left)
-                                    (interaction-state->txs interaction-state stage player-eid entity* create-timer* tx-event-txs)))
+                                    (interaction-state->txs interaction-state inventory-visible? player-eid entity* create-timer* tx-event-txs)))
 
                                 :player-moving
                                 (if-let [move-v (movement-vector key-pressed?)]
@@ -3736,6 +3734,26 @@ menus [{:label "Debug"
                                       (throw (ex-info "handle-txs! error" 
                                                       {:k k :params params}
                                                       t)))))))
+primary-interaction! (fn [{:keys [set-cursor!
+                                  get-selected-skill
+                                  mouseover-actor-info
+                                  world-mouse-position
+                                  inventory-visible?
+                                  key-pressed?
+                                  button-just-pressed?]
+                           :as capabilities}]
+                       (let [player-eid (player-eid)
+                             interaction-state (create-interaction-state (mouseover-actor-info) 
+                                                                         (world-mouse-position) 
+                                                                         get-selected-skill)
+                             cursor-key (get-cursor-key player-eid interaction-state)
+                             txs (handle-player-input player-eid
+                                                      interaction-state
+                                                      inventory-visible?
+                                                      key-pressed?
+                                                      button-just-pressed?)]
+                         (set-cursor! cursor-key)
+                         (handle-txs! capabilities txs)))
 init-game-state! (fn [capabilities textures image->texture-region]
                    (let [{:keys [tiled-map
                                  start-position]} (create-level! textures image->texture-region)]
@@ -3809,7 +3827,19 @@ remove-destroyed-entities! (fn [capabilities]
                                           cursor (new-cursor pixmap hotspot-x hotspot-y)]
                                       (disposable/dispose! pixmap)
                                       cursor)))
+             get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
+                                    (stage/hit stage x y))
+             viewport (create-viewport! 1440 900 world-unit-scale)
              capabilities {
+                           :key-pressed? key-pressed?
+                           :button-just-pressed? button-just-pressed?
+                           :inventory-visible? #(-> (stage/root stage)
+                                                    (group/find-actor "moon.ui.windows.inventory")
+                                                    actor/visible?)
+                           :mouseover-actor-info #(if-let [actor (get-mouseover-actor)]
+                                                    (mouseover-actor-info actor)
+                                                    nil)
+                           :world-mouse-position #(unproject viewport (get-input-position))
                            :set-cursor! #(set-cursor! (safe-get cursors %)) 
                            :get-selected-skill #(-> (stage/root stage)
                                                     (group/find-actor "moon.ui.action-bar")
@@ -3840,7 +3870,6 @@ remove-destroyed-entities! (fn [capabilities]
              shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
              get-unit-scale (fn [] @unit-scale)
-             viewport (create-viewport! 1440 900 world-unit-scale)
              unproject-viewport #(unproject viewport %)
              camera-zoom (fn [] (orthographic-camera/zoom (viewport/camera viewport)))
              ui-viewport-width (viewport/world-width (stage/viewport stage))
@@ -3942,8 +3971,6 @@ remove-destroyed-entities! (fn [capabilities]
                                                    :text text
                                                    :scale 2.5
                                                    :up? true})))
-             get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
-                                    (stage/hit stage x y))
              draw-world-unit-scale! (fn []
                                       (with-line-width shape-drawer world-unit-scale
                                         (reset! unit-scale world-unit-scale)
@@ -3983,23 +4010,6 @@ remove-destroyed-entities! (fn [capabilities]
                                         (swap! player-message update :counter + (get-delta-time))
                                         (when (>= (:counter @player-message) message-duration-seconds)
                                           (reset! player-message nil)))
-             primary-interaction! (fn [{:keys [set-cursor!
-                                               get-selected-skill]}]
-                                    (let [player-eid (player-eid)
-                                          mouseover-actor-info (if-let [actor (get-mouseover-actor)]
-                                                                 (mouseover-actor-info actor)
-                                                                 nil)
-                                          interaction-state (create-interaction-state mouseover-actor-info 
-                                                                                      (unproject viewport (get-input-position)) 
-                                                                                      get-selected-skill)
-                                          cursor-key (get-cursor-key player-eid interaction-state)
-                                          txs (handle-player-input player-eid
-                                                                   interaction-state
-                                                                   stage
-                                                                   key-pressed?
-                                                                   button-just-pressed?)]
-                                      (set-cursor! cursor-key)
-                                      (handle-txs! capabilities txs)))
              ]
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
