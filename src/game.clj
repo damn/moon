@@ -3464,6 +3464,23 @@
       cursor-fn
       (cursor-fn eid))))
 
+(defn tick-component-txs [[k v] eid delta-time elapsed-time grid tx-event-txs mk-effect-txs max-speed create-timer* choose-skill line-of-sight?*]
+  (case k
+    :entity/animation [[:tx/swap eid animation-tick delta-time]]
+    :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time elapsed-time grid tx-event-txs)
+    :entity/string-effect (string-effect-tick v eid delta-time elapsed-time)
+    :entity/skills (skills-tick v eid delta-time elapsed-time)
+    :entity/temp-modifier (temp-modifier-tick v eid delta-time elapsed-time)
+    :entity/projectile-collision (projectile-collision-tick v eid delta-time grid mk-effect-txs)
+    :active-skill (active-skill-tick v eid line-of-sight?* mk-effect-txs elapsed-time tx-event-txs)
+    :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
+    :stunned (stunned-tick v eid delta-time elapsed-time tx-event-txs)
+    :player-moving (movement-tick v eid delta-time grid max-speed)
+    :npc-moving (npc-moving-tick v eid delta-time elapsed-time grid max-speed tx-event-txs)
+    :npc-sleeping (npc-sleeping-tick v eid delta-time grid tx-event-txs)
+    :npc-idle (npc-idle-tick v eid delta-time line-of-sight?* grid choose-skill create-timer* tx-event-txs)
+    nil))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3532,22 +3549,6 @@
         grid (atom nil)
         line-of-sight?* (fn [& params]
                          (apply line-of-sight? @raycaster params))
-        tick-component (fn [[k v] eid delta-time elapsed-time]
-                         (case k
-                           :entity/animation [[:tx/swap eid animation-tick delta-time]]
-                           :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time elapsed-time @grid tx-event-txs)
-                           :entity/string-effect (string-effect-tick v eid delta-time elapsed-time)
-                           :entity/skills (skills-tick v eid delta-time elapsed-time)
-                           :entity/temp-modifier (temp-modifier-tick v eid delta-time elapsed-time)
-                           :entity/projectile-collision (projectile-collision-tick v eid delta-time @grid mk-effect-txs)
-                           :active-skill (active-skill-tick v eid line-of-sight?* mk-effect-txs elapsed-time tx-event-txs)
-                           :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
-                           :stunned (stunned-tick v eid delta-time elapsed-time tx-event-txs)
-                           :player-moving (movement-tick v eid delta-time @grid max-speed)
-                           :npc-moving (npc-moving-tick v eid delta-time elapsed-time @grid max-speed tx-event-txs)
-                           :npc-sleeping (npc-sleeping-tick v eid delta-time @grid tx-event-txs)
-                           :npc-idle (npc-idle-tick v eid delta-time line-of-sight?* @grid choose-skill create-timer* tx-event-txs)
-                           nil))
         entity-ids (atom {})
         player-id (atom nil)
         player-eid (fn []
@@ -3726,7 +3727,17 @@ menus [{:label "Debug"
                                                    max-iterations))
                                         (mapcat (fn [eid] 
                                                   (mapcat (fn [component]
-                                                            (tick-component component eid delta-time @elapsed-time)) 
+                                                            (tick-component-txs component 
+                                                                            eid 
+                                                                            delta-time 
+                                                                            @elapsed-time 
+                                                                            @grid 
+                                                                            tx-event-txs 
+                                                                            mk-effect-txs
+                                                                            max-speed
+                                                                            create-timer*
+                                                                            choose-skill
+                                                                            line-of-sight?*)) 
                                                           @eid))
                                                 @active-entities))))
       handle-txs! (fn [{:keys [play-sound!
