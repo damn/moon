@@ -3803,7 +3803,17 @@ remove-destroyed-entities! (fn [capabilities]
                                                       (:height (:stage game-config)))
                                  batch)
              image->texture-region #(get-texture-region textures %)
+             cursors (update-vals (:cursors game-config) 
+                                  (fn [[path [hotspot-x hotspot-y]]]
+                                    (let [pixmap (pixmap/create (internal path))
+                                          cursor (new-cursor pixmap hotspot-x hotspot-y)]
+                                      (disposable/dispose! pixmap)
+                                      cursor)))
              capabilities {
+                           :set-cursor! #(set-cursor! (safe-get cursors %)) 
+                           :get-selected-skill #(-> (stage/root stage)
+                                                    (group/find-actor "moon.ui.action-bar")
+                                                    selected-skill)
                            :play-sound! play-sound!
                            :show-modal! (fn [opts]
                                           (show-modal! skin stage opts))
@@ -3973,17 +3983,9 @@ remove-destroyed-entities! (fn [capabilities]
                                         (swap! player-message update :counter + (get-delta-time))
                                         (when (>= (:counter @player-message) message-duration-seconds)
                                           (reset! player-message nil)))
-             cursors (update-vals (:cursors game-config) 
-                                  (fn [[path [hotspot-x hotspot-y]]]
-                                    (let [pixmap (pixmap/create (internal path))
-                                          cursor (new-cursor pixmap hotspot-x hotspot-y)]
-                                      (disposable/dispose! pixmap)
-                                      cursor)))
-             primary-interaction! (fn []
+             primary-interaction! (fn [{:keys [set-cursor!
+                                               get-selected-skill]}]
                                     (let [player-eid (player-eid)
-                                          get-selected-skill #(-> (stage/root stage)
-                                                                  (group/find-actor "moon.ui.action-bar")
-                                                                  selected-skill)
                                           mouseover-actor (get-mouseover-actor)
                                           interaction-state (create-interaction-state mouseover-actor 
                                                                                       (unproject viewport (get-input-position)) 
@@ -3995,7 +3997,7 @@ remove-destroyed-entities! (fn [capabilities]
                                                                    mouseover-actor
                                                                    key-pressed?
                                                                    button-just-pressed?)]
-                                      (set-cursor! (safe-get cursors cursor-key))
+                                      (set-cursor! cursor-key)
                                       (handle-txs! capabilities txs)))
              ]
          (doseq [actor [(create-action-bar)
@@ -4039,7 +4041,7 @@ remove-destroyed-entities! (fn [capabilities]
                                    (update-mouseover-eid! (get-mouseover-actor) (unproject viewport (get-input-position)))
                                    (update-active-entities!)
                                    (set-camera-position! viewport (:entity/position @(player-eid)))
-                                   (primary-interaction!)
+                                   (primary-interaction! capabilities)
                                    (update-paused-state! key-just-pressed? key-pressed?)
                                    (when-not-paused-updates! capabilities (get-delta-time))
                                    (remove-destroyed-entities! capabilities)
