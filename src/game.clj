@@ -3841,13 +3841,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         ]
     {
      :create!
-     (fn [{:keys [audio 
-                  files 
+     (fn [{:keys [files
                   graphics 
                   get-input-position 
                   set-input-processor! 
                   create-cursor 
-                  create-sound
+                  new-sound
                   create-font
                   white-pixel-texture
                   get-frames-per-second]}]
@@ -3858,7 +3857,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              default-font (create-font font-params)
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (files/internal files (:skin game-config)))
-             sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
+             sounds (into {} (for [path (:sounds game-config)] [path (new-sound (files/internal files path))]))
              play-sound!* (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
              stage (stage/create (fit-viewport/create (:width (:stage game-config))
@@ -4370,9 +4369,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                    (actor/add-listener! (change-listener/create
                                     (fn [event actor]
                                       (clicked-id-fn actor (:property/id property)))))
-                   (actor/add-listener! (text-tooltip/create (binding [*print-level* 2]
-                                                  (with-out-str
-                                                    (pprint/pprint property))))))
+                   (actor/add-listener! (text-tooltip (binding [*print-level* 2]
+                                                        (with-out-str
+                                                          (pprint/pprint property))))))
                  (doto (new-label (extra-info-text property))
                    (actor/set-touchable! touchable/disabled))])
           stack)))))
@@ -4993,7 +4992,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         (layout/pack! window)
                         window))]
     {:create!
-     (fn [{:keys [audio files set-input-processor!] :as capabilities}] 
+     (fn [{:keys [new-sound files set-input-processor!] :as capabilities}]
        (reset! input (:input capabilities))
        (reset! batch (sprite-batch/create))
        (reset! skin (skin/create (files/internal files (:skin editor-config))))
@@ -5003,7 +5002,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (reset! editor-stage (stage/create (fit-viewport/create 1440 900) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
-                              [path (audio/new-sound audio (files/internal files path))])))
+                              [path (new-sound (files/internal files path))])))
        (reset! textures (create-textures files (:textures editor-config)))
        (set-input-processor! @editor-stage)
        (stage/add-actor! @editor-stage (main-window)))
@@ -5033,7 +5032,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :sprite-batch! sprite-batch/create
      :white-pixel-texture white-pixel-texture
      :create-font (fn [params] (create-default-font! files params))
-     :create-sound  (fn [path] (audio/new-sound audio (files/internal files path)))
+     :new-sound (fn [file-handle]
+                  (audio/new-sound audio file-handle))
      :create-cursor (fn [[path [hotspot-x hotspot-y]]]
                       (let [pixmap (pixmap/create (files/internal files path))
                             cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
