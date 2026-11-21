@@ -3570,6 +3570,14 @@
     (when (>= (:counter @player-message) message-duration-seconds)
       (reset! player-message nil))))
 
+(defn update-paused-state! [pausing? paused? state->pause-game? controls player-entity key-just-pressed? key-pressed?]
+  (reset! paused?
+          (or #_error
+              (and pausing?
+                   (state->pause-game? (:state (:entity/fsm player-entity)))
+                   (not (or (key-just-pressed? (:unpause-once controls))
+                            (key-pressed? (:unpause-continously controls))))))))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3650,13 +3658,6 @@
         update-message-counter! (fn [{:keys [get-delta-time]}]
                                   (message-counter-update! player-message message-duration-seconds (get-delta-time)))
         paused? (atom false)
-        update-paused-state! (fn [key-just-pressed? key-pressed?]
-                               (reset! paused?
-                                       (or #_error
-                                           (and pausing?
-                                                (state->pause-game? (:state (:entity/fsm @(player-eid))))
-                                                (not (or (key-just-pressed? (:unpause-once controls))
-                                                         (key-pressed? (:unpause-continously controls))))))))
         key-pressed-checks! (fn [viewport key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
                                                                    (let [camera (viewport/camera viewport)]
@@ -4124,7 +4125,7 @@ remove-destroyed-entities! (fn [capabilities]
                                    (update-active-entities!)
                                    (set-camera-position! viewport (:entity/position @(player-eid)))
                                    (primary-interaction! capabilities)
-                                   (update-paused-state! key-just-pressed? key-pressed?)
+                                   (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
                                    (when-not-paused-updates! capabilities)
                                    (remove-destroyed-entities! capabilities)
                                    (key-pressed-checks! viewport key-pressed?)
