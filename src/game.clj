@@ -628,41 +628,41 @@
     (math/sqrt (+ (* x-d x-d)
                   (* y-d y-d)))))
 
-(import '(space.earlygrey.shapedrawer ShapeDrawer))
+(require '[clojure.space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
 
 (defmacro with-line-width [shape-drawer width & body]
-  `(let [old-line-width# (space.earlygrey.shapedrawer.ShapeDrawer/.getDefaultLineWidth ~shape-drawer)]
-     (space.earlygrey.shapedrawer.ShapeDrawer/.setDefaultLineWidth ~shape-drawer (* ~width old-line-width#))
+  `(let [old-line-width# (shape-drawer/default-line-width ~shape-drawer)]
+     (shape-drawer/set-default-line-width ~shape-drawer (* ~width old-line-width#))
      ~@body
-     (space.earlygrey.shapedrawer.ShapeDrawer/.setDefaultLineWidth ~shape-drawer old-line-width#)))
+     (shape-drawer/set-default-line-width ~shape-drawer old-line-width#)))
 
-(defn filled-rectangle! [^ShapeDrawer shape-drawer x y w h color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.filledRectangle shape-drawer (float x) (float y) (float w) (float h)))
+(defn filled-rectangle! [shape-drawer x y w h color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/filled-rectangle! shape-drawer x y w h))
 
-(defn rectangle! [^ShapeDrawer shape-drawer x y w h color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.rectangle shape-drawer x y w h))
+(defn rectangle! [shape-drawer x y w h color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/rectangle! shape-drawer x y w h))
 
-(defn line! [^ShapeDrawer shape-drawer [sx sy] [ex ey] color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.line shape-drawer (float sx) (float sy) (float ex) (float ey)))
+(defn line! [shape-drawer [sx sy] [ex ey] color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/line! shape-drawer sx sy ex ey))
 
-(defn circle! [^ShapeDrawer shape-drawer [x y] radius color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.circle shape-drawer x y radius))
+(defn circle! [shape-drawer [x y] radius color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/circle! shape-drawer x y radius))
 
-(defn ellipse! [^ShapeDrawer shape-drawer [x y] radius-x radius-y color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.ellipse shape-drawer x y radius-x radius-y))
+(defn ellipse! [shape-drawer [x y] radius-x radius-y color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/ellipse! shape-drawer x y radius-x radius-y))
 
-(defn filled-circle! [^ShapeDrawer shape-drawer [x y] radius color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.filledCircle shape-drawer (float x) (float y) (float radius)))
+(defn filled-circle! [shape-drawer [x y] radius color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/filled-circle! shape-drawer x y radius))
 
-(defn sector! [^ShapeDrawer shape-drawer [center-x center-y] radius start-radians radians color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.sector shape-drawer center-x center-y radius start-radians radians))
+(defn sector! [shape-drawer [center-x center-y] radius start-radians radians color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/sector! shape-drawer center-x center-y radius start-radians radians))
 
 (defn touched-tiles*
   "x is leftmost point and y bottom most point in the rectangle."
@@ -4237,7 +4237,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                            (handle-txs! stage image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
-             shape-drawer (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))
+             shape-drawer (shape-drawer/create batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
              get-unit-scale (fn [] @unit-scale)
              viewport (create-viewport! 1440 900 world-unit-scale)
@@ -5553,8 +5553,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                            :quality-scaling 2
                                            :use-integer-positions? false}))
        (reset! shape-drawer-texture (white-pixel-texture))
-       (reset! shape-drawer (ShapeDrawer. @batch
-                                          (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
+       (reset! shape-drawer (shape-drawer/create @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
        (reset! viewport (FitViewport. (float 1440)
                                       (float 900)
                                       (doto (OrthographicCamera.)
