@@ -2264,153 +2264,6 @@
                                  :direction direction
                                  :speed speed}})
 
-(defn- double-ray-endpositions
-  [[start-x start-y]
-   [target-x target-y]
-   path-w]
-  {:pre [(< path-w 0.98)]}
-  (let [path-w (+ path-w 0.02)
-        v (v2-direction [start-x start-y]
-                        [target-y target-y])
-        [normal1 normal2] (v2-normal-vectors v)
-        normal1 (v2-scale normal1 (/ path-w 2))
-        normal2 (v2-scale normal2 (/ path-w 2))
-        start1  (mapv + [start-x  start-y]  normal1)
-        start2  (mapv + [start-x  start-y]  normal2)
-        target1 (mapv + [target-x target-y] normal1)
-        target2 (mapv + [target-x target-y] normal2)]
-    [start1 target1 start2 target2]))
-
-(defn- affected-targets
-  [active-entities raycaster entity]
-  (->> active-entities
-       (filter #(:entity/species @%))
-       (filter #(line-of-sight? raycaster entity @%))
-       (remove #(:entity/player? @%))))
-
-(def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
-(def ^:private spiderweb-duration 5)
-
-(defn projectile-effect [v effect-ctx create-projectile]
-  (let [source (:effect/source effect-ctx)
-        source* @source
-        direction (:effect/target-direction effect-ctx)
-        size (:projectile/size v)]
-    [[:tx/spawn-entity (create-projectile
-                         {:position (mapv + (:entity/position source*)
-                                          (v2-scale direction
-                                                    (+ (/ (:entity/width source*) 2) size 0.1)))
-                          :direction direction
-                          :faction (:entity/faction source*)}
-                         v)]]))
-
-(defn animation-entity [game-db position animation-k]
-  (assert (keyword? animation-k))
-  (let [{:keys [entity/animation]} (safe-get game-db animation-k)]
-    (spawn-effect position
-                  {:entity/animation (assoc animation :delete-after-stopped? true)})))
-
-(defn spawn-effect* [v effect-ctx game-db fsms entity*]
-  (let [source (:effect/source effect-ctx)
-        position (:effect/target-position effect-ctx)]
-    [[:tx/sound "bfxr_curse.wav"]
-     [:tx/spawn-entity (entity* (animation-entity game-db position :audiovisuals/spawn))]
-     [:tx/spawn-entity (entity* (spawn-creature {:position position
-                                                 :creature-property v
-                                                 :components {:entity/fsm {:fsm (:npc fsms)
-                                                                           :initial-state :npc-idle}
-                                                              :entity/faction (:entity/faction @source)}}))]]))
-
-(defn target-all-effect [v effect-ctx affected-targets applicable-effect-txs entity*]
-  (let [source (:effect/source effect-ctx)
-        source* @source]
-    (mapcat (fn [target]
-              (cons [:tx/spawn-entity
-                     (entity* (spawn-line {:start (:entity/position source*)
-                                           :end (:entity/position @target)
-                                           :duration 0.05
-                                           :color (color/float-bits 1 0 0 0.75)
-                                           :thick? true}))]
-                    (applicable-effect-txs {:effect/source source
-                                            :effect/target target}
-                                           (:entity-effects v))))
-            (affected-targets source*))))
-
-(defn convert-effect [_v effect-ctx game-db entity*]
-  (let [source (:effect/source effect-ctx)
-        target (:effect/target effect-ctx)]
-    [[:tx/sound "bfxr_burrow.wav"]
-     [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position @target) :audiovisuals/convert))]
-     [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
-
-(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs entity*]
-  (let [source (:effect/source effect-ctx)
-        target (:effect/target effect-ctx)
-        body        @source
-        target-body @target
-        {:keys [maxrange entity-effects]} v]
-    (if (in-range? body target-body maxrange)
-      (cons [:tx/spawn-entity
-             (entity* (spawn-line
-                        {:start (start-point body target-body)
-                         :end (:entity/position target-body)
-                         :duration 0.05
-                         :color (color/float-bits 1 0 0 0.75)
-                         :thick? true}))]
-            (applicable-effect-txs effect-ctx entity-effects))
-      [[:tx/sound "bfxr_fisthit.wav"]
-       [:tx/spawn-entity (entity* (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground))]])))
-
-(defn damage-effect [v effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs]
-  (let [source (:effect/source effect-ctx)
-        target (:effect/target effect-ctx)
-        source* @source
-        target* @target
-        hp (get-hitpoints (:entity/stats target*))]
-    (cond
-      (zero? (hp 0))
-      nil
-
-      (not (:entity/stats target*))
-      nil
-
-      (and (:entity/stats source*)
-           (:entity/stats target*)
-           (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
-      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 #(timer-create % elapsed-time)]]
-
-      :else
-      (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
-                      (:damage/min-max (calc-damage (:entity/stats source*)
-                                                    (:entity/stats target*)
-                                                    v))
-                      (:damage/min-max v))
-            dmg-amount (let [[lower upper] min-max]
-                         (+ lower (rand-int (inc (- upper lower)))))
-
-            new-hp-val (max (- (hp 0) dmg-amount)
-                            0)
-            dmg-text (str "[RED]" dmg-amount "[]")]
-        (concat
-          [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
-           [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
-           [:tx/sound "bfxr_normalhit.wav"]
-           [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position target*) :audiovisuals/damage))]]
-          (if (zero? new-hp-val)
-            (kill-txs target)
-            (tx-event-txs target :alert)))))))
-
-(defn kill-effect [_v effect-ctx kill-txs]
-  (kill-txs (:effect/target effect-ctx)))
-
-(defn spiderweb-effect [_v effect-ctx elapsed-time]
-  (let [target (:effect/target effect-ctx)]
-    ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
-    (when-not (:entity/temp-modifier @target)
-      [[:tx/swap target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                     :counter (timer-create spiderweb-duration elapsed-time)}]
-       [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
-
 (defn create-skin! [file-handle]
   (let [s (skin/create file-handle)]
     (bitmap-font-data/set-markup-enabled!
@@ -2845,6 +2698,154 @@
                                       :effect/target hit-entity}
                                      entity-effects)))))
 
+(defn projectile-effect [v effect-ctx create-projectile]
+  (let [source (:effect/source effect-ctx)
+        source* @source
+        direction (:effect/target-direction effect-ctx)
+        size (:projectile/size v)]
+    [[:tx/spawn-entity (create-projectile
+                         {:position (mapv + (:entity/position source*)
+                                          (v2-scale direction
+                                                    (+ (/ (:entity/width source*) 2) size 0.1)))
+                          :direction direction
+                          :faction (:entity/faction source*)}
+                         v)]]))
+
+(defn- double-ray-endpositions
+  [[start-x start-y]
+   [target-x target-y]
+   path-w]
+  {:pre [(< path-w 0.98)]}
+  (let [path-w (+ path-w 0.02)
+        v (v2-direction [start-x start-y]
+                        [target-y target-y])
+        [normal1 normal2] (v2-normal-vectors v)
+        normal1 (v2-scale normal1 (/ path-w 2))
+        normal2 (v2-scale normal2 (/ path-w 2))
+        start1  (mapv + [start-x  start-y]  normal1)
+        start2  (mapv + [start-x  start-y]  normal2)
+        target1 (mapv + [target-x target-y] normal1)
+        target2 (mapv + [target-x target-y] normal2)]
+    [start1 target1 start2 target2]))
+
+(defn- affected-targets
+  [active-entities raycaster entity]
+  (->> active-entities
+       (filter #(:entity/species @%))
+       (filter #(line-of-sight? raycaster entity @%))
+       (remove #(:entity/player? @%))))
+
+(def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
+(def ^:private spiderweb-duration 5)
+
+(defn animation-entity [game-db position animation-k]
+  (assert (keyword? animation-k))
+  (let [{:keys [entity/animation]} (safe-get game-db animation-k)]
+    (spawn-effect position
+                  {:entity/animation (assoc animation :delete-after-stopped? true)})))
+
+(defn spawn-effect* [v effect-ctx game-db fsms entity*]
+  (let [source (:effect/source effect-ctx)
+        position (:effect/target-position effect-ctx)]
+    [[:tx/sound "bfxr_curse.wav"]
+     [:tx/spawn-entity (entity* (animation-entity game-db position :audiovisuals/spawn))]
+     [:tx/spawn-entity (entity* (spawn-creature {:position position
+                                                 :creature-property v
+                                                 :components {:entity/fsm {:fsm (:npc fsms)
+                                                                           :initial-state :npc-idle}
+                                                              :entity/faction (:entity/faction @source)}}))]]))
+
+(defn target-all-effect [v effect-ctx affected-targets applicable-effect-txs entity*]
+  (let [source (:effect/source effect-ctx)
+        source* @source]
+    (mapcat (fn [target]
+              (cons [:tx/spawn-entity
+                     (entity* (spawn-line {:start (:entity/position source*)
+                                           :end (:entity/position @target)
+                                           :duration 0.05
+                                           :color (color/float-bits 1 0 0 0.75)
+                                           :thick? true}))]
+                    (applicable-effect-txs {:effect/source source
+                                            :effect/target target}
+                                           (:entity-effects v))))
+            (affected-targets source*))))
+
+(defn convert-effect [_v effect-ctx game-db entity*]
+  (let [source (:effect/source effect-ctx)
+        target (:effect/target effect-ctx)]
+    [[:tx/sound "bfxr_burrow.wav"]
+     [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position @target) :audiovisuals/convert))]
+     [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
+
+(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs entity*]
+  (let [source (:effect/source effect-ctx)
+        target (:effect/target effect-ctx)
+        body        @source
+        target-body @target
+        {:keys [maxrange entity-effects]} v]
+    (if (in-range? body target-body maxrange)
+      (cons [:tx/spawn-entity
+             (entity* (spawn-line
+                        {:start (start-point body target-body)
+                         :end (:entity/position target-body)
+                         :duration 0.05
+                         :color (color/float-bits 1 0 0 0.75)
+                         :thick? true}))]
+            (applicable-effect-txs effect-ctx entity-effects))
+      [[:tx/sound "bfxr_fisthit.wav"]
+       [:tx/spawn-entity (entity* (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground))]])))
+
+(defn damage-effect [v effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs]
+  (let [source (:effect/source effect-ctx)
+        target (:effect/target effect-ctx)
+        source* @source
+        target* @target
+        hp (get-hitpoints (:entity/stats target*))]
+    (cond
+      (zero? (hp 0))
+      nil
+
+      (not (:entity/stats target*))
+      nil
+
+      (and (:entity/stats source*)
+           (:entity/stats target*)
+           (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
+      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 #(timer-create % elapsed-time)]]
+
+      :else
+      (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
+                      (:damage/min-max (calc-damage (:entity/stats source*)
+                                                    (:entity/stats target*)
+                                                    v))
+                      (:damage/min-max v))
+            dmg-amount (let [[lower upper] min-max]
+                         (+ lower (rand-int (inc (- upper lower)))))
+
+            new-hp-val (max (- (hp 0) dmg-amount)
+                            0)
+            dmg-text (str "[RED]" dmg-amount "[]")]
+        (concat
+          [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
+           [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
+           [:tx/sound "bfxr_normalhit.wav"]
+           [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position target*) :audiovisuals/damage))]]
+          (if (zero? new-hp-val)
+            (kill-txs target)
+            (tx-event-txs target :alert)))))))
+
+(defn kill-effect [_v effect-ctx kill-txs]
+  (kill-txs (:effect/target effect-ctx)))
+
+(defn spiderweb-effect [_v effect-ctx elapsed-time]
+  (let [target (:effect/target effect-ctx)]
+    ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
+    (when-not (:entity/temp-modifier @target)
+      [[:tx/swap target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
+                                                     :counter (timer-create spiderweb-duration elapsed-time)}]
+       [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
+
+
 ; maybe the whole 'active-skill' or 'delayed-action'
 ; needs to be ONE data structure
 ; and projectile effects we do separate (first without schema/db later we see?)
@@ -2876,16 +2877,78 @@
     :effects.target/stun (and (:effect/target effect-ctx)
                               (:entity/fsm @(:effect/target effect-ctx)))))
 
+(defn effects->txs [foo** effect-ctx effects create-projectile game-db fsms entity* elapsed-time tx-event-txs kill-txs affected-targets*]
+  (mapcat (fn [[k v]]
+            (case k
+              :effects/projectile (projectile-effect v effect-ctx create-projectile)
+              :effects/spawn (spawn-effect* v effect-ctx game-db fsms entity*)
+              :effects/target-all (target-all-effect v effect-ctx affected-targets* foo** entity*)
+              :effects/target-entity (target-entity-effect v effect-ctx game-db foo** entity*)
+              :effects.target/convert (convert-effect v effect-ctx game-db entity*)
+              :effects.target/damage (damage-effect v effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs)
+              :effects.target/kill (kill-effect v effect-ctx kill-txs)
+              :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs)
+              :effects.target/spiderweb (spiderweb-effect v effect-ctx elapsed-time)
+              :effects.target/stun (let [duration v]
+                                     (tx-event-txs (:effect/target effect-ctx) :stun duration))))
+          (filter #(effect-applicable? % effect-ctx) effects)))
 
-; :projectiles/black
-; {:effects.target/damage {:damage/min-max [4 8]},
-;   :effects.target/stun 0.5}
+(defn effect-useful? [[k v] effect-ctx ray-blocked?]
+  (case k
+    :effects/projectile
+    (let [{:keys [projectile/max-range] :as projectile} v
+          source-p (:entity/position @(:effect/source effect-ctx))
+          target-p (:entity/position @(:effect/target effect-ctx))]
+      (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
+                                                                               target-p
+                                                                               (:projectile/size projectile))]
+                  (or
+                    (ray-blocked? start1 target1)
+                    (ray-blocked? start2 target2))))
+           (< (v2-distance source-p target-p)
+              max-range)))
 
-; :entity-effects {:effects.target/kill true}
-; :projectiles/double-fireball
+    :effects/target-all
+    false
+
+    :effects/target-entity
+    (in-range? @(:effect/source effect-ctx)
+               @(:effect/target effect-ctx)
+               (:maxrange v))
+
+    true))
 
 (defn effects-applicable? [effects effect-ctx]
   (seq (filter #(effect-applicable? % effect-ctx) effects)))
+
+(defn effects-useful? [effects effect-ctx raycaster-blocked?]
+  (->> effects
+       (filter (fn [e] (effect-applicable? e effect-ctx)))
+       (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
+
+(defn usable-state [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
+  (cond
+    cooling-down?
+    :cooldown
+
+    (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
+    :not-enough-mana
+
+    (not (effects-applicable? effects effect-ctx))
+    :invalid-params
+
+    :else
+    :usable))
+
+(defn choose-skill [raycaster-blocked? entity effect-ctx]
+  (->> entity
+       :entity/skills
+       vals
+       (sort-by :skill/cost)
+       reverse
+       (filter #(and (= :usable (usable-state % entity effect-ctx))
+                     (effects-useful? (:skill/effects %) effect-ctx raycaster-blocked?)))
+       first))
 
 (defn active-skill-tick
   [{:keys [skill effect-ctx counter]} 
@@ -3237,60 +3300,6 @@
 
     nil))
 
-(defn effect-useful? [[k v] effect-ctx ray-blocked?]
-  (case k
-    :effects/projectile
-    (let [{:keys [projectile/max-range] :as projectile} v
-          source-p (:entity/position @(:effect/source effect-ctx))
-          target-p (:entity/position @(:effect/target effect-ctx))]
-      (and (not (let [[start1 target1 start2 target2] (double-ray-endpositions source-p
-                                                                               target-p
-                                                                               (:projectile/size projectile))]
-                  (or
-                    (ray-blocked? start1 target1)
-                    (ray-blocked? start2 target2))))
-           (< (v2-distance source-p target-p)
-              max-range)))
-
-    :effects/target-all
-    false
-
-    :effects/target-entity
-    (in-range? @(:effect/source effect-ctx)
-               @(:effect/target effect-ctx)
-               (:maxrange v))
-
-    true))
-
-(defn usable-state [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
-  (cond
-    cooling-down?
-    :cooldown
-
-    (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
-    :not-enough-mana
-
-    (not (effects-applicable? effects effect-ctx))
-    :invalid-params
-
-    :else
-    :usable))
-
-(defn effects-useful? [effects effect-ctx raycaster-blocked?]
-  (->> effects
-       (filter (fn [e] (effect-applicable? e effect-ctx)))
-       (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
-
-(defn choose-skill [raycaster-blocked? entity effect-ctx]
-  (->> entity
-       :entity/skills
-       vals
-       (sort-by :skill/cost)
-       reverse
-       (filter #(and (= :usable (usable-state % entity effect-ctx))
-                     (effects-useful? (:skill/effects %) effect-ctx raycaster-blocked?)))
-       first))
-
 (defn kill-txs* [tx-event-txs eid]
   (concat (tx-event-txs eid :kill)
           (if (:entity/player? @eid)
@@ -3486,21 +3495,8 @@
         affected-targets* (fn [entity]
                             (affected-targets @active-entities @raycaster entity))
         ; maybe just make 'effects queries together with effect-ctx' ? 
-        mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
-                        (mapcat (fn [[k v]]
-                                  (case k
-                                    :effects/projectile (projectile-effect v effect-ctx create-projectile)
-                                    :effects/spawn (spawn-effect* v effect-ctx game-db fsms entity*)
-                                    :effects/target-all (target-all-effect v effect-ctx affected-targets* applicable-effect-txs entity*)
-                                    :effects/target-entity (target-entity-effect v effect-ctx game-db applicable-effect-txs entity*)
-                                    :effects.target/convert (convert-effect v effect-ctx game-db entity*)
-                                    :effects.target/damage (damage-effect v effect-ctx game-db @elapsed-time entity* kill-txs tx-event-txs)
-                                    :effects.target/kill (kill-effect v effect-ctx kill-txs)
-                                    :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db @elapsed-time entity* kill-txs tx-event-txs)
-                                    :effects.target/spiderweb (spiderweb-effect v effect-ctx @elapsed-time)
-                                    :effects.target/stun (let [duration v]
-                                                           (tx-event-txs (:effect/target effect-ctx) :stun duration))))
-                                (filter #(effect-applicable? % effect-ctx) effects)))
+        mk-effect-txs (fn foo** [effect-ctx effects]
+                        (effects->txs foo** effect-ctx effects create-projectile game-db fsms entity* @elapsed-time tx-event-txs kill-txs affected-targets*))
         choose-skill (fn [& params]
                        (apply choose-skill (partial raycaster-blocked? @raycaster) params))
         grid (atom nil)
