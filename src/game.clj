@@ -3827,9 +3827,6 @@
     (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid)
     (reset! unit-scale 1)))
 
-; 645
-; too many states to keep in sync ! one state persistent ? non platform data?
-; with functions keeping it proper
 (defn game-listener 
   [{:keys [game-db
            build-property
@@ -3861,11 +3858,19 @@
            ]
     :as game-config}]
   (let [
+        active-skill-radius (let [tile-size 48
+                                  image-width 32]
+                              (/ (/ image-width tile-size) 2))
+
         elapsed-time (atom 0)
+
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
+
         id-counter (atom 0)
+
         generate-id!* #(swap! id-counter inc)
+
         entity* (fn
                   ([entity]
                    (assoc (construct-entity entity create-timer*)
@@ -3873,6 +3878,7 @@
                   ([entity id]
                    (assoc (construct-entity entity create-timer*)
                           :entity/id id)))
+
         create-projectile (fn [foo bar]
                             (entity* (spawn-projectile foo bar)))
         create-entity-state (fn [state-args entity]
@@ -3887,7 +3893,6 @@
         active-entities (atom nil)
         affected-targets* (fn [entity]
                             (affected-targets @active-entities @raycaster entity))
-        ; maybe just make 'effects queries together with effect-ctx' ? 
         mk-effect-txs (fn foo** [effect-ctx effects]
                         (effects->txs foo** effect-ctx effects create-projectile game-db fsms entity* @elapsed-time tx-event-txs kill-txs affected-targets*))
         choose-skill (fn [& params]
@@ -3907,9 +3912,6 @@
         update-message-counter! (fn [{:keys [get-delta-time]}]
                                   (message-counter-update! player-message message-duration-seconds (get-delta-time)))
         paused? (atom false)
-        active-skill-radius (let [tile-size 48
-                                  image-width 32]
-                              (/ (/ image-width tile-size) 2))
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
         content-grid (atom nil)
@@ -3919,101 +3921,6 @@
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
         potential-field-cache (atom nil)
-      handle-txs! (fn [{:keys [play-sound!
-                               show-modal!
-                               set-item!
-                               remove-item!
-                               toggle-inventory-visible!
-                               set-skill!]} 
-                       txs]
-                           (let [k->txs {
-                                         :tx/swap swap!
-                                         :tx/spawn-entity 
-                                         (fn [entity]
-                                           (spawn-entity! entity-ids @content-grid @grid entity))
-                                         :tx/update-position
-                                         (fn [eid]
-                                           (update-entity-position! @content-grid @grid eid))
-                                         :tx/remove-entity
-                                         (fn [eid]
-                                           (remove-entity!* entity-ids @content-grid @grid eid))
-                                         :tx/modal show-modal!
-                                         :tx/set-item 
-                                         (fn [cell item]
-                                           (set-item! cell (:entity/image item) (item-info-text item)))
-                                         :tx/sound play-sound! 
-                                         :tx/remove-item remove-item!
-                                         :tx/toggle-inventory-visible toggle-inventory-visible!
-                                         :tx/show-message
-                                         (fn [message]
-                                           (reset! player-message {:text message :counter 0}))
-                                         :tx/set-skill set-skill!
-                                         }]
-                             (doseq [[k & params] txs]
-                               (try (apply (safe-get k->txs k) params)
-                                    (catch Throwable t
-                                      (throw (ex-info "handle-txs! error" 
-                                                      {:k k :params params}
-                                                      t)))))))
-primary-interaction! (fn [caps]
-                       (primary-interaction! handle-txs! 
-                                             (player-eid)
-                                             @mouseover-eid
-                                             tx-event-txs
-                                             entity*
-                                             create-timer*
-                                             caps))
-init-game-state! (fn [capabilities textures image->texture-region]
-                   (let [{:keys [tiled-map
-                                 start-position]} (create-level! textures image->texture-region)]
-                     (reset! tiled-map* tiled-map)
-                     (reset! id-counter 0)
-                     (reset! entity-ids {})
-                     (let [props (tiled-map/properties tiled-map)
-                           width (map-properties/get props "width")
-                           height (map-properties/get props "height")
-                           g (create-grid tiled-map)]
-                       (reset! grid g) 
-                       (reset! content-grid (create-content-grid width height 16))
-                       (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
-                                                                         (range height)))
-                                                           (range width)))
-                       (reset! raycaster (create-raycaster g)))
-                     (reset! elapsed-time 0)
-                     (reset! player-id (generate-id!*))
-                     (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                            :creature-property (build-property :creatures/vampire)
-                                                            :components {:entity/fsm {:fsm (:player fsms)
-                                                                                      :initial-state :player-idle}
-                                                                         :entity/faction :good
-                                                                         :entity/player? true
-                                                                         :entity/free-skill-points 3
-                                                                         :entity/clickable {:type :clickable/player}
-                                                                         :entity/click-distance-tiles 1.5}})
-                                           @player-id)]
-                       (handle-txs! capabilities 
-                                    (concat [[:tx/spawn-entity entity]]
-                                            (player-ui-txs #(info-text % @elapsed-time) entity)
-                                            (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
-      clicked-inventory-cell! (fn [capabilities cell]
-                                (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
-    when-not-paused-updates! (fn [{:keys [get-delta-time] :as capabilities}]
-                               (handle-txs! capabilities (when-not-paused-updates!* paused?
-                                                                                    max-delta
-                                                                                    elapsed-time
-                                                                                    factions-iterations
-                                                                                    grid
-                                                                                    potential-field-cache
-                                                                                    active-entities
-                                                                                    tx-event-txs 
-                                                                                    mk-effect-txs
-                                                                                    max-speed
-                                                                                    create-timer*
-                                                                                    choose-skill
-                                                                                    line-of-sight?*
-                                                                                    (get-delta-time))))
-remove-destroyed-entities! (fn [capabilities]
-                             (handle-txs! capabilities (destroy-entities game-db entity-ids entity*)))
         state (atom nil)
         ]
     {
@@ -4126,9 +4033,45 @@ remove-destroyed-entities! (fn [capabilities]
                                                                @elapsed-time)
                                                     ""))
                                :skin skin}
+             handle-txs! (fn [{:keys [play-sound!
+                                      show-modal!
+                                      set-item!
+                                      remove-item!
+                                      toggle-inventory-visible!
+                                      set-skill!]} 
+                              txs]
+                           (let [k->txs {
+                                         :tx/swap swap!
+                                         :tx/spawn-entity 
+                                         (fn [entity]
+                                           (spawn-entity! entity-ids @content-grid @grid entity))
+                                         :tx/update-position
+                                         (fn [eid]
+                                           (update-entity-position! @content-grid @grid eid))
+                                         :tx/remove-entity
+                                         (fn [eid]
+                                           (remove-entity!* entity-ids @content-grid @grid eid))
+                                         :tx/modal show-modal!
+                                         :tx/set-item 
+                                         (fn [cell item]
+                                           (set-item! cell (:entity/image item) (item-info-text item)))
+                                         :tx/sound play-sound! 
+                                         :tx/remove-item remove-item!
+                                         :tx/toggle-inventory-visible toggle-inventory-visible!
+                                         :tx/show-message
+                                         (fn [message]
+                                           (reset! player-message {:text message :counter 0}))
+                                         :tx/set-skill set-skill!
+                                         }]
+                             (doseq [[k & params] txs]
+                               (try (apply (safe-get k->txs k) params)
+                                    (catch Throwable t
+                                      (throw (ex-info "handle-txs! error" 
+                                                      {:k k :params params}
+                                                      t)))))))
              inventory-window-opts {:get-mouse-position get-input-position
                                     :on-click-cell (fn [_event cell]
-                                                     (clicked-inventory-cell! capabilities cell))
+                                                     (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
                                     :draw-cell-rect! (fn [x y mouseover? cell]
                                                        (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (color/float-bits 0.5 0.5 0.5 1))
                                                        (let [player-entity @(player-eid)]
@@ -4226,7 +4169,37 @@ remove-destroyed-entities! (fn [capabilities]
                                                 (draw-player-message!))})]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
-         (init-game-state! capabilities textures image->texture-region)
+         (let [{:keys [tiled-map
+                       start-position]} (create-level! textures image->texture-region)]
+           (reset! tiled-map* tiled-map)
+           (reset! id-counter 0)
+           (reset! entity-ids {})
+           (let [props (tiled-map/properties tiled-map)
+                 width (map-properties/get props "width")
+                 height (map-properties/get props "height")
+                 g (create-grid tiled-map)]
+             (reset! grid g) 
+             (reset! content-grid (create-content-grid width height 16))
+             (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
+                                                               (range height)))
+                                                 (range width)))
+             (reset! raycaster (create-raycaster g)))
+           (reset! elapsed-time 0)
+           (reset! player-id (generate-id!*))
+           (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                  :creature-property (build-property :creatures/vampire)
+                                                  :components {:entity/fsm {:fsm (:player fsms)
+                                                                            :initial-state :player-idle}
+                                                               :entity/faction :good
+                                                               :entity/player? true
+                                                               :entity/free-skill-points 3
+                                                               :entity/clickable {:type :clickable/player}
+                                                               :entity/click-distance-tiles 1.5}})
+                                 @player-id)]
+             (handle-txs! capabilities 
+                          (concat [[:tx/spawn-entity entity]]
+                                  (player-ui-txs #(info-text % @elapsed-time) entity)
+                                  (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
          (reset! state {:dispose! (fn []
                                     (disposable/dispose! batch)
                                     (run! disposable/dispose! (vals cursors))
@@ -4249,10 +4222,29 @@ remove-destroyed-entities! (fn [capabilities]
                                                           (unproject viewport (get-input-position)))
                                    (update-active-entities! active-entities content-grid player-eid)
                                    (set-camera-position! viewport (:entity/position @(player-eid)))
-                                   (primary-interaction! capabilities)
+                                   (primary-interaction! handle-txs! 
+                                                         (player-eid)
+                                                         @mouseover-eid
+                                                         tx-event-txs
+                                                         entity*
+                                                         create-timer*
+                                                         capabilities)
                                    (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
-                                   (when-not-paused-updates! capabilities)
-                                   (remove-destroyed-entities! capabilities)
+                                   (handle-txs! capabilities (when-not-paused-updates!* paused?
+                                                                                        max-delta
+                                                                                        elapsed-time
+                                                                                        factions-iterations
+                                                                                        grid
+                                                                                        potential-field-cache
+                                                                                        active-entities
+                                                                                        tx-event-txs 
+                                                                                        mk-effect-txs
+                                                                                        max-speed
+                                                                                        create-timer*
+                                                                                        choose-skill
+                                                                                        line-of-sight?*
+                                                                                        (get-delta-time)))
+                                   (handle-txs! capabilities (destroy-entities game-db entity-ids entity*))
                                    (key-pressed-checks! controls viewport key-pressed?)
                                    (key-just-pressed-checks! controls stage key-just-pressed?)
                                    (update-message-counter! capabilities)
