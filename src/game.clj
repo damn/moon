@@ -1424,12 +1424,10 @@
 
 (defn- grid->tiled-map
   [schema-tiled-map grid]
-  (let [copy-tile (memoize
+  (let [copy-tile (memoize 
                    (fn [tile]
-                     (assert tile)
-                     (if (instance? StaticTiledMapTile tile)
-                       (StaticTiledMapTile. ^StaticTiledMapTile tile)
-                       (static-tiled-map-tile tile))))]
+                     (assert (instance? StaticTiledMapTile tile))
+                     (StaticTiledMapTile. ^StaticTiledMapTile tile)))]
     {:properties (merge (let [props (get-properties schema-tiled-map)]
                           (zipmap (map-properties/get-keys props)
                                   (map-properties/get-values props)))
