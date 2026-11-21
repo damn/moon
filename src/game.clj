@@ -523,11 +523,11 @@
           (recur remaining result))))
 
 (defn create-textures
-  [files {:keys [folder extensions]}]
+  [internal {:keys [folder extensions]}]
   (into {}
-        (for [path (->> (recursively-search (files/internal files folder) extensions)
+        (for [path (->> (recursively-search (internal folder) extensions)
                         (map #(str/replace-first % folder "")))]
-          [path (texture/create (files/internal files path))])))
+          [path (texture/create (internal path))])))
 
 (defn get-texture-region
   [textures {:keys [image/file image/bounds]}]
@@ -2431,8 +2431,8 @@
                          (doto (orthographic-camera/create)
                            (orthographic-camera/set-to-ortho! false world-width world-height)))))
 
-(defn create-default-font! [files {:keys [path size quality-scaling use-integer-positions?]}]
-  (let [generator (free-type-font-generator/create (files/internal files path))
+(defn create-default-font! [internal {:keys [path size quality-scaling use-integer-positions?]}]
+  (let [generator (free-type-font-generator/create (internal path))
         parameter (doto (font-parameter/create)
                     (font-parameter/set-size! (* size quality-scaling))
                     (font-parameter/set-min-filter! texture-filter/linear)
@@ -3838,8 +3838,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         ]
     {
      :create!
-     (fn [{:keys [files
-                  graphics 
+     (fn [{:keys [internal
                   get-input-position 
                   set-input-processor! 
                   create-cursor 
@@ -3850,11 +3849,11 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (colors/put "PRETTY_NAME" (color/create 0.84 0.8 0.52 1))
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [batch (sprite-batch/create)
-             textures (create-textures files (:textures game-config))
+             textures (create-textures internal (:textures game-config))
              default-font (create-font font-params)
              shape-drawer-texture (white-pixel-texture)
-             skin (create-skin! (files/internal files (:skin game-config)))
-             sounds (into {} (for [path (:sounds game-config)] [path (new-sound (files/internal files path))]))
+             skin (create-skin! (internal (:skin game-config)))
+             sounds (into {} (for [path (:sounds game-config)] [path (new-sound (internal path))]))
              play-sound!* (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
              stage (stage/create (fit-viewport/create (:width (:stage game-config))
@@ -4164,10 +4163,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         tiled-map-color-setter (constantly (color/float-bits color/white))
         state (atom nil)]
     {:create!
-     (fn [{:keys [files input set-input-processor!]}]
+     (fn [{:keys [internal set-input-processor!]}]
        (let [batch (sprite-batch/create)
-             skin (skin/create (files/internal files "skin/uiskin.json"))
-             textures (create-textures files
+             skin (skin/create (internal "skin/uiskin.json"))
+             textures (create-textures internal
                                        {:folder "resources/"
                                         :extensions #{"png" "bmp"}})
              viewport (fit-viewport/create world-width
@@ -4989,18 +4988,18 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         (layout/pack! window)
                         window))]
     {:create!
-     (fn [{:keys [new-sound files set-input-processor!] :as capabilities}]
+     (fn [{:keys [new-sound internal set-input-processor!] :as capabilities}]
        (reset! input (:input capabilities))
        (reset! batch (sprite-batch/create))
-       (reset! skin (skin/create (files/internal files (:skin editor-config))))
+       (reset! skin (skin/create (internal (:skin editor-config))))
        (bitmap-font-data/set-markup-enabled!
         (bitmap-font/data (skin/font @skin "default-font"))
         true)
        (reset! editor-stage (stage/create (fit-viewport/create 1440 900) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
-                              [path (new-sound (files/internal files path))])))
-       (reset! textures (create-textures files (:textures editor-config)))
+                              [path (new-sound (internal path))])))
+       (reset! textures (create-textures internal (:textures editor-config)))
        (set-input-processor! @editor-stage)
        (stage/add-actor! @editor-stage (main-window)))
      :dispose!
@@ -5023,16 +5022,18 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
   (let [audio (gdx/audio)
         files (gdx/files)
         input (gdx/input)
-        graphics (gdx/graphics)]
+        graphics (gdx/graphics)
+        internal (fn [path] (files/internal files path))]
     {
      :get-frames-per-second (fn [] (graphics/frames-per-second graphics))
      :sprite-batch! sprite-batch/create
      :white-pixel-texture white-pixel-texture
-     :create-font (fn [params] (create-default-font! files params))
+     :internal internal
+     :create-font (fn [params] (create-default-font! internal params))
      :new-sound (fn [file-handle]
                   (audio/new-sound audio file-handle))
      :create-cursor (fn [[path [hotspot-x hotspot-y]]]
-                      (let [pixmap (pixmap/create (files/internal files path))
+                      (let [pixmap (pixmap/create (internal path))
                             cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
                         (disposable/dispose! pixmap)
                         cursor))
@@ -5050,7 +5051,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :key-just-pressed? #(input/key-just-pressed? input %)
      :button-just-pressed? #(input/button-just-pressed? input %)
      :audio    audio
-     :files    files
      :graphics graphics
      :input    input
      }))
@@ -5116,9 +5116,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                          :scale 2
                          :up? true}}]]
     {:create!
-     (fn [{:keys [files]}]
+     (fn [{:keys [internal]}]
        (reset! batch (sprite-batch/create))
-       (reset! font (create-default-font! files
+       (reset! font (create-default-font! internal
                                           {:path "fonts/films.EXL_____.ttf"
                                            :size 16
                                            :quality-scaling 2
