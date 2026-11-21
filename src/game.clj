@@ -2574,13 +2574,13 @@
     (rectangle! shape-drawer x y width height color-float-bits)))
 
 (defn draw-entities!
-  [draw-component! shape-drawer raycaster active-entities player-entity show-body-bounds? render-z-order render-layers]
+  [draw-component! shape-drawer line-of-sight? active-entities player-entity show-body-bounds? render-z-order render-layers]
   (doseq [[z-order entities] (sort-by (comp render-z-order key) <
                                       (group-by :entity/z-order (map deref active-entities)))
           render-layer render-layers
           entity entities
           :when (or (= z-order :z-order/effect)
-                    (line-of-sight? raycaster player-entity entity))]
+                    (line-of-sight? player-entity entity))]
     (when show-body-bounds?
       (draw-entity-rectangle! shape-drawer
                               entity
@@ -2703,10 +2703,10 @@
     [start1 target1 start2 target2]))
 
 (defn- affected-targets
-  [active-entities raycaster entity]
+  [active-entities line-of-sight? entity]
   (->> active-entities
        (filter #(:entity/species @%))
-       (filter #(line-of-sight? raycaster entity @%))
+       (filter #(line-of-sight? entity @%))
        (remove #(:entity/player? @%))))
 
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
@@ -2895,12 +2895,12 @@
 
     true))
 
-(defn effect-render! [[k v] effect-ctx shape-drawer active-entities raycaster]
+(defn effect-render! [[k v] effect-ctx shape-drawer active-entities line-of-sight?]
   (case k
     :effects/target-all
     (let [source (:effect/source effect-ctx)
           source* @source]
-      (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
+      (doseq [target* (map deref (affected-targets active-entities line-of-sight? source*))]
         (line! shape-drawer
                (:entity/position source*)
                (:entity/position target*)
@@ -2921,9 +2921,9 @@
 
     nil))
 
-(defn effects-render! [effects effect-ctx shape-drawer active-entities raycaster] 
+(defn effects-render! [effects effect-ctx shape-drawer active-entities line-of-sight?] 
   (doseq [effect effects]
-    (effect-render! effect effect-ctx shape-drawer active-entities raycaster)))
+    (effect-render! effect effect-ctx shape-drawer active-entities line-of-sight?)))
 
 (defn effects-applicable? [effects effect-ctx]
   (seq (filter #(effect-applicable? % effect-ctx) effects)))
@@ -2934,7 +2934,7 @@
        (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster timer-ratio active-skill-radius]
+  [v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -2952,7 +2952,7 @@
              (math/to-radians (* (float action-counter-ratio) 360))
              (color/float-bits 1 1 1 0.5))
     (draw-texture-region! batch unit-scale (image->texture-region image) [(- (float x) radius) y])
-    (effects-render! effects effect-ctx shape-drawer active-entities raycaster)))
+    (effects-render! effects effect-ctx shape-drawer active-entities line-of-sight?)))
 
 (defn usable-state [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
   (cond
@@ -3603,7 +3603,7 @@
 
 (defn draw-component! 
   [active-entities 
-   raycaster 
+   line-of-sight?
    timer-ratio
    active-skill-radius 
    player-entity 
@@ -3633,13 +3633,13 @@
     :entity/temp-modifier
     (temp-modifier-draw entity shape-drawer)
     :active-skill
-    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster timer-ratio active-skill-radius)
+    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius)
     :npc-sleeping
     (npc-sleeping-draw entity batch default-font unit-scale)
     :stunned
     (stunned-draw entity shape-drawer)))
 
-(defn update-mouseover-eid! [render-z-order raycaster grid player-eid mouseover-eid mouseover-actor world-mouse-position]
+(defn update-mouseover-eid! [render-z-order line-of-sight? grid player-eid mouseover-eid mouseover-actor world-mouse-position]
   (let [old-mouseover-eid @mouseover-eid
         new-eid (if mouseover-actor
                   nil
@@ -3649,7 +3649,7 @@
                     (->> hits
                          (sort-by #((:entity/z-order @%) render-z-order) <)
                          reverse
-                         (filter #(line-of-sight? @raycaster player @%))
+                         (filter #(line-of-sight? player @%))
                          first)))]
     (when old-mouseover-eid
       (swap! old-mouseover-eid dissoc :entity/mouseover?))
@@ -3787,7 +3787,7 @@
     show-potential-field-colors?
     grid
     active-entities
-    raycaster
+    line-of-sight?
     active-skill-radius
     player-eid
     image->texture-region
@@ -3809,7 +3809,7 @@
     (draw-entities! (fn [& params]
                       (apply draw-component! 
                              @active-entities 
-                             @raycaster 
+                             line-of-sight?
                              timer-ratio
                              active-skill-radius
                              @(player-eid)
@@ -3820,7 +3820,7 @@
                              shape-drawer 
                              params))
                     shape-drawer
-                    @raycaster
+                    line-of-sight?
                     @active-entities
                     @(player-eid)
                     @show-body-bounds?
@@ -3899,17 +3899,22 @@
                        (apply tx-event-txs* create-entity-state entity-state-exit! params))
         kill-txs (fn [eid]
                    (kill-txs* tx-event-txs eid))
+
         raycaster (atom nil)
+        init-raycaster! #(reset! raycaster (create-raycaster %))
+        line-of-sight?* (fn [source target]
+                         (line-of-sight? @raycaster source target))
+        ray-blocked?* (fn [start end]
+                        (raycaster-blocked? @raycaster start end))
+
         active-entities (atom nil)
         affected-targets* (fn [entity]
-                            (affected-targets @active-entities @raycaster entity))
+                            (affected-targets @active-entities line-of-sight?* entity))
         mk-effect-txs (fn foo** [effect-ctx effects]
                         (effects->txs foo** effect-ctx effects create-projectile game-db fsms entity* create-timer* tx-event-txs kill-txs affected-targets*))
         choose-skill (fn [& params]
-                       (apply choose-skill (partial raycaster-blocked? @raycaster) params))
+                       (apply choose-skill ray-blocked?* params))
         grid (atom nil)
-        line-of-sight?* (fn [& params]
-                         (apply line-of-sight? @raycaster params))
         entity-ids (atom {})
         player-id (atom nil)
         player-eid (fn []
@@ -4117,7 +4122,7 @@
                                                  batch
                                                  (camera-view-bounds (viewport/camera viewport))
                                                  (tile-color-setter*
-                                                   {:ray-blocked? (partial raycaster-blocked? @raycaster)
+                                                   {:ray-blocked? ray-blocked?*
                                                     :explored-tile-corners explored-tile-corners
                                                     :light-position (let [pos (orthographic-camera/position (viewport/camera viewport))]
                                                                       [(vector3/x pos) (vector3/y pos) (vector3/z pos)])
@@ -4192,7 +4197,7 @@
              (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
                                                                (range height)))
                                                  (range width)))
-             (reset! raycaster (create-raycaster g)))
+             (init-raycaster! g))
            (reset! player-id (generate-id!*))
            (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
                                                   :creature-property (build-property :creatures/vampire)
@@ -4222,7 +4227,7 @@
                                    (viewport/update! viewport width height false))
                         :render! (fn []
                                    (update-mouseover-eid! render-z-order 
-                                                          raycaster 
+                                                          line-of-sight?* 
                                                           grid 
                                                           player-eid 
                                                           mouseover-eid 
@@ -4277,7 +4282,7 @@
                                                             show-potential-field-colors?
                                                             grid
                                                             active-entities
-                                                            raycaster
+                                                            line-of-sight?*
                                                             active-skill-radius
                                                             player-eid
                                                             image->texture-region
