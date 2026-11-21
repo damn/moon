@@ -12,3 +12,6 @@
 
 (defn create-from-texture-region [^TextureRegion texture-region]
   (Image. texture-region))
+
+(defn set-drawable! [^Image image ^Drawable drawable]
+  (.setDrawable image drawable))
