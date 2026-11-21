@@ -2517,33 +2517,32 @@
        [:tx/remove-item cell]
        [:tx/set-item cell item-on-cursor]])))
 
-(defn player-message-actor-create [default-font get-unit-scale]
-  (let [message-duration-seconds 0.5]
-    (doto (actor/create
-            {:act!
-             (fn [this delta]
-               (let [state (actor/user-object this)]
-                 (when (:text @state)
-                   (swap! state update :counter + delta)
-                   (when (>= (:counter @state) message-duration-seconds)
-                     (reset! state nil)))))
-             :draw!
-             (fn [this batch _parent-alpha]
-               (when-let [stage (actor/stage this)]
-                 (let [state (actor/user-object this)
-                       vp-width (viewport/world-width (stage/viewport stage))
-                       vp-height (viewport/world-height (stage/viewport stage))]
-                   (when-let [text (:text @state)]
-                     (draw-text! batch
-                                 default-font
-                                 (get-unit-scale)
-                                 {:x (/ vp-width 2)
-                                  :y (+ (/ vp-height 2) 200)
-                                  :text text
-                                  :scale 2.5
-                                  :up? true})))))})
-      (actor/set-name! "player-message")
-      (actor/set-user-object! (atom nil)))))
+(defn player-message-actor-create [message-duration-seconds default-font get-unit-scale]
+  (doto (actor/create
+          {:act!
+           (fn [this delta]
+             (let [state (actor/user-object this)]
+               (when (:text @state)
+                 (swap! state update :counter + delta)
+                 (when (>= (:counter @state) message-duration-seconds)
+                   (reset! state nil)))))
+           :draw!
+           (fn [this batch _parent-alpha]
+             (when-let [stage (actor/stage this)]
+               (let [state (actor/user-object this)
+                     vp-width (viewport/world-width (stage/viewport stage))
+                     vp-height (viewport/world-height (stage/viewport stage))]
+                 (when-let [text (:text @state)]
+                   (draw-text! batch
+                               default-font
+                               (get-unit-scale)
+                               {:x (/ vp-width 2)
+                                :y (+ (/ vp-height 2) 200)
+                                :text text
+                                :scale 2.5
+                                :up? true})))))})
+    (actor/set-name! "player-message")
+    (actor/set-user-object! (atom nil))))
 
 (defn windows-create [actors]
   (doto (group/create)
@@ -3943,7 +3942,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              item-on-cursor-actor {:act! (fn [_this _delta])
                                    :draw! (fn [_this _batch _parent-alpha]
                                             (draw-item-on-cursor!))}
-             player-message-actor (player-message-actor-create default-font get-unit-scale)]
+             message-duration-seconds 0.5
+             player-message-actor (player-message-actor-create message-duration-seconds default-font get-unit-scale)]
          (doseq [actor [action-bar
                         dev-menu
                         hp-mana-bars
