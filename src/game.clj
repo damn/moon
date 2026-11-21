@@ -2210,13 +2210,6 @@
             (place-items items))
         entity))))
 
-(defn- spawn-effect [position components]
-  (assoc components
-         :entity/width 0.5
-         :entity/height 0.5
-         :entity/z-order :z-order/effect
-         :entity/position position))
-
 (defn timer-create [duration elapsed-time]
   {:pre [(>= duration 0)]}
   {:duration duration
@@ -2233,9 +2226,12 @@
                       :text (:property/pretty-name item)}})
 
 (defn- spawn-line [{:keys [start end duration color thick?]}]
-  (spawn-effect start
-                {:entity/line-render {:thick? thick? :end end :color color}
-                 :entity/delete-after-duration duration}))
+  {:entity/position start
+   :entity/width 0.5
+   :entity/height 0.5
+   :entity/z-order :z-order/effect
+   :entity/line-render {:thick? thick? :end end :color color}
+   :entity/delete-after-duration duration})
 
 (defn- spawn-projectile
   [{:keys [position direction faction]}
@@ -2719,8 +2715,11 @@
 (defn animation-entity [game-db position animation-k]
   (assert (keyword? animation-k))
   (let [{:keys [entity/animation]} (safe-get game-db animation-k)]
-    (spawn-effect position
-                  {:entity/animation (assoc animation :delete-after-stopped? true)})))
+    {:entity/position position
+     :entity/width 0.5
+     :entity/height 0.5
+     :entity/z-order :z-order/effect
+     :entity/animation (assoc animation :delete-after-stopped? true)}))
 
 (defn spawn-effect* [v effect-ctx game-db fsms entity*]
   (let [source (:effect/source effect-ctx)
@@ -3322,10 +3321,13 @@
   (case k
     :npc-sleeping
     [[:tx/swap eid add-text-effect "[WHITE]!" 1 create-timer]
-     [:tx/spawn-entity (entity* (spawn-effect (:entity/position @eid) 
-                                              {:entity/alert-friendlies-after-duration
-                                               {:counter (create-timer 0.2)
-                                                :faction (:entity/faction @eid)}}))]]
+     [:tx/spawn-entity (entity* {:entity/position (:entity/position @eid)
+                                 :entity/width 0.5
+                                 :entity/height 0.5
+                                 :entity/z-order :z-order/effect
+                                 :entity/alert-friendlies-after-duration
+                                 {:counter (create-timer 0.2)
+                                  :faction (:entity/faction @eid)}})]]
 
     nil))
 
