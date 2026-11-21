@@ -3933,22 +3933,22 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              inventory-window (build-inventory-window inventory-window-opts)
              windows (windows-create [info-window
                                       inventory-window])
-             player-state-draw-actor
-             (actor/create
-               {:act! (fn [_this _delta])
-                :draw! (fn [_this _batch _parent-alpha]
-                         (when-let [item (:entity/item-on-cursor @(player-eid))]
-                           (draw-texture-region! batch
-                                                 (get-unit-scale)
-                                                 (image->texture-region (:entity/image item))
-                                                 (unproject (stage/viewport stage) (get-input-position))
-                                                 {:center? true})))})
+             draw-item-on-cursor! (fn []
+                                    (when-let [item (:entity/item-on-cursor @(player-eid))]
+                                      (draw-texture-region! batch
+                                                            (get-unit-scale)
+                                                            (image->texture-region (:entity/image item))
+                                                            (unproject (stage/viewport stage) (get-input-position))
+                                                            {:center? true})))
+             item-on-cursor-actor {:act! (fn [_this _delta])
+                                   :draw! (fn [_this _batch _parent-alpha]
+                                            (draw-item-on-cursor!))}
              player-message-actor (player-message-actor-create default-font get-unit-scale)]
          (doseq [actor [action-bar
                         dev-menu
                         hp-mana-bars
                         windows
-                        player-state-draw-actor
+                        (actor/create item-on-cursor-actor)
                         player-message-actor]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
