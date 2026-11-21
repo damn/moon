@@ -3739,6 +3739,9 @@ init-game-state! (fn [textures image->texture-region]
                                                       (:height (:stage game-config)))
                                  batch)
              image->texture-region #(get-texture-region textures %)
+             ; TODO world handle
+             ; then ui handle
+             ; then audio handle?
              handle-txs! (fn [txs]
                            (let [k->txs {
                                          :tx/swap swap!
@@ -3979,85 +3982,93 @@ init-game-state! (fn [textures image->texture-region]
              camera-position (:entity/position @(player-eid))
              mouseover-actor (let [[x y] (unproject (stage/viewport stage) mouse-position)]
                                (stage/hit stage x y))
-             world-mouse-position (unproject viewport mouse-position)]
-         (clear-screen! 0 0 0 0)
+             world-mouse-position (unproject viewport mouse-position)
+             draw-world-unit-scale! (fn []
+                                      (with-line-width shape-drawer world-unit-scale
+                                        (reset! unit-scale world-unit-scale)
+                                        (draw-tile-grid shape-drawer viewport @show-tile-grid?)
+                                        (draw-cell-debug factions-iterations
+                                                         shape-drawer viewport
+                                                         @show-cell-entities?
+                                                         @show-cell-occupied?
+                                                         @show-potential-field-colors?
+                                                         @grid)
+                                        (draw-entities! (fn [& params]
+                                                          (apply draw-component! image->texture-region @unit-scale batch default-font shape-drawer mouse-position params))
+                                                        shape-drawer
+                                                        @raycaster
+                                                        @active-entities
+                                                        @(player-eid)
+                                                        @show-body-bounds?
+                                                        render-z-order
+                                                        render-layers)
+                                        (highlight-mouseover-tile shape-drawer (unproject viewport mouse-position) @grid)
+                                        (reset! unit-scale 1)))
+             draw-tiled-map!* (fn []
+                                (draw-tiled-map! @tiled-map*
+                                                 batch
+                                                 (camera-view-bounds (viewport/camera viewport))
+                                                 (tile-color-setter*
+                                                   {:ray-blocked? (partial raycaster-blocked? @raycaster)
+                                                    :explored-tile-corners explored-tile-corners
+                                                    :light-position (let [pos (orthographic-camera/position (viewport/camera viewport))]
+                                                                      [(vector3/x pos) (vector3/y pos) (vector3/z pos)])
+                                                    :see-all-tiles? false
+                                                    :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
+                                                    :visible-tile-color (color/float-bits 1 1 1 1)
+                                                    :invisible-tile-color (color/float-bits 0 0 0 1)})
+                                                 world-unit-scale))
+             when-not-paused-updates! #(when-not @paused?
+                                         (let [delta-time (min delta-time max-delta)]
+                                           (swap! elapsed-time + delta-time)
+                                           (doseq [[faction max-iterations] factions-iterations]
+                                             (update! @grid
+                                                      potential-field-cache
+                                                      faction
+                                                      @active-entities
+                                                      max-iterations))
+                                           (doseq [eid @active-entities
+                                                   component @eid]
+                                             (handle-txs! (tick-component component eid delta-time @elapsed-time)))))
+             update-message-counter! #(when (:text @player-message)
+                                        (swap! player-message update :counter + delta-time)
+                                        (when (>= (:counter @player-message) message-duration-seconds)
+                                          (reset! player-message nil)))
+             primary-interaction! (fn []
+                                    (let [player-eid (player-eid)
+                                          get-selected-skill #(-> (stage/root stage)
+                                                                  (group/find-actor "moon.ui.action-bar")
+                                                                  selected-skill)
+                                          interaction-state (create-interaction-state mouseover-actor 
+                                                                                      world-mouse-position 
+                                                                                      get-selected-skill)
+                                          cursor-key (get-cursor-key player-eid interaction-state)
+                                          txs (handle-player-input player-eid
+                                                                   interaction-state
+                                                                   stage
+                                                                   mouseover-actor
+                                                                   key-pressed?
+                                                                   button-just-pressed?)]
+                                      (set-cursor! (safe-get cursors cursor-key))
+                                      (handle-txs! txs)))]
          (update-mouseover-eid! mouseover-actor world-mouse-position)
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
-         (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
-         (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
-         (batch/begin batch)
-         (draw-tiled-map! @tiled-map*
-                          batch
-                          (camera-view-bounds (viewport/camera viewport))
-                          (tile-color-setter*
-                            {:ray-blocked? (partial raycaster-blocked? @raycaster)
-                             :explored-tile-corners explored-tile-corners
-                             :light-position (let [pos (orthographic-camera/position (viewport/camera viewport))]
-                                               [(vector3/x pos) (vector3/y pos) (vector3/z pos)])
-                             :see-all-tiles? false
-                             :explored-tile-color (color/float-bits 0.5 0.5 0.5 1)
-                             :visible-tile-color (color/float-bits 1 1 1 1)
-                             :invisible-tile-color (color/float-bits 0 0 0 1)})
-                          world-unit-scale)
-         (with-line-width shape-drawer world-unit-scale
-           (reset! unit-scale world-unit-scale)
-           (draw-tile-grid shape-drawer viewport @show-tile-grid?)
-           (draw-cell-debug factions-iterations
-                            shape-drawer viewport
-                            @show-cell-entities?
-                            @show-cell-occupied?
-                            @show-potential-field-colors?
-                            @grid)
-           (draw-entities! (fn [& params]
-                             (apply draw-component! image->texture-region @unit-scale batch default-font shape-drawer mouse-position params))
-                           shape-drawer
-                           @raycaster
-                           @active-entities
-                           @(player-eid)
-                           @show-body-bounds?
-                           render-z-order
-                           render-layers)
-           (highlight-mouseover-tile shape-drawer (unproject viewport mouse-position) @grid)
-           (reset! unit-scale 1))
-         (batch/end batch)
-         (let [player-eid (player-eid)
-               get-selected-skill #(-> (stage/root stage)
-                                       (group/find-actor "moon.ui.action-bar")
-                                       selected-skill)
-               interaction-state (create-interaction-state mouseover-actor 
-                                                           world-mouse-position 
-                                                           get-selected-skill)
-               cursor-key (get-cursor-key player-eid interaction-state)
-               txs (handle-player-input player-eid
-                                             interaction-state
-                                             stage
-                                             mouseover-actor
-                                             key-pressed?
-                                             button-just-pressed?)]
-           (set-cursor! (safe-get cursors cursor-key))
-           (handle-txs! txs))
+         (primary-interaction!)
          (update-paused-state! key-just-pressed? key-pressed?)
-         (when-not @paused?
-           (let [delta-time (min delta-time max-delta)]
-             (swap! elapsed-time + delta-time)
-             (doseq [[faction max-iterations] factions-iterations]
-               (update! @grid
-                        potential-field-cache
-                        faction
-                        @active-entities
-                        max-iterations))
-             (doseq [eid @active-entities
-                     component @eid]
-               (handle-txs! (tick-component component eid delta-time @elapsed-time)))))
+         (when-not-paused-updates!)
          (handle-txs! (destroy-entities game-db entity-ids entity*))
          (key-pressed-checks! viewport key-pressed?)
          (key-just-pressed-checks! stage key-just-pressed?)
-         (when (:text @player-message)
-           (swap! player-message update :counter + delta-time)
-           (when (>= (:counter @player-message) message-duration-seconds)
-             (reset! player-message nil)))
+         (update-message-counter!)
          (stage/act! stage)
+         (clear-screen! 0 0 0 0)
+         (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
+         (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
+         (batch/begin batch)
+         (draw-tiled-map!*)
+         (draw-world-unit-scale!)
+         (batch/end batch)
          (stage/draw! stage)))
 
      :resize!
