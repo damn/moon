@@ -24,9 +24,6 @@
    [clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
    [clojure.com.badlogic.gdx.graphics.texture :as texture]
    [clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-filter]
-   [clojure.com.badlogic.gdx.input :as input]
-   [clojure.com.badlogic.gdx.input-buttons :as input-buttons]
-   [clojure.com.badlogic.gdx.input-keys :as input-keys]
    [clojure.com.badlogic.gdx.maps.map-layers :as map-layers]
    [clojure.com.badlogic.gdx.maps.map-properties :as map-properties]
    [clojure.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -82,6 +79,7 @@
    [clojure.set :as set]
    [clojure.space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
    [clojure.string :as str]
+   [game.input :as input]
    [malli.core :as m]
    [malli.error :as me]
    [reduce-fsm :as fsm])
@@ -3033,10 +3031,10 @@
           (filter (comp :entity/destroyed? deref) (vals @entity-ids))))
 
 (defn- movement-vector [key-pressed?]
-  (let [r (when (key-pressed? input-keys/D) [1  0])
-        l (when (key-pressed? input-keys/A) [-1 0])
-        u (when (key-pressed? input-keys/W) [0  1])
-        d (when (key-pressed? input-keys/S) [0 -1])]
+  (let [r (when (key-pressed? :keys/d) [1  0])
+        l (when (key-pressed? :keys/a) [-1 0])
+        u (when (key-pressed? :keys/w) [0  1])
+        d (when (key-pressed? :keys/s) [0 -1])]
     (when (or r l u d)
       (let [v (v2-normalise (reduce #(mapv + %1 %2) [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2-length v))
@@ -3614,7 +3612,7 @@
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
                                   (tx-event-txs player-eid :movement-input move-v)
-                                  (when (button-just-pressed? input-buttons/LEFT)
+                                  (when (button-just-pressed? :buttons/left)
                                     (interaction-state->txs interaction-state stage player-eid entity* create-timer* tx-event-txs)))
 
                                 :player-moving
@@ -4222,28 +4220,28 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                           tiled-map-color-setter
                           world-unit-scale)
          (batch/end batch)
-         (doseq [[k f] {input-keys/MINUS (fn [camera]
-                                           (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.1)))
-                                           (orthographic-camera/update! camera))
-                        input-keys/EQUALS (fn [camera]
-                                            (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.1)))
-                                            (orthographic-camera/update! camera))
-                        input-keys/LEFT (fn [camera]
-                                          (let [pos (orthographic-camera/position camera)]
-                                            (vector3/set-x! pos (- (vector3/x pos) 1))
-                                            (orthographic-camera/update! camera)))
-                        input-keys/RIGHT (fn [camera]
-                                           (let [pos (orthographic-camera/position camera)]
-                                             (vector3/set-x! pos (+ (vector3/x pos) 1))
-                                             (orthographic-camera/update! camera)))
-                        input-keys/UP (fn [camera]
-                                        (let [pos (orthographic-camera/position camera)]
-                                          (vector3/set-y! pos (+ (vector3/y pos) 1))
-                                          (orthographic-camera/update! camera)))
-                        input-keys/DOWN (fn [camera]
-                                          (let [pos (orthographic-camera/position camera)]
-                                            (vector3/set-y! pos (- (vector3/y pos) 1))
-                                            (orthographic-camera/update! camera)))}]
+         (doseq [[k f] {:keys/minus (fn [camera]
+                                      (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.1)))
+                                      (orthographic-camera/update! camera))
+                        :keys/equals (fn [camera]
+                                       (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.1)))
+                                       (orthographic-camera/update! camera))
+                        :keys/left (fn [camera]
+                                     (let [pos (orthographic-camera/position camera)]
+                                       (vector3/set-x! pos (- (vector3/x pos) 1))
+                                       (orthographic-camera/update! camera)))
+                        :keys/right (fn [camera]
+                                      (let [pos (orthographic-camera/position camera)]
+                                        (vector3/set-x! pos (+ (vector3/x pos) 1))
+                                        (orthographic-camera/update! camera)))
+                        :keys/up (fn [camera]
+                                   (let [pos (orthographic-camera/position camera)]
+                                     (vector3/set-y! pos (+ (vector3/y pos) 1))
+                                     (orthographic-camera/update! camera)))
+                        :keys/down (fn [camera]
+                                     (let [pos (orthographic-camera/position camera)]
+                                       (vector3/set-y! pos (- (vector3/y pos) 1))
+                                       (orthographic-camera/update! camera)))}]
            (when (key-pressed? k)
              (f (viewport/camera viewport))))
          (stage/act! stage)
@@ -4964,7 +4962,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                    (group/add-actor! window (actor/create
                                                               {:act!
                                                                (fn [this _delta]
-                                                                 (when (input/key-just-pressed? (gdx/input) input-keys/ENTER)
+                                                                 (when (input/key-just-pressed? (gdx/input) :keys/enter)
                                                                    (on-save this)))
                                                                :draw!
                                                                (fn [_this _batch _parent-alpha])}))
@@ -5031,7 +5029,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :new-cursor (fn [pixmap hotspot-x hotspot-y]
                    (graphics/new-cursor graphics pixmap hotspot-x hotspot-y))
      :set-input-processor! (fn [processor]
-                             (input/set-input-processor! input processor))
+                             (input/set-processor! input processor))
      :clear-screen! (fn [r g b a]
                       (screen-utils/clear r g b a))
      :get-input-position (fn []
@@ -5128,7 +5126,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 
      :render!
      (fn [{:keys [clear-screen! key-just-pressed?]}]
-       (when (key-just-pressed? input-keys/U)
+       (when (key-just-pressed? :keys/u)
          (swap! unit-scale #(if (== ^double % 1.0)
                               world-unit-scale
                               1.0)))
@@ -5477,13 +5475,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                          ; should transcations be self contained ? or systems no intermediary wrong state?
                                          ;:player-item-on-cursor true
                                          }
-                    :controls {:zoom-in input-keys/MINUS
-                               :zoom-out input-keys/EQUALS
-                               :unpause-once input-keys/P
-                               :unpause-continously input-keys/SPACE
-                               :close-windows-key input-keys/ESCAPE
-                               :toggle-inventory input-keys/I
-                               :toggle-entity-info input-keys/E}
+                    :controls {:zoom-in :keys/minus
+                               :zoom-out :keys/equals
+                               :unpause-once :keys/p
+                               :unpause-continously :keys/space
+                               :close-windows-key :keys/escape
+                               :toggle-inventory :keys/i
+                               :toggle-entity-info :keys/e}
                     :cursors (-> "cursors.edn" io/resource slurp edn/read-string)
                     :sounds (-> "sounds.edn" io/resource slurp edn/read-string)
                     :skin "skin/uiskin.json"
