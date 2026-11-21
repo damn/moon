@@ -220,15 +220,6 @@
                      (str (str/capitalize (name stat-k)) ": "
                           (get-value stats stat-k))))))
 
-(defprotocol GetName
-  (get-name [_]))
-
-(defprotocol GetWidth
-  (get-width [_]))
-
-(defprotocol GetHeight
-  (get-height [_]))
-
 (require '[clojure.com.badlogic.gdx.maps.map-layers :as map-layers]
          '[clojure.com.badlogic.gdx.maps.map-properties :as map-properties]
          '[clojure.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -283,10 +274,6 @@
     {:creature/level level
      :tile/id id
      :tile/texture-region texture-region}))
-
-(defprotocol Visible
-  (visible? [_])
-  (set-visible! [_ v]))
 
 (defn tiled-map-tile-layer [width height tilewidth tileheight name visible?]
   (doto (tiled-map-tile-layer/create width height tilewidth tileheight)
@@ -684,60 +671,27 @@
          '[clojure.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
          '[clojure.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
 
-(import '(com.badlogic.gdx.scenes.scene2d Actor
-                                          Event
-                                          Group
-                                          Stage
-                                          Touchable))
+(require '[clojure.com.badlogic.gdx.scenes.scene2d.actor :as actor]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.event :as event]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.group :as group]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.stage :as stage]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.touchable :as touchable])
 (import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener
                                                 ClickListener
                                                 Drawable
                                                 Layout))
 
-(extend-type Actor
-  GetWidth
-  (get-width [this]
-    (.getWidth this))
-  GetHeight
-  (get-height [this]
-    (.getHeight this)))
-
-(defn create-actor [{:keys [act! draw!]}]
-  (proxy [Actor] []
-    (act [delta]
-      (when act!
-        (act! this delta))
-      (let [^Actor this this]
-        (proxy-super act delta)))
-    (draw [batch parent-alpha]
-      (when draw!
-        (draw! batch parent-alpha)))))
-
-(defn get-stage [^Actor actor]
-  (.getStage actor))
-
 (defn- set-label-text-actor [label-widget text-fn]
-  (create-actor
+  (actor/create
     {:act!
-     (fn [this delta]
-       (when (get-stage this)
-         (label/set-text! label-widget (text-fn))))}))
+     (fn [this _delta]
+       (when (actor/stage this)
+         (label/set-text! label-widget (text-fn))))
+     :draw!
+     (fn [_this _batch _parent-alpha])}))
 
 (defn pack! [layout]
   (Layout/.pack layout))
-
-(defprotocol AddActor
-  (add-actor! [_ actor]))
-
-(extend-type Group
-  AddActor
-  (add-actor! [this actor]
-    (.addActor this actor)))
-
-(extend-type Stage
-  AddActor
-  (add-actor! [this actor]
-    (.addActor this actor)))
 
 (defn- add-upd-label!
   ([skin tbl text-fn icon]
@@ -748,50 +702,44 @@
        (table/add! sub-table (:actor c)))
      (table/row! sub-table)
      (pack! sub-table)
-     (add-actor! tbl (set-label-text-actor lbl text-fn))
+     (group/add-actor! tbl (set-label-text-actor lbl text-fn))
      (doto (table/add! tbl sub-table)
        (cell/right!)
        (cell/expand-x!))))
   ([skin tbl text-fn]
    (let [lbl (label/create "" skin)]
-     (add-actor! tbl (set-label-text-actor lbl text-fn))
+     (group/add-actor! tbl (set-label-text-actor lbl text-fn))
      (doto (table/add! tbl lbl)
        (cell/right!)
        (cell/expand-x!)))))
-
-(defn add-listener! [actor listener]
-  (Actor/.addListener actor listener))
 
 (defn create-change-listener [f]
   (proxy [ChangeListener] []
     (changed [event actor]
       (f event actor))))
 
-(defn remove! [^Actor actor]
-  (.remove actor))
-
 (defn- main-table [skin menus update-labels]
   (let [table (table/create)]
     (doseq [cell (for [{:keys [label items]} menus]
                    {:actor
                     (doto (text-button/create label skin)
-                      (add-listener! (create-change-listener
+                      (actor/add-listener! (create-change-listener
                                        (fn [event actor]
-                                         (let [^Stage stage (.getStage ^Event event)]
-                                           (add-actor! stage
+                                         (let [stage (event/stage event)]
+                                           (stage/add-actor! stage
                                                       (let [window (window/create label skin)]
                                                         (doseq [{:keys [label on-click]} items]
                                                           (table/add! window (doto (text-button/create label skin)
-                                                                         (add-listener! (create-change-listener
+                                                                         (actor/add-listener! (create-change-listener
                                                                                           (fn [_event _actor]
                                                                                             (on-click)))))))
                                                         (table/row! window)
                                                         (pack! window)
                                                         (table/add! (window/title-table window)
                                                               (doto (text-button/create "X" skin)
-                                                                (add-listener! (create-change-listener
+                                                                (actor/add-listener! (create-change-listener
                                                                                  (fn [_event _actor]
-                                                                                   (remove! window))))))
+                                                                                   (actor/remove! window))))))
                                                         window)))))))})]
       (table/add! table (:actor cell)))
     (table/row! table)
@@ -803,9 +751,6 @@
           (add-upd-label! skin table update-fn))))
     table))
 
-(defn set-touchable! [actor touchable]
-  (Actor/.setTouchable actor touchable))
-
 (defn create-dev-menu
   [{:keys [menus update-labels skin]}]
   (let [table (table/create)]
@@ -815,7 +760,7 @@
       (cell/colspan! 1))
     (table/row! table)
     (doto (table/add! table (doto (label/create "" skin)
-                        (set-touchable! Touchable/disabled)))
+                        (actor/set-touchable! touchable/disabled)))
       (cell/expand!)
       (cell/fill-x!)
       (cell/fill-y!))
@@ -933,68 +878,30 @@
     (.unproject viewport v2)
     [(.x v2) (.y v2)]))
 
-(defn get-user-object [^Actor actor]
-  (.getUserObject actor))
-
-(defn get-viewport [^Stage stage]
-  (.getViewport stage))
-
-(defprotocol GetX
-  (get-x [_]))
-
-(extend-type Actor
-  GetX
-  (get-x [this]
-    (.getX this)))
-
-(defprotocol GetY
-  (get-y [_]))
-
-(extend-type Actor
-  GetY
-  (get-y [this]
-    (.getY this)))
-
-(defn get-parent [actor]
-  (.getParent ^Actor actor))
-
 (defn create-widget [draw!]
   (proxy [com.badlogic.gdx.scenes.scene2d.ui.Widget] []
     (draw [_batch _parent-alpha]
       (draw! this))))
 
-(defn stage->local-coordinates [^Actor actor [x y]]
-  (let [v2 (.stageToLocalCoordinates actor (Vector2. x y))]
-    [(.x v2)
-     (.y v2)]))
-
-(defn actor-hit [^Actor actor [x y]]
-  (.hit actor (float x) (float y) true))
-
 (defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position]
   (create-widget
     (fn [this]
-      (draw-cell-rect! (get-x this)
-                       (get-y this)
-                       (actor-hit this
-                                  (let [stage-mouse-coords (unproject (get-viewport (get-stage this)) (get-mouse-position))]
-                                    (stage->local-coordinates this stage-mouse-coords)))
-                       cell))))
-
-(defn set-user-object! [^Actor actor obj]
-  (.setUserObject actor obj))
-
-(defn set-name! [^Actor actor name]
-  (.setName actor name))
+      (let [stage-mouse-coords (unproject (stage/viewport (actor/stage this)) (get-mouse-position))
+            local (let [^Vector2 v2 (actor/stage->local-coordinates this (Vector2. (stage-mouse-coords 0) (stage-mouse-coords 1)))]
+                    [(.x v2) (.y v2)])]
+        (draw-cell-rect! (actor/x this)
+                         (actor/y this)
+                         (actor/hit this (local 0) (local 1) true)
+                         cell)))))
 
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
   (doto (image/create-from-drawable background-drawable)
-    (set-name! "image-widget")
-    (set-user-object! {:background-drawable background-drawable
+    (actor/set-name! "image-widget")
+    (actor/set-user-object! {:background-drawable background-drawable
                        :cell-size cell-size})))
 
-(defn add-actors! [group actors]
-  (run! #(add-actor! group %) actors))
+(defn add-actors! [g actors]
+  (run! #(group/add-actor! g %) actors))
 
 (defn- inv-window-cell [get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -1002,27 +909,14 @@
     (doto (stack/create)
       (add-actors! [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-mouse-position)
                     (inventory-window-cell-image-widget background-drawable cell-size)])
-      (add-listener! (proxy [ClickListener] []
+      (actor/add-listener! (proxy [ClickListener] []
                        (clicked [event _x _y]
                          (on-click-cell event cell))))
-      (set-name! "inventory-cell")
-      (set-user-object! cell))))
-
-(extend-type Actor
-  Visible
-  (visible? [this]
-    (.isVisible this))
-  (set-visible! [this v]
-    (.setVisible this v)))
+      (actor/set-name! "inventory-cell")
+      (actor/set-user-object! cell))))
 
 (defn toggle-visible! [obj]
-  (set-visible! obj (not (visible? obj))))
-
-(defn set-position! 
-  ([actor x y]
-   (Actor/.setPosition actor (float x) (float y)))
-  ([actor x y align]
-   (Actor/.setPosition actor (float x) (float y) align)))
+  (actor/set-visible! obj (not (actor/visible? obj))))
 
 (defn- build-inventory-window
   [{:keys [get-mouse-position
@@ -1063,15 +957,15 @@
         (table/add! cell-table actor))
       (table/row! cell-table))
     (pack! cell-table)
-    (set-name! cell-table "inventory-cell-table")
+    (actor/set-name! cell-table "inventory-cell-table")
     (let [c (table/add! window cell-table)]
       (cell/pad! c 4))
     (table/row! window)
     (pack! window)
-    (set-name! window "moon.ui.windows.inventory")
-    (set-visible! window false)
+    (actor/set-name! window "moon.ui.windows.inventory")
+    (actor/set-visible! window false)
     (let [[x y] position]
-      (set-position! window x y))
+      (actor/set-position! window x y))
     window))
 
 (defn get-world-width [^Viewport viewport]
@@ -1626,24 +1520,18 @@
       s
       (remove-newlines new-s))))
 
-(defn find-actor [^Group group actor-name]
-  (.findActor group actor-name))
-
-(defn get-children [^Group group]
-  (.getChildren group))
-
 (defn- inv-get-cell [inventory-window cell]
-  (->> (get-children (find-actor inventory-window "inventory-cell-table"))
-       (filter #(= (get-user-object %) cell))
+  (->> (group/children (group/find-actor inventory-window "inventory-cell-table"))
+       (filter #(= (actor/user-object %) cell))
        first))
 
 (defn set-item!* [inventory-window cell {:keys [texture-region tooltip-text]} skin]
   (let [cell-widget (inv-get-cell inventory-window cell)
-        image-widget (find-actor cell-widget "image-widget")
-        cell-size (:cell-size (get-user-object image-widget))]
+        image-widget (group/find-actor cell-widget "image-widget")
+        cell-size (:cell-size (actor/user-object image-widget))]
     (image/set-drawable! image-widget (doto (texture-region-drawable/create texture-region)
                                         (texture-region-drawable/set-min-size! cell-size cell-size)))
-    (add-listener! cell-widget (text-tooltip/create tooltip-text skin))
+    (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
 (defn item-info-text [item]
@@ -1655,9 +1543,6 @@
                      (when (seq (:stats/modifiers item))
                        (str "[CYAN]" (mods-format-text (:stats/modifiers item)) "[]"))])))
 
-(defn get-root [^Stage stage]
-  (.getRoot stage))
-
 (defn add-skill!
   [action-bar
    {:keys [skill-id
@@ -1665,31 +1550,31 @@
            tooltip-text]}
    skin]
   (let [scale 2
-        horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (get-user-object horizontal-group)
+        horizontal-group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (actor/user-object horizontal-group)
         button (doto (image-button/create
                       (doto (texture-region-drawable/create texture-region)
                         (texture-region-drawable/set-min-size! (* scale (texture-region/region-width texture-region))
                                                                (* scale (texture-region/region-height texture-region)))))
-                 (add-listener! (text-tooltip/create tooltip-text skin))
-                 (set-user-object! skill-id))]
-    (add-actor! horizontal-group ^Actor button)
+                 (actor/add-listener! (text-tooltip/create tooltip-text skin))
+                 (actor/set-user-object! skill-id))]
+    (group/add-actor! horizontal-group button)
     (button-group/add! button-group button)
     nil))
 
 #_(defn remove-skill!
   [action-bar skill-id]
-  (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (get-user-object horizontal-group)
+  (let [horizontal-group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (actor/user-object horizontal-group)
         button (get horizontal-group skill-id)]
-    (remove! button)
+    (actor/remove! button)
     (button-group/remove! button-group button)
     nil))
 
 (defn remove-item!* [inventory-window cell]
   (let [cell-widget (inv-get-cell inventory-window cell)
-        image-widget (find-actor cell-widget "image-widget")]
-    (image/set-drawable! image-widget (:background-drawable (get-user-object image-widget)))
+        image-widget (group/find-actor cell-widget "image-widget")]
+    (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
     ; ... first find the listener
@@ -1697,52 +1582,49 @@
     nil))
 
 (defn remove-item! [stage cell]
-  (-> (get-root stage)
-      (find-actor "moon.ui.windows.inventory")
+  (-> (stage/root stage)
+      (group/find-actor "moon.ui.windows.inventory")
       (remove-item!* cell)))
 
 (defn toggle-inventory-visible! [stage]
-  (-> (get-root stage)
-      (find-actor "moon.ui.windows.inventory")
+  (-> (stage/root stage)
+      (group/find-actor "moon.ui.windows.inventory")
       toggle-visible!))
 
 (defn close-windows! [stage]
-  (->> (get-children (find-actor (get-root stage) "moon.ui.windows"))
-       (run! #(set-visible! % false))))
+  (->> (group/children (group/find-actor (stage/root stage) "moon.ui.windows"))
+       (run! #(actor/set-visible! % false))))
 
 (defn toggle-entity-info! [stage]
-  (-> (get-root stage)
-      (find-actor "moon.ui.windows.entity-info")
+  (-> (stage/root stage)
+      (group/find-actor "moon.ui.windows.entity-info")
       toggle-visible!))
-
-(defn stage-hit [stage x y]
-  (.hit ^Stage stage (float x) (float y) true))
 
 (import '(com.badlogic.gdx.utils Align
                                  Disposable
                                  ScreenUtils))
 
-(defn show-modal! [skin ^Stage stage {:keys [title text button-text on-click]}]
-  (assert (not (find-actor (get-root stage) "moon.ui.modal-window")))
+(defn show-modal! [skin stage {:keys [title text button-text on-click]}]
+  (assert (not (group/find-actor (stage/root stage) "moon.ui.modal-window")))
   (let [^String title title
         ^String text text
         window (window/create title skin)]
     (table/add! window (label/create text skin))
     (table/row! window)
     (table/add! window (doto (text-button/create button-text skin)
-                   (add-listener! (create-change-listener
+                   (actor/add-listener! (create-change-listener
                                     (fn [_event _actor]
-                                      (remove! (find-actor (get-root stage) "moon.ui.modal-window"))
+                                      (actor/remove! (group/find-actor (stage/root stage) "moon.ui.modal-window"))
                                       (on-click))))))
     (table/row! window)
     (pack! window)
     (window/set-modal! window true)
-    (set-name! window "moon.ui.modal-window")
-    (set-position! window
-                  (/ (get-world-width (get-viewport stage)) 2)
-                  (* (get-world-height (get-viewport stage)) (/ 3 4))
+    (actor/set-name! window "moon.ui.modal-window")
+    (actor/set-position! window
+                  (/ (get-world-width (stage/viewport stage)) 2)
+                  (* (get-world-height (stage/viewport stage)) (/ 3 4))
                   Align/center)
-    (add-actor! stage window)))
+    (stage/add-actor! stage window)))
 
 (defn- create-info-window
   [{:keys [title
@@ -1758,18 +1640,18 @@
     (cell/expand! c)
     (table/row! window)
     (pack! window)
-    (set-name! window actor-name)
-    (set-visible! window visible?)
+    (actor/set-name! window actor-name)
+    (actor/set-visible! window visible?)
     (let [[x y] position]
-      (set-position! window x y))
-    (add-actor! window (proxy [Actor] []
-                         (act [delta]
-                           (let [^Actor this this]
-                             (when (.getStage this)
-                               (label/set-text! label (set-label-text!)))
-                             (pack! window)
-                             (proxy-super act delta)))
-                         (draw [batch parent-alpha])))
+      (actor/set-position! window x y))
+    (group/add-actor! window (actor/create
+                               {:act!
+                                (fn [this _delta]
+                                  (when (actor/stage this)
+                                    (label/set-text! label (set-label-text!)))
+                                  (pack! window))
+                                :draw!
+                                (fn [_this _batch _parent-alpha])}))
     window))
 
 (defn nearest-entity [cell faction]
@@ -2169,20 +2051,20 @@
 (defn- button?
   [actor]
   (or (button/button? actor)
-      (when-let [parent (get-parent actor)]
+      (when-let [parent (actor/parent actor)]
         (button/button? parent))))
 
 (defn mouseover-actor-info [actor]
-  (let [inventory-slot (and (get-parent actor)
-                            (= "inventory-cell" (get-name (get-parent actor)))
-                            (get-user-object (get-parent actor)))]
+  (let [inventory-slot (and (actor/parent actor)
+                            (= "inventory-cell" (actor/name (actor/parent actor)))
+                            (actor/user-object (actor/parent actor)))]
     (cond
       inventory-slot
       [:mouseover-actor/inventory-cell inventory-slot]
 
       (when (label/label? actor)
-        (when-let [p (get-parent actor)]
-          (when-let [p (get-parent p)]
+        (when-let [p (actor/parent actor)]
+          (when-let [p (actor/parent p)]
             (and (window/window? p)
                  (= (window/title-label p) actor)))))
       [:mouseover-actor/window-title-bar]
@@ -2668,31 +2550,31 @@
 
 (defn player-message-actor-create [default-font get-unit-scale]
   (let [message-duration-seconds 0.5]
-    (doto (proxy [Actor] []
-            (act [delta]
-              (let [state (get-user-object this)]
-                (when (:text @state)
-                  (swap! state update :counter + delta)
-                  (when (>= (:counter @state) message-duration-seconds)
-                    (reset! state nil))))
-              (let [^Actor this this]
-                (proxy-super act delta)))
-            (draw [batch parent-alpha]
-              (when-let [stage (.getStage ^Actor this)]
-                (let [state (get-user-object this)
-                      vp-width (get-world-width (get-viewport stage))
-                      vp-height (get-world-height (get-viewport stage))]
-                  (when-let [text (:text @state)]
-                    (draw-text! batch 
-                                default-font 
-                                (get-unit-scale) 
-                                {:x (/ vp-width 2)
-                                 :y (+ (/ vp-height 2) 200)
-                                 :text text
-                                 :scale 2.5
-                                 :up? true}))))))
-      (set-name! "player-message")
-      (set-user-object! (atom nil)))))
+    (doto (actor/create
+            {:act!
+             (fn [this delta]
+               (let [state (actor/user-object this)]
+                 (when (:text @state)
+                   (swap! state update :counter + delta)
+                   (when (>= (:counter @state) message-duration-seconds)
+                     (reset! state nil)))))
+             :draw!
+             (fn [this batch _parent-alpha]
+               (when-let [stage (actor/stage this)]
+                 (let [state (actor/user-object this)
+                       vp-width (get-world-width (stage/viewport stage))
+                       vp-height (get-world-height (stage/viewport stage))]
+                   (when-let [text (:text @state)]
+                     (draw-text! batch
+                                 default-font
+                                 (get-unit-scale)
+                                 {:x (/ vp-width 2)
+                                  :y (+ (/ vp-height 2) 200)
+                                  :text text
+                                  :scale 2.5
+                                  :up? true})))))})
+      (actor/set-name! "player-message")
+      (actor/set-user-object! (atom nil)))))
 
 ; TODO inline.
 (defn- entity-state-draw-ui-view
@@ -2705,29 +2587,29 @@
                           {:center? true})))
 
 (defn player-state-draw-create [get-player-eid get-unit-scale image->texture-region get-mouse-position]
-  (proxy [Actor] []
-    (act [delta]
-      (let [^Actor this this]
-        (proxy-super act delta)))
-    (draw [batch parent-alpha]
-      (let [stage (.getStage ^Actor this)
-            player-eid (get-player-eid)
-            entity @player-eid
-            state-k (:state (:entity/fsm entity))
-            mouse-pos (unproject (get-viewport stage) (get-mouse-position))
-            [x y] mouse-pos]
-        (entity-state-draw-ui-view [state-k (state-k entity)]
-                                   player-eid
-                                   batch
-                                   (get-unit-scale)
-                                   image->texture-region
-                                   (stage-hit stage x y)
-                                   mouse-pos)))))
+  (actor/create
+    {:act!
+     (fn [_this _delta])
+     :draw!
+     (fn [this batch _parent-alpha]
+       (let [stage (actor/stage this)
+             player-eid (get-player-eid)
+             entity @player-eid
+             state-k (:state (:entity/fsm entity))
+             mouse-pos (unproject (stage/viewport stage) (get-mouse-position))
+             [x y] mouse-pos]
+         (entity-state-draw-ui-view [state-k (state-k entity)]
+                                    player-eid
+                                    batch
+                                    (get-unit-scale)
+                                    image->texture-region
+                                    (stage/hit stage x y)
+                                    mouse-pos)))}))
 
 (defn windows-create [actors]
-  (doto (Group.)
+  (doto (group/create)
     (add-actors! actors)
-    (set-name! "moon.ui.windows")))
+    (actor/set-name! "moon.ui.windows")))
 
 (defn get-camera [^Viewport viewport]
   (.getCamera viewport))
@@ -3156,8 +3038,8 @@
     (doto (table/add! table (doto (horizontal-group/create)
                               (horizontal-group/space! 2)
                               (horizontal-group/pad! 2) ; horizontal group pad not 'pad!' from cell
-                              (set-name! "moon.ui.action-bar.horizontal-group")
-                              (set-user-object! (doto (button-group/create)
+                              (actor/set-name! "moon.ui.action-bar.horizontal-group")
+                              (actor/set-user-object! (doto (button-group/create)
                                                   (button-group/set-max-check-count! 1)
                                                   (button-group/set-min-check-count! 0)))))
       (cell/expand!)
@@ -3166,7 +3048,7 @@
     (doto table
       (pack!)
       (table/set-fill-parent! true)
-      (set-name! "moon.ui.action-bar"))))
+      (actor/set-name! "moon.ui.action-bar"))))
 
 (defn destroy-entities
   [game-db entity-ids entity*]
@@ -3195,26 +3077,20 @@
           v)))))
 
 (defn- show-message! [stage message]
-  (-> (get-root stage)
-      (find-actor "player-message")
-      (set-user-object! (atom {:text message :counter 0}))))
+  (-> (stage/root stage)
+      (group/find-actor "player-message")
+      (actor/set-user-object! (atom {:text message :counter 0}))))
 
 (defn selected-skill [action-bar]
-  (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
-        button-group (get-user-object horizontal-group)]
+  (let [horizontal-group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")
+        button-group (actor/user-object horizontal-group)]
     (when-let [skill-button (button-group/checked button-group)]
-      (get-user-object skill-button))))
+      (actor/user-object skill-button))))
 
 (import '(com.badlogic.gdx.audio Sound))
 
 (defn resize! [^Viewport viewport width height center-camera?]
   (.update viewport width height center-camera?))
-
-(defn act! [^Stage stage]
-  (.act stage))
-
-(defn draw! [^Stage stage]
-  (.draw stage))
 
 (require '[malli.error :as me])
 (defn validate-hum [schema value]
@@ -3534,9 +3410,9 @@
           :clickable/item
           (let [item (:entity/item @clicked-eid)]
             (cond
-              (-> (get-root stage)
-                  (find-actor "moon.ui.windows.inventory")
-                  visible?)
+              (-> (stage/root stage)
+                  (group/find-actor "moon.ui.windows.inventory")
+                  actor/visible?)
               ; beacuse of this case destroy entities havs to run after paused
               ; otherwise game pauses and we just mark destryoted 
               ; maybe transactions shouldnt be allowed to return partial valid state
@@ -3913,8 +3789,8 @@
                                       (show-modal! skin stage opts))
                                     :tx/set-item 
                                     (fn [cell item]
-                                      (-> (get-root stage)
-                                          (find-actor "moon.ui.windows.inventory")
+                                      (-> (stage/root stage)
+                                          (group/find-actor "moon.ui.windows.inventory")
                                           (set-item!* cell
                                                       {:texture-region (image->texture-region (:entity/image item))
                                                        :tooltip-text (item-info-text item)}
@@ -3931,8 +3807,8 @@
                                       (show-message! stage message))
                                     :tx/set-skill
                                     (fn [skill-id image tooltip-text]
-                                      (-> (get-root stage)
-                                          (find-actor "moon.ui.action-bar")
+                                      (-> (stage/root stage)
+                                          (group/find-actor "moon.ui.action-bar")
                                           (add-skill! {:skill-id skill-id
                                                        :texture-region (image->texture-region image)
                                                        :tooltip-text tooltip-text}
@@ -4022,7 +3898,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
              play-sound!* (fn [sound-name]
                             (Sound/.play (safe-get sounds sound-name)))
-             stage (Stage. (FitViewport. (float (:width (:stage game-config))) 
+             stage (stage/create (FitViewport. (float (:width (:stage game-config))) 
                                          (float (:height (:stage game-config)))) 
                            batch)
              image->texture-region #(get-texture-region textures %)
@@ -4036,10 +3912,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              viewport (create-viewport! 1440 900 world-unit-scale)
              unproject-viewport #(unproject viewport %)
              camera-zoom (fn [] (orthographic-camera/zoom (get-camera viewport)))
-             ui-viewport-width (get-world-width (get-viewport stage))
-             ui-viewport-height (get-world-height (get-viewport stage))
+             ui-viewport-width (get-world-width (stage/viewport stage))
+             ui-viewport-height (get-world-height (stage/viewport stage))
              ui-mouse-info-text (fn []
-                                  (mapv int (unproject (get-viewport stage) (get-input-position))))
+                                  (mapv int (unproject (stage/viewport stage) (get-input-position))))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
              action-bar (create-action-bar)
              update-labels [{:label "elapsed-time"
@@ -4095,13 +3971,15 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                       :x (+ x 75)
                                       :y (+ y 2)
                                       :up? true}))
-             hp-mana-bar-actor-declaration {:draw!
-                                            (fn [batch _parent-alpha]
+             hp-mana-bar-actor-declaration {:act!
+                                            (fn [_this _delta])
+                                            :draw!
+                                            (fn [_this batch _parent-alpha]
                                               (let [stats (:entity/stats @(player-eid))
                                                     bar-x (- (/ ui-viewport-width 2) (/ rahmenw 2))]
                                                 (draw-bar! batch bar-x y-hp hpcontent-file (get-hitpoints stats) "HP")
                                                 (draw-bar! batch bar-x y-mana manacontent-file (get-mana stats) "MP")))}
-             hp-mana-bars (create-actor hp-mana-bar-actor-declaration)
+             hp-mana-bars (actor/create hp-mana-bar-actor-declaration)
              info-window-opts {:title "Entity Info"
                                :actor-name "moon.ui.windows.entity-info"
                                :visible? false
@@ -4142,7 +4020,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         windows
                         player-state-draw-actor
                         player-message-actor]]
-           (add-actor! stage actor))
+           (stage/add-actor! stage actor))
          (set-input-processor! stage)
          (reset! state {:batch batch
                         :cursors (update-vals (:cursors game-config) create-cursor)
@@ -4198,8 +4076,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              mouse-position (get-input-position)
              delta-time (get-delta-time)
              camera-position (:entity/position @(player-eid))
-             mouseover-actor (let [[x y] (unproject (get-viewport stage) mouse-position)]
-                               (stage-hit stage x y))
+             mouseover-actor (let [[x y] (unproject (stage/viewport stage) mouse-position)]
+                               (stage/hit stage x y))
              world-mouse-position (unproject viewport mouse-position)]
          (clear-screen! 0 0 0 0)
          (update-mouseover-eid! mouseover-actor world-mouse-position)
@@ -4243,8 +4121,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
            (reset! unit-scale 1))
          (batch/end batch)
          (let [player-eid (player-eid)
-               get-selected-skill #(-> (get-root stage)
-                                       (find-actor "moon.ui.action-bar")
+               get-selected-skill #(-> (stage/root stage)
+                                       (group/find-actor "moon.ui.action-bar")
                                        selected-skill)
                interaction-state (create-interaction-state mouseover-actor 
                                                            world-mouse-position 
@@ -4272,20 +4150,20 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
          (handle-txs! (destroy-entities game-db entity-ids entity*))
          (key-pressed-checks! viewport key-pressed?)
          (key-just-pressed-checks! stage key-just-pressed?)
-         (act! stage)
-         (draw! stage)))
+         (stage/act! stage)
+         (stage/draw! stage)))
 
      :resize!
      (fn [width height]
        (let [{:keys [stage
                      viewport]} @state]
-         (resize! (get-viewport stage) width height true)
+         (resize! (stage/viewport stage) width height true)
          (resize! viewport width height false)))
      }))
 
 (defn- text-button [skin label on-click!]
   (doto (text-button/create label skin)
-    (add-listener! (create-change-listener
+    (actor/add-listener! (create-change-listener
                      (fn [_event _actor]
                        (on-click!))))))
 
@@ -4357,8 +4235,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                (table/row! window))
                              (pack! window)
                              window)
-             stage (doto (Stage. (FitViewport. 1440 900) batch)
-                     (add-actor! button-window))]
+             stage (doto (stage/create (FitViewport. 1440 900) batch)
+                     (stage/add-actor! button-window))]
          (set-input-processor! stage) 
          (reset! current-tiled-map (generate-level db textures create-uf-caves)) 
          (adjust-camera! viewport @current-tiled-map)
@@ -4413,13 +4291,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                             (orthographic-camera/update! camera)))}]
            (when (key-pressed? k)
              (f (get-camera viewport))))
-         (act! stage)
-         (draw! stage)))
+         (stage/act! stage)
+         (stage/draw! stage)))
 
      :resize!
      (fn [width height]
        (let [{:keys [stage viewport]} @state]
-         (resize! (get-viewport stage) width height true)
+         (resize! (stage/viewport stage) width height true)
          (resize! viewport width height false)))
      }))
 
@@ -4524,19 +4402,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         (let [stack (stack/create)
               texture-region (get-texture-region (or (:entity/image property)
                                                      (first (:animation/frames (:entity/animation property)))))]
-          (run! #(add-actor! stack %)
+          (run! #(group/add-actor! stack %)
                 [(doto (image-button/create
                          (doto (texture-region-drawable/create texture-region)
                            (texture-region-drawable/set-min-size! (* image-scale (texture-region/region-width texture-region))
                                                                   (* image-scale (texture-region/region-height texture-region)))))
-                   (add-listener! (create-change-listener
+                   (actor/add-listener! (create-change-listener
                                     (fn [event actor]
                                       (clicked-id-fn actor (:property/id property)))))
-                   (add-listener! (text-tooltip/create (binding [*print-level* 2]
+                   (actor/add-listener! (text-tooltip/create (binding [*print-level* 2]
                                                   (with-out-str
                                                     (pprint/pprint property))))))
                  (doto (new-label (extra-info-text property))
-                   (set-touchable! Touchable/disabled))])
+                   (actor/set-touchable! touchable/disabled))])
           stack)))))
 
 (defn property-overview-window [property-type clicked-id-fn {:keys [editor/new-window
@@ -4549,9 +4427,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (pack! window)
     (table/add! (window/title-table window)
           (doto (new-text-button "X")
-            (add-listener! (create-change-listener
+            (actor/add-listener! (create-change-listener
                              (fn [_event _actor]
-                               (remove! window))))))
+                               (actor/remove! window))))))
     (window/set-modal! window true)
     window))
 
@@ -4582,7 +4460,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (check-box/set-checked! checked?)))
 
 (defn- default-widget-value [widget]
-  ((get-user-object widget) 1))
+  ((actor/user-object widget) 1))
 
 (defn- truncate ^String [s limit]
   (if (> (count s) limit)
@@ -4608,30 +4486,24 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 
 (defn- create-number-widget [schema v skin]
   (doto (text-field/create (pr-str v) skin)
-    (add-listener! (text-tooltip/create (str schema) skin))))
+    (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
 (defn- string-widget-value [widget]
   (text-field/text widget))
 
 (defn- create-string-widget [schema v skin]
   (doto (text-field/create (str v) skin)
-    (add-listener! (text-tooltip/create (str schema) skin))))
+    (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
 (defn- val-max-widget-value [widget]
   (edn/read-string (text-field/text widget)))
 
 (defn- create-val-max-widget [schema v skin]
   (doto (text-field/create (pr-str v) skin)
-    (add-listener! (text-tooltip/create (str schema) skin))))
+    (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
 (defn play! [sound]
   (Sound/.play sound))
-
-(defn clear-children! [^Group group]
-  (.clearChildren group))
-
-(defn first-ascendant [^Actor actor class]
-  (.firstAscendant actor class))
 
 (defn- list-sounds-table [pad rows]
   (let [table (table/create)]
@@ -4648,21 +4520,21 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults table) 5)
     (letfn [(play-sound-button [sound-name]
               (doto (text-button/create "play!" skin)
-                (add-listener! (create-change-listener
+                (actor/add-listener! (create-change-listener
                                  (fn [event _actor]
                                    (play-sound! sound-name))))))
             (choose-sound-button [sound-name]
               (doto (text-button/create sound-name skin)
-                (add-listener! (create-change-listener
+                (actor/add-listener! (create-change-listener
                                  (fn [event actor]
-                                   (clear-children! table)
+                                   (group/clear-children! table)
                                    (doseq [cell (sound-columns-fn sound-name)]
                                      (table/add! table (:actor cell)))
                                    (table/row! table)
-                                   (remove! (first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
-                                   (pack! (first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window))
-                                   (let [[k _] (get-user-object table)]
-                                     (set-user-object! table [k sound-name])))))))
+                                   (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                   (pack! (actor/first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                   (let [[k _] (actor/user-object table)]
+                                     (actor/set-user-object! table [k sound-name])))))))
             (choose-sound-window []
               (let [list-table (list-sounds-table
                                  5
@@ -4671,21 +4543,21 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                     (play-sound-button sound-name)]))
                     window (window/create "Choose" skin)]
                 (doto (table/add! window (scroll-pane/create list-table skin))
-                  (cell/width! (+ (get-width list-table) 50))
+                  (cell/width! (+ (actor/width list-table) 50))
                   (cell/height! (min (- (get-world-height stage-viewport) 50)
-                                (get-height list-table))))
+                                (actor/height list-table))))
                 (table/row! window)
                 (pack! window)
                 (table/add! (window/title-table window)
                       (doto (text-button/create "X" skin)
-                        (add-listener! (create-change-listener
+                        (actor/add-listener! (create-change-listener
                                          (fn [_event _actor]
-                                           (remove! window))))))
+                                           (actor/remove! window))))))
                 (window/set-modal! window true)
                 window))
             (sound-columns-fn [sound-name]
               [{:actor (doto (text-button/create sound-name skin)
-                         (add-listener! (create-change-listener
+                         (actor/add-listener! (create-change-listener
                                           (fn [_event _actor]
                                             (open-select-fn)))))}
                {:actor (play-sound-button sound-name)}])
@@ -4695,7 +4567,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      (sound-columns-fn sound-name)
                      [{:actor
                        (doto (text-button/create "No sound" skin)
-                         (add-listener! (create-change-listener
+                         (actor/add-listener! (create-change-listener
                                           (fn [_event _actor]
                                             (open-select-fn)))))}])]
         (table/add! table (:actor cell)))
@@ -4703,8 +4575,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
       table)))
 
 (defn- one-to-one-widget-value [widget]
-  (->> (get-children widget)
-       (keep get-user-object)
+  (->> (group/children widget)
+       (keep actor/user-object)
        first))
 
 (defn- create-one-to-one-widget [[_ property-type] property-id editor]
@@ -4712,19 +4584,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults table) 5)
     (letfn [(add-one-to-one-rows [property-id]
               (let [redo-rows (fn [id]
-                                (clear-children! table)
+                                (group/clear-children! table)
                                 (add-one-to-one-rows id)
-                                (pack! (first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window)))]
+                                (pack! (actor/first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window)))]
                 (doseq [row (cond-> []
                               (not property-id) ; can even be nil?
                               (conj [{:actor (doto ((:editor/new-text-button editor) "+")
-                                               (add-listener! (create-change-listener
+                                               (actor/add-listener! (create-change-listener
                                                                 (fn [event _actor]
                                                                   ((:editor/add-actor! editor)
                                                                    (property-overview-window
                                                                      property-type
                                                                      (fn [actor id]
-                                                                       (remove! (first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                                                       (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
                                                                        (redo-rows id))
                                                                      editor))))))}])
                               property-id
@@ -4734,13 +4606,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                (doto (image/create-from-texture-region ((:editor/get-texture-region editor) 
                                                                             (or (:entity/image property)
                                                                                 (first (:animation/frames (:entity/animation property))))))
-                                                 (add-listener! ((:editor/text-tooltip editor) 
+                                                 (actor/add-listener! ((:editor/text-tooltip editor) 
                                                                  (binding [*print-level* 2]
                                                                    (with-out-str
                                                                      (pprint/pprint property)))))
-                                                 (set-user-object! property-id)))}]
+                                                 (actor/set-user-object! property-id)))}]
                                     [{:actor (doto ((:editor/new-text-button editor) "-")
-                                               (add-listener! (create-change-listener
+                                               (actor/add-listener! (create-change-listener
                                                                 (fn [event _actor]
                                                                   (redo-rows nil)))))}]))]
                   (doseq [cell row]
@@ -4751,8 +4623,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     table))
 
 (defn- one-to-many-widget-value [widget]
-  (->> (get-children widget)
-       (keep get-user-object)
+  (->> (group/children widget)
+       (keep actor/user-object)
        set))
 
 (defn- create-one-to-many-widget [[_ property-type] property-ids skin editor]
@@ -4760,20 +4632,20 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults table) 5)
     (letfn [(add-one-to-many-rows [property-ids]
               (let [redo-rows (fn [property-ids]
-                                (clear-children! table)
+                                (group/clear-children! table)
                                 (add-one-to-many-rows property-ids)
                                 ; editor window callback instead ? 
-                                (pack! (first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                (pack! (actor/first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window))
                                 )]
                 (doseq [row
                         [[{:actor (doto (text-button/create "+" skin)
-                                    (add-listener! (create-change-listener
+                                    (actor/add-listener! (create-change-listener
                                                      (fn [event _actor]
                                                        ((:editor/add-actor! editor)
                                                         (property-overview-window
                                                           property-type
                                                           (fn [actor id]
-                                                            (remove! (first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                                            (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
                                                             (redo-rows (conj property-ids id)))
                                                           editor))))))}]
                          (for [property-id property-ids]
@@ -4781,14 +4653,14 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                              {:actor (doto (image/create-from-texture-region ((:editor/get-texture-region editor) 
                                                                   (or (:entity/image property)
                                                                       (first (:animation/frames (:entity/animation property))))))
-                                       (add-listener! (text-tooltip/create (binding [*print-level* 2]
+                                       (actor/add-listener! (text-tooltip/create (binding [*print-level* 2]
                                                                       (with-out-str
                                                                         (pprint/pprint property)))
                                                                     skin))
-                                       (set-user-object! property-id))}))
+                                       (actor/set-user-object! property-id))}))
                          (for [id property-ids]
                            {:actor (doto (text-button/create "-" skin)
-                                     (add-listener! (create-change-listener
+                                     (actor/add-listener! (create-change-listener
                                                       (fn [event _actor]
                                                         (redo-rows (disj property-ids id))))))})]]
                   (doseq [cell row]
@@ -4815,15 +4687,15 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults window) 5)
     (table/add! (window/title-table window)
           (doto (text-button/create "X" skin)
-            (add-listener! (create-change-listener
+            (actor/add-listener! (create-change-listener
                              (fn [_event _actor]
-                               (remove! window))))))
+                               (actor/remove! window))))))
     (window/set-modal! window true)
     (doseq [{:keys [text f]} columns]
       (table/add! window (doto (text-button/create text skin)
-                     (add-listener! (create-change-listener
+                     (actor/add-listener! (create-change-listener
                                       (fn [event _actor]
-                                        (remove! window)
+                                        (actor/remove! window)
                                         (f))))))
       (table/row! window))
     (pack! window)
@@ -4844,7 +4716,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
            map-schema-keys
            ]}]
   (let [table (doto (table/create)
-                (set-name! "moon.db.schema.map.ui.widget"))
+                (actor/set-name! "moon.db.schema.map.ui.widget"))
         component-row-table (fn
                               [{:keys [display-remove-component-button?
                                        k]}]
@@ -4852,12 +4724,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                 (cell/pad! (table/defaults table) 2)
                                 (doto (table/add! row-table (when display-remove-component-button?
                                                         (doto (text-button/create "-" skin)
-                                                          (add-listener! (create-change-listener
+                                                          (actor/add-listener! (create-change-listener
                                                                            (fn [event _actor]
-                                                                             (remove! (first (filter (fn [actor]
-                                                                                                       (and (get-user-object actor)
-                                                                                                            (= k ((get-user-object actor) 0))))
-                                                                                                     (get-children table))))
+                                                                             (actor/remove! (first (filter (fn [actor]
+                                                                                                       (and (actor/user-object actor)
+                                                                                                            (= k ((actor/user-object actor) 0))))
+                                                                                                     (group/children table))))
                                                                              (rebuild-editor-window!)))))
                                                         (label/create "." skin)))
                                   (cell/left!))
@@ -4893,7 +4765,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults table) 5)
     (when opt?
       (doto (table/add! table (doto (text-button/create "Add component" skin)
-                          (add-listener! (create-change-listener
+                          (actor/add-listener! (create-change-listener
                                            (fn [_event _actor]
                                              (open-add-component-window!))))))
         (cell/colspan! colspan))
@@ -4919,12 +4791,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
       (cell/colspan! 2))
     (table/row! table)
     (doto (table/add! table (doto (text-button/create "Save [LIGHT_GRAY](ENTER)[]" skin)
-                        (add-listener! (create-change-listener
+                        (actor/add-listener! (create-change-listener
                                          (fn [event actor]
                                            (on-save actor))))))
       (cell/center!))
     (doto (table/add! table (doto (text-button/create "Delete" skin)
-                        (add-listener! (create-change-listener
+                        (actor/add-listener! (create-change-listener
                                          (fn [event actor]
                                            (on-delete actor))))))
       (cell/center!))
@@ -4992,9 +4864,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                 (fn [title]
                   (text-button/create title @skin))
                 :editor/get-viewport
-                #(get-viewport @editor-stage)
+                #(stage/viewport @editor-stage)
                 :editor/add-actor!
-                #(add-actor! @editor-stage %)
+                #(stage/add-actor! @editor-stage %)
                 :editor/sound-names
                 (fn [] (keys @sounds))
                 :editor/play-sound!
@@ -5032,8 +4904,8 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                         :s/enum (enum-widget-value widget)
                                                         :s/image (default-widget-value widget)
                                                         :s/map (into {}
-                                                                     (for [widget (filter (comp vector? get-user-object) (get-children widget))
-                                                                           :let [[k _] (get-user-object widget)]]
+                                                                     (for [widget (filter (comp vector? actor/user-object) (group/children widget))
+                                                                           :let [[k _] (actor/user-object widget)]]
                                                                        [k (widget-value (get schemas k) widget)]))
                                                         :s/number (number-widget-value widget)
                                                         :s/one-to-many (one-to-many-widget-value widget)
@@ -5044,12 +4916,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                         :s/string (string-widget-value widget)
                                                         :s/val-max (val-max-widget-value widget)))
                                        rebuild-editor-window! (fn []
-                                                                (let [window (-> (get-root @editor-stage)
-                                                                                 (find-actor "moon.ui.clojure.editor-window"))
-                                                                      map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+                                                                (let [window (-> (stage/root @editor-stage)
+                                                                                 (group/find-actor "moon.ui.clojure.editor-window"))
+                                                                      map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
                                                                       property (widget-value schema map-widget-table)]
-                                                                  (remove! window)
-                                                                  (add-actor! @editor-stage (property-editor-window property))))
+                                                                  (actor/remove! window)
+                                                                  (stage/add-actor! @editor-stage (property-editor-window property))))
                                        create-map-widget (fn [schema m build-widget]
                                                            (map-widget-table-create
                                                              {:map-schema-keys (map-keys (malli-form schemas schema))
@@ -5084,7 +4956,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                          :s/map (create-map-widget schema v
                                                                                    (fn build-widget [schema k v] 
                                                                                      (let [widget (create-widget schema v)]
-                                                                                       (set-user-object! widget [k v])
+                                                                                       (actor/set-user-object! widget [k v])
                                                                                        widget)))
                                                          :s/number (create-number-widget schema v @skin)
                                                          :s/one-to-many (create-one-to-many-widget schema v @skin editor)
@@ -5100,13 +4972,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                          :s/string (create-string-widget schema v @skin)
                                                          :s/val-max (create-val-max-widget schema v @skin)))
                                        widget (create-widget schema property)
-                                       scroll-pane-height (get-world-height (get-viewport @editor-stage))
+                                       scroll-pane-height (get-world-height (stage/viewport @editor-stage))
                                        property-id (:property/id property)
                                        with-window-close (fn [f]
                                                            (fn [actor]
                                                              (try
                                                                (swap! db f)
-                                                               (remove! (first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                                               (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
                                                                (catch Throwable t
                                                                  (binding [*print-level* 3]
                                                                    (pretty-repl/pretty-pst t 24))))))
@@ -5131,37 +5003,37 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                        window (window/create "[SKY]Property[]" @skin)]
                                    (cell/pad! (table/defaults window) 5)
                                    (let [c (table/add! window (scroll-pane/create table @skin))]
-                                     (cell/width! c (+ (get-width table) 50))
+                                     (cell/width! c (+ (actor/width table) 50))
                                      (cell/height! c (min (- scroll-pane-height 50)
-                                                     (get-height table))))
+                                                     (actor/height table))))
                                    (table/row! window)
                                    (pack! window)
                                    (table/add! (window/title-table window)
                                          (doto (text-button/create "X" @skin)
-                                           (add-listener! (create-change-listener
+                                           (actor/add-listener! (create-change-listener
                                                             (fn [_event _actor]
-                                                              (remove! window))))))
+                                                              (actor/remove! window))))))
                                    (window/set-modal! window true)
-                                   (add-actor! window (proxy [Actor] []
-                                                        (act [delta]
-                                                          (when (input/key-just-pressed? @input input-keys/ENTER)
-                                                            (on-save this))
-                                                          (let [^Actor this this]
-                                                            (proxy-super act delta)))
-                                                        (draw [batch parent-alpha])))
-                                   (set-name! window "moon.ui.clojure.editor-window")
+                                   (group/add-actor! window (actor/create
+                                                              {:act!
+                                                               (fn [this _delta]
+                                                                 (when (input/key-just-pressed? @input input-keys/ENTER)
+                                                                   (on-save this)))
+                                                               :draw!
+                                                               (fn [_this _batch _parent-alpha])}))
+                                   (actor/set-name! window "moon.ui.clojure.editor-window")
                                    window))
         main-window (fn []
                       (let [window (window/create "Edit" @skin)]
                         (doseq [property-type property-types]
                           (table/add! window (doto (text-button/create (str/capitalize (name property-type)) @skin)
-                                         (add-listener! (create-change-listener
+                                         (actor/add-listener! (create-change-listener
                                                           (fn [_event _actor]
-                                                            (add-actor! @editor-stage
+                                                            (stage/add-actor! @editor-stage
                                                                         (property-overview-window
                                                                           property-type
                                                                           (fn [_actor id]
-                                                                            (add-actor! @editor-stage
+                                                                            (stage/add-actor! @editor-stage
                                                                                         (property-editor-window ((:editor/get-property editor) id))))
                                                                           editor)))))))
                           (table/row! window))
@@ -5175,13 +5047,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (bitmap-font-bitmap-font-data/set-markup-enabled!
         (bitmap-font/data (skin/font @skin "default-font"))
         true)
-       (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
+       (reset! editor-stage (stage/create (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (audio/new-sound audio (files/internal files path))])))
        (reset! textures (create-textures files (:textures editor-config)))
        (set-input-processor! @editor-stage)
-       (add-actor! @editor-stage (main-window)))
+       (stage/add-actor! @editor-stage (main-window)))
      :dispose!
      (fn []
        (run! dispose! (vals @sounds))
@@ -5191,17 +5063,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :render!
      (fn [{:keys [clear-screen!]}]
        (clear-screen! 0 0 0 0)
-       (act! @editor-stage)
-       (draw! @editor-stage))
+       (stage/act! @editor-stage)
+       (stage/draw! @editor-stage))
      :resize!
      (fn [width height]
-       (resize! (get-viewport @editor-stage) width height true))
+       (resize! (stage/viewport @editor-stage) width height true))
      }))
-
-(extend-type Actor
-  GetName
-  (get-name [this]
-    (.getName this)))
 
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
