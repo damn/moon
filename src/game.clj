@@ -3683,7 +3683,7 @@ menus [{:label "Debug"
                          :on-click #(reset! show-potential-field-colors? :evil)}]}
                {:label "Help"
                 :items [{:label controls-info}]}]
-init-game-state! (fn [handle-txs! textures image->texture-region]
+init-game-state! (fn [textures image->texture-region]
                    (let [{:keys [tiled-map
                                  start-position]} (create-level! textures image->texture-region)]
                      (reset! tiled-map* tiled-map)
@@ -3701,19 +3701,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                        (reset! raycaster (create-raycaster g)))
                      (reset! elapsed-time 0)
                      (reset! player-id (generate-id!*))
-                     (handle-txs! (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                                         :creature-property (build-property :creatures/vampire)
-                                                                         :components {:entity/fsm {:fsm (:player fsms)
-                                                                                                   :initial-state :player-idle}
-                                                                                      :entity/faction :good
-                                                                                      :entity/player? true
-                                                                                      :entity/free-skill-points 3
-                                                                                      :entity/clickable {:type :clickable/player}
-                                                                                      :entity/click-distance-tiles 1.5}})
-                                                        @player-id)]
-                                    (concat [[:tx/spawn-entity entity]]
-                                            (player-ui-txs #(info-text % @elapsed-time) entity)
-                                            (spawn-map-creatures build-property @tiled-map* start-position fsms entity*))))))
+                     (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                                            :creature-property (build-property :creatures/vampire)
+                                                            :components {:entity/fsm {:fsm (:player fsms)
+                                                                                      :initial-state :player-idle}
+                                                                         :entity/faction :good
+                                                                         :entity/player? true
+                                                                         :entity/free-skill-points 3
+                                                                         :entity/clickable {:type :clickable/player}
+                                                                         :entity/click-distance-tiles 1.5}})
+                                           @player-id)]
+                       (concat [[:tx/spawn-entity entity]]
+                               (player-ui-txs #(info-text % @elapsed-time) entity)
+                               (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
         state (atom nil)
         potential-field-cache (atom nil)
         ]
@@ -3936,7 +3936,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         :textures textures
                         :unit-scale unit-scale
                         :viewport viewport})
-         (init-game-state! handle-txs! textures image->texture-region)))
+         (handle-txs! (init-game-state! textures image->texture-region))))
 
      :dispose!
      (fn []
