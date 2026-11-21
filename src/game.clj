@@ -2845,13 +2845,54 @@
                                       :effect/target hit-entity}
                                      entity-effects)))))
 
+; maybe the whole 'active-skill' or 'delayed-action'
+; needs to be ONE data structure
+; and projectile effects we do separate (first without schema/db later we see?)
+; or even skill can do without schema/db?
+
+; also lets make one 'type' for each as var for now?
+; keys together
+
+(defn effect-applicable? [[k v] effect-ctx]
+  (case k
+    :effects/projectile (:effect/target-direction effect-ctx)
+    :effects/spawn (and (:entity/faction @(:effect/source effect-ctx))
+                        (:effect/target-position effect-ctx))
+    :effects/target-all true
+    :effects/target-entity (and (:effect/target effect-ctx)
+                                (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
+    :effects.target/convert (let [source (:effect/source effect-ctx)
+                                  target (:effect/target effect-ctx)]
+                              (and target
+                                   (= (:entity/faction @target)
+                                      (enemy (:entity/faction @source)))))
+    :effects.target/damage (and (:effect/target effect-ctx)
+                                #_(:stats/hp @target))
+    :effects.target/kill (and (:effect/target effect-ctx)
+                              (:entity/fsm @(:effect/target effect-ctx)))
+    :effects.target/melee-damage (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
+                                                     effect-ctx)
+    :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
+    :effects.target/stun (and (:effect/target effect-ctx)
+                              (:entity/fsm @(:effect/target effect-ctx)))))
+
+
+; :projectiles/black
+; {:effects.target/damage {:damage/min-max [4 8]},
+;   :effects.target/stun 0.5}
+
+; :entity-effects {:effects.target/kill true}
+; :projectiles/double-fireball
+
+(defn effects-applicable? [effects effect-ctx]
+  (seq (filter #(effect-applicable? % effect-ctx) effects)))
+
 (defn active-skill-tick
   [{:keys [skill effect-ctx counter]} 
    eid 
    line-of-sight? 
    applicable-effect-txs 
    elapsed-time 
-   effect-applicable? 
    tx-event-txs]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
@@ -2861,7 +2902,7 @@
                      effect-ctx
                      (dissoc effect-ctx :effect/target))]
     (cond
-      (not (seq (filter #(effect-applicable? % effect-ctx) (:skill/effects skill))))
+      (not (effects-applicable? (:skill/effects skill) effect-ctx))
       (tx-event-txs eid :action-done)
 
       (timer-stopped? counter elapsed-time)
@@ -3196,29 +3237,6 @@
 
     nil))
 
-(defn effect-applicable? [[k v] effect-ctx]
-  (case k
-    :effects/projectile (:effect/target-direction effect-ctx)
-    :effects/spawn (and (:entity/faction @(:effect/source effect-ctx))
-                        (:effect/target-position effect-ctx))
-    :effects/target-all true
-    :effects/target-entity (and (:effect/target effect-ctx)
-                                (seq (filter #(effect-applicable? % effect-ctx) (:entity-effects v))))
-    :effects.target/convert (let [source (:effect/source effect-ctx)
-                                  target (:effect/target effect-ctx)]
-                              (and target
-                                   (= (:entity/faction @target)
-                                      (enemy (:entity/faction @source)))))
-    :effects.target/damage (and (:effect/target effect-ctx)
-                                #_(:stats/hp @target))
-    :effects.target/kill (and (:effect/target effect-ctx)
-                              (:entity/fsm @(:effect/target effect-ctx)))
-    :effects.target/melee-damage (effect-applicable? [:effects.target/damage (melee-damage @(:effect/source effect-ctx))]
-                                                     effect-ctx)
-    :effects.target/spiderweb (:entity/stats @(:effect/target effect-ctx))
-    :effects.target/stun (and (:effect/target effect-ctx)
-                              (:entity/fsm @(:effect/target effect-ctx)))))
-
 (defn effect-useful? [[k v] effect-ctx ray-blocked?]
   (case k
     :effects/projectile
@@ -3252,11 +3270,16 @@
     (> (:skill/cost skill) ((get-mana (:entity/stats entity)) 0))
     :not-enough-mana
 
-    (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
+    (not (effects-applicable? effects effect-ctx))
     :invalid-params
 
     :else
     :usable))
+
+(defn effects-useful? [effects effect-ctx raycaster-blocked?]
+  (->> effects
+       (filter (fn [e] (effect-applicable? e effect-ctx)))
+       (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
 
 (defn choose-skill [raycaster-blocked? entity effect-ctx]
   (->> entity
@@ -3265,9 +3288,7 @@
        (sort-by :skill/cost)
        reverse
        (filter #(and (= :usable (usable-state % entity effect-ctx))
-                     (->> (:skill/effects %)
-                          (filter (fn [e] (effect-applicable? e effect-ctx)))
-                          (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?))))))
+                     (effects-useful? (:skill/effects %) effect-ctx raycaster-blocked?)))
        first))
 
 (defn kill-txs* [tx-event-txs eid]
@@ -3464,6 +3485,7 @@
         active-entities (atom nil)
         affected-targets* (fn [entity]
                             (affected-targets @active-entities @raycaster entity))
+        ; maybe just make 'effects queries together with effect-ctx' ? 
         mk-effect-txs (fn applicable-effect-txs [effect-ctx effects]
                         (mapcat (fn [[k v]]
                                   (case k
@@ -3492,7 +3514,7 @@
                            :entity/skills (skills-tick v eid delta-time elapsed-time)
                            :entity/temp-modifier (temp-modifier-tick v eid delta-time elapsed-time)
                            :entity/projectile-collision (projectile-collision-tick v eid delta-time @grid mk-effect-txs)
-                           :active-skill (active-skill-tick v eid line-of-sight? mk-effect-txs elapsed-time effect-applicable? tx-event-txs)
+                           :active-skill (active-skill-tick v eid line-of-sight? mk-effect-txs elapsed-time tx-event-txs)
                            :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
                            :stunned (stunned-tick v eid delta-time elapsed-time tx-event-txs)
                            :player-moving (movement-tick v eid delta-time @grid max-speed)
