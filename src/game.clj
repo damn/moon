@@ -3746,7 +3746,6 @@ init-game-state! (fn [textures image->texture-region]
                   new-sound
                   frames-per-second
                   new-cursor]}]
-       (colors/put "PRETTY_NAME" (color/create 0.84 0.8 0.52 1))
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [batch (sprite-batch/create)
              textures (create-textures internal (:textures game-config))
@@ -5436,5 +5435,6 @@ init-game-state! (fn [textures image->texture-region]
                 :width 1440 
                 :height 900 
                 :fps 60}]
+    (colors/put "PRETTY_NAME" (color/create 0.84 0.8 0.52 1))
     (lwjgl3-application-configuration/use-glfw-async!)
     (lwjgl3-application! listener config)))
