@@ -3866,6 +3866,8 @@
                         (timer-create duration @elapsed-time))
         timer-info (fn [] 
                      (str (readable @elapsed-time) " seconds"))
+        timer-ratio-txt (fn [timer]
+                          (str (readable (timer-ratio timer @elapsed-time)) "/1"))
 
         id-counter (atom 0)
 
@@ -4030,7 +4032,7 @@
                                                     (info-text (apply dissoc @eid [:entity/skills
                                                                                    :entity/faction
                                                                                    :active-skill])
-                                                               @elapsed-time)
+                                                               timer-ratio-txt)
                                                     ""))
                                :skin skin}
              handle-txs! (fn [{:keys [play-sound!
@@ -4198,7 +4200,7 @@
                                  @player-id)]
              (handle-txs! capabilities 
                           (concat [[:tx/spawn-entity entity]]
-                                  (player-ui-txs #(info-text % @elapsed-time) entity)
+                                  (player-ui-txs #(info-text % timer-ratio-txt) entity)
                                   (spawn-map-creatures build-property @tiled-map* start-position fsms entity*)))))
          (reset! state {:dispose! (fn []
                                     (disposable/dispose! batch)
@@ -5446,17 +5448,17 @@
                    :entity/fsm "YELLOW"
                    :entity/species "LIGHT_GRAY"
                    :entity/temp-modifier "LIGHT_GRAY"}
-        info-text (fn info-text [entity elapsed-time]
+        info-text (fn info-text [entity timer-ratio-txt]
                     (let [component-info (fn [[k v]]
                                            (let [s (case k
                                                      :entity/delete-after-duration
-                                                     (str "Remaining: " (readable (timer-ratio v elapsed-time)) "/1")
+                                                     (str "Remaining: " (timer-ratio-txt v))
 
                                                      :entity/temp-modifier
-                                                     (str "Spiderweb - remaining: " (readable (timer-ratio (:counter v) elapsed-time)) "/1")
+                                                     (str "Spiderweb - remaining: " (timer-ratio-txt (:counter v)))
 
                                                      :skill/cooling-down?
-                                                     (str "Cooldown: " (readable (timer-ratio v elapsed-time)) "/1")
+                                                     (str "Cooldown: " (timer-ratio-txt (:counter v)))
 
                                                      (when-let [info-fn (k->info-fn k)]
                                                        (str (info-fn v))))]
@@ -5470,7 +5472,7 @@
                                              (catch Throwable _t
                                                (str "*info-error* " k)))
                                         (when (map? v)
-                                          (str "\n" (info-text v elapsed-time))))))
+                                          (str "\n" (info-text v timer-ratio-txt))))))
                            (str/join "\n")
                            remove-newlines)))
         slot->y-sprite-idx #:inventory.slot {:weapon 0
