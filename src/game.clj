@@ -3661,54 +3661,6 @@
                                    (when new-eid
                                      (swap! new-eid assoc :entity/mouseover? true))
                                    (reset! mouseover-eid new-eid)))
-        handle-txs! (fn [stage image->texture-region skin play-sound! txs]
-                      (let [k->txs {
-                                    :tx/swap swap!
-                                    :tx/spawn-entity 
-                                    (fn [entity]
-                                      (spawn-entity! entity-ids @content-grid @grid entity))
-                                    :tx/update-position
-                                    (fn [eid]
-                                      (update-entity-position! @content-grid @grid eid))
-                                    :tx/remove-entity
-                                    (fn [eid]
-                                      (remove-entity!* entity-ids @content-grid @grid eid))
-                                    :tx/modal
-                                    (fn [opts]
-                                      (show-modal! skin stage opts))
-                                    :tx/set-item 
-                                    (fn [cell item]
-                                      (-> (stage/root stage)
-                                          (group/find-actor "moon.ui.windows.inventory")
-                                          (set-item!* cell
-                                                      {:texture-region (image->texture-region (:entity/image item))
-                                                       :tooltip-text (item-info-text item)}
-                                                      skin)))
-                                    :tx/sound play-sound! 
-                                    :tx/remove-item
-                                    (fn [cell] 
-                                      (remove-item! stage cell))
-                                    :tx/toggle-inventory-visible
-                                    (fn []
-                                      (toggle-inventory-visible! stage))
-                                    :tx/show-message
-                                    (fn [message]
-                                      (reset! player-message {:text message :counter 0}))
-                                    :tx/set-skill
-                                    (fn [skill-id image tooltip-text]
-                                      (-> (stage/root stage)
-                                          (group/find-actor "moon.ui.action-bar")
-                                          (add-skill! {:skill-id skill-id
-                                                       :texture-region (image->texture-region image)
-                                                       :tooltip-text tooltip-text}
-                                                      skin)))
-                                    }]
-                        (doseq [[k & params] txs]
-                          (try (apply (safe-get k->txs k) params)
-                               (catch Throwable t
-                                 (throw (ex-info "handle-txs! error" 
-                                                 {:k k :params params}
-                                                 t)))))))
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -3781,14 +3733,60 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (internal (:skin game-config)))
              sounds (into {} (for [path (:sounds game-config)] [path (new-sound (internal path))]))
-             play-sound!* (fn [sound-name]
+             play-sound! (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
              stage (stage/create (fit-viewport/create (:width (:stage game-config))
                                                       (:height (:stage game-config)))
                                  batch)
              image->texture-region #(get-texture-region textures %)
              handle-txs! (fn [txs]
-                           (handle-txs! stage image->texture-region skin play-sound!* txs))
+                           (let [k->txs {
+                                         :tx/swap swap!
+                                         :tx/spawn-entity 
+                                         (fn [entity]
+                                           (spawn-entity! entity-ids @content-grid @grid entity))
+                                         :tx/update-position
+                                         (fn [eid]
+                                           (update-entity-position! @content-grid @grid eid))
+                                         :tx/remove-entity
+                                         (fn [eid]
+                                           (remove-entity!* entity-ids @content-grid @grid eid))
+                                         :tx/modal
+                                         (fn [opts]
+                                           (show-modal! skin stage opts))
+                                         :tx/set-item 
+                                         (fn [cell item]
+                                           (-> (stage/root stage)
+                                               (group/find-actor "moon.ui.windows.inventory")
+                                               (set-item!* cell
+                                                           {:texture-region (image->texture-region (:entity/image item))
+                                                            :tooltip-text (item-info-text item)}
+                                                           skin)))
+                                         :tx/sound play-sound! 
+                                         :tx/remove-item
+                                         (fn [cell] 
+                                           (remove-item! stage cell))
+                                         :tx/toggle-inventory-visible
+                                         (fn []
+                                           (toggle-inventory-visible! stage))
+                                         :tx/show-message
+                                         (fn [message]
+                                           (reset! player-message {:text message :counter 0}))
+                                         :tx/set-skill
+                                         (fn [skill-id image tooltip-text]
+                                           (-> (stage/root stage)
+                                               (group/find-actor "moon.ui.action-bar")
+                                               (add-skill! {:skill-id skill-id
+                                                            :texture-region (image->texture-region image)
+                                                            :tooltip-text tooltip-text}
+                                                           skin)))
+                                         }]
+                             (doseq [[k & params] txs]
+                               (try (apply (safe-get k->txs k) params)
+                                    (catch Throwable t
+                                      (throw (ex-info "handle-txs! error" 
+                                                      {:k k :params params}
+                                                      t)))))))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
              shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
