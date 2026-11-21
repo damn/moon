@@ -5067,7 +5067,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
            width 
            height 
            fps]}]
-  (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application/create
     (application-listener/create
       {:create! (fn [] (create! (create-capabilities)))
@@ -5179,6 +5178,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (viewport/update! @viewport width height true))}))
 
 (defn draw-text-demo! []
+  (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application! (draw-text-demo-listener)
                        {:title "draw-text! demo"
                         :width 1440
@@ -5186,6 +5186,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         :fps 60}))
 
 (defn levelgen! []
+  (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application! (levelgen-listener)
                        {:title "Levelgen", 
                         :width 1440, 
@@ -5193,6 +5194,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         :fps 60}))
 
 (defn editor! []
+  (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application! (editor-application-listener
                          {
                           :skin "skin/uiskin.json"
@@ -5509,4 +5511,5 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                 :width 1440 
                 :height 900 
                 :fps 60}]
+    (lwjgl3-application-configuration/use-glfw-async!)
     (lwjgl3-application! listener config)))
