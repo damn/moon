@@ -2846,9 +2846,14 @@
                                      entity-effects)))))
 
 (defn active-skill-tick
-  [v eid _delta-time line-of-sight? applicable-effect-txs elapsed-time effect-applicable? tx-event-txs]
-  (let [{:keys [skill effect-ctx counter]} v
-        source (:effect/source effect-ctx)
+  [{:keys [skill effect-ctx counter]} 
+   eid 
+   line-of-sight? 
+   applicable-effect-txs 
+   elapsed-time 
+   effect-applicable? 
+   tx-event-txs]
+  (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         effect-ctx (if (and target
                             (not (:entity/destroyed? @target))
@@ -2856,8 +2861,7 @@
                      effect-ctx
                      (dissoc effect-ctx :effect/target))]
     (cond
-      (not (seq (filter #(effect-applicable? % effect-ctx)
-                        (:skill/effects skill))))
+      (not (seq (filter #(effect-applicable? % effect-ctx) (:skill/effects skill))))
       (tx-event-txs eid :action-done)
 
       (timer-stopped? counter elapsed-time)
@@ -3478,6 +3482,7 @@
         choose-skill (fn [& params]
                        (apply choose-skill (partial raycaster-blocked? @raycaster) params))
         grid (atom nil)
+        line-of-sight? (partial line-of-sight? @raycaster)
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation [[:tx/swap eid animation-tick delta-time]]
@@ -3486,13 +3491,13 @@
                            :entity/skills (skills-tick v eid delta-time elapsed-time)
                            :entity/temp-modifier (temp-modifier-tick v eid delta-time elapsed-time)
                            :entity/projectile-collision (projectile-collision-tick v eid delta-time @grid mk-effect-txs)
-                           :active-skill (active-skill-tick v eid delta-time (partial line-of-sight? @raycaster) mk-effect-txs elapsed-time effect-applicable? tx-event-txs)
+                           :active-skill (active-skill-tick v eid line-of-sight? mk-effect-txs elapsed-time effect-applicable? tx-event-txs)
                            :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
                            :stunned (stunned-tick v eid delta-time elapsed-time tx-event-txs)
                            :player-moving (movement-tick v eid delta-time @grid max-speed)
                            :npc-moving (npc-moving-tick v eid delta-time elapsed-time @grid max-speed tx-event-txs)
                            :npc-sleeping (npc-sleeping-tick v eid delta-time @grid tx-event-txs)
-                           :npc-idle (npc-idle-tick v eid delta-time (partial line-of-sight? @raycaster) @grid choose-skill create-timer* tx-event-txs)
+                           :npc-idle (npc-idle-tick v eid delta-time line-of-sight? @grid choose-skill create-timer* tx-event-txs)
                            nil))
         entity-ids (atom {})
         player-id (atom nil)
