@@ -1,4 +1,92 @@
-(ns game)
+(ns game
+  (:require
+   [clj-commons.pretty.repl :as pretty-repl]
+   [clojure.com.badlogic.gdx.application-listener :as application-listener]
+   [clojure.com.badlogic.gdx.audio :as audio]
+   [clojure.com.badlogic.gdx.audio.sound :as sound]
+   [clojure.com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+   [clojure.com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
+   [clojure.com.badlogic.gdx.files :as files]
+   [clojure.com.badlogic.gdx.files.file-handle :as file-handle]
+   [clojure.com.badlogic.gdx.gdx :as gdx]
+   [clojure.com.badlogic.gdx.graphics :as graphics]
+   [clojure.com.badlogic.gdx.graphics.color :as color]
+   [clojure.com.badlogic.gdx.graphics.colors :as colors]
+   [clojure.com.badlogic.gdx.graphics.g2d.batch :as batch]
+   [clojure.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+   [clojure.com.badlogic.gdx.graphics.g2d.bitmap-font-bitmap-font-data :as bitmap-font-bitmap-font-data]
+   [clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
+   [clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator-free-type-font-parameter :as font-parameter]
+   [clojure.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+   [clojure.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+   [clojure.com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+   [clojure.com.badlogic.gdx.graphics.pixmap :as pixmap]
+   [clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
+   [clojure.com.badlogic.gdx.graphics.texture :as texture]
+   [clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter]
+   [clojure.com.badlogic.gdx.input :as input]
+   [clojure.com.badlogic.gdx.input-buttons :as input-buttons]
+   [clojure.com.badlogic.gdx.input-keys :as input-keys]
+   [clojure.com.badlogic.gdx.maps.map-layers :as map-layers]
+   [clojure.com.badlogic.gdx.maps.map-properties :as map-properties]
+   [clojure.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+   [clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
+   [clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+   [clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as tiled-map-tile-layer-cell]
+   [clojure.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+   [clojure.com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+   [clojure.com.badlogic.gdx.math.circle :as circle]
+   [clojure.com.badlogic.gdx.math.frustum :as frustum]
+   [clojure.com.badlogic.gdx.math.intersector :as intersector]
+   [clojure.com.badlogic.gdx.math.rectangle :as rectangle]
+   [clojure.com.badlogic.gdx.math.vector2 :as vector2]
+   [clojure.com.badlogic.gdx.math.vector3 :as vector3]
+   [clojure.com.badlogic.gdx.scenes.scene2d.actor :as actor]
+   [clojure.com.badlogic.gdx.scenes.scene2d.event :as event]
+   [clojure.com.badlogic.gdx.scenes.scene2d.group :as group]
+   [clojure.com.badlogic.gdx.scenes.scene2d.stage :as stage]
+   [clojure.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.button :as button]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
+   [clojure.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+   [clojure.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+   [clojure.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+   [clojure.com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+   [clojure.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+   [clojure.com.badlogic.gdx.utils.align :as align]
+   [clojure.com.badlogic.gdx.utils.disposable :as disposable]
+   [clojure.com.badlogic.gdx.utils.screen-utils :as screen-utils]
+   [clojure.com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+   [clojure.com.badlogic.gdx.utils.viewport.viewport :as viewport]
+   [clojure.edn :as edn]
+   [clojure.java.io :as io]
+   [clojure.java.util.random :as random]
+   [clojure.math :as math]
+   [clojure.pprint :as pprint]
+   [clojure.set :as set]
+   [clojure.space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
+   [clojure.string :as str]
+   [malli.core :as m]
+   [malli.error :as me]
+   [reduce-fsm :as fsm])
+  (:import
+   (clojure RayCaster)))
 
 (def float-rounding-error (double 0.000001))
 
@@ -16,8 +104,6 @@
              :inventory.slot/necklace
              :inventory.slot/rings})
 
-(require '[malli.core :as m])
-
 (def val-max-schema
   (m/schema
    [:and
@@ -26,8 +112,6 @@
                       (when (< mx v)
                         (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
      (fn [[^int a ^int b]] (<= a b))]]))
-
-(require '[clojure.java.util.random :as random])
 
 (def k->adj-num
   {:wide
@@ -91,9 +175,6 @@
   {:pre [(= "modifier" (namespace modifier-k))]}
   (apply-ops (modifier-k modifiers)
              base-value))
-
-(require '[clojure.math :as math])
-(require '[clojure.string :as str])
 
 (defn mods-format-text
   [mods]
@@ -220,24 +301,6 @@
                      (str (str/capitalize (name stat-k)) ": "
                           (get-value stats stat-k))))))
 
-(require '[clojure.com.badlogic.gdx.maps.map-layers :as map-layers]
-         '[clojure.com.badlogic.gdx.maps.map-properties :as map-properties]
-         '[clojure.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-         '[clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-         '[clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-         '[clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as tiled-map-tile-layer-cell]
-         '[clojure.com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
-         '[clojure.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
-
-(require '[clojure.com.badlogic.gdx.graphics.g2d.batch :as batch]
-         '[clojure.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-         '[clojure.com.badlogic.gdx.graphics.g2d.bitmap-font-bitmap-font-data :as bitmap-font-bitmap-font-data]
-         '[clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
-         '[clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator-free-type-font-parameter :as font-parameter]
-         '[clojure.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-         '[clojure.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
-
-
 (defn tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
@@ -312,25 +375,6 @@
             :when tile]
       (set-cell! layer x y tile))
     (map-layers/add! (tiled-map/layers tiled-map) layer)))
-
-(require '[clojure.com.badlogic.gdx.graphics.color :as color]
-         '[clojure.com.badlogic.gdx.graphics.colors :as colors]
-         '[clojure.com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-         '[clojure.com.badlogic.gdx.graphics.pixmap :as pixmap]
-         '[clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
-         '[clojure.com.badlogic.gdx.graphics.texture :as texture]
-         '[clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter]
-         '[clojure.com.badlogic.gdx.math.circle :as circle]
-         '[clojure.com.badlogic.gdx.math.frustum :as frustum]
-         '[clojure.com.badlogic.gdx.math.intersector :as intersector]
-         '[clojure.com.badlogic.gdx.math.rectangle :as rectangle]
-         '[clojure.com.badlogic.gdx.math.vector2 :as vector2]
-         '[clojure.com.badlogic.gdx.math.vector3 :as vector3]
-         '[clojure.com.badlogic.gdx.utils.align :as align]
-         '[clojure.com.badlogic.gdx.utils.disposable :as disposable]
-         '[clojure.com.badlogic.gdx.utils.screen-utils :as screen-utils]
-         '[clojure.com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-         '[clojure.com.badlogic.gdx.utils.viewport.viewport :as viewport])
 
 (defn- draw-tile!
   [x
@@ -463,8 +507,6 @@
                       color-setter
                       world-unit-scale)))
 
-(require '[clojure.com.badlogic.gdx.files.file-handle :as file-handle])
-
 (defn- recursively-search [handle extensions]
   (loop [[handle & remaining] (file-handle/list handle)
          result []]
@@ -479,15 +521,6 @@
 
           :else
           (recur remaining result))))
-
-(require '[clojure.com.badlogic.gdx.audio :as audio]
-         '[clojure.com.badlogic.gdx.audio.sound :as sound]
-         '[clojure.com.badlogic.gdx.files :as files]
-         '[clojure.com.badlogic.gdx.gdx :as gdx]
-         '[clojure.com.badlogic.gdx.graphics :as graphics]
-         '[clojure.com.badlogic.gdx.input :as input]
-         '[clojure.com.badlogic.gdx.input-buttons :as input-buttons]
-         '[clojure.com.badlogic.gdx.input-keys :as input-keys])
 
 (defn create-textures
   [files {:keys [folder extensions]}]
@@ -550,8 +583,6 @@
     (math/sqrt (+ (* x-d x-d)
                   (* y-d y-d)))))
 
-(require '[clojure.space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
-
 (defmacro with-line-width [shape-drawer width & body]
   `(let [old-line-width# (shape-drawer/default-line-width ~shape-drawer)]
      (shape-drawer/set-default-line-width ~shape-drawer (* ~width old-line-width#))
@@ -604,8 +635,6 @@
              y (range b (inc t))]
          [x y])
        [[l b] [l t] [r b] [r t]]))))
-
-(import '(clojure RayCaster))
 
 (defn raycaster-blocked?
   [[bool-arr
@@ -662,36 +691,6 @@
 (defn diagonal? [[x1 y1] [x2 y2]]
   (and (not= x1 x2)
        (not= y1 y2)))
-
-(require '[clojure.com.badlogic.gdx.scenes.scene2d.ui.button :as button]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
-
-(require '[clojure.com.badlogic.gdx.scenes.scene2d.actor :as actor]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.event :as event]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.group :as group]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.stage :as stage]
-         '[clojure.com.badlogic.gdx.scenes.scene2d.touchable :as touchable])
 
 (defn- set-label-text-actor [label-widget text-fn]
   (actor/create
@@ -852,8 +851,6 @@
                         (recur-sort %)
                         %)
                      (vals m)))))
-
-(require '[clojure.pprint :as pprint])
 
 (defn save! [db file]
   (let [data (->> (vals db)
@@ -3007,7 +3004,6 @@
           (when (timer-stopped? (:timer v) elapsed-time)
             (tx-event-txs eid :timer-finished))))
 
-
 (defn create-action-bar []
   (let [table (table/create)]
     (cell/pad! (table/defaults table) 2)
@@ -3063,7 +3059,6 @@
     (when-let [skill-button (button-group/checked button-group)]
       (actor/user-object skill-button))))
 
-(require '[malli.error :as me])
 (defn validate-hum [schema value]
   (when-not (m/validate schema value)
     (throw (ex-info (str (me/humanize (m/explain schema value)))
@@ -3138,8 +3133,6 @@
           :let [k (keyword "properties" (namespace (:property/id property)))]]
     (validate-hum (malli-schema schemas k) property))
   (zipmap (map :property/id properties) properties))
-
-(require '[reduce-fsm :as fsm])
 
 (defn update-xy! [camera [x y]]
   (let [pos (orthographic-camera/position camera)]
@@ -3402,7 +3395,6 @@
                    [:tx/sound "bfxr_pickup.wav"]
                    [:tx/swap player-eid set-item cell item]
                    [:tx/set-item cell item]]))
-
 
               :else
               [[:tx/sound "bfxr_denied.wav"]
@@ -4166,9 +4158,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (tiled-map-tile-layer/set-visible! (map-layers/get (tiled-map/layers tiled-map) "creatures") true)
     tiled-map))
 
-(require '[clojure.edn :as edn])
-(require '[clojure.java.io :as io])
-
 (defn levelgen-listener []
   (let [db (create-db (-> "schema.edn" io/resource slurp edn/read-string) 
                       (-> "properties.edn" io/resource slurp edn/read-string))
@@ -4747,8 +4736,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                            :display-remove-component-button? (k->optional? k)}))
     table))
 
-(require '[clojure.set :as set])
-
 (defn play-sound!* [sounds sound-name]
   (sound/play! (safe-get sounds sound-name)))
 
@@ -4771,8 +4758,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (table/row! table)
     (layout/pack! table)
     table))
-
-(require '[clj-commons.pretty.repl :as pretty-repl])
 
 (defn editor-application-listener 
   [editor-config]
@@ -5038,10 +5023,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (viewport/update! (stage/viewport @editor-stage) width height true))
      }))
 
-(require '[clojure.com.badlogic.gdx.application-listener :as application-listener]
-         '[clojure.com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-         '[clojure.com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration])
-
 (defn create-capabilities []
   (let [audio (gdx/audio)
         files (gdx/files)
@@ -5210,7 +5191,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                         :width 1440, 
                         :height 900, 
                         :fps 60}))
-
 
 (defn editor! []
   (lwjgl3-application! (editor-application-listener
