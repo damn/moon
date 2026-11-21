@@ -3564,6 +3564,12 @@
     (set-cursor! cursor-key)
     (handle-txs! capabilities txs)))
 
+(defn message-counter-update! [player-message message-duration-seconds delta-time]
+  (when (:text @player-message)
+    (swap! player-message update :counter + delta-time)
+    (when (>= (:counter @player-message) message-duration-seconds)
+      (reset! player-message nil))))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3642,10 +3648,7 @@
         player-message (atom nil)
         message-duration-seconds 0.5
         update-message-counter! (fn [{:keys [get-delta-time]}]
-                                  (when (:text @player-message)
-                                    (swap! player-message update :counter + (get-delta-time))
-                                    (when (>= (:counter @player-message) message-duration-seconds)
-                                      (reset! player-message nil))))
+                                  (message-counter-update! player-message message-duration-seconds (get-delta-time)))
         paused? (atom false)
         update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
