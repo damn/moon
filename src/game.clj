@@ -2409,23 +2409,22 @@
       (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
 (defn draw-tile-grid
-  [shape-drawer viewport show-tile-grid?]
-  (when show-tile-grid?
-    (let [camera (viewport/camera viewport)
-          plane-points (mapv (fn [v3]
-                               [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
-                             (frustum/plane-points (orthographic-camera/frustum camera)))
-          frustum-points (take 4 plane-points)
-          left-x   (apply min (map first  frustum-points))
-          bottom-y (apply min (map second frustum-points))]
-      (draw-fn-grid shape-drawer
-                    (int left-x)
-                    (int bottom-y)
-                    (inc (int (viewport/world-width viewport)))
-                    (+ 2 (int (viewport/world-height viewport)))
-                    1
-                    1
-                    (color/float-bits 1 1 1 0.8)))))
+  [shape-drawer viewport]
+  (let [camera (viewport/camera viewport)
+        plane-points (mapv (fn [v3]
+                             [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
+                           (frustum/plane-points (orthographic-camera/frustum camera)))
+        frustum-points (take 4 plane-points)
+        left-x   (apply min (map first  frustum-points))
+        bottom-y (apply min (map second frustum-points))]
+    (draw-fn-grid shape-drawer
+                  (int left-x)
+                  (int bottom-y)
+                  (inc (int (viewport/world-width viewport)))
+                  (+ 2 (int (viewport/world-height viewport)))
+                  1
+                  1
+                  (color/float-bits 1 1 1 0.8))))
 
 (defn highlight-mouseover-tile
   [shape-drawer world-mouse-position grid]
@@ -3796,7 +3795,8 @@
     get-input-position]]
   (with-line-width shape-drawer world-unit-scale
     (reset! unit-scale world-unit-scale)
-    (draw-tile-grid shape-drawer viewport @show-tile-grid?)
+    (when @show-tile-grid?
+      (draw-tile-grid shape-drawer viewport)
     (draw-cell-debug factions-iterations
                      shape-drawer 
                      viewport
@@ -3863,7 +3863,6 @@
                               (/ (/ image-width tile-size) 2))
 
         elapsed-time (atom 0)
-
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
 
