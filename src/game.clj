@@ -2773,7 +2773,7 @@
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (entity* (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground))]])))
 
-(defn damage-effect [v effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs]
+(defn damage-effect [v effect-ctx game-db create-timer entity* kill-txs tx-event-txs]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         source* @source
@@ -2789,7 +2789,7 @@
       (and (:entity/stats source*)
            (:entity/stats target*)
            (< (rand) (effective-armor-save (:entity/stats source*) (:entity/stats target*))))
-      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 #(timer-create % elapsed-time)]]
+      [[:tx/swap target add-text-effect "[WHITE]ARMOR" 0.3 create-timer]]
 
       :else
       (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
@@ -2805,7 +2805,7 @@
             dmg-text (str "[RED]" dmg-amount "[]")]
         (concat
           [[:tx/swap target assoc-in [:entity/stats :stats/hp 0] new-hp-val]
-           [:tx/swap target add-text-effect dmg-text 0.3 #(timer-create % elapsed-time)]
+           [:tx/swap target add-text-effect dmg-text 0.3 create-timer]
            [:tx/sound "bfxr_normalhit.wav"]
            [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position target*) :audiovisuals/damage))]]
           (if (zero? new-hp-val)
@@ -2815,12 +2815,12 @@
 (defn kill-effect [_v effect-ctx kill-txs]
   (kill-txs (:effect/target effect-ctx)))
 
-(defn spiderweb-effect [_v effect-ctx elapsed-time]
+(defn spiderweb-effect [_v effect-ctx create-timer]
   (let [target (:effect/target effect-ctx)]
     ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
     (when-not (:entity/temp-modifier @target)
       [[:tx/swap target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                     :counter (timer-create spiderweb-duration elapsed-time)}]
+                                                     :counter (create-timer spiderweb-duration)}]
        [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
 
@@ -2855,7 +2855,7 @@
     :effects.target/stun (and (:effect/target effect-ctx)
                               (:entity/fsm @(:effect/target effect-ctx)))))
 
-(defn effects->txs [foo** effect-ctx effects create-projectile game-db fsms entity* elapsed-time tx-event-txs kill-txs affected-targets*]
+(defn effects->txs [foo** effect-ctx effects create-projectile game-db fsms entity* create-timer tx-event-txs kill-txs affected-targets*]
   (mapcat (fn [[k v]]
             (case k
               :effects/projectile (projectile-effect v effect-ctx create-projectile)
@@ -2863,10 +2863,10 @@
               :effects/target-all (target-all-effect v effect-ctx affected-targets* foo** entity*)
               :effects/target-entity (target-entity-effect v effect-ctx game-db foo** entity*)
               :effects.target/convert (convert-effect v effect-ctx game-db entity*)
-              :effects.target/damage (damage-effect v effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs)
+              :effects.target/damage (damage-effect v effect-ctx game-db create-timer entity* kill-txs tx-event-txs)
               :effects.target/kill (kill-effect v effect-ctx kill-txs)
-              :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db elapsed-time entity* kill-txs tx-event-txs)
-              :effects.target/spiderweb (spiderweb-effect v effect-ctx elapsed-time)
+              :effects.target/melee-damage (damage-effect (melee-damage @(:effect/source effect-ctx)) effect-ctx game-db create-timer entity* kill-txs tx-event-txs)
+              :effects.target/spiderweb (spiderweb-effect v effect-ctx create-timer)
               :effects.target/stun (let [duration v]
                                      (tx-event-txs (:effect/target effect-ctx) :stun duration))))
           (filter #(effect-applicable? % effect-ctx) effects)))
@@ -3723,10 +3723,9 @@
                         @eid))
               @active-entities))))
 
-(defn game-update-labels [frames-per-second elapsed-time mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom] 
+(defn game-update-labels [frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom] 
   [{:label "elapsed-time"
-    :update-fn (fn [] 
-                 (str (readable @elapsed-time) " seconds"))
+    :update-fn timer-info
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn frames-per-second
@@ -3796,7 +3795,7 @@
   (with-line-width shape-drawer world-unit-scale
     (reset! unit-scale world-unit-scale)
     (when @show-tile-grid?
-      (draw-tile-grid shape-drawer viewport)
+      (draw-tile-grid shape-drawer viewport))
     (draw-cell-debug factions-iterations
                      shape-drawer 
                      viewport
@@ -3865,6 +3864,8 @@
         elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
+        timer-info (fn [] 
+                     (str (readable @elapsed-time) " seconds"))
 
         id-counter (atom 0)
 
@@ -3893,7 +3894,7 @@
         affected-targets* (fn [entity]
                             (affected-targets @active-entities @raycaster entity))
         mk-effect-txs (fn foo** [effect-ctx effects]
-                        (effects->txs foo** effect-ctx effects create-projectile game-db fsms entity* @elapsed-time tx-event-txs kill-txs affected-targets*))
+                        (effects->txs foo** effect-ctx effects create-projectile game-db fsms entity* create-timer* tx-event-txs kill-txs affected-targets*))
         choose-skill (fn [& params]
                        (apply choose-skill (partial raycaster-blocked? @raycaster) params))
         grid (atom nil)
@@ -4019,7 +4020,7 @@
                                   (if (:icon item)
                                     (update item :icon #(get textures %))
                                     item))
-                                (game-update-labels frames-per-second elapsed-time mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom))
+                                (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom))
              info-window-opts {:title "Entity Info"
                                :actor-name "moon.ui.windows.entity-info"
                                :visible? false
