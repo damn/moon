@@ -238,11 +238,11 @@
          '[clojure.com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
          '[clojure.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
 
-(import '(com.badlogic.gdx.graphics.g2d Batch
-                                        BitmapFont
-                                        BitmapFont$BitmapFontData
-                                        SpriteBatch
-                                        TextureRegion))
+(require '[clojure.com.badlogic.gdx.graphics.g2d.batch :as batch]
+         '[clojure.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+         '[clojure.com.badlogic.gdx.graphics.g2d.bitmap-font-bitmap-font-data :as bitmap-font-bitmap-font-data]
+         '[clojure.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+         '[clojure.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
 
 
 (defn tile-movement-property
@@ -324,13 +324,13 @@
       (set-cell! layer x y tile))
     (map-layers/add! (tiled-map/layers tiled-map) layer)))
 
-(import '(com.badlogic.gdx.graphics Color
-                                    Colors
-                                    Texture
-                                    Texture$TextureFilter
-                                    OrthographicCamera
-                                    Pixmap 
-                                    Pixmap$Format))
+(require '[clojure.com.badlogic.gdx.graphics.color :as color]
+         '[clojure.com.badlogic.gdx.graphics.colors :as colors]
+         '[clojure.com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+         '[clojure.com.badlogic.gdx.graphics.pixmap :as pixmap]
+         '[clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
+         '[clojure.com.badlogic.gdx.graphics.texture :as texture]
+         '[clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter])
 
 (defn- draw-tile!
   [x
@@ -345,51 +345,51 @@
   (let [region (tiled-map-tile/texture-region tile)
         x1 (+ x (* (tiled-map-tile/offset-x tile) unit-scale))
         y1 (+ y (* (tiled-map-tile/offset-y tile) unit-scale))
-        x2 (+ x1 (* (.getRegionWidth region) unit-scale))
-        y2 (+ y1 (* (.getRegionHeight region) unit-scale))
-        u1 (.getU region)
-        v1 (.getV2 region)
-        u2 (.getU2 region)
-        v2 (.getV region)
+        x2 (+ x1 (* (texture-region/region-width region) unit-scale))
+        y2 (+ y1 (* (texture-region/region-height region) unit-scale))
+        u1 (texture-region/u region)
+        v1 (texture-region/v2 region)
+        u2 (texture-region/u2 region)
+        v2 (texture-region/v region)
         color11 (float (color-setter batch-color x1 y1))
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
         color21 (float (color-setter batch-color x2 y1))]
-    (aset-float verts Batch/X1 x1)
-    (aset-float verts Batch/Y1 y1)
-    (aset-float verts Batch/C1 color11)
-    (aset-float verts Batch/U1 u1)
-    (aset-float verts Batch/V1 v1)
-    (aset-float verts Batch/X2 x1)
-    (aset-float verts Batch/Y2 y2)
-    (aset-float verts Batch/C2 color12)
-    (aset-float verts Batch/U2 u1)
-    (aset-float verts Batch/V2 v2)
-    (aset-float verts Batch/X3 x2)
-    (aset-float verts Batch/Y3 y2)
-    (aset-float verts Batch/C3 color22)
-    (aset-float verts Batch/U3 u2)
-    (aset-float verts Batch/V3 v2)
-    (aset-float verts Batch/X4 x2)
-    (aset-float verts Batch/Y4 y1)
-    (aset-float verts Batch/C4 color21)
-    (aset-float verts Batch/U4 u2)
-    (aset-float verts Batch/V4 v1)
-    (.draw ^Batch batch
-           ^Texture (.getTexture ^TextureRegion region)
-           ^floats verts
-           (int 0)
-           (int num-vertices))))
+    (aset-float verts batch/X1 x1)
+    (aset-float verts batch/Y1 y1)
+    (aset-float verts batch/C1 color11)
+    (aset-float verts batch/U1 u1)
+    (aset-float verts batch/V1 v1)
+    (aset-float verts batch/X2 x1)
+    (aset-float verts batch/Y2 y2)
+    (aset-float verts batch/C2 color12)
+    (aset-float verts batch/U2 u1)
+    (aset-float verts batch/V2 v2)
+    (aset-float verts batch/X3 x2)
+    (aset-float verts batch/Y3 y2)
+    (aset-float verts batch/C3 color22)
+    (aset-float verts batch/U3 u2)
+    (aset-float verts batch/V3 v2)
+    (aset-float verts batch/X4 x2)
+    (aset-float verts batch/Y4 y1)
+    (aset-float verts batch/C4 color21)
+    (aset-float verts batch/U4 u2)
+    (aset-float verts batch/V4 v1)
+    (batch/draw batch
+                (texture-region/texture region)
+                verts
+                0
+                num-vertices)))
 
 (defn- draw-tile-layer!
   [layer
-   ^Batch batch
+   batch
    view-bounds
    color-setter
    world-unit-scale]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (.getColor batch)
+        batch-color (batch/color batch)
         layer-width (tiled-map-tile-layer/width layer)
         layer-height (tiled-map-tile-layer/height layer)
         layer-tile-width (* (tiled-map-tile-layer/tile-width layer) world-unit-scale)
@@ -440,15 +440,15 @@
         (recur (dec row)
                (- y layer-tile-height))))))
 
-(defn camera-view-bounds [^OrthographicCamera camera]
-  (let [width  (* (.viewportWidth camera) (.zoom camera))
-        height (* (.viewportHeight camera) (.zoom camera))
-        up (.up camera)
+(defn camera-view-bounds [camera]
+  (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
+        height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
+        up (orthographic-camera/up camera)
         w (+ (* width  (Math/abs (float (.y up))))
              (* height (Math/abs (float (.x up)))))
         h (+ (* height (Math/abs (float (.y up))))
              (* width  (Math/abs (float (.x up)))))
-        pos (.position camera)]
+        pos (orthographic-camera/position camera)]
     {:x (- (.x pos) (/ w 2))
      :y (- (.y pos) (/ h 2))
      :width w
@@ -463,55 +463,45 @@
                       color-setter
                       world-unit-scale)))
 
-(import '(com.badlogic.gdx.files FileHandle))
+(require '[clojure.com.badlogic.gdx.files.file-handle :as file-handle])
 
-(defn- recursively-search [^FileHandle handle extensions]
-  (loop [[^FileHandle handle & remaining] (.list handle)
+(defn- recursively-search [handle extensions]
+  (loop [[handle & remaining] (file-handle/list handle)
          result []]
     (cond (nil? handle)
           result
 
-          (.isDirectory handle)
-          (recur (concat remaining (.list handle)) result)
+          (file-handle/directory? handle)
+          (recur (concat remaining (file-handle/list handle)) result)
 
-          (extensions (.extension handle))
-          (recur remaining (conj result (.path handle)))
+          (extensions (file-handle/extension handle))
+          (recur remaining (conj result (file-handle/path handle)))
 
           :else
           (recur remaining result))))
 
-(import '(com.badlogic.gdx ApplicationListener
-                           Audio
-                           Files
-                           Gdx
-                           Graphics
-                           Input
-                           Input$Buttons
-                           Input$Keys))
-
-(defn internal [files path]
-  (Files/.internal files path))
-
-(defn texture! [^FileHandle file-handle]
-  (Texture. file-handle))
-
-(defn pixmap->texture! [pixmap]
-  (Texture. ^Pixmap pixmap))
+(require '[clojure.com.badlogic.gdx.audio :as audio]
+         '[clojure.com.badlogic.gdx.files :as files]
+         '[clojure.com.badlogic.gdx.gdx :as gdx]
+         '[clojure.com.badlogic.gdx.graphics :as graphics]
+         '[clojure.com.badlogic.gdx.input :as input]
+         '[clojure.com.badlogic.gdx.input-buttons :as input-buttons]
+         '[clojure.com.badlogic.gdx.input-keys :as input-keys])
 
 (defn create-textures
   [files {:keys [folder extensions]}]
   (into {}
-        (for [path (->> (recursively-search (internal files folder) extensions)
+        (for [path (->> (recursively-search (files/internal files folder) extensions)
                         (map #(str/replace-first % folder "")))]
-          [path (texture! (internal files path))])))
+          [path (texture/create (files/internal files path))])))
 
 (defn get-texture-region
   [textures {:keys [image/file image/bounds]}]
   (assert file)
-  (let [^Texture texture (safe-get textures file)] 
+  (let [texture (safe-get textures file)]
     (if-let [[x y w h] bounds]
-      (TextureRegion. texture (int x) (int y) (int w) (int h))
-      (TextureRegion. texture))))
+      (texture-region/create texture x y w h)
+      (texture-region/create texture))))
 
 (defn timer-increment [timer duration]
   (update timer :stop-time + duration))
@@ -756,15 +746,15 @@
     (.addActor this actor)))
 
 (defn texture-image
-  [^Texture texture]
+  [texture]
   (Image. texture))
 
 (defn drawable-image
   [^Drawable drawable]
   (Image. drawable))
 
-(defn texture-region-image 
-  [^TextureRegion texture-region]
+(defn texture-region-image
+  [texture-region]
   (Image. texture-region))
 
 (defn add! [^Table table ^Actor actor]
@@ -1023,20 +1013,10 @@
   (get-x [this]
     (.getX this)))
 
-(extend-type Input
-  GetX
-  (get-x [this]
-    (.getX this)))
-
 (defprotocol GetY
   (get-y [_]))
 
 (extend-type Actor
-  GetY
-  (get-y [this]
-    (.getY this)))
-
-(extend-type Input
   GetY
   (get-y [this]
     (.getY this)))
@@ -1131,9 +1111,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
+                         (doto (TextureRegionDrawable. (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
-                           (.tint (Color. 1 1 1 0.4))))
+                           (.tint (color/create 1 1 1 0.4))))
         ->cell (partial inv-window-cell get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
         cell-table (table-create)
         window (create-window "Inventory" skin)]
@@ -1620,11 +1600,11 @@
                       (memoize
                        (fn [& {:keys [sprite-idx movement]}]
                          {:pre [#{"all" "air" "none"} movement]}
-                         (let [texture-region (TextureRegion. ^Texture texture
-                                                              (int (* (sprite-idx 0) tile-size))
-                                                              (int (* (sprite-idx 1) tile-size))
-                                                              (int tile-size)
-                                                              (int tile-size))
+                         (let [texture-region (texture-region/create texture
+                                                                     (* (sprite-idx 0) tile-size)
+                                                                     (* (sprite-idx 1) tile-size)
+                                                                     tile-size
+                                                                     tile-size)
                                tile (static-tiled-map-tile/create texture-region)]
                            (map-properties/put! (tiled-map-tile/properties tile) "movement" movement)
                            tile))))
@@ -1739,7 +1719,7 @@
   (let [cell-widget (inv-get-cell inventory-window cell)
         image-widget (find-actor cell-widget "image-widget")
         cell-size (:cell-size (get-user-object image-widget))]
-    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+    (.setDrawable ^Image image-widget ^Drawable (doto (TextureRegionDrawable. texture-region)
                                                   (.setMinSize cell-size cell-size)))
     (add-listener! cell-widget (text-tooltip tooltip-text skin))
     nil))
@@ -1766,9 +1746,9 @@
         horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
         button-group (get-user-object horizontal-group)
         button (doto (ImageButton.
-                      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                        (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                                     (* scale (.getRegionHeight ^TextureRegion texture-region)))))
+                      (doto (TextureRegionDrawable. texture-region)
+                        (.setMinSize (* scale (texture-region/region-width texture-region))
+                                     (* scale (texture-region/region-height texture-region)))))
                  (add-listener! (text-tooltip tooltip-text skin))
                  (set-user-object! skill-id))]
     (add-actor! horizontal-group ^Actor button)
@@ -1921,7 +1901,7 @@
       (update :entity/stats remove-mods (:stats/modifiers item)))))
 
 (defn float-bits [r g b a]
-  (Color/toFloatBits (float r) (float g) (float b) (float a)))
+  (color/to-float-bits r g b a))
 
 (defrecord GridCell 
   [position
@@ -2330,76 +2310,68 @@
 (defn dispose! [disposable]
   (Disposable/.dispose disposable))
 
-(def rgba8888 Pixmap$Format/RGBA8888)
-
-(defn pixmap 
-  ([file-handle]
-   (Pixmap. ^FileHandle file-handle))
-  ([width height pixmap-format]
-   (Pixmap. (int width) (int height) ^Pixmap$Format pixmap-format)))
-
 (defn- white-pixel-texture []
-  (let [pixmap (doto (pixmap 1 1 rgba8888)
-                 (Pixmap/.setColor 1 1 1 1)
-                 (Pixmap/.drawPixel 0 0))
-        texture (pixmap->texture! pixmap)]
+  (let [pixmap (doto (pixmap/create 1 1 pixmap-format/RGBA8888)
+                 (pixmap/set-color! 1 1 1 1)
+                 (pixmap/draw-pixel! 0 0))
+        texture (texture/from-pixmap pixmap)]
     (dispose! pixmap)
     texture))
 
-(defn- draw-text! 
-  [batch 
-   default-font 
-   unit-scale 
+(defn- draw-text!
+  [batch
+   default-font
+   unit-scale
    {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
         scale (or scale 1)
-        font-data (.getData ^BitmapFont font)
-        old-scale (.scaleX ^BitmapFont$BitmapFontData font-data)
+        font-data (bitmap-font/data font)
+        old-scale (bitmap-font-bitmap-font-data/scale-x font-data)
         target-width 0
         wrap? false
         scale (* (float unit-scale)
                  (float scale))]
-    (.setScale ^BitmapFont$BitmapFontData font-data (* old-scale scale))
-    (.draw ^BitmapFont font
-           ^Batch batch
-           text
-           (float x)
-           (float (+ y (if up?
-                         (-> text
-                             (str/split #"\n")
-                             count
-                             (* (.getLineHeight ^BitmapFont font)))
-                         0)))
-           (float target-width)
-           Align/center
-           wrap?)
-    (.setScale ^BitmapFont$BitmapFontData font-data old-scale)))
+    (bitmap-font-bitmap-font-data/set-scale! font-data (* old-scale scale))
+    (bitmap-font/draw font
+                      batch
+                      text
+                      (float x)
+                      (float (+ y (if up?
+                                    (-> text
+                                        (str/split #"\n")
+                                        count
+                                        (* (bitmap-font/line-height font)))
+                                    0)))
+                      (float target-width)
+                      Align/center
+                      wrap?)
+    (bitmap-font-bitmap-font-data/set-scale! font-data old-scale)))
 
 (defn- draw-texture-region! [batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
-  (let [[w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
-                                (.getRegionHeight ^TextureRegion texture-region)]]
-                  (if (= unit-scale 1)
-                    dimensions
-                    (mapv (comp float (partial * unit-scale))
-                          dimensions)))]
+  (let [[w h] (let [dimensions [(texture-region/region-width texture-region)
+                                (texture-region/region-height texture-region)]]
+                (if (= unit-scale 1)
+                  dimensions
+                  (mapv (comp float (partial * unit-scale))
+                        dimensions)))]
     (if center?
-      (Batch/.draw ^Batch batch
-                   ^TextureRegion texture-region
-                   (float (- (float x) (/ (float w) 2)))
-                   (float (- (float y) (/ (float h) 2)))
-                   (float (/ (float w) 2))
-                   (float (/ (float h) 2))
-                   (float w)
-                   (float h)
-                   (float 1)
-                   (float 1)
-                   (float (or rotation 0)))
-      (.draw ^Batch batch
-             ^TextureRegion texture-region
-             (float x)
-             (float y)
-             (float w)
-             (float h)))))
+      (batch/draw batch
+                  texture-region
+                  (- (float x) (/ (float w) 2))
+                  (- (float y) (/ (float h) 2))
+                  (/ (float w) 2)
+                  (/ (float h) 2)
+                  w
+                  h
+                  1
+                  1
+                  (or rotation 0))
+      (batch/draw batch
+                  texture-region
+                  x
+                  y
+                  w
+                  h))))
 
 (defn- create-fsm
   [fsm initial-state]
@@ -2664,40 +2636,42 @@
                                                      :counter (timer-create spiderweb-duration elapsed-time)}]
        [:tx/swap target update :entity/stats add-mods spiderweb-modifiers]])))
 
-(defn create-skin [^FileHandle file-handle]
+(defn create-skin [file-handle]
   (Skin. file-handle))
 
 (defn create-skin! [file-handle]
   (let [s (create-skin file-handle)]
-    (set! (.markupEnabled ^BitmapFont$BitmapFontData (.getData (.getFont ^Skin s "default-font"))) true)
+    (bitmap-font-bitmap-font-data/set-markup-enabled!
+     (bitmap-font/data (.getFont ^Skin s "default-font"))
+     true)
     s))
 
 (defn new-cursor [graphics pixmap hotspot-x hotspot-y]
-  (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
+  (graphics/new-cursor graphics pixmap hotspot-x hotspot-y))
 
 (defn create-viewport! [width height world-unit-scale]
   (let [world-width (* width world-unit-scale)
         world-height (* height world-unit-scale)]
     (FitViewport. (float world-width)
                   (float world-height)
-                  (doto (OrthographicCamera.)
-                    (.setToOrtho false world-width world-height)))))
+                  (doto (orthographic-camera/create)
+                    (orthographic-camera/set-to-ortho! false world-width world-height)))))
 
 (import '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
 
 (defn create-default-font! [files {:keys [path size quality-scaling use-integer-positions?]}]
-  (let [generator (FreeTypeFontGenerator. (internal files path))
+  (let [generator (FreeTypeFontGenerator. (files/internal files path))
         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                     (set! (.size p) (* size quality-scaling))
-                    (set! (.minFilter p) Texture$TextureFilter/Linear)
-                    (set! (.magFilter p) Texture$TextureFilter/Linear)
+                    (set! (.minFilter p) texture-texture-filter/Linear)
+                    (set! (.magFilter p) texture-texture-filter/Linear)
                     p)
         font (.generateFont generator parameter)
-        font-data (.getData font)]
+        font-data (bitmap-font/data font)]
     (dispose! generator)
-    (.setScale font-data (/ quality-scaling))
-    (set! (.markupEnabled font-data) true)
-    (.setUseIntegerPositions font use-integer-positions?)
+    (bitmap-font-bitmap-font-data/set-scale! font-data (/ quality-scaling))
+    (bitmap-font-bitmap-font-data/set-markup-enabled! font-data true)
+    (bitmap-font/set-use-integer-positions! font use-integer-positions?)
     font))
 
 (defn create-vampire-level [_]
@@ -2845,10 +2819,10 @@
 
 (defn draw-cell-debug
   [factions-iterations shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
-  (let [^OrthographicCamera camera (get-camera viewport)
+  (let [camera (get-camera viewport)
         plane-points (mapv (fn [^Vector3 v3]
                              [(.x v3) (.y v3) (.z v3)])
-                           (.planePoints (.frustum camera)))
+                           (.planePoints (orthographic-camera/frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
@@ -2884,10 +2858,10 @@
 (defn draw-tile-grid
   [shape-drawer viewport show-tile-grid?]
   (when show-tile-grid?
-    (let [^OrthographicCamera camera (get-camera viewport)
+    (let [camera (get-camera viewport)
           plane-points (mapv (fn [^Vector3 v3]
                                [(.x v3) (.y v3) (.z v3)])
-                             (.planePoints (.frustum camera)))
+                             (.planePoints (orthographic-camera/frustum camera)))
           frustum-points (take 4 plane-points)
           left-x   (apply min (map first  frustum-points))
           bottom-y (apply min (map second frustum-points))]
@@ -3299,10 +3273,10 @@
           (filter (comp :entity/destroyed? deref) (vals @entity-ids))))
 
 (defn- movement-vector [key-pressed?]
-  (let [r (when (key-pressed? Input$Keys/D) [1  0])
-        l (when (key-pressed? Input$Keys/A) [-1 0])
-        u (when (key-pressed? Input$Keys/W) [0  1])
-        d (when (key-pressed? Input$Keys/S) [0 -1])]
+  (let [r (when (key-pressed? input-keys/D) [1  0])
+        l (when (key-pressed? input-keys/A) [-1 0])
+        u (when (key-pressed? input-keys/W) [0  1])
+        d (when (key-pressed? input-keys/S) [0 -1])]
     (when (or r l u d)
       (let [v (v2-normalise (reduce #(mapv + %1 %2) [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2-length v))
@@ -3313,25 +3287,13 @@
       (find-actor "player-message")
       (set-user-object! (atom {:text message :counter 0}))))
 
-(defn get-delta-time [graphics]
-  (Graphics/.getDeltaTime graphics))
-
 (defn selected-skill [action-bar]
   (let [horizontal-group (find-actor action-bar "moon.ui.action-bar.horizontal-group")
         button-group (get-user-object horizontal-group)]
     (when-let [skill-button (.getChecked ^ButtonGroup button-group)]
       (get-user-object skill-button))))
 
-(defn new-sound [audio file-handle]
-  (Audio/.newSound audio file-handle))
-
-(defn sprite-batch! []
-  (SpriteBatch.))
-
 (import '(com.badlogic.gdx.audio Sound))
-
-(defn set-projection-matrix! [^Batch batch matrix]
-  (.setProjectionMatrix batch matrix))
 
 (defn resize! [^Viewport viewport width height center-camera?]
   (.update viewport width height center-camera?))
@@ -3341,12 +3303,6 @@
 
 (defn draw! [^Stage stage]
   (.draw stage))
-
-(defn get-frames-per-second [graphics]
-  (Graphics/.getFramesPerSecond graphics))
-
-(defn set-cursor! [graphics cursor]
-  (Graphics/.setCursor graphics cursor))
 
 (require '[malli.error :as me])
 (defn validate-hum [schema value]
@@ -3426,11 +3382,11 @@
 
 (require '[reduce-fsm :as fsm])
 
-(defn update-xy! [^OrthographicCamera camera [x y]]
-  (let [pos (.position camera)]
+(defn update-xy! [camera [x y]]
+  (let [pos (orthographic-camera/position camera)]
     (set! (.x pos) x)
     (set! (.y pos) y)
-    (.update camera)))
+    (orthographic-camera/update! camera)))
 
 (defn set-camera-position! [viewport xy]
   (update-xy! (get-camera viewport) xy))
@@ -3913,7 +3869,7 @@
                                 :player-idle
                                 (if-let [move-v (movement-vector key-pressed?)]
                                   (tx-event-txs player-eid :movement-input move-v)
-                                  (when (button-just-pressed? Input$Buttons/LEFT)
+                                  (when (button-just-pressed? input-buttons/LEFT)
                                     (interaction-state->txs interaction-state stage player-eid entity* create-timer* tx-event-txs)))
 
                                 :player-moving
@@ -3933,13 +3889,13 @@
                                                          (key-pressed? (:unpause-continously controls))))))))
         key-pressed-checks! (fn [viewport key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
-                                                                   (let [^OrthographicCamera camera (get-camera viewport)]
-                                                                     (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.025)))
-                                                                     (.update camera)))
+                                                                   (let [camera (get-camera viewport)]
+                                                                     (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.025)))
+                                                                     (orthographic-camera/update! camera)))
                                              (:zoom-out controls) (fn []
-                                                                    (let [^OrthographicCamera camera (get-camera viewport)]
-                                                                      (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.025)))
-                                                                      (.update camera)))}]
+                                                                    (let [camera (get-camera viewport)]
+                                                                      (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.025)))
+                                                                      (orthographic-camera/update! camera)))}]
                                 (when (key-pressed? k)
                                   (f))))
         key-just-pressed-checks! (fn [stage key-just-pressed?]
@@ -4143,15 +4099,14 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                   create-sound
                   create-font
                   white-pixel-texture
-                  sprite-batch!
                   get-frames-per-second]}]
-       (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+       (colors/put "PRETTY_NAME" (color/create 0.84 0.8 0.52 1))
        (set! (.initialTime (TooltipManager/getInstance)) 0)
-       (let [batch (sprite-batch!)
+       (let [batch (sprite-batch/create)
              textures (create-textures files (:textures game-config))
              default-font (create-font font-params)
              shape-drawer-texture (white-pixel-texture)
-             skin (create-skin! (internal files (:skin game-config)))
+             skin (create-skin! (files/internal files (:skin game-config)))
              sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
              play-sound!* (fn [sound-name]
                             (Sound/.play (safe-get sounds sound-name)))
@@ -4163,12 +4118,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                            (handle-txs! stage image->texture-region skin play-sound!* txs))
              clicked-inventory-cell! (fn [cell]
                                        (handle-txs! (handle-clicked-inventory-cell (player-eid) cell)))
-             shape-drawer (shape-drawer/create batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1))
+             shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
              get-unit-scale (fn [] @unit-scale)
              viewport (create-viewport! 1440 900 world-unit-scale)
              unproject-viewport #(unproject viewport %)
-             camera-zoom (fn [] (.zoom ^OrthographicCamera (get-camera viewport)))
+             camera-zoom (fn [] (orthographic-camera/zoom (get-camera viewport)))
              ui-viewport-width (get-world-width (get-viewport stage))
              ui-viewport-height (get-world-height (get-viewport stage))
              ui-mouse-info-text (fn []
@@ -4338,16 +4293,16 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
          (update-mouseover-eid! mouseover-actor world-mouse-position)
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
-         (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
-         (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1)) ; hotfix for tooltips they set the color every creature flashes
-         (.begin ^Batch batch)
+         (batch/set-projection-matrix! batch (orthographic-camera/combined (get-camera viewport)))
+         (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
+         (batch/begin batch)
          (draw-tiled-map! @tiled-map*
                           batch
                           (camera-view-bounds (get-camera viewport))
                           (tile-color-setter*
                             {:ray-blocked? (partial raycaster-blocked? @raycaster)
                              :explored-tile-corners explored-tile-corners
-                             :light-position (let [pos (.position ^OrthographicCamera (get-camera viewport))]
+                             :light-position (let [pos (orthographic-camera/position (get-camera viewport))]
                                                [(.x pos) (.y pos) (.z pos)])
                              :see-all-tiles? false
                              :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4374,7 +4329,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                            render-layers)
            (highlight-mouseover-tile shape-drawer (unproject viewport mouse-position) @grid)
            (reset! unit-scale 1))
-         (.end ^Batch batch)
+         (batch/end batch)
          (let [player-eid (player-eid)
                get-selected-skill #(-> (get-root stage)
                                        (find-actor "moon.ui.action-bar")
@@ -4422,18 +4377,18 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      (fn [_event _actor]
                        (on-click!))))))
 
-(defn fit-to-size! [^OrthographicCamera camera width height]
-  (let [pos (.position camera)
+(defn fit-to-size! [camera width height]
+  (let [pos (orthographic-camera/position camera)
         px (float (/ width 2))
         py (float (/ height 2))
         x-diff (max (- px (float 0)) (- (float width) px))
         y-diff (max (- (float height) py) (- py (float 0)))
-        vp-ratio-w (/ (* x-diff 2) (.viewportWidth camera))
-        vp-ratio-h (/ (* y-diff 2) (.viewportHeight camera))]
+        vp-ratio-w (/ (* x-diff 2) (orthographic-camera/viewport-width camera))
+        vp-ratio-h (/ (* y-diff 2) (orthographic-camera/viewport-height camera))]
     (set! (.x pos) px)
     (set! (.y pos) py)
-    (set! (.zoom camera) (max vp-ratio-w vp-ratio-h))
-    (.update camera)))
+    (orthographic-camera/set-zoom! camera (max vp-ratio-w vp-ratio-h))
+    (orthographic-camera/update! camera)))
 
 (defn adjust-camera! [viewport tiled-map]
   (fit-to-size! (get-camera viewport)
@@ -4460,21 +4415,21 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
         world-unit-scale (/ tile-size)
         world-width (* 1440 world-unit-scale)
         world-height (* 900 world-unit-scale)
-        tiled-map-color-setter (constantly (.toFloatBits Color/WHITE))
+        tiled-map-color-setter (constantly (color/to-float-bits color/WHITE))
         state (atom nil)]
     {:create!
      (fn [{:keys [files input set-input-processor!]}]
-       (let [batch (sprite-batch!)
-             skin (create-skin (internal files "skin/uiskin.json"))
+       (let [batch (sprite-batch/create)
+             skin (create-skin (files/internal files "skin/uiskin.json"))
              textures (create-textures files
                                        {:folder "resources/"
                                         :extensions #{"png" "bmp"}})
              viewport (FitViewport. (float world-width)
                                     (float world-height)
-                                    (doto (OrthographicCamera.)
-                                      (.setToOrtho false
-                                                   world-width
-                                                   world-height)))
+                                    (doto (orthographic-camera/create)
+                                      (orthographic-camera/set-to-ortho! false
+                                                                         world-width
+                                                                         world-height)))
              
              current-tiled-map (atom nil)
              button-window (let [window (create-window "Edit" skin)] 
@@ -4514,36 +4469,36 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      (fn [{:keys [clear-screen! key-pressed?]}]
        (let [{:keys [batch stage current-tiled-map viewport]} @state]
          (clear-screen! 0 0 0 0) 
-         (set-projection-matrix! batch (.combined ^OrthographicCamera (get-camera viewport)))
-         (Batch/.begin batch) 
+         (batch/set-projection-matrix! batch (orthographic-camera/combined (get-camera viewport)))
+         (batch/begin batch)
          (draw-tiled-map! @current-tiled-map
                           batch
                           (camera-view-bounds (get-camera viewport))
                           tiled-map-color-setter
                           world-unit-scale)
-         (Batch/.end batch)
-         (doseq [[k f] {Input$Keys/MINUS (fn [^OrthographicCamera camera] 
-                                           (set! (.zoom camera) (max 0.1 (+ (.zoom camera) 0.1)))
-                                           (.update camera))
-                        Input$Keys/EQUALS (fn [^OrthographicCamera camera]
-                                            (set! (.zoom camera) (max 0.1 (+ (.zoom camera) -0.1)))
-                                            (.update camera))
-                        Input$Keys/LEFT (fn [^OrthographicCamera camera]
-                                          (let [pos (.position camera)]
+         (batch/end batch)
+         (doseq [[k f] {input-keys/MINUS (fn [camera]
+                                           (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.1)))
+                                           (orthographic-camera/update! camera))
+                        input-keys/EQUALS (fn [camera]
+                                            (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.1)))
+                                            (orthographic-camera/update! camera))
+                        input-keys/LEFT (fn [camera]
+                                          (let [pos (orthographic-camera/position camera)]
                                             (set! (.x pos) (- (.x pos) 1))
-                                            (.update camera)))
-                        Input$Keys/RIGHT (fn [^OrthographicCamera camera]
-                                           (let [pos (.position camera)]
+                                            (orthographic-camera/update! camera)))
+                        input-keys/RIGHT (fn [camera]
+                                           (let [pos (orthographic-camera/position camera)]
                                              (set! (.x pos) (+ (.x pos) 1))
-                                             (.update camera)))
-                        Input$Keys/UP (fn [^OrthographicCamera camera]
-                                        (let [pos (.position camera)]
+                                             (orthographic-camera/update! camera)))
+                        input-keys/UP (fn [camera]
+                                        (let [pos (orthographic-camera/position camera)]
                                           (set! (.y pos) (+ (.y pos) 1))
-                                          (.update camera)))
-                        Input$Keys/DOWN (fn [^OrthographicCamera camera]
-                                          (let [pos (.position camera)]
+                                          (orthographic-camera/update! camera)))
+                        input-keys/DOWN (fn [camera]
+                                          (let [pos (orthographic-camera/position camera)]
                                             (set! (.y pos) (- (.y pos) 1))
-                                            (.update camera)))}]
+                                            (orthographic-camera/update! camera)))}]
            (when (key-pressed? k)
              (f (get-camera viewport))))
          (act! stage)
@@ -4659,9 +4614,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                      (first (:animation/frames (:entity/animation property)))))]
           (run! #(add-actor! stack %)
                 [(doto (ImageButton.
-                         (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                           (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
-                                        (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
+                         (doto (TextureRegionDrawable. texture-region)
+                           (.setMinSize (* image-scale (texture-region/region-width texture-region))
+                                        (* image-scale (texture-region/region-height texture-region)))))
                    (add-listener! (create-change-listener
                                     (fn [event actor]
                                       (clicked-id-fn actor (:property/id property)))))
@@ -4690,9 +4645,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 
 (defn scaled-image-button [texture-region scale]
   (ImageButton.
-   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-     (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                  (* scale (.getRegionHeight ^TextureRegion texture-region))))))
+   (doto (TextureRegionDrawable. texture-region)
+     (.setMinSize (* scale (texture-region/region-width texture-region))
+                  (* scale (texture-region/region-height texture-region))))))
 
 (defn create-image-widget [image get-texture-region]
   (scaled-image-button (get-texture-region image) 2))
@@ -5086,9 +5041,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (pack! table)
     table))
 
-(defn key-just-pressed? [input input-key]
-  (Input/.isKeyJustPressed input input-key))
-
 (require '[clj-commons.pretty.repl :as pretty-repl])
 
 (defn editor-application-listener 
@@ -5301,7 +5253,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                    (set-modal! window true)
                                    (add-actor! window (proxy [Actor] []
                                                         (act [delta]
-                                                          (when (key-just-pressed? @input Input$Keys/ENTER)
+                                                          (when (input/key-just-pressed? @input input-keys/ENTER)
                                                             (on-save this))
                                                           (let [^Actor this this]
                                                             (proxy-super act delta)))
@@ -5327,13 +5279,15 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     {:create!
      (fn [{:keys [audio files set-input-processor!] :as capabilities}] 
        (reset! input (:input capabilities))
-       (reset! batch (sprite-batch!))
-       (reset! skin (create-skin (internal files (:skin editor-config))))
-       (set! (.markupEnabled (.getData (.getFont ^Skin @skin "default-font"))) true)
+       (reset! batch (sprite-batch/create))
+       (reset! skin (create-skin (files/internal files (:skin editor-config))))
+       (bitmap-font-bitmap-font-data/set-markup-enabled!
+        (bitmap-font/data (.getFont ^Skin @skin "default-font"))
+        true)
        (reset! editor-stage (Stage. (FitViewport. (float 1440) (float 900)) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
-                              [path (new-sound audio (internal files path))])))
+                              [path (audio/new-sound audio (files/internal files path))])))
        (reset! textures (create-textures files (:textures editor-config)))
        (set-input-processor! @editor-stage)
        (add-actor! @editor-stage (main-window)))
@@ -5361,34 +5315,34 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 (import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
 
 (defn create-capabilities []
-  (let [audio Gdx/audio
-        files Gdx/files
-        input Gdx/input
-        graphics Gdx/graphics]
+  (let [audio (gdx/audio)
+        files (gdx/files)
+        input (gdx/input)
+        graphics (gdx/graphics)]
     {
-     :get-frames-per-second (fn [] (get-frames-per-second graphics))
-     :sprite-batch! sprite-batch!
+     :get-frames-per-second (fn [] (graphics/frames-per-second graphics))
+     :sprite-batch! sprite-batch/create
      :white-pixel-texture white-pixel-texture
      :create-font (fn [params] (create-default-font! files params))
-     :create-sound  (fn [path] (new-sound audio (internal files path)))
+     :create-sound  (fn [path] (audio/new-sound audio (files/internal files path)))
      :create-cursor (fn [[path [hotspot-x hotspot-y]]]
-                      (let [pixmap (pixmap (internal files path))
+                      (let [pixmap (pixmap/create (files/internal files path))
                             cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
                         (dispose! pixmap)
                         cursor))
      :set-input-processor! (fn [processor]
-                             (.setInputProcessor input processor))
+                             (input/set-input-processor! input processor))
      :clear-screen! (fn [r g b a]
                       (ScreenUtils/clear r g b a))
-     :get-input-position (fn [] 
-                           [(get-x input) 
-                            (get-y input)])
+     :get-input-position (fn []
+                           [(input/x input)
+                            (input/y input)])
      :set-cursor! (fn [cursor]
-                    (set-cursor! graphics cursor))
-     :get-delta-time #(get-delta-time graphics)
-     :key-pressed? #(.isKeyPressed input %)
-     :key-just-pressed? #(key-just-pressed? input %)
-     :button-just-pressed? #(.isButtonJustPressed input (int %))
+                    (graphics/set-cursor! graphics cursor))
+     :get-delta-time #(graphics/delta-time graphics)
+     :key-pressed? #(input/key-pressed? input %)
+     :key-just-pressed? #(input/key-just-pressed? input %)
+     :button-just-pressed? #(input/button-just-pressed? input %)
      :audio    audio
      :files    files
      :graphics graphics
@@ -5406,7 +5360,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
            fps]}]
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. 
-    (reify ApplicationListener
+    (reify com.badlogic.gdx.ApplicationListener
       (create [_]
         (create! (create-capabilities)))
 
@@ -5467,18 +5421,18 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                          :up? true}}]]
     {:create!
      (fn [{:keys [files]}]
-       (reset! batch (sprite-batch!))
+       (reset! batch (sprite-batch/create))
        (reset! font (create-default-font! files
                                           {:path "fonts/films.EXL_____.ttf"
                                            :size 16
                                            :quality-scaling 2
                                            :use-integer-positions? false}))
        (reset! shape-drawer-texture (white-pixel-texture))
-       (reset! shape-drawer (shape-drawer/create @batch (TextureRegion. ^Texture @shape-drawer-texture 1 0 1 1)))
+       (reset! shape-drawer (shape-drawer/create @batch (texture-region/create @shape-drawer-texture 1 0 1 1)))
        (reset! viewport (FitViewport. (float 1440)
                                       (float 900)
-                                      (doto (OrthographicCamera.)
-                                        (.setToOrtho false 1440 900)))))
+                                      (doto (orthographic-camera/create)
+                                        (orthographic-camera/set-to-ortho! false 1440 900)))))
 
      :dispose!
      (fn []
@@ -5488,13 +5442,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 
      :render!
      (fn [{:keys [clear-screen! key-just-pressed?]}]
-       (when (key-just-pressed? Input$Keys/U)
+       (when (key-just-pressed? input-keys/U)
          (swap! unit-scale #(if (== ^double % 1.0)
                               world-unit-scale
                               1.0)))
        (clear-screen! 0.08 0.08 0.1 1)
-       (set-projection-matrix! @batch (.combined ^OrthographicCamera (get-camera @viewport)))
-       (Batch/.begin @batch)
+       (batch/set-projection-matrix! @batch (orthographic-camera/combined (get-camera @viewport)))
+       (batch/begin @batch)
        (let [b @batch
              f @font
              us @unit-scale
@@ -5518,7 +5472,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                             :y 880
                             :scale 1.1
                             :up? true}))
-       (Batch/.end @batch))
+       (batch/end @batch))
 
      :resize!
      (fn [width height]
@@ -5835,13 +5789,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                          ; should transcations be self contained ? or systems no intermediary wrong state?
                                          ;:player-item-on-cursor true
                                          }
-                    :controls {:zoom-in Input$Keys/MINUS
-                               :zoom-out Input$Keys/EQUALS
-                               :unpause-once Input$Keys/P
-                               :unpause-continously Input$Keys/SPACE
-                               :close-windows-key Input$Keys/ESCAPE
-                               :toggle-inventory Input$Keys/I
-                               :toggle-entity-info Input$Keys/E}
+                    :controls {:zoom-in input-keys/MINUS
+                               :zoom-out input-keys/EQUALS
+                               :unpause-once input-keys/P
+                               :unpause-continously input-keys/SPACE
+                               :close-windows-key input-keys/ESCAPE
+                               :toggle-inventory input-keys/I
+                               :toggle-entity-info input-keys/E}
                     :cursors (-> "cursors.edn" io/resource slurp edn/read-string)
                     :sounds (-> "sounds.edn" io/resource slurp edn/read-string)
                     :skin "skin/uiskin.json"
