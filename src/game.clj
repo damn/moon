@@ -2545,16 +2545,6 @@
       (actor/set-name! "player-message")
       (actor/set-user-object! (atom nil)))))
 
-; TODO inline.
-(defn- entity-state-draw-ui-view
-  [[k _v] eid batch unit-scale image->texture-region mouseover-actor* ui-mouse-pos]
-  (when-let [item (:entity/item-on-cursor @eid)]
-    (draw-texture-region! batch
-                          unit-scale
-                          (image->texture-region (:entity/image item))
-                          ui-mouse-pos
-                          {:center? true})))
-
 (defn player-state-draw-create [get-player-eid get-unit-scale image->texture-region get-mouse-position]
   (actor/create
     {:act!
@@ -2563,17 +2553,13 @@
      (fn [this batch _parent-alpha]
        (let [stage (actor/stage this)
              player-eid (get-player-eid)
-             entity @player-eid
-             state-k (:state (:entity/fsm entity))
-             mouse-pos (unproject (stage/viewport stage) (get-mouse-position))
-             [x y] mouse-pos]
-         (entity-state-draw-ui-view [state-k (state-k entity)]
-                                    player-eid
-                                    batch
-                                    (get-unit-scale)
-                                    image->texture-region
-                                    (stage/hit stage x y)
-                                    mouse-pos)))}))
+             mouse-pos (unproject (stage/viewport stage) (get-mouse-position))]
+         (when-let [item (:entity/item-on-cursor @player-eid)]
+           (draw-texture-region! batch
+                                 (get-unit-scale)
+                                 (image->texture-region (:entity/image item))
+                                 mouse-pos
+                                 {:center? true}))))}))
 
 (defn windows-create [actors]
   (doto (group/create)
