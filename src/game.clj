@@ -3578,6 +3578,66 @@
                    (not (or (key-just-pressed? (:unpause-once controls))
                             (key-pressed? (:unpause-continously controls))))))))
 
+(defn key-pressed-checks! [controls viewport key-pressed?]
+  (doseq [[k f] {(:zoom-in controls) (fn []
+                                       (let [camera (viewport/camera viewport)]
+                                         (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.025)))
+                                         (orthographic-camera/update! camera)))
+                 (:zoom-out controls) (fn []
+                                        (let [camera (viewport/camera viewport)]
+                                          (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.025)))
+                                          (orthographic-camera/update! camera)))}]
+    (when (key-pressed? k)
+      (f))))
+
+(defn key-just-pressed-checks! [controls stage key-just-pressed?]
+  (doseq [[k f] {(:close-windows-key controls) (fn []
+                                                 (close-windows! stage))
+                 (:toggle-inventory controls) (fn []
+                                                (toggle-inventory-visible! stage))
+                 (:toggle-entity-info controls) (fn []
+                                                  (toggle-entity-info! stage))}]
+    (when (key-just-pressed? k)
+      (f))))
+
+(defn draw-component! 
+  [active-entities 
+   raycaster 
+   elapsed-time 
+   active-skill-radius 
+   player-entity 
+   image->texture-region 
+   unit-scale 
+   batch 
+   default-font 
+   shape-drawer 
+   k 
+   v 
+   entity]
+  (case k
+    :entity/clickable
+    (clickable-draw v entity batch default-font unit-scale)
+    :entity/animation
+    (animation-draw v entity batch unit-scale image->texture-region)
+    :entity/image
+    (image-draw v entity batch unit-scale image->texture-region)
+    :entity/line-render
+    (line-render-draw v entity shape-drawer)
+    :entity/mouseover?
+    (mouseover?-draw entity shape-drawer player-entity)
+    :entity/stats
+    (stats-draw entity shape-drawer unit-scale)
+    :entity/string-effect
+    (string-effect-draw v entity batch default-font unit-scale)
+    :entity/temp-modifier
+    (temp-modifier-draw entity shape-drawer)
+    :active-skill
+    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius)
+    :npc-sleeping
+    (npc-sleeping-draw entity batch default-font unit-scale)
+    :stunned
+    (stunned-draw entity shape-drawer)))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3658,53 +3718,9 @@
         update-message-counter! (fn [{:keys [get-delta-time]}]
                                   (message-counter-update! player-message message-duration-seconds (get-delta-time)))
         paused? (atom false)
-        key-pressed-checks! (fn [viewport key-pressed?]
-                              (doseq [[k f] {(:zoom-in controls) (fn []
-                                                                   (let [camera (viewport/camera viewport)]
-                                                                     (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.025)))
-                                                                     (orthographic-camera/update! camera)))
-                                             (:zoom-out controls) (fn []
-                                                                    (let [camera (viewport/camera viewport)]
-                                                                      (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.025)))
-                                                                      (orthographic-camera/update! camera)))}]
-                                (when (key-pressed? k)
-                                  (f))))
-        key-just-pressed-checks! (fn [stage key-just-pressed?]
-                                   (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                                                  (close-windows! stage))
-                                                  (:toggle-inventory controls) (fn []
-                                                                                 (toggle-inventory-visible! stage))
-                                                  (:toggle-entity-info controls) (fn []
-                                                                                   (toggle-entity-info! stage))}]
-                                     (when (key-just-pressed? k)
-                                       (f))))
         active-skill-radius (let [tile-size 48
                                   image-width 32]
                               (/ (/ image-width tile-size) 2))
-        draw-component! (fn [image->texture-region unit-scale batch default-font shape-drawer mouse-position k v entity]
-                          (case k
-                            :entity/clickable
-                            (clickable-draw v entity batch default-font unit-scale)
-                            :entity/animation
-                            (animation-draw v entity batch unit-scale image->texture-region)
-                            :entity/image
-                            (image-draw v entity batch unit-scale image->texture-region)
-                            :entity/line-render
-                            (line-render-draw v entity shape-drawer)
-                            :entity/mouseover?
-                            (mouseover?-draw entity shape-drawer @(player-eid))
-                            :entity/stats
-                            (stats-draw entity shape-drawer unit-scale)
-                            :entity/string-effect
-                            (string-effect-draw v entity batch default-font unit-scale)
-                            :entity/temp-modifier
-                            (temp-modifier-draw entity shape-drawer)
-                            :active-skill
-                            (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region @active-entities @raycaster @elapsed-time active-skill-radius)
-                            :npc-sleeping
-                            (npc-sleeping-draw entity batch default-font unit-scale)
-                            :stunned
-                            (stunned-draw entity shape-drawer)))
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
         content-grid (atom nil)
@@ -4058,7 +4074,18 @@ remove-destroyed-entities! (fn [capabilities]
                                                          @show-potential-field-colors?
                                                          @grid)
                                         (draw-entities! (fn [& params]
-                                                          (apply draw-component! image->texture-region @unit-scale batch default-font shape-drawer (get-input-position) params))
+                                                          (apply draw-component! 
+                                                                 @active-entities 
+                                                                 @raycaster 
+                                                                 @elapsed-time 
+                                                                 active-skill-radius
+                                                                 @(player-eid)
+                                                                 image->texture-region 
+                                                                 @unit-scale 
+                                                                 batch 
+                                                                 default-font 
+                                                                 shape-drawer 
+                                                                 params))
                                                         shape-drawer
                                                         @raycaster
                                                         @active-entities
@@ -4128,8 +4155,8 @@ remove-destroyed-entities! (fn [capabilities]
                                    (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
                                    (when-not-paused-updates! capabilities)
                                    (remove-destroyed-entities! capabilities)
-                                   (key-pressed-checks! viewport key-pressed?)
-                                   (key-just-pressed-checks! stage key-just-pressed?)
+                                   (key-pressed-checks! controls viewport key-pressed?)
+                                   (key-just-pressed-checks! controls stage key-just-pressed?)
                                    (update-message-counter! capabilities)
                                    (stage/act! stage)
                                    (clear-screen! 0 0 0 0)
