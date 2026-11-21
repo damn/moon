@@ -2517,33 +2517,6 @@
        [:tx/remove-item cell]
        [:tx/set-item cell item-on-cursor]])))
 
-(defn player-message-actor-create [message-duration-seconds default-font get-unit-scale]
-  (doto (actor/create
-          {:act!
-           (fn [this delta]
-             (let [state (actor/user-object this)]
-               (when (:text @state)
-                 (swap! state update :counter + delta)
-                 (when (>= (:counter @state) message-duration-seconds)
-                   (reset! state nil)))))
-           :draw!
-           (fn [this batch _parent-alpha]
-             (when-let [stage (actor/stage this)]
-               (let [state (actor/user-object this)
-                     vp-width (viewport/world-width (stage/viewport stage))
-                     vp-height (viewport/world-height (stage/viewport stage))]
-                 (when-let [text (:text @state)]
-                   (draw-text! batch
-                               default-font
-                               (get-unit-scale)
-                               {:x (/ vp-width 2)
-                                :y (+ (/ vp-height 2) 200)
-                                :text text
-                                :scale 2.5
-                                :up? true})))))})
-    (actor/set-name! "player-message")
-    (actor/set-user-object! (atom nil))))
-
 (defn windows-create [actors]
   (doto (group/create)
     (add-actors! actors)
@@ -3008,11 +2981,6 @@
       (let [v (v2-normalise (reduce #(mapv + %1 %2) [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2-length v))
           v)))))
-
-(defn- show-message! [stage message]
-  (-> (stage/root stage)
-      (group/find-actor "player-message")
-      (actor/set-user-object! (atom {:text message :counter 0}))))
 
 (defn selected-skill [action-bar]
   (let [horizontal-group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")
@@ -3540,6 +3508,8 @@
                        (assert eid (str "player id not in entity-ids: " @player-id))
                        eid))
         mouseover-eid (atom nil)
+        player-message (atom nil)
+        message-duration-seconds 0.5
         create-interaction-state (fn [mouseover-actor world-mouse-position get-selected-skill]
                                    (let [player-eid (player-eid)
                                          mouseover-eid @mouseover-eid
@@ -3728,7 +3698,7 @@
                                       (toggle-inventory-visible! stage))
                                     :tx/show-message
                                     (fn [message]
-                                      (show-message! stage message))
+                                      (reset! player-message {:text message :counter 0}))
                                     :tx/set-skill
                                     (fn [skill-id image tooltip-text]
                                       (-> (stage/root stage)
@@ -3942,14 +3912,25 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              item-on-cursor-actor {:act! (fn [_this _delta])
                                    :draw! (fn [_this _batch _parent-alpha]
                                             (draw-item-on-cursor!))}
-             message-duration-seconds 0.5
-             player-message-actor (player-message-actor-create message-duration-seconds default-font get-unit-scale)]
+             draw-player-message! (fn []
+                                    (when-let [text (:text @player-message)]
+                                      (draw-text! batch
+                                                  default-font
+                                                  (get-unit-scale)
+                                                  {:x (/ ui-viewport-width 2)
+                                                   :y (+ (/ ui-viewport-height 2) 200)
+                                                   :text text
+                                                   :scale 2.5
+                                                   :up? true})))
+             player-message-actor {:act! (fn [_this _delta])
+                                   :draw! (fn [_this _batch _parent-alpha]
+                                            (draw-player-message!))}]
          (doseq [actor [action-bar
                         dev-menu
                         hp-mana-bars
                         windows
                         (actor/create item-on-cursor-actor)
-                        player-message-actor]]
+                        (actor/create player-message-actor)]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
          (reset! state {:batch batch
@@ -4085,6 +4066,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
          (handle-txs! (destroy-entities game-db entity-ids entity*))
          (key-pressed-checks! viewport key-pressed?)
          (key-just-pressed-checks! stage key-just-pressed?)
+         (when (:text @player-message)
+           (swap! player-message update :counter + delta-time)
+           (when (>= (:counter @player-message) message-duration-seconds)
+             (reset! player-message nil)))
          (stage/act! stage)
          (stage/draw! stage)))
 
