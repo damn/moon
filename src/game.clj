@@ -3482,7 +3482,8 @@
         choose-skill (fn [& params]
                        (apply choose-skill (partial raycaster-blocked? @raycaster) params))
         grid (atom nil)
-        line-of-sight? (partial line-of-sight? @raycaster)
+        line-of-sight? (fn [& params]
+                         (apply line-of-sight? @raycaster params))
         tick-component (fn [[k v] eid delta-time elapsed-time]
                          (case k
                            :entity/animation [[:tx/swap eid animation-tick delta-time]]
