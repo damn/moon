@@ -4027,14 +4027,16 @@ init-game-state! (fn [textures image->texture-region]
                                        selected-skill)
                interaction-state (create-interaction-state mouseover-actor 
                                                            world-mouse-position 
-                                                           get-selected-skill)]
-           (set-cursor! (safe-get cursors (get-cursor-key player-eid interaction-state)))
-           (handle-txs! (handle-player-input player-eid
+                                                           get-selected-skill)
+               cursor-key (get-cursor-key player-eid interaction-state)
+               txs (handle-player-input player-eid
                                              interaction-state
                                              stage
                                              mouseover-actor
                                              key-pressed?
-                                             button-just-pressed?)))
+                                             button-just-pressed?)]
+           (set-cursor! (safe-get cursors cursor-key))
+           (handle-txs! txs))
          (update-paused-state! key-just-pressed? key-pressed?)
          (when-not @paused?
            (let [delta-time (min delta-time max-delta)]
