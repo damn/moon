@@ -2619,9 +2619,9 @@
          (filter #(= (:entity/faction @%) faction)))))
 
 (defn alert-friendlies-after-duration-tick
-  [v eid _delta-time elapsed-time grid tx-event-txs]
+  [v eid _delta-time timer-stopped? grid tx-event-txs]
   (let [{:keys [counter faction]} v]
-    (when (timer-stopped? counter elapsed-time)
+    (when (timer-stopped? counter)
       (into [[:tx/swap eid assoc :entity/destroyed? true]]
             (apply concat
                    (for [friendly-eid (get-friendlies-for-alert eid faction grid)
@@ -2630,22 +2630,22 @@
                      (tx-event-txs friendly-eid :alert)))))))
 
 (defn string-effect-tick
-  [v eid _delta-time elapsed-time]
+  [v eid _delta-time timer-stopped?]
   (let [{:keys [counter]} v]
-    (when (timer-stopped? counter elapsed-time)
+    (when (timer-stopped? counter)
       [[:tx/swap eid dissoc :entity/string-effect]])))
 
 (defn skills-tick
-  [v eid _delta-time elapsed-time]
+  [v eid _delta-time timer-stopped?]
   (for [{:keys [skill/cooling-down?] :as skill} (vals v)
         :when (and cooling-down?
-                   (timer-stopped? cooling-down? elapsed-time))]
+                   (timer-stopped? cooling-down?))]
     [:tx/swap eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false]))
 
 (defn temp-modifier-tick
-  [v eid _delta-time elapsed-time]
+  [v eid _delta-time timer-stopped?]
   (let [{:keys [modifiers counter]} v]
-    (when (timer-stopped? counter elapsed-time)
+    (when (timer-stopped? counter)
       [[:tx/swap eid dissoc :entity/temp-modifier]
        [:tx/swap eid update :entity/stats remove-mods modifiers]])))
 
@@ -2935,11 +2935,11 @@
        (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius]
+  [v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster timer-ratio active-skill-radius]
   (let [{:keys [skill effect-ctx counter]} v
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
-        action-counter-ratio (timer-ratio counter elapsed-time)
+        action-counter-ratio (timer-ratio counter)
         [x y] (:entity/position entity)
         y (+ (float y)
              (float (/ (:entity/height entity) 2))
@@ -2984,7 +2984,7 @@
    eid 
    line-of-sight? 
    applicable-effect-txs 
-   elapsed-time 
+   timer-stopped?
    tx-event-txs]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
@@ -2997,19 +2997,19 @@
       (not (effects-applicable? (:skill/effects skill) effect-ctx))
       (tx-event-txs eid :action-done)
 
-      (timer-stopped? counter elapsed-time)
+      (timer-stopped? counter)
       (concat (applicable-effect-txs effect-ctx (:skill/effects skill))
               (tx-event-txs eid :action-done)))))
 
 (defn delete-after-duration-tick
-  [v eid _delta-time elapsed-time]
-  (when (timer-stopped? v elapsed-time)
+  [v eid _delta-time timer-stopped?]
+  (when (timer-stopped? v)
     [[:tx/swap eid assoc :entity/destroyed? true]]))
 
 (defn stunned-tick
-  [v eid _delta-time elapsed-time tx-event-txs]
+  [v eid _delta-time timer-stopped? tx-event-txs]
   (let [{:keys [counter]} v]
-    (when (timer-stopped? counter elapsed-time)
+    (when (timer-stopped? counter)
       (tx-event-txs eid :effect-wears-off))))
 
 (defn npc-sleeping-tick
@@ -3065,9 +3065,9 @@
          [:tx/update-position eid]]))))
 
 (defn npc-moving-tick
-  [v eid delta-time elapsed-time grid max-speed tx-event-txs]
+  [v eid delta-time timer-stopped? grid max-speed tx-event-txs]
   (concat (movement-tick v eid delta-time grid max-speed)
-          (when (timer-stopped? (:timer v) elapsed-time)
+          (when (timer-stopped? (:timer v))
             (tx-event-txs eid :timer-finished))))
 
 (defn create-action-bar []
@@ -3463,19 +3463,19 @@
       cursor-fn
       (cursor-fn eid))))
 
-(defn tick-component-txs [[k v] eid delta-time elapsed-time grid tx-event-txs mk-effect-txs max-speed create-timer* choose-skill line-of-sight?*]
+(defn tick-component-txs [[k v] eid delta-time timer-stopped? grid tx-event-txs mk-effect-txs max-speed create-timer* choose-skill line-of-sight?*]
   (case k
     :entity/animation [[:tx/swap eid animation-tick delta-time]]
-    :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time elapsed-time grid tx-event-txs)
-    :entity/string-effect (string-effect-tick v eid delta-time elapsed-time)
-    :entity/skills (skills-tick v eid delta-time elapsed-time)
-    :entity/temp-modifier (temp-modifier-tick v eid delta-time elapsed-time)
+    :entity/alert-friendlies-after-duration (alert-friendlies-after-duration-tick v eid delta-time timer-stopped? grid tx-event-txs)
+    :entity/string-effect (string-effect-tick v eid delta-time timer-stopped?)
+    :entity/skills (skills-tick v eid delta-time timer-stopped?)
+    :entity/temp-modifier (temp-modifier-tick v eid delta-time timer-stopped?)
     :entity/projectile-collision (projectile-collision-tick v eid delta-time grid mk-effect-txs)
-    :active-skill (active-skill-tick v eid line-of-sight?* mk-effect-txs elapsed-time tx-event-txs)
-    :entity/delete-after-duration (delete-after-duration-tick v eid delta-time elapsed-time)
-    :stunned (stunned-tick v eid delta-time elapsed-time tx-event-txs)
+    :active-skill (active-skill-tick v eid line-of-sight?* mk-effect-txs timer-stopped? tx-event-txs)
+    :entity/delete-after-duration (delete-after-duration-tick v eid delta-time timer-stopped?)
+    :stunned (stunned-tick v eid delta-time timer-stopped? tx-event-txs)
     :player-moving (movement-tick v eid delta-time grid max-speed)
-    :npc-moving (npc-moving-tick v eid delta-time elapsed-time grid max-speed tx-event-txs)
+    :npc-moving (npc-moving-tick v eid delta-time timer-stopped? grid max-speed tx-event-txs)
     :npc-sleeping (npc-sleeping-tick v eid delta-time grid tx-event-txs)
     :npc-idle (npc-idle-tick v eid delta-time line-of-sight?* grid choose-skill create-timer* tx-event-txs)
     nil))
@@ -3602,7 +3602,7 @@
 (defn draw-component! 
   [active-entities 
    raycaster 
-   elapsed-time 
+   timer-ratio
    active-skill-radius 
    player-entity 
    image->texture-region 
@@ -3631,7 +3631,7 @@
     :entity/temp-modifier
     (temp-modifier-draw entity shape-drawer)
     :active-skill
-    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster elapsed-time active-skill-radius)
+    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities raycaster timer-ratio active-skill-radius)
     :npc-sleeping
     (npc-sleeping-draw entity batch default-font unit-scale)
     :stunned
@@ -3684,9 +3684,10 @@
     :items [{:label controls-info}]}])
 
 (defn when-not-paused-updates!* 
-  [paused? 
+  [timer-stopped?
+   paused? 
    max-delta
-   elapsed-time
+   tick-main-timer!
    factions-iterations
    grid
    potential-field-cache
@@ -3700,7 +3701,7 @@
    delta-time]
   (when-not @paused?
     (let [delta-time (min delta-time max-delta)]
-      (swap! elapsed-time + delta-time)
+      (tick-main-timer! delta-time)
       (doseq [[faction max-iterations] factions-iterations]
         (update! @grid
                  potential-field-cache
@@ -3712,7 +3713,7 @@
                           (tick-component-txs component 
                                               eid 
                                               delta-time 
-                                              @elapsed-time 
+                                              timer-stopped? 
                                               @grid 
                                               tx-event-txs 
                                               mk-effect-txs
@@ -3770,7 +3771,8 @@
                :up? true}))
 
 (defn draw-world-unit-scale! 
-  [[batch
+  [[timer-ratio
+    batch
     default-font
     shape-drawer 
     world-unit-scale 
@@ -3784,7 +3786,6 @@
     grid
     active-entities
     raycaster
-    elapsed-time
     active-skill-radius
     player-eid
     image->texture-region
@@ -3807,7 +3808,7 @@
                       (apply draw-component! 
                              @active-entities 
                              @raycaster 
-                             @elapsed-time 
+                             timer-ratio
                              active-skill-radius
                              @(player-eid)
                              image->texture-region 
@@ -3866,8 +3867,14 @@
                         (timer-create duration @elapsed-time))
         timer-info (fn [] 
                      (str (readable @elapsed-time) " seconds"))
+        timer-ratio (fn [timer]
+                      (timer-ratio timer @elapsed-time))
         timer-ratio-txt (fn [timer]
-                          (str (readable (timer-ratio timer @elapsed-time)) "/1"))
+                          (str (readable (timer-ratio timer)) "/1"))
+        tick-main-timer! (fn [delta-time]
+                           (swap! elapsed-time + delta-time))
+        timer-stopped*? (fn [timer]
+                          (timer-stopped? timer @elapsed-time))
 
         id-counter (atom 0)
 
@@ -4186,7 +4193,6 @@
                                                                (range height)))
                                                  (range width)))
              (reset! raycaster (create-raycaster g)))
-           (reset! elapsed-time 0)
            (reset! player-id (generate-id!*))
            (let [entity (entity* (spawn-creature {:position (mapv (partial + 0.5) start-position)
                                                   :creature-property (build-property :creatures/vampire)
@@ -4232,9 +4238,10 @@
                                                          create-timer*
                                                          capabilities)
                                    (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
-                                   (handle-txs! capabilities (when-not-paused-updates!* paused?
+                                   (handle-txs! capabilities (when-not-paused-updates!* timer-stopped*?
+                                                                                        paused?
                                                                                         max-delta
-                                                                                        elapsed-time
+                                                                                        tick-main-timer!
                                                                                         factions-iterations
                                                                                         grid
                                                                                         potential-field-cache
@@ -4256,7 +4263,8 @@
                                    (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
                                    (batch/begin batch)
                                    (draw-tiled-map!*)
-                                   (draw-world-unit-scale! [batch
+                                   (draw-world-unit-scale! [timer-ratio
+                                                            batch
                                                             default-font
                                                             shape-drawer 
                                                             world-unit-scale 
@@ -4270,7 +4278,6 @@
                                                             grid
                                                             active-entities
                                                             raycaster
-                                                            elapsed-time
                                                             active-skill-radius
                                                             player-eid
                                                             image->texture-region
