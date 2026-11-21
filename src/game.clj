@@ -232,6 +232,8 @@
 (require '[clojure.com.badlogic.gdx.graphics.g2d.batch :as batch]
          '[clojure.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
          '[clojure.com.badlogic.gdx.graphics.g2d.bitmap-font-bitmap-font-data :as bitmap-font-bitmap-font-data]
+         '[clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
+         '[clojure.com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator-free-type-font-parameter :as font-parameter]
          '[clojure.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
          '[clojure.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
 
@@ -318,8 +320,17 @@
          '[clojure.com.badlogic.gdx.graphics.pixmap-format :as pixmap-format]
          '[clojure.com.badlogic.gdx.graphics.texture :as texture]
          '[clojure.com.badlogic.gdx.graphics.texture-texture-filter :as texture-texture-filter]
+         '[clojure.com.badlogic.gdx.math.circle :as circle]
          '[clojure.com.badlogic.gdx.math.frustum :as frustum]
-         '[clojure.com.badlogic.gdx.math.vector3 :as vector3])
+         '[clojure.com.badlogic.gdx.math.intersector :as intersector]
+         '[clojure.com.badlogic.gdx.math.rectangle :as rectangle]
+         '[clojure.com.badlogic.gdx.math.vector2 :as vector2]
+         '[clojure.com.badlogic.gdx.math.vector3 :as vector3]
+         '[clojure.com.badlogic.gdx.utils.align :as align]
+         '[clojure.com.badlogic.gdx.utils.disposable :as disposable]
+         '[clojure.com.badlogic.gdx.utils.screen-utils :as screen-utils]
+         '[clojure.com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+         '[clojure.com.badlogic.gdx.utils.viewport.viewport :as viewport])
 
 (defn- draw-tile!
   [x
@@ -470,6 +481,7 @@
           (recur remaining result))))
 
 (require '[clojure.com.badlogic.gdx.audio :as audio]
+         '[clojure.com.badlogic.gdx.audio.sound :as sound]
          '[clojure.com.badlogic.gdx.files :as files]
          '[clojure.com.badlogic.gdx.gdx :as gdx]
          '[clojure.com.badlogic.gdx.graphics :as graphics]
@@ -668,7 +680,11 @@
          '[clojure.com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
          '[clojure.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
          '[clojure.com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
          '[clojure.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+         '[clojure.com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
          '[clojure.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
 
 (require '[clojure.com.badlogic.gdx.scenes.scene2d.actor :as actor]
@@ -676,10 +692,6 @@
          '[clojure.com.badlogic.gdx.scenes.scene2d.group :as group]
          '[clojure.com.badlogic.gdx.scenes.scene2d.stage :as stage]
          '[clojure.com.badlogic.gdx.scenes.scene2d.touchable :as touchable])
-(import '(com.badlogic.gdx.scenes.scene2d.utils ChangeListener
-                                                ClickListener
-                                                Drawable
-                                                Layout))
 
 (defn- set-label-text-actor [label-widget text-fn]
   (actor/create
@@ -690,9 +702,6 @@
      :draw!
      (fn [_this _batch _parent-alpha])}))
 
-(defn pack! [layout]
-  (Layout/.pack layout))
-
 (defn- add-upd-label!
   ([skin tbl text-fn icon]
    (let [lbl (label/create "" skin)
@@ -701,7 +710,7 @@
                 {:actor lbl}]]
        (table/add! sub-table (:actor c)))
      (table/row! sub-table)
-     (pack! sub-table)
+     (layout/pack! sub-table)
      (group/add-actor! tbl (set-label-text-actor lbl text-fn))
      (doto (table/add! tbl sub-table)
        (cell/right!)
@@ -713,37 +722,32 @@
        (cell/right!)
        (cell/expand-x!)))))
 
-(defn create-change-listener [f]
-  (proxy [ChangeListener] []
-    (changed [event actor]
-      (f event actor))))
-
 (defn- main-table [skin menus update-labels]
   (let [table (table/create)]
     (doseq [cell (for [{:keys [label items]} menus]
                    {:actor
                     (doto (text-button/create label skin)
-                      (actor/add-listener! (create-change-listener
+                      (actor/add-listener! (change-listener/create
                                        (fn [event actor]
                                          (let [stage (event/stage event)]
                                            (stage/add-actor! stage
                                                       (let [window (window/create label skin)]
                                                         (doseq [{:keys [label on-click]} items]
                                                           (table/add! window (doto (text-button/create label skin)
-                                                                         (actor/add-listener! (create-change-listener
+                                                                         (actor/add-listener! (change-listener/create
                                                                                           (fn [_event _actor]
                                                                                             (on-click)))))))
                                                         (table/row! window)
-                                                        (pack! window)
+                                                        (layout/pack! window)
                                                         (table/add! (window/title-table window)
                                                               (doto (text-button/create "X" skin)
-                                                                (actor/add-listener! (create-change-listener
+                                                                (actor/add-listener! (change-listener/create
                                                                                  (fn [_event _actor]
                                                                                    (actor/remove! window))))))
                                                         window)))))))})]
       (table/add! table (:actor cell)))
     (table/row! table)
-    (pack! table)
+    (layout/pack! table)
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn))]
         (if icon
@@ -766,7 +770,7 @@
       (cell/fill-y!))
     (table/row! table)
     (doto table
-      (pack!)
+      (layout/pack!)
       (table/set-fill-parent! true))))
 
 (defn- nad-corner? [grid [fromx fromy] [tox toy]]
@@ -869,30 +873,22 @@
   (->> (vals db)
        (filter #(= property-type (keyword "properties" (namespace (:property/id %)))))))
 
-(import '(com.badlogic.gdx.math Circle Intersector Rectangle Vector2))
-
-(import '(com.badlogic.gdx.utils.viewport FitViewport Viewport))
-
-(defn unproject [^Viewport viewport [x y]]
-  (let [v2 (Vector2. x y)]
-    (.unproject viewport v2)
-    [(.x v2) (.y v2)]))
-
-(defn create-widget [draw!]
-  (proxy [com.badlogic.gdx.scenes.scene2d.ui.Widget] []
-    (draw [_batch _parent-alpha]
-      (draw! this))))
+(defn unproject [vp [x y]]
+  (let [v2 (vector2/create x y)]
+    (viewport/unproject! vp v2)
+    [(vector2/x v2) (vector2/y v2)]))
 
 (defn inventory-window-cell-highlight-widget [cell draw-cell-rect! get-mouse-position]
-  (create-widget
-    (fn [this]
-      (let [stage-mouse-coords (unproject (stage/viewport (actor/stage this)) (get-mouse-position))
-            local (let [^Vector2 v2 (actor/stage->local-coordinates this (Vector2. (stage-mouse-coords 0) (stage-mouse-coords 1)))]
-                    [(.x v2) (.y v2)])]
-        (draw-cell-rect! (actor/x this)
-                         (actor/y this)
-                         (actor/hit this (local 0) (local 1) true)
-                         cell)))))
+  (widget/create
+    {:draw!
+     (fn [this _batch _parent-alpha]
+       (let [stage-mouse-coords (unproject (stage/viewport (actor/stage this)) (get-mouse-position))
+             local (let [v2 (actor/stage->local-coordinates this (vector2/create (stage-mouse-coords 0) (stage-mouse-coords 1)))]
+                     [(vector2/x v2) (vector2/y v2)])]
+         (draw-cell-rect! (actor/x this)
+                          (actor/y this)
+                          (actor/hit this (local 0) (local 1) true)
+                          cell)))}))
 
 (defn inventory-window-cell-image-widget [background-drawable cell-size]
   (doto (image/create-from-drawable background-drawable)
@@ -909,9 +905,9 @@
     (doto (stack/create)
       (add-actors! [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-mouse-position)
                     (inventory-window-cell-image-widget background-drawable cell-size)])
-      (actor/add-listener! (proxy [ClickListener] []
-                       (clicked [event _x _y]
-                         (on-click-cell event cell))))
+      (actor/add-listener! (click-listener/create
+                             (fn [event _x _y]
+                               (on-click-cell event cell))))
       (actor/set-name! "inventory-cell")
       (actor/set-user-object! cell))))
 
@@ -956,23 +952,17 @@
       (doseq [actor row]
         (table/add! cell-table actor))
       (table/row! cell-table))
-    (pack! cell-table)
+    (layout/pack! cell-table)
     (actor/set-name! cell-table "inventory-cell-table")
     (let [c (table/add! window cell-table)]
       (cell/pad! c 4))
     (table/row! window)
-    (pack! window)
+    (layout/pack! window)
     (actor/set-name! window "moon.ui.windows.inventory")
     (actor/set-visible! window false)
     (let [[x y] position]
       (actor/set-position! window x y))
     window))
-
-(defn get-world-width [^Viewport viewport]
-  (.getWorldWidth viewport))
-
-(defn get-world-height [^Viewport viewport]
-  (.getWorldHeight viewport))
 
 (defn create-content-grid [width height cell-size]
   (let [w (inc (int (/ width cell-size)))
@@ -1600,10 +1590,6 @@
       (group/find-actor "moon.ui.windows.entity-info")
       toggle-visible!))
 
-(import '(com.badlogic.gdx.utils Align
-                                 Disposable
-                                 ScreenUtils))
-
 (defn show-modal! [skin stage {:keys [title text button-text on-click]}]
   (assert (not (group/find-actor (stage/root stage) "moon.ui.modal-window")))
   (let [^String title title
@@ -1612,18 +1598,18 @@
     (table/add! window (label/create text skin))
     (table/row! window)
     (table/add! window (doto (text-button/create button-text skin)
-                   (actor/add-listener! (create-change-listener
+                   (actor/add-listener! (change-listener/create
                                     (fn [_event _actor]
                                       (actor/remove! (group/find-actor (stage/root stage) "moon.ui.modal-window"))
                                       (on-click))))))
     (table/row! window)
-    (pack! window)
+    (layout/pack! window)
     (window/set-modal! window true)
     (actor/set-name! window "moon.ui.modal-window")
     (actor/set-position! window
-                  (/ (get-world-width (stage/viewport stage)) 2)
-                  (* (get-world-height (stage/viewport stage)) (/ 3 4))
-                  Align/center)
+                  (/ (viewport/world-width (stage/viewport stage)) 2)
+                  (* (viewport/world-height (stage/viewport stage)) (/ 3 4))
+                  align/center)
     (stage/add-actor! stage window)))
 
 (defn- create-info-window
@@ -1639,7 +1625,7 @@
         c (table/add! window label)]
     (cell/expand! c)
     (table/row! window)
-    (pack! window)
+    (layout/pack! window)
     (actor/set-name! window actor-name)
     (actor/set-visible! window visible?)
     (let [[x y] position]
@@ -1649,7 +1635,7 @@
                                 (fn [this _delta]
                                   (when (actor/stage this)
                                     (label/set-text! label (set-label-text!)))
-                                  (pack! window))
+                                  (layout/pack! window))
                                 :draw!
                                 (fn [_this _batch _parent-alpha])}))
     window))
@@ -1758,11 +1744,11 @@
            entity/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
-    (Rectangle. (float x) (float y) (float width) (float height))))
+    (rectangle/create x y width height)))
 
 (defn overlaps? [entity other-entity]
-  (.overlaps ^Rectangle (rectangle entity)
-             ^Rectangle (rectangle other-entity)))
+  (rectangle/overlaps? (rectangle entity)
+                       (rectangle other-entity)))
 
 (defn touched-tiles
   [{:keys [entity/position
@@ -2004,7 +1990,7 @@
 
 (defn point->entities [grid pos]
   (when-let [cell (get-in grid (mapv int pos))]
-    (filter #(.contains ^Rectangle (rectangle @%) (float (first pos)) (float (second pos)))
+    (filter #(rectangle/contains? (rectangle @%) (first pos) (second pos))
             (:entities @cell))))
 
 (defn create-animation
@@ -2107,15 +2093,12 @@
                 (swap! explored-tile-corners assoc-in (mapv int position) true))
               visible-tile-color))))))
 
-(defn dispose! [disposable]
-  (Disposable/.dispose disposable))
-
 (defn- white-pixel-texture []
   (let [pixmap (doto (pixmap/create 1 1 pixmap-format/RGBA8888)
                  (pixmap/set-color! 1 1 1 1)
                  (pixmap/draw-pixel! 0 0))
         texture (texture/from-pixmap pixmap)]
-    (dispose! pixmap)
+    (disposable/dispose! pixmap)
     texture))
 
 (defn- draw-text!
@@ -2143,7 +2126,7 @@
                                         (* (bitmap-font/line-height font)))
                                     0)))
                       (float target-width)
-                      Align/center
+                      align/center
                       wrap?)
     (bitmap-font-bitmap-font-data/set-scale! font-data old-scale)))
 
@@ -2449,23 +2432,20 @@
 (defn create-viewport! [width height world-unit-scale]
   (let [world-width (* width world-unit-scale)
         world-height (* height world-unit-scale)]
-    (FitViewport. (float world-width)
-                  (float world-height)
-                  (doto (orthographic-camera/create)
-                    (orthographic-camera/set-to-ortho! false world-width world-height)))))
-
-(import '(com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter))
+    (fit-viewport/create world-width
+                         world-height
+                         (doto (orthographic-camera/create)
+                           (orthographic-camera/set-to-ortho! false world-width world-height)))))
 
 (defn create-default-font! [files {:keys [path size quality-scaling use-integer-positions?]}]
-  (let [generator (FreeTypeFontGenerator. (files/internal files path))
-        parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                    (set! (.size p) (* size quality-scaling))
-                    (set! (.minFilter p) texture-texture-filter/Linear)
-                    (set! (.magFilter p) texture-texture-filter/Linear)
-                    p)
-        font (.generateFont generator parameter)
+  (let [generator (free-type-font-generator/create (files/internal files path))
+        parameter (doto (font-parameter/create)
+                    (font-parameter/set-size! (* size quality-scaling))
+                    (font-parameter/set-min-filter! texture-texture-filter/Linear)
+                    (font-parameter/set-mag-filter! texture-texture-filter/Linear))
+        font (free-type-font-generator/generate-font generator parameter)
         font-data (bitmap-font/data font)]
-    (dispose! generator)
+    (disposable/dispose! generator)
     (bitmap-font-bitmap-font-data/set-scale! font-data (/ quality-scaling))
     (bitmap-font-bitmap-font-data/set-markup-enabled! font-data true)
     (bitmap-font/set-use-integer-positions! font use-integer-positions?)
@@ -2562,8 +2542,8 @@
              (fn [this batch _parent-alpha]
                (when-let [stage (actor/stage this)]
                  (let [state (actor/user-object this)
-                       vp-width (get-world-width (stage/viewport stage))
-                       vp-height (get-world-height (stage/viewport stage))]
+                       vp-width (viewport/world-width (stage/viewport stage))
+                       vp-height (viewport/world-height (stage/viewport stage))]
                    (when-let [text (:text @state)]
                      (draw-text! batch
                                  default-font
@@ -2611,12 +2591,9 @@
     (add-actors! actors)
     (actor/set-name! "moon.ui.windows")))
 
-(defn get-camera [^Viewport viewport]
-  (.getCamera viewport))
-
 (defn draw-cell-debug
   [factions-iterations shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
-  (let [camera (get-camera viewport)
+  (let [camera (viewport/camera viewport)
         plane-points (mapv (fn [v3]
                              [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
                            (frustum/plane-points (orthographic-camera/frustum camera)))
@@ -2655,7 +2632,7 @@
 (defn draw-tile-grid
   [shape-drawer viewport show-tile-grid?]
   (when show-tile-grid?
-    (let [camera (get-camera viewport)
+    (let [camera (viewport/camera viewport)
           plane-points (mapv (fn [v3]
                                [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
                              (frustum/plane-points (orthographic-camera/frustum camera)))
@@ -2665,8 +2642,8 @@
       (draw-fn-grid shape-drawer
                     (int left-x)
                     (int bottom-y)
-                    (inc (int (get-world-width viewport)))
-                    (+ 2 (int (get-world-height viewport)))
+                    (inc (int (viewport/world-width viewport)))
+                    (+ 2 (int (viewport/world-height viewport)))
                     1
                     1
                     (float-bits 1 1 1 0.8)))))
@@ -2871,18 +2848,17 @@
      :height size}))
 
 (defn get-friendlies-for-alert [eid faction grid]
-  (let [circle {:position (:entity/position @eid)
-                :radius 4}
-        [x y] (:position circle)
-        gdx-circle (Circle. (float x) (float y) (float (:radius circle)))]
-    (->> circle
+  (let [alert-circle {:position (:entity/position @eid)
+                      :radius 4}
+        [x y] (:position alert-circle)
+        gdx-circle (circle/create x y (:radius alert-circle))]
+    (->> alert-circle
          outer-rectangle
          touched-tiles*
          (keep #(get-in grid %))
          (map deref)
          (into #{} (mapcat :entities))
-         (filter #(Intersector/overlaps ^Circle gdx-circle
-                                        ^Rectangle (rectangle @%)))
+         (filter #(intersector/overlaps? gdx-circle (rectangle @%)))
          (filter #(= (:entity/faction @%) faction)))))
 
 (defn alert-friendlies-after-duration-tick
@@ -3046,7 +3022,7 @@
       (cell/bottom!))
     (table/row! table)
     (doto table
-      (pack!)
+      (layout/pack!)
       (table/set-fill-parent! true)
       (actor/set-name! "moon.ui.action-bar"))))
 
@@ -3086,11 +3062,6 @@
         button-group (actor/user-object horizontal-group)]
     (when-let [skill-button (button-group/checked button-group)]
       (actor/user-object skill-button))))
-
-(import '(com.badlogic.gdx.audio Sound))
-
-(defn resize! [^Viewport viewport width height center-camera?]
-  (.update viewport width height center-camera?))
 
 (require '[malli.error :as me])
 (defn validate-hum [schema value]
@@ -3177,7 +3148,7 @@
     (orthographic-camera/update! camera)))
 
 (defn set-camera-position! [viewport xy]
-  (update-xy! (get-camera viewport) xy))
+  (update-xy! (viewport/camera viewport) xy))
 
 (defn tx-event-txs* 
   [create-entity-state entity-state-exit! eid event & [params]]
@@ -3677,11 +3648,11 @@
                                                          (key-pressed? (:unpause-continously controls))))))))
         key-pressed-checks! (fn [viewport key-pressed?]
                               (doseq [[k f] {(:zoom-in controls) (fn []
-                                                                   (let [camera (get-camera viewport)]
+                                                                   (let [camera (viewport/camera viewport)]
                                                                      (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.025)))
                                                                      (orthographic-camera/update! camera)))
                                              (:zoom-out controls) (fn []
-                                                                    (let [camera (get-camera viewport)]
+                                                                    (let [camera (viewport/camera viewport)]
                                                                       (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.025)))
                                                                       (orthographic-camera/update! camera)))}]
                                 (when (key-pressed? k)
@@ -3897,10 +3868,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              skin (create-skin! (files/internal files (:skin game-config)))
              sounds (into {} (for [path (:sounds game-config)] [path (create-sound path)]))
              play-sound!* (fn [sound-name]
-                            (Sound/.play (safe-get sounds sound-name)))
-             stage (stage/create (FitViewport. (float (:width (:stage game-config))) 
-                                         (float (:height (:stage game-config)))) 
-                           batch)
+                            (sound/play! (safe-get sounds sound-name)))
+             stage (stage/create (fit-viewport/create (:width (:stage game-config))
+                                                      (:height (:stage game-config)))
+                                 batch)
              image->texture-region #(get-texture-region textures %)
              handle-txs! (fn [txs]
                            (handle-txs! stage image->texture-region skin play-sound!* txs))
@@ -3911,9 +3882,9 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              get-unit-scale (fn [] @unit-scale)
              viewport (create-viewport! 1440 900 world-unit-scale)
              unproject-viewport #(unproject viewport %)
-             camera-zoom (fn [] (orthographic-camera/zoom (get-camera viewport)))
-             ui-viewport-width (get-world-width (stage/viewport stage))
-             ui-viewport-height (get-world-height (stage/viewport stage))
+             camera-zoom (fn [] (orthographic-camera/zoom (viewport/camera viewport)))
+             ui-viewport-width (viewport/world-width (stage/viewport stage))
+             ui-viewport-height (viewport/world-height (stage/viewport stage))
              ui-mouse-info-text (fn []
                                   (mapv int (unproject (stage/viewport stage) (get-input-position))))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
@@ -4047,14 +4018,14 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      sounds
                      textures]} @state
              tiled-map @tiled-map*]
-         (dispose! batch)
-         (run! dispose! (vals cursors))
-         (dispose! default-font)
-         (dispose! shape-drawer-texture)
-         (dispose! skin)
-         (run! dispose! (vals sounds))
-         (run! dispose! (vals textures))
-         (dispose! tiled-map)))
+         (disposable/dispose! batch)
+         (run! disposable/dispose! (vals cursors))
+         (disposable/dispose! default-font)
+         (disposable/dispose! shape-drawer-texture)
+         (disposable/dispose! skin)
+         (run! disposable/dispose! (vals sounds))
+         (run! disposable/dispose! (vals textures))
+         (disposable/dispose! tiled-map)))
 
      :render!
      (fn [{:keys [clear-screen! 
@@ -4083,16 +4054,16 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
          (update-mouseover-eid! mouseover-actor world-mouse-position)
          (update-active-entities!)
          (set-camera-position! viewport camera-position)
-         (batch/set-projection-matrix! batch (orthographic-camera/combined (get-camera viewport)))
+         (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
          (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
          (batch/begin batch)
          (draw-tiled-map! @tiled-map*
                           batch
-                          (camera-view-bounds (get-camera viewport))
+                          (camera-view-bounds (viewport/camera viewport))
                           (tile-color-setter*
                             {:ray-blocked? (partial raycaster-blocked? @raycaster)
                              :explored-tile-corners explored-tile-corners
-                             :light-position (let [pos (orthographic-camera/position (get-camera viewport))]
+                             :light-position (let [pos (orthographic-camera/position (viewport/camera viewport))]
                                                [(vector3/x pos) (vector3/y pos) (vector3/z pos)])
                              :see-all-tiles? false
                              :explored-tile-color (float-bits 0.5 0.5 0.5 1)
@@ -4157,13 +4128,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      (fn [width height]
        (let [{:keys [stage
                      viewport]} @state]
-         (resize! (stage/viewport stage) width height true)
-         (resize! viewport width height false)))
+         (viewport/update! (stage/viewport stage) width height true)
+         (viewport/update! viewport width height false)))
      }))
 
 (defn- text-button [skin label on-click!]
   (doto (text-button/create label skin)
-    (actor/add-listener! (create-change-listener
+    (actor/add-listener! (change-listener/create
                      (fn [_event _actor]
                        (on-click!))))))
 
@@ -4181,7 +4152,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (orthographic-camera/update! camera)))
 
 (defn adjust-camera! [viewport tiled-map]
-  (fit-to-size! (get-camera viewport)
+  (fit-to-size! (viewport/camera viewport)
                 (map-properties/get (tiled-map/properties tiled-map) "width")
                 (map-properties/get (tiled-map/properties tiled-map) "height")))
 
@@ -4214,12 +4185,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
              textures (create-textures files
                                        {:folder "resources/"
                                         :extensions #{"png" "bmp"}})
-             viewport (FitViewport. (float world-width)
-                                    (float world-height)
-                                    (doto (orthographic-camera/create)
-                                      (orthographic-camera/set-to-ortho! false
-                                                                         world-width
-                                                                         world-height)))
+             viewport (fit-viewport/create world-width
+                                           world-height
+                                           (doto (orthographic-camera/create)
+                                             (orthographic-camera/set-to-ortho! false
+                                                                                world-width
+                                                                                world-height)))
              
              current-tiled-map (atom nil)
              button-window (let [window (window/create "Edit" skin)] 
@@ -4229,13 +4200,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                (table/add! window (text-button skin 
                                                          (str "Generate " label)
                                                          (fn []
-                                                           (dispose! @current-tiled-map)
+                                                           (disposable/dispose! @current-tiled-map)
                                                            (reset! current-tiled-map (generate-level db textures level-fn))
                                                            (adjust-camera! viewport @current-tiled-map))))
                                (table/row! window))
-                             (pack! window)
+                             (layout/pack! window)
                              window)
-             stage (doto (stage/create (FitViewport. 1440 900) batch)
+             stage (doto (stage/create (fit-viewport/create 1440 900) batch)
                      (stage/add-actor! button-window))]
          (set-input-processor! stage) 
          (reset! current-tiled-map (generate-level db textures create-uf-caves)) 
@@ -4250,20 +4221,20 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :dispose!
      (fn []
        (let [{:keys [batch skin textures current-tiled-map]} @state]
-         (dispose! batch)
-         (dispose! skin)
-         (run! dispose! (vals textures))
-         (dispose! @current-tiled-map)))
+         (disposable/dispose! batch)
+         (disposable/dispose! skin)
+         (run! disposable/dispose! (vals textures))
+         (disposable/dispose! @current-tiled-map)))
 
      :render!
      (fn [{:keys [clear-screen! key-pressed?]}]
        (let [{:keys [batch stage current-tiled-map viewport]} @state]
          (clear-screen! 0 0 0 0) 
-         (batch/set-projection-matrix! batch (orthographic-camera/combined (get-camera viewport)))
+         (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
          (batch/begin batch)
          (draw-tiled-map! @current-tiled-map
                           batch
-                          (camera-view-bounds (get-camera viewport))
+                          (camera-view-bounds (viewport/camera viewport))
                           tiled-map-color-setter
                           world-unit-scale)
          (batch/end batch)
@@ -4290,15 +4261,15 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                             (vector3/set-y! pos (- (vector3/y pos) 1))
                                             (orthographic-camera/update! camera)))}]
            (when (key-pressed? k)
-             (f (get-camera viewport))))
+             (f (viewport/camera viewport))))
          (stage/act! stage)
          (stage/draw! stage)))
 
      :resize!
      (fn [width height]
        (let [{:keys [stage viewport]} @state]
-         (resize! (stage/viewport stage) width height true)
-         (resize! viewport width height false)))
+         (viewport/update! (stage/viewport stage) width height true)
+         (viewport/update! viewport width height false)))
      }))
 
 (defn map-form-k->properties
@@ -4407,7 +4378,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                          (doto (texture-region-drawable/create texture-region)
                            (texture-region-drawable/set-min-size! (* image-scale (texture-region/region-width texture-region))
                                                                   (* image-scale (texture-region/region-height texture-region)))))
-                   (actor/add-listener! (create-change-listener
+                   (actor/add-listener! (change-listener/create
                                     (fn [event actor]
                                       (clicked-id-fn actor (:property/id property)))))
                    (actor/add-listener! (text-tooltip/create (binding [*print-level* 2]
@@ -4424,10 +4395,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
       (doseq [actor row]
         (table/add! window actor))
       (table/row! window))
-    (pack! window)
+    (layout/pack! window)
     (table/add! (window/title-table window)
           (doto (new-text-button "X")
-            (actor/add-listener! (create-change-listener
+            (actor/add-listener! (change-listener/create
                              (fn [_event _actor]
                                (actor/remove! window))))))
     (window/set-modal! window true)
@@ -4449,7 +4420,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (doseq [actor columns]
       (table/add! table actor))
     (table/row! table)
-    (pack! table)
+    (layout/pack! table)
     table))
 
 (defn- boolean-widget-value [widget]
@@ -4502,9 +4473,6 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
   (doto (text-field/create (pr-str v) skin)
     (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
-(defn play! [sound]
-  (Sound/.play sound))
-
 (defn- list-sounds-table [pad rows]
   (let [table (table/create)]
     (cell/pad! (table/defaults table) pad)
@@ -4512,7 +4480,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
       (doseq [actor columns]
         (table/add! table actor))
       (table/row! table))
-    (pack! table)
+    (layout/pack! table)
     table))
 
 (defn- create-sound-widget [sound-names sound-name play-sound! skin stage-viewport stage-add-actor!]
@@ -4520,19 +4488,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults table) 5)
     (letfn [(play-sound-button [sound-name]
               (doto (text-button/create "play!" skin)
-                (actor/add-listener! (create-change-listener
+                (actor/add-listener! (change-listener/create
                                  (fn [event _actor]
                                    (play-sound! sound-name))))))
             (choose-sound-button [sound-name]
               (doto (text-button/create sound-name skin)
-                (actor/add-listener! (create-change-listener
+                (actor/add-listener! (change-listener/create
                                  (fn [event actor]
                                    (group/clear-children! table)
                                    (doseq [cell (sound-columns-fn sound-name)]
                                      (table/add! table (:actor cell)))
                                    (table/row! table)
-                                   (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
-                                   (pack! (actor/first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                   (actor/remove! (actor/first-ascendant actor window/class))
+                                   (layout/pack! (actor/first-ascendant table window/class))
                                    (let [[k _] (actor/user-object table)]
                                      (actor/set-user-object! table [k sound-name])))))))
             (choose-sound-window []
@@ -4544,20 +4512,20 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                     window (window/create "Choose" skin)]
                 (doto (table/add! window (scroll-pane/create list-table skin))
                   (cell/width! (+ (actor/width list-table) 50))
-                  (cell/height! (min (- (get-world-height stage-viewport) 50)
+                  (cell/height! (min (- (viewport/world-height stage-viewport) 50)
                                 (actor/height list-table))))
                 (table/row! window)
-                (pack! window)
+                (layout/pack! window)
                 (table/add! (window/title-table window)
                       (doto (text-button/create "X" skin)
-                        (actor/add-listener! (create-change-listener
+                        (actor/add-listener! (change-listener/create
                                          (fn [_event _actor]
                                            (actor/remove! window))))))
                 (window/set-modal! window true)
                 window))
             (sound-columns-fn [sound-name]
               [{:actor (doto (text-button/create sound-name skin)
-                         (actor/add-listener! (create-change-listener
+                         (actor/add-listener! (change-listener/create
                                           (fn [_event _actor]
                                             (open-select-fn)))))}
                {:actor (play-sound-button sound-name)}])
@@ -4567,7 +4535,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                      (sound-columns-fn sound-name)
                      [{:actor
                        (doto (text-button/create "No sound" skin)
-                         (actor/add-listener! (create-change-listener
+                         (actor/add-listener! (change-listener/create
                                           (fn [_event _actor]
                                             (open-select-fn)))))}])]
         (table/add! table (:actor cell)))
@@ -4586,17 +4554,17 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
               (let [redo-rows (fn [id]
                                 (group/clear-children! table)
                                 (add-one-to-one-rows id)
-                                (pack! (actor/first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window)))]
+                                (layout/pack! (actor/first-ascendant table window/class)))]
                 (doseq [row (cond-> []
                               (not property-id) ; can even be nil?
                               (conj [{:actor (doto ((:editor/new-text-button editor) "+")
-                                               (actor/add-listener! (create-change-listener
+                                               (actor/add-listener! (change-listener/create
                                                                 (fn [event _actor]
                                                                   ((:editor/add-actor! editor)
                                                                    (property-overview-window
                                                                      property-type
                                                                      (fn [actor id]
-                                                                       (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                                                       (actor/remove! (actor/first-ascendant actor window/class))
                                                                        (redo-rows id))
                                                                      editor))))))}])
                               property-id
@@ -4612,7 +4580,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                                      (pprint/pprint property)))))
                                                  (actor/set-user-object! property-id)))}]
                                     [{:actor (doto ((:editor/new-text-button editor) "-")
-                                               (actor/add-listener! (create-change-listener
+                                               (actor/add-listener! (change-listener/create
                                                                 (fn [event _actor]
                                                                   (redo-rows nil)))))}]))]
                   (doseq [cell row]
@@ -4635,17 +4603,17 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                 (group/clear-children! table)
                                 (add-one-to-many-rows property-ids)
                                 ; editor window callback instead ? 
-                                (pack! (actor/first-ascendant table com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                (layout/pack! (actor/first-ascendant table window/class))
                                 )]
                 (doseq [row
                         [[{:actor (doto (text-button/create "+" skin)
-                                    (actor/add-listener! (create-change-listener
+                                    (actor/add-listener! (change-listener/create
                                                      (fn [event _actor]
                                                        ((:editor/add-actor! editor)
                                                         (property-overview-window
                                                           property-type
                                                           (fn [actor id]
-                                                            (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                                            (actor/remove! (actor/first-ascendant actor window/class))
                                                             (redo-rows (conj property-ids id)))
                                                           editor))))))}]
                          (for [property-id property-ids]
@@ -4660,7 +4628,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                        (actor/set-user-object! property-id))}))
                          (for [id property-ids]
                            {:actor (doto (text-button/create "-" skin)
-                                     (actor/add-listener! (create-change-listener
+                                     (actor/add-listener! (change-listener/create
                                                       (fn [event _actor]
                                                         (redo-rows (disj property-ids id))))))})]]
                   (doseq [cell row]
@@ -4687,18 +4655,18 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults window) 5)
     (table/add! (window/title-table window)
           (doto (text-button/create "X" skin)
-            (actor/add-listener! (create-change-listener
+            (actor/add-listener! (change-listener/create
                              (fn [_event _actor]
                                (actor/remove! window))))))
     (window/set-modal! window true)
     (doseq [{:keys [text f]} columns]
       (table/add! window (doto (text-button/create text skin)
-                     (actor/add-listener! (create-change-listener
+                     (actor/add-listener! (change-listener/create
                                       (fn [event _actor]
                                         (actor/remove! window)
                                         (f))))))
       (table/row! window))
-    (pack! window)
+    (layout/pack! window)
     window))
 
 (defn- map-widget-table-create
@@ -4724,7 +4692,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                 (cell/pad! (table/defaults table) 2)
                                 (doto (table/add! row-table (when display-remove-component-button?
                                                         (doto (text-button/create "-" skin)
-                                                          (actor/add-listener! (create-change-listener
+                                                          (actor/add-listener! (change-listener/create
                                                                            (fn [event _actor]
                                                                              (actor/remove! (first (filter (fn [actor]
                                                                                                        (and (actor/user-object actor)
@@ -4735,7 +4703,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                   (cell/left!))
                                 (table/add! row-table (label/create (k-label-text k) skin))
                                 (table/row! row-table)
-                                (pack! row-table)
+                                (layout/pack! row-table)
                                 row-table))
         add-component-row! (fn [opts]
                              (doto (table/add! table (component-row-table opts))
@@ -4765,7 +4733,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
     (cell/pad! (table/defaults table) 5)
     (when opt?
       (doto (table/add! table (doto (text-button/create "Add component" skin)
-                          (actor/add-listener! (create-change-listener
+                          (actor/add-listener! (change-listener/create
                                            (fn [_event _actor]
                                              (open-add-component-window!))))))
         (cell/colspan! colspan))
@@ -4782,7 +4750,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 (require '[clojure.set :as set])
 
 (defn play-sound!* [sounds sound-name]
-  (play! (safe-get sounds sound-name)))
+  (sound/play! (safe-get sounds sound-name)))
 
 (defn- property-editor-table [widget on-save on-delete skin]
   (let [table (table/create)]
@@ -4791,17 +4759,17 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
       (cell/colspan! 2))
     (table/row! table)
     (doto (table/add! table (doto (text-button/create "Save [LIGHT_GRAY](ENTER)[]" skin)
-                        (actor/add-listener! (create-change-listener
+                        (actor/add-listener! (change-listener/create
                                          (fn [event actor]
                                            (on-save actor))))))
       (cell/center!))
     (doto (table/add! table (doto (text-button/create "Delete" skin)
-                        (actor/add-listener! (create-change-listener
+                        (actor/add-listener! (change-listener/create
                                          (fn [event actor]
                                            (on-delete actor))))))
       (cell/center!))
     (table/row! table)
-    (pack! table)
+    (layout/pack! table)
     table))
 
 (require '[clj-commons.pretty.repl :as pretty-repl])
@@ -4972,13 +4940,13 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                          :s/string (create-string-widget schema v @skin)
                                                          :s/val-max (create-val-max-widget schema v @skin)))
                                        widget (create-widget schema property)
-                                       scroll-pane-height (get-world-height (stage/viewport @editor-stage))
+                                       scroll-pane-height (viewport/world-height (stage/viewport @editor-stage))
                                        property-id (:property/id property)
                                        with-window-close (fn [f]
                                                            (fn [actor]
                                                              (try
                                                                (swap! db f)
-                                                               (actor/remove! (actor/first-ascendant actor com.badlogic.gdx.scenes.scene2d.ui.Window))
+                                                               (actor/remove! (actor/first-ascendant actor window/class))
                                                                (catch Throwable t
                                                                  (binding [*print-level* 3]
                                                                    (pretty-repl/pretty-pst t 24))))))
@@ -5007,10 +4975,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                      (cell/height! c (min (- scroll-pane-height 50)
                                                      (actor/height table))))
                                    (table/row! window)
-                                   (pack! window)
+                                   (layout/pack! window)
                                    (table/add! (window/title-table window)
                                          (doto (text-button/create "X" @skin)
-                                           (actor/add-listener! (create-change-listener
+                                           (actor/add-listener! (change-listener/create
                                                             (fn [_event _actor]
                                                               (actor/remove! window))))))
                                    (window/set-modal! window true)
@@ -5027,7 +4995,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                       (let [window (window/create "Edit" @skin)]
                         (doseq [property-type property-types]
                           (table/add! window (doto (text-button/create (str/capitalize (name property-type)) @skin)
-                                         (actor/add-listener! (create-change-listener
+                                         (actor/add-listener! (change-listener/create
                                                           (fn [_event _actor]
                                                             (stage/add-actor! @editor-stage
                                                                         (property-overview-window
@@ -5037,7 +5005,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                                                                         (property-editor-window ((:editor/get-property editor) id))))
                                                                           editor)))))))
                           (table/row! window))
-                        (pack! window)
+                        (layout/pack! window)
                         window))]
     {:create!
      (fn [{:keys [audio files set-input-processor!] :as capabilities}] 
@@ -5047,7 +5015,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (bitmap-font-bitmap-font-data/set-markup-enabled!
         (bitmap-font/data (skin/font @skin "default-font"))
         true)
-       (reset! editor-stage (stage/create (FitViewport. (float 1440) (float 900)) @batch))
+       (reset! editor-stage (stage/create (fit-viewport/create 1440 900) @batch))
        (reset! sounds (into {}
                             (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
                               [path (audio/new-sound audio (files/internal files path))])))
@@ -5056,10 +5024,10 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (stage/add-actor! @editor-stage (main-window)))
      :dispose!
      (fn []
-       (run! dispose! (vals @sounds))
-       (dispose! @batch)
-       (dispose! @skin)
-       (run! dispose! (vals @textures)))
+       (run! disposable/dispose! (vals @sounds))
+       (disposable/dispose! @batch)
+       (disposable/dispose! @skin)
+       (run! disposable/dispose! (vals @textures)))
      :render!
      (fn [{:keys [clear-screen!]}]
        (clear-screen! 0 0 0 0)
@@ -5067,10 +5035,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
        (stage/draw! @editor-stage))
      :resize!
      (fn [width height]
-       (resize! (stage/viewport @editor-stage) width height true))
+       (viewport/update! (stage/viewport @editor-stage) width height true))
      }))
 
-(import '(com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration))
+(require '[clojure.com.badlogic.gdx.application-listener :as application-listener]
+         '[clojure.com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+         '[clojure.com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration])
 
 (defn create-capabilities []
   (let [audio (gdx/audio)
@@ -5086,12 +5056,12 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
      :create-cursor (fn [[path [hotspot-x hotspot-y]]]
                       (let [pixmap (pixmap/create (files/internal files path))
                             cursor (new-cursor graphics pixmap hotspot-x hotspot-y)]
-                        (dispose! pixmap)
+                        (disposable/dispose! pixmap)
                         cursor))
      :set-input-processor! (fn [processor]
                              (input/set-input-processor! input processor))
      :clear-screen! (fn [r g b a]
-                      (ScreenUtils/clear r g b a))
+                      (screen-utils/clear r g b a))
      :get-input-position (fn []
                            [(input/x input)
                             (input/y input)])
@@ -5116,28 +5086,19 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
            width 
            height 
            fps]}]
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. 
-    (reify com.badlogic.gdx.ApplicationListener
-      (create [_]
-        (create! (create-capabilities)))
-
-      (dispose [_]
-        (dispose!))
-
-      (render [_]
-        (render! (create-capabilities)))
-
-      (resize [_ width height]
-        (resize! width height))
-
-      (pause [_])
-
-      (resume [_])) 
-    (doto (Lwjgl3ApplicationConfiguration.)
-      (.setTitle title)
-      (.setWindowedMode width height)
-      (.setForegroundFPS fps))))
+  (lwjgl3-application-configuration/use-glfw-async!)
+  (lwjgl3-application/create
+    (application-listener/create
+      {:create! (fn [] (create! (create-capabilities)))
+       :dispose! dispose!
+       :render! (fn [] (render! (create-capabilities)))
+       :resize! resize!
+       :pause! (fn [])
+       :resume! (fn [])})
+    (doto (lwjgl3-application-configuration/create)
+      (lwjgl3-application-configuration/set-title! title)
+      (lwjgl3-application-configuration/set-windowed-mode! width height)
+      (lwjgl3-application-configuration/set-foreground-fps! fps))))
 
 (defn draw-text-demo-listener []
   (let [batch (atom nil)
@@ -5187,16 +5148,16 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                                            :use-integer-positions? false}))
        (reset! shape-drawer-texture (white-pixel-texture))
        (reset! shape-drawer (shape-drawer/create @batch (texture-region/create @shape-drawer-texture 1 0 1 1)))
-       (reset! viewport (FitViewport. (float 1440)
-                                      (float 900)
-                                      (doto (orthographic-camera/create)
-                                        (orthographic-camera/set-to-ortho! false 1440 900)))))
+       (reset! viewport (fit-viewport/create 1440
+                                             900
+                                             (doto (orthographic-camera/create)
+                                               (orthographic-camera/set-to-ortho! false 1440 900)))))
 
      :dispose!
      (fn []
-       (dispose! @batch)
-       (dispose! @font)
-       (dispose! @shape-drawer-texture))
+       (disposable/dispose! @batch)
+       (disposable/dispose! @font)
+       (disposable/dispose! @shape-drawer-texture))
 
      :render!
      (fn [{:keys [clear-screen! key-just-pressed?]}]
@@ -5205,7 +5166,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
                               world-unit-scale
                               1.0)))
        (clear-screen! 0.08 0.08 0.1 1)
-       (batch/set-projection-matrix! @batch (orthographic-camera/combined (get-camera @viewport)))
+       (batch/set-projection-matrix! @batch (orthographic-camera/combined (viewport/camera @viewport)))
        (batch/begin @batch)
        (let [b @batch
              f @font
@@ -5234,7 +5195,7 @@ init-game-state! (fn [handle-txs! textures image->texture-region]
 
      :resize!
      (fn [width height]
-       (resize! @viewport width height true))}))
+       (viewport/update! @viewport width height true))}))
 
 (defn draw-text-demo! []
   (lwjgl3-application! (draw-text-demo-listener)
