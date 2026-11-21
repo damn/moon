@@ -3516,6 +3516,22 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
+(defn handle-player-input [player-eid interaction-state inventory-visible? key-pressed? button-just-pressed? tx-event-txs entity* create-timer*]
+  (case (:state (:entity/fsm @player-eid))
+    :player-idle
+    (if-let [move-v (movement-vector key-pressed?)]
+      (tx-event-txs player-eid :movement-input move-v)
+      (when (button-just-pressed? :buttons/left)
+        (interaction-state->txs interaction-state inventory-visible? player-eid entity* create-timer* tx-event-txs)))
+
+    :player-moving
+    (if-let [move-v (movement-vector key-pressed?)]
+      [[:tx/swap player-eid assoc :player-moving {:direction move-v
+                                                  :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
+                                                             0)}]]
+      (tx-event-txs player-eid :no-movement-input))
+    nil))
+
 ; 645
 ; too many states to keep in sync ! one state persistent ? non platform data?
 ; with functions keeping it proper
@@ -3598,21 +3614,6 @@
                                     (swap! player-message update :counter + (get-delta-time))
                                     (when (>= (:counter @player-message) message-duration-seconds)
                                       (reset! player-message nil))))
-        handle-player-input (fn [player-eid interaction-state inventory-visible? key-pressed? button-just-pressed?]
-                              (case (:state (:entity/fsm @player-eid))
-                                :player-idle
-                                (if-let [move-v (movement-vector key-pressed?)]
-                                  (tx-event-txs player-eid :movement-input move-v)
-                                  (when (button-just-pressed? :buttons/left)
-                                    (interaction-state->txs interaction-state inventory-visible? player-eid entity* create-timer* tx-event-txs)))
-
-                                :player-moving
-                                (if-let [move-v (movement-vector key-pressed?)]
-                                  [[:tx/swap player-eid assoc :player-moving {:direction move-v
-                                                                              :speed (or (get-value (:entity/stats @player-eid) :stats/movement-speed)
-                                                                                         0)}]]
-                                  (tx-event-txs player-eid :no-movement-input))
-                                nil))
         paused? (atom false)
         update-paused-state! (fn [key-just-pressed? key-pressed?]
                                (reset! paused?
@@ -3794,7 +3795,10 @@ primary-interaction! (fn [{:keys [set-cursor!
                                                       interaction-state
                                                       inventory-visible?
                                                       key-pressed?
-                                                      button-just-pressed?)]
+                                                      button-just-pressed?
+                                                      tx-event-txs
+                                                      entity* 
+                                                      create-timer*)]
                          (set-cursor! cursor-key)
                          (handle-txs! capabilities txs)))
 init-game-state! (fn [capabilities textures image->texture-region]
