@@ -27,22 +27,16 @@
                         (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
      (fn [[^int a ^int b]] (<= a b))]]))
 
-(import '(java.util Random))
-
-(defn create-random []
-  (Random.))
-
-(defn next-float [random]
-  (Random/.nextFloat random))
+(require '[clojure.java.util.random :as random])
 
 (def k->adj-num
   {:wide
    (fn [open-paths random]
      (if (= open-paths 1)
-       (case (int (* 3 (next-float random)))
+       (case (int (* 3 (random/next-float random)))
          0 1
          2)
-       (case (int (* 4 (next-float random)))
+       (case (int (* 4 (random/next-float random)))
          0 1
          1 2
          2 3
@@ -53,7 +47,7 @@
    (fn [open-paths random]
      (if (= open-paths 1)
        1
-       (case (int (* 7 (next-float random)))
+       (case (int (* 7 (random/next-float random)))
          0 0
          1 2
          1)))
@@ -61,13 +55,13 @@
    ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
    (fn [open-paths random]
      (if (= open-paths 1)
-       (case (int (* 4 (next-float random)))
+       (case (int (* 4 (random/next-float random)))
          0 1
          1 1
          2 1
          3 2
          1)
-       (case (int (* 4 (next-float random)))
+       (case (int (* 4 (random/next-float random)))
          0 0
          1 1
          2 1
@@ -1295,7 +1289,7 @@
   "Return a random permutation of coll"
   [coll random]
   (let [al (java.util.ArrayList. ^java.util.Collection coll)]
-    (java.util.Collections/shuffle al ^Random random)
+    (java.util.Collections/shuffle al ^java.util.Random random)
     (clojure.lang.RT/vector (.toArray al))))
 
 (defn- from-mapgrid
@@ -1356,7 +1350,7 @@
         (finished grid
                   (last posi-seq)
                   cell-cnt)
-        (let [current-order (if (< (next-float random) turn-ratio)
+        (let [current-order (if (< (random/next-float random) turn-ratio)
                               (create-order)
                               current-order)
               neighbours (get-4-neighbours (last posi-seq))
@@ -1532,7 +1526,7 @@
     :or {map-size 5
          spawn-rate 0.05}}]
   (let [scale [32 20]
-        {:keys [start grid]} (create-caves (create-random) map-size map-size :wide)
+        {:keys [start grid]} (create-caves (random/create) map-size map-size :wide)
         grid (fix-nads grid)
         grid (let [grid (reduce #(assoc-in %1 %2 :transition)
                                 grid
@@ -1687,7 +1681,7 @@
                 :cave-size 200
                 :cave-style :wide}
                world-fn-ctx)
-        {:keys [start grid]} (create-caves (create-random) cave-size cave-size cave-style)
+        {:keys [start grid]} (create-caves (random/create) cave-size cave-size cave-style)
         _ (assert (= #{:wall :ground} (set (apply concat grid))))
         grid (fix-nads grid)
         create-tile (let [texture (get textures texture-path)]
