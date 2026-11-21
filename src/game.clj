@@ -3896,7 +3896,20 @@ init-game-state! (fn [textures image->texture-region]
                                                    :y (+ (/ ui-viewport-height 2) 200)
                                                    :text text
                                                    :scale 2.5
-                                                   :up? true})))]
+                                                   :up? true})))
+             when-not-paused-updates! (fn [delta-time]
+                                        (when-not @paused?
+                                          (let [delta-time (min delta-time max-delta)]
+                                            (swap! elapsed-time + delta-time)
+                                            (doseq [[faction max-iterations] factions-iterations]
+                                              (update! @grid
+                                                       potential-field-cache
+                                                       faction
+                                                       @active-entities
+                                                       max-iterations))
+                                            (doseq [eid @active-entities
+                                                    component @eid]
+                                              (handle-txs! (tick-component component eid delta-time @elapsed-time))))))]
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus menus
                                           :update-labels update-labels 
@@ -3931,6 +3944,7 @@ init-game-state! (fn [textures image->texture-region]
                         :default-font default-font
                         :image->texture-region image->texture-region
                         :handle-txs! handle-txs!
+                        :when-not-paused-updates! when-not-paused-updates!
                         :shape-drawer shape-drawer
                         :shape-drawer-texture shape-drawer-texture
                         :skin skin
@@ -3976,7 +3990,8 @@ init-game-state! (fn [textures image->texture-region]
                      shape-drawer
                      stage
                      unit-scale
-                     viewport]} @state
+                     viewport
+                     when-not-paused-updates!]} @state
              mouse-position (get-input-position)
              delta-time (get-delta-time)
              camera-position (:entity/position @(player-eid))
@@ -4018,18 +4033,6 @@ init-game-state! (fn [textures image->texture-region]
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
-             when-not-paused-updates! #(when-not @paused?
-                                         (let [delta-time (min delta-time max-delta)]
-                                           (swap! elapsed-time + delta-time)
-                                           (doseq [[faction max-iterations] factions-iterations]
-                                             (update! @grid
-                                                      potential-field-cache
-                                                      faction
-                                                      @active-entities
-                                                      max-iterations))
-                                           (doseq [eid @active-entities
-                                                   component @eid]
-                                             (handle-txs! (tick-component component eid delta-time @elapsed-time)))))
              update-message-counter! #(when (:text @player-message)
                                         (swap! player-message update :counter + delta-time)
                                         (when (>= (:counter @player-message) message-duration-seconds)
@@ -4056,7 +4059,7 @@ init-game-state! (fn [textures image->texture-region]
          (set-camera-position! viewport camera-position)
          (primary-interaction!)
          (update-paused-state! key-just-pressed? key-pressed?)
-         (when-not-paused-updates!)
+         (when-not-paused-updates! delta-time)
          (handle-txs! (destroy-entities game-db entity-ids entity*))
          (key-pressed-checks! viewport key-pressed?)
          (key-just-pressed-checks! stage key-just-pressed?)
