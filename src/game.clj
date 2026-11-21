@@ -3746,6 +3746,12 @@ init-game-state! (fn [textures image->texture-region]
                   new-sound
                   frames-per-second
                   new-cursor]}]
+       ;       clojure.com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/instance  tooltip_manager.clj:    4
+       ;      com.badlogic.gdx.scenes.scene2d.ui.TooltipManager.getInstance  TooltipManager.java:  154
+       ;           com.badlogic.gdx.scenes.scene2d.ui.TooltipManager.<init>  TooltipManager.java:   58
+       ;         com.badlogic.gdx.scenes.scene2d.ui.TooltipManager$1.<init>  TooltipManager.java:   58
+       ;                           com.badlogic.gdx.utils.Timer$Task.<init>           Timer.java:  212
+       ;java.lang.IllegalStateException: Gdx.app not available.
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [batch (sprite-batch/create)
              textures (create-textures internal (:textures game-config))
