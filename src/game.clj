@@ -3755,60 +3755,10 @@
                :up? true}))
 
 (defn draw-world-unit-scale! 
-  [[timer-ratio
-    batch
-    default-font
-    shape-drawer 
-    world-unit-scale 
-    unit-scale 
-    viewport
-    show-tile-grid?
-    factions-iterations
-    show-cell-entities?
-    show-cell-occupied?
-    show-potential-field-colors?
-    grid
-    active-entities
-    line-of-sight?
-    active-skill-radius
-    player-eid
-    image->texture-region
-    show-body-bounds?
-    render-z-order
-    render-layers
-    get-input-position]]
+  [shape-drawer world-unit-scale unit-scale draw-operations]
   (with-line-width shape-drawer world-unit-scale
     (reset! unit-scale world-unit-scale)
-    (when @show-tile-grid?
-      (draw-tile-grid shape-drawer viewport))
-    (draw-cell-debug factions-iterations
-                     shape-drawer 
-                     viewport
-                     @show-cell-entities?
-                     @show-cell-occupied?
-                     @show-potential-field-colors?
-                     @grid)
-    (draw-entities! (fn [& params]
-                      (apply draw-component! 
-                             @active-entities 
-                             line-of-sight?
-                             timer-ratio
-                             active-skill-radius
-                             @(player-eid)
-                             image->texture-region 
-                             @unit-scale 
-                             batch 
-                             default-font 
-                             shape-drawer 
-                             params))
-                    shape-drawer
-                    line-of-sight?
-                    @active-entities
-                    @(player-eid)
-                    @show-body-bounds?
-                    render-z-order
-                    render-layers)
-    (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid)
+    (draw-operations)
     (reset! unit-scale 1)))
 
 (defn game-listener 
@@ -4127,6 +4077,38 @@
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
+
+             world-unit-scale-draw-operations (fn []
+                                                (when @show-tile-grid?
+                                                  (draw-tile-grid shape-drawer viewport))
+                                                (draw-cell-debug factions-iterations
+                                                                 shape-drawer 
+                                                                 viewport
+                                                                 @show-cell-entities?
+                                                                 @show-cell-occupied?
+                                                                 @show-potential-field-colors?
+                                                                 @grid)
+                                                (draw-entities! (fn [& params]
+                                                                  (apply draw-component! 
+                                                                         @active-entities 
+                                                                         line-of-sight?*
+                                                                         timer-ratio
+                                                                         active-skill-radius
+                                                                         @(player-eid)
+                                                                         image->texture-region 
+                                                                         @unit-scale 
+                                                                         batch 
+                                                                         default-font 
+                                                                         shape-drawer 
+                                                                         params))
+                                                                shape-drawer
+                                                                line-of-sight?*
+                                                                @active-entities
+                                                                @(player-eid)
+                                                                @show-body-bounds?
+                                                                render-z-order
+                                                                render-layers)
+                                                (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid))
              ]
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus (game-menus show-tile-grid?
@@ -4258,28 +4240,10 @@
                                    (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
                                    (batch/begin batch)
                                    (draw-tiled-map!*)
-                                   (draw-world-unit-scale! [timer-ratio
-                                                            batch
-                                                            default-font
-                                                            shape-drawer 
-                                                            world-unit-scale 
-                                                            unit-scale 
-                                                            viewport
-                                                            show-tile-grid?
-                                                            factions-iterations
-                                                            show-cell-entities?
-                                                            show-cell-occupied?
-                                                            show-potential-field-colors?
-                                                            grid
-                                                            active-entities
-                                                            line-of-sight?*
-                                                            active-skill-radius
-                                                            player-eid
-                                                            image->texture-region
-                                                            show-body-bounds?
-                                                            render-z-order
-                                                            render-layers
-                                                            get-input-position])
+                                   (draw-world-unit-scale! shape-drawer
+                                                           world-unit-scale
+                                                           unit-scale
+                                                           world-unit-scale-draw-operations)
                                    (batch/end batch)
                                    (stage/draw! stage))})))
 
