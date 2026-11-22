@@ -2934,9 +2934,17 @@
        (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
 
 (defn active-skill-draw
-  [v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius]
-  (let [{:keys [skill effect-ctx counter]} v
-        {:keys [entity/image skill/effects]} skill
+  [{:keys [skill effect-ctx counter]} 
+   entity 
+   shape-drawer 
+   batch 
+   unit-scale 
+   image->texture-region 
+   active-entities 
+   line-of-sight? 
+   timer-ratio 
+   active-skill-radius]
+  (let [{:keys [entity/image skill/effects]} skill
         radius active-skill-radius
         action-counter-ratio (timer-ratio counter)
         [x y] (:entity/position entity)
@@ -3633,6 +3641,7 @@
     :entity/temp-modifier
     (temp-modifier-draw entity shape-drawer)
     :active-skill
+    ; deepest issue
     (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius)
     :npc-sleeping
     (npc-sleeping-draw entity batch default-font unit-scale)
@@ -4089,6 +4098,7 @@
                                                                  @show-potential-field-colors?
                                                                  @grid)
                                                 (draw-entities! (fn [& params]
+                                                                  ; very deep -> goes to active skill draw
                                                                   (apply draw-component! 
                                                                          @active-entities 
                                                                          line-of-sight?*
