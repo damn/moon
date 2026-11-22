@@ -3219,11 +3219,21 @@
                  [:tx/swap eid dissoc old-state-k]]
                 (entity-state-exit! eid old-state-obj))))))
 
-(defn spawn-entity! [entity-ids content-grid grid entity]
-  (let [id (:entity/id entity)
+(defn spawn-entity! [entity-ids content-grid grid entity minimum-size z-orders]
+  (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity
+        id (:entity/id entity)
         eid (atom entity)]
     (assert (number? id))
     (assert (not (contains? @entity-ids id)))
+    (assert position)
+    (assert width)
+    (assert height)
+    (assert (>= width  (if collides? minimum-size 0)))
+    (assert (>= height (if collides? minimum-size 0)))
+    (assert (or (boolean? collides?) (nil? collides?)))
+    (assert ((set z-orders) z-order))
+    (assert (or (nil? rotation-angle)
+                (<= 0 rotation-angle 360)))
     (swap! entity-ids assoc id eid)
     (assert (:entity/position @eid))
     (update-entity! content-grid eid)
@@ -3296,23 +3306,6 @@
 ; state->pause-game?
 ; render-layers (contains fns ? )
 ; info-text
-
-(defn construct-entity [entity minimum-size z-orders]
-  (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
-    (assert position)
-    (assert width)
-    (assert height)
-    (assert (>= width  (if collides? minimum-size 0)))
-    (assert (>= height (if collides? minimum-size 0)))
-    (assert (or (boolean? collides?) (nil? collides?)))
-    (assert ((set z-orders) z-order))
-    (assert (or (nil? rotation-angle)
-                (<= 0 rotation-angle 360)))
-    (assoc entity
-           :entity/position (mapv float position)
-           :entity/width (float width)
-           :entity/height (float height)
-           :entity/rotation-angle (or rotation-angle 0))))
 
 (defn entity-state-exit! [eid [k _v] create-timer entity*]
   (case k
@@ -3736,7 +3729,6 @@
            inventory-cell-size
            slot->texture-region
            factions-iterations
-           construct-entity
            create-level!
            render-z-order
            render-layers
@@ -3748,6 +3740,8 @@
            rahmen-file
            hpcontent-file
            manacontent-file
+           minimum-size
+           z-orders
            ]
     :as game-config}]
   (let [
@@ -3774,11 +3768,9 @@
 
         entity* (fn
                   ([entity]
-                   (assoc (construct-entity entity)
-                          :entity/id (generate-id!*)))
+                   (assoc entity :entity/id (generate-id!*)))
                   ([entity id]
-                   (assoc (construct-entity entity)
-                          :entity/id id)))
+                   (assoc entity :entity/id id)))
         create-projectile (fn [foo bar]
                             (entity* (spawn-projectile foo bar create-timer*)))
 
@@ -3950,7 +3942,7 @@
                                          :tx/swap swap!
                                          :tx/spawn-entity 
                                          (fn [entity]
-                                           (spawn-entity! entity-ids @content-grid @grid entity))
+                                           (spawn-entity! entity-ids @content-grid @grid entity minimum-size z-orders))
                                          :tx/update-position
                                          (fn [eid]
                                            (update-entity-position! @content-grid @grid eid))
@@ -5540,8 +5532,6 @@
                                  {:image/file "images/items.png"
                                   :image/bounds bounds}))
         factions-iterations {:good 15 :evil 5}
-        construct-entity (fn [entity]
-                           (construct-entity entity minimum-size z-orders))
         level-fn create-vampire-level
                     ;create-uf-caves
                     ;create-modules-level
@@ -5590,7 +5580,6 @@
                     :hpcontent-file hpcontent-file
                     :manacontent-file manacontent-file
                     :create-level! create-level!
-                    :construct-entity construct-entity
                     :inventory-cell-size inventory-cell-size
                     :factions-iterations factions-iterations
                     :slot->texture-region slot->texture-region
