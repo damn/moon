@@ -3593,58 +3593,6 @@
     (when (key-just-pressed? k)
       (f))))
 
-(defn draw-component! 
-  [active-entities 
-   line-of-sight?
-   timer-ratio
-   active-skill-radius 
-   player-entity 
-   image->texture-region 
-   unit-scale 
-   batch 
-   default-font 
-   shape-drawer 
-   k 
-   v 
-   entity]
-  (let [draw-tx-rg! (fn [image position opts]
-                      (draw-texture-region! batch
-                                            unit-scale
-                                            (image->texture-region image)
-                                            position
-                                            opts))
-        draw-text! (fn [opts]
-                     (draw-text! batch
-                                 default-font
-                                 unit-scale
-                                 opts))
-        filled-rect! (fn [& params]
-                       (apply filled-rectangle! shape-drawer params))]
-    (case k
-      :entity/clickable
-      (clickable-draw v entity draw-text!)
-      :entity/animation
-      (animation-draw v entity draw-tx-rg!)
-      :entity/image
-      (image-draw v entity draw-tx-rg!)
-      :entity/line-render
-      (line-render-draw v entity shape-drawer)
-      :entity/mouseover?
-      (mouseover?-draw entity shape-drawer player-entity)
-      :entity/stats
-      (stats-draw entity filled-rect! unit-scale)
-      :entity/string-effect
-      (string-effect-draw v entity draw-text! unit-scale)
-      :entity/temp-modifier
-      (temp-modifier-draw entity shape-drawer)
-      :active-skill
-      ; deepest issue
-      (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius)
-      :npc-sleeping
-      (npc-sleeping-draw entity draw-text!)
-      :stunned
-      (stunned-draw entity shape-drawer))))
-
 (defn update-mouseover-eid! [render-z-order line-of-sight? grid player-eid mouseover-eid mouseover-actor world-mouse-position]
   (let [old-mouseover-eid @mouseover-eid
         new-eid (if mouseover-actor
@@ -4083,7 +4031,43 @@
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
-
+             draw-tx-rg! (fn [image position opts]
+                           (draw-texture-region! batch
+                                                 @unit-scale
+                                                 (image->texture-region image)
+                                                 position
+                                                 opts))
+             draw-text! (fn [opts]
+                          (draw-text! batch
+                                      default-font
+                                      @unit-scale
+                                      opts))
+             filled-rect! (fn [& params]
+                            (apply filled-rectangle! shape-drawer params))
+             draw-component** (fn [k v entity]
+                                (case k
+                                  :entity/clickable
+                                  (clickable-draw v entity draw-text!)
+                                  :entity/animation
+                                  (animation-draw v entity draw-tx-rg!)
+                                  :entity/image
+                                  (image-draw v entity draw-tx-rg!)
+                                  :entity/line-render
+                                  (line-render-draw v entity shape-drawer)
+                                  :entity/mouseover?
+                                  (mouseover?-draw entity shape-drawer @(player-eid))
+                                  :entity/stats
+                                  (stats-draw entity filled-rect! @unit-scale)
+                                  :entity/string-effect
+                                  (string-effect-draw v entity draw-text! @unit-scale)
+                                  :entity/temp-modifier
+                                  (temp-modifier-draw entity shape-drawer)
+                                  :active-skill
+                                  (active-skill-draw v entity shape-drawer batch @unit-scale image->texture-region @active-entities line-of-sight?* timer-ratio active-skill-radius)
+                                  :npc-sleeping
+                                  (npc-sleeping-draw entity draw-text!)
+                                  :stunned
+                                  (stunned-draw entity shape-drawer)))
              world-unit-scale-draw-operations (fn []
                                                 (when @show-tile-grid?
                                                   (draw-tile-grid shape-drawer viewport))
@@ -4094,20 +4078,7 @@
                                                                  @show-cell-occupied?
                                                                  @show-potential-field-colors?
                                                                  @grid)
-                                                (draw-entities! (fn [& params]
-                                                                  ; very deep -> goes to active skill draw
-                                                                  (apply draw-component! 
-                                                                         @active-entities 
-                                                                         line-of-sight?*
-                                                                         timer-ratio
-                                                                         active-skill-radius
-                                                                         @(player-eid)
-                                                                         image->texture-region 
-                                                                         @unit-scale 
-                                                                         batch 
-                                                                         default-font 
-                                                                         shape-drawer 
-                                                                         params))
+                                                (draw-entities! draw-component**
                                                                 shape-drawer
                                                                 line-of-sight?*
                                                                 @active-entities
