@@ -3276,6 +3276,17 @@
                 }
    })
 
+; entity-state-exit!
+; get-cursor-key
+; tick-component-txs
+; handle-player-input
+; info-text
+; draw-component**
+; state->pause-game?
+; render-layers (contains fns ? )
+; construct-entity
+; info-text
+
 (defn construct-entity [entity create-timer minimum-size z-orders]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (case k
@@ -5483,6 +5494,8 @@
         minimum-size 0.39
         max-delta 0.04
         max-speed (/ minimum-size max-delta)
+        ; states:
+        ; npc-sleeping\|npc-idle\|npc-moving\|active-skill\|stunned\|npc-dead\|player-idle\|player-moving\|player-dead
         fsms {:npc (fsm/fsm-inc
                      [[:npc-sleeping
                        :kill -> :npc-dead
