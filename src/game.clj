@@ -4922,13 +4922,6 @@
         image->texture-region #(get-texture-region @textures %)
         skin (atom nil)
         sounds (atom nil)
-        ; ???
-        ; map-widget-table-create
-        ; create-one-to-many-widget
-        ; create-one-to-one-widget
-        ; create-sound-widget
-        ; property-overview-window
-        ; property-overview-rows
         editor {:editor/all-raw
                 (fn [property-type]
                   (all-raw @db property-type))
