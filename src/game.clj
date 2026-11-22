@@ -2195,7 +2195,14 @@
                           :entity/z-order (if (:entity/flying? creature-property)
                                             :z-order/flying
                                             :z-order/ground))
-                   (assoc :entity/destroy-audiovisual :audiovisuals/creature-die))
+                   (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
+                   (cond-> (:entity/stats creature-property)
+                     (update :entity/stats (fn [stats]
+                                             (-> stats
+                                                 (update :stats/mana (fn [v] [v v]))
+                                                 (update :stats/hp   (fn [v] [v v])))))
+                     (:entity/animation creature-property)
+                     (update :entity/animation create-animation)))
         {:keys [fsm initial-state]} (:entity/fsm components)
         components (assoc components
                           :entity/fsm (create-fsm fsm initial-state)
@@ -2225,13 +2232,13 @@
    :entity/clickable {:type :clickable/item
                       :text (:property/pretty-name item)}})
 
-(defn- spawn-line [{:keys [start end duration color thick?]}]
+(defn- spawn-line [{:keys [start end duration color thick?]} create-timer]
   {:entity/position start
    :entity/width 0.5
    :entity/height 0.5
    :entity/z-order :z-order/effect
    :entity/line-render {:thick? thick? :end end :color color}
-   :entity/delete-after-duration duration})
+   :entity/delete-after-duration (create-timer duration)})
 
 (defn- spawn-projectile
   [{:keys [position direction faction]}
@@ -2240,7 +2247,8 @@
            projectile/speed
            entity-effects
            projectile/size
-           projectile/piercing?]}]
+           projectile/piercing?]}
+   create-timer]
   {:entity/position position
    :entity/width size
    :entity/height size
@@ -2253,12 +2261,13 @@
                               angle))
    :entity/image image
    :entity/faction faction
-   :entity/delete-after-duration (/ max-range speed)
+   :entity/delete-after-duration (create-timer (/ max-range speed))
    :entity/destroy-audiovisual :audiovisuals/hit-wall
    :entity/projectile-collision {:entity-effects entity-effects
                                  :piercing? piercing?
                                  :direction direction
-                                 :speed speed}})
+                                 :speed speed
+                                 :already-hit-bodies #{}}})
 
 (defn create-skin! [file-handle]
   (let [s (skin/create file-handle)]
@@ -2706,7 +2715,7 @@
      :entity/width 0.5
      :entity/height 0.5
      :entity/z-order :z-order/effect
-     :entity/animation (assoc animation :delete-after-stopped? true)}))
+     :entity/animation (create-animation (assoc animation :delete-after-stopped? true))}))
 
 (defn spawn-effect* [v effect-ctx game-db fsms entity*]
   (let [source (:effect/source effect-ctx)
@@ -2719,7 +2728,7 @@
                                                                            :initial-state :npc-idle}
                                                               :entity/faction (:entity/faction @source)}}))]]))
 
-(defn target-all-effect [v effect-ctx affected-targets applicable-effect-txs entity*]
+(defn target-all-effect [v effect-ctx affected-targets applicable-effect-txs entity* create-timer]
   (let [source (:effect/source effect-ctx)
         source* @source]
     (mapcat (fn [target]
@@ -2728,7 +2737,8 @@
                                            :end (:entity/position @target)
                                            :duration 0.05
                                            :color (color/float-bits 1 0 0 0.75)
-                                           :thick? true}))]
+                                           :thick? true}
+                                         create-timer))]
                     (applicable-effect-txs {:effect/source source
                                             :effect/target target}
                                            (:entity-effects v))))
@@ -2741,7 +2751,7 @@
      [:tx/spawn-entity (entity* (animation-entity game-db (:entity/position @target) :audiovisuals/convert))]
      [:tx/swap target assoc :entity/faction (:entity/faction @source)]]))
 
-(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs entity*]
+(defn target-entity-effect [v effect-ctx game-db applicable-effect-txs entity* create-timer]
   (let [source (:effect/source effect-ctx)
         target (:effect/target effect-ctx)
         body        @source
@@ -2754,7 +2764,8 @@
                          :end (:entity/position target-body)
                          :duration 0.05
                          :color (color/float-bits 1 0 0 0.75)
-                         :thick? true}))]
+                         :thick? true}
+                        create-timer))]
             (applicable-effect-txs effect-ctx entity-effects))
       [[:tx/sound "bfxr_fisthit.wav"]
        [:tx/spawn-entity (entity* (animation-entity game-db (end-point body target-body maxrange) :audiovisuals/hit-ground))]])))
@@ -2846,8 +2857,8 @@
             (case k
               :effects/projectile (projectile-effect v effect-ctx create-projectile)
               :effects/spawn (spawn-effect* v effect-ctx game-db fsms entity*)
-              :effects/target-all (target-all-effect v effect-ctx affected-targets* foo** entity*)
-              :effects/target-entity (target-entity-effect v effect-ctx game-db foo** entity*)
+              :effects/target-all (target-all-effect v effect-ctx affected-targets* foo** entity* create-timer)
+              :effects/target-entity (target-entity-effect v effect-ctx game-db foo** entity* create-timer)
               :effects.target/convert (convert-effect v effect-ctx game-db entity*)
               :effects.target/damage (damage-effect v effect-ctx game-db create-timer entity* kill-txs tx-event-txs)
               :effects.target/kill (kill-effect v effect-ctx kill-txs)
@@ -3284,44 +3295,24 @@
 ; draw-component**
 ; state->pause-game?
 ; render-layers (contains fns ? )
-; construct-entity
 ; info-text
 
-(defn construct-entity [entity create-timer minimum-size z-orders]
-  (let [entity (reduce (fn [m [k v]]
-                         (assoc m k (case k
-                                      :entity/animation
-                                      (create-animation v)
-
-                                      :entity/delete-after-duration
-                                      (create-timer v)
-
-                                      :entity/projectile-collision
-                                      (assoc v :already-hit-bodies #{})
-
-                                      :entity/stats
-                                      (-> v
-                                          (update :stats/mana (fn [v] [v v]))
-                                          (update :stats/hp   (fn [v] [v v])))
-
-                                      v)))
-                       {}
-                       entity)]
-    (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
-      (assert position)
-      (assert width)
-      (assert height)
-      (assert (>= width  (if collides? minimum-size 0)))
-      (assert (>= height (if collides? minimum-size 0)))
-      (assert (or (boolean? collides?) (nil? collides?)))
-      (assert ((set z-orders) z-order))
-      (assert (or (nil? rotation-angle)
-                  (<= 0 rotation-angle 360)))
-      (assoc entity
-             :entity/position (mapv float position)
-             :entity/width (float width)
-             :entity/height (float height)
-             :entity/rotation-angle (or rotation-angle 0)))))
+(defn construct-entity [entity minimum-size z-orders]
+  (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
+    (assert position)
+    (assert width)
+    (assert height)
+    (assert (>= width  (if collides? minimum-size 0)))
+    (assert (>= height (if collides? minimum-size 0)))
+    (assert (or (boolean? collides?) (nil? collides?)))
+    (assert ((set z-orders) z-order))
+    (assert (or (nil? rotation-angle)
+                (<= 0 rotation-angle 360)))
+    (assoc entity
+           :entity/position (mapv float position)
+           :entity/width (float width)
+           :entity/height (float height)
+           :entity/rotation-angle (or rotation-angle 0))))
 
 (defn entity-state-exit! [eid [k _v] create-timer entity*]
   (case k
@@ -3783,13 +3774,13 @@
 
         entity* (fn
                   ([entity]
-                   (assoc (construct-entity entity create-timer*)
+                   (assoc (construct-entity entity)
                           :entity/id (generate-id!*)))
                   ([entity id]
-                   (assoc (construct-entity entity create-timer*)
+                   (assoc (construct-entity entity)
                           :entity/id id)))
         create-projectile (fn [foo bar]
-                            (entity* (spawn-projectile foo bar)))
+                            (entity* (spawn-projectile foo bar create-timer*)))
 
         create-entity-state (fn [[k v] entity]
                               ((safe-get (safe-get entity-states k) :create) v entity create-timer*))
@@ -5549,8 +5540,8 @@
                                  {:image/file "images/items.png"
                                   :image/bounds bounds}))
         factions-iterations {:good 15 :evil 5}
-        construct-entity (fn [entity create-timer*]
-                           (construct-entity entity create-timer* minimum-size z-orders))
+        construct-entity (fn [entity]
+                           (construct-entity entity minimum-size z-orders))
         level-fn create-vampire-level
                     ;create-uf-caves
                     ;create-modules-level
