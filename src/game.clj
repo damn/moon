@@ -5120,9 +5120,13 @@
                                                                           editor)))))))
                           (table/row! window))
                         (layout/pack! window)
-                        window))]
+                        window))
+        state (atom nil)]
     {:create!
-     (fn [{:keys [new-sound internal set-input-processor!] :as capabilities}]
+     (fn [{:keys [new-sound 
+                  internal 
+                  set-input-processor!
+                  clear-screen!] :as capabilities}]
        (reset! batch (sprite-batch/create))
        (reset! skin (skin/create (internal (:skin editor-config))))
        (bitmap-font-data/set-markup-enabled!
@@ -5134,21 +5138,23 @@
                               [path (new-sound (internal path))])))
        (reset! textures (create-textures internal (:textures editor-config)))
        (set-input-processor! @editor-stage)
-       (stage/add-actor! @editor-stage (main-window)))
-     :dispose!
-     (fn []
-       (run! disposable/dispose! (vals @sounds))
-       (disposable/dispose! @batch)
-       (disposable/dispose! @skin)
-       (run! disposable/dispose! (vals @textures)))
-     :render!
-     (fn [{:keys [clear-screen!]}]
-       (clear-screen! 0 0 0 0)
-       (stage/act! @editor-stage)
-       (stage/draw! @editor-stage))
-     :resize!
-     (fn [width height]
-       (viewport/update! (stage/viewport @editor-stage) width height true))
+       (stage/add-actor! @editor-stage (main-window))
+       (reset! state {
+                      :dispose! (fn []
+                                  (run! disposable/dispose! (vals @sounds))
+                                  (disposable/dispose! @batch)
+                                  (disposable/dispose! @skin)
+                                  (run! disposable/dispose! (vals @textures)))
+                      :render! (fn []
+                                 (clear-screen! 0 0 0 0)
+                                 (stage/act! @editor-stage)
+                                 (stage/draw! @editor-stage))
+                      :resize! (fn [width height]
+                                 (viewport/update! (stage/viewport @editor-stage) width height true))
+                      }))
+     :dispose! (fn [] ((:dispose! @state)))
+     :render! (fn [_cap] ((:render! @state)))
+     :resize!  (fn [width height] ((:resize! @state) width height))
      }))
 
 (defn create-capabilities []
