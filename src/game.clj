@@ -4246,7 +4246,7 @@
        ((:dispose! @state)))
 
      :render!
-     (fn [_]
+     (fn [_cap]
        ((:render! @state)))
 
      :resize!
@@ -4298,7 +4298,10 @@
         tiled-map-color-setter (constantly (color/float-bits color/white))
         state (atom nil)]
     {:create!
-     (fn [{:keys [internal set-input-processor!]}]
+     (fn [{:keys [clear-screen!
+                  key-pressed?
+                  internal 
+                  set-input-processor!]}]
        (let [batch (sprite-batch/create)
              skin (skin/create (internal "skin/uiskin.json"))
              textures (create-textures internal
@@ -4330,65 +4333,62 @@
          (set-input-processor! stage) 
          (reset! current-tiled-map (generate-level db textures create-uf-caves)) 
          (adjust-camera! viewport @current-tiled-map)
-         (reset! state {:batch batch
-                        :skin skin
-                        :stage stage
-                        :textures textures
-                        :current-tiled-map current-tiled-map
-                        :viewport viewport}))) 
+         (reset! state {:dispose! (fn []
+                                    (disposable/dispose! batch)
+                                    (disposable/dispose! skin)
+                                    (run! disposable/dispose! (vals textures))
+                                    (disposable/dispose! @current-tiled-map))
+                        :render! (fn []
+                                   (clear-screen! 0 0 0 0) 
+                                   (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
+                                   (batch/begin batch)
+                                   (draw-tiled-map! @current-tiled-map
+                                                    batch
+                                                    (camera-view-bounds (viewport/camera viewport))
+                                                    tiled-map-color-setter
+                                                    world-unit-scale)
+                                   (batch/end batch)
+                                   (doseq [[k f] {:keys/minus (fn [camera]
+                                                                (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.1)))
+                                                                (orthographic-camera/update! camera))
+                                                  :keys/equals (fn [camera]
+                                                                 (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.1)))
+                                                                 (orthographic-camera/update! camera))
+                                                  :keys/left (fn [camera]
+                                                               (let [pos (orthographic-camera/position camera)]
+                                                                 (vector3/set-x! pos (- (vector3/x pos) 1))
+                                                                 (orthographic-camera/update! camera)))
+                                                  :keys/right (fn [camera]
+                                                                (let [pos (orthographic-camera/position camera)]
+                                                                  (vector3/set-x! pos (+ (vector3/x pos) 1))
+                                                                  (orthographic-camera/update! camera)))
+                                                  :keys/up (fn [camera]
+                                                             (let [pos (orthographic-camera/position camera)]
+                                                               (vector3/set-y! pos (+ (vector3/y pos) 1))
+                                                               (orthographic-camera/update! camera)))
+                                                  :keys/down (fn [camera]
+                                                               (let [pos (orthographic-camera/position camera)]
+                                                                 (vector3/set-y! pos (- (vector3/y pos) 1))
+                                                                 (orthographic-camera/update! camera)))}]
+                                     (when (key-pressed? k)
+                                       (f (viewport/camera viewport))))
+                                   (stage/act! stage)
+                                   (stage/draw! stage))
+                        :resize! (fn [width height]
+                                   (viewport/update! (stage/viewport stage) width height true)
+                                   (viewport/update! viewport width height false))}))) 
 
      :dispose!
      (fn []
-       (let [{:keys [batch skin textures current-tiled-map]} @state]
-         (disposable/dispose! batch)
-         (disposable/dispose! skin)
-         (run! disposable/dispose! (vals textures))
-         (disposable/dispose! @current-tiled-map)))
+       ((:dispose! @state)))
 
      :render!
-     (fn [{:keys [clear-screen! key-pressed?]}]
-       (let [{:keys [batch stage current-tiled-map viewport]} @state]
-         (clear-screen! 0 0 0 0) 
-         (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
-         (batch/begin batch)
-         (draw-tiled-map! @current-tiled-map
-                          batch
-                          (camera-view-bounds (viewport/camera viewport))
-                          tiled-map-color-setter
-                          world-unit-scale)
-         (batch/end batch)
-         (doseq [[k f] {:keys/minus (fn [camera]
-                                      (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) 0.1)))
-                                      (orthographic-camera/update! camera))
-                        :keys/equals (fn [camera]
-                                       (orthographic-camera/set-zoom! camera (max 0.1 (+ (orthographic-camera/zoom camera) -0.1)))
-                                       (orthographic-camera/update! camera))
-                        :keys/left (fn [camera]
-                                     (let [pos (orthographic-camera/position camera)]
-                                       (vector3/set-x! pos (- (vector3/x pos) 1))
-                                       (orthographic-camera/update! camera)))
-                        :keys/right (fn [camera]
-                                      (let [pos (orthographic-camera/position camera)]
-                                        (vector3/set-x! pos (+ (vector3/x pos) 1))
-                                        (orthographic-camera/update! camera)))
-                        :keys/up (fn [camera]
-                                   (let [pos (orthographic-camera/position camera)]
-                                     (vector3/set-y! pos (+ (vector3/y pos) 1))
-                                     (orthographic-camera/update! camera)))
-                        :keys/down (fn [camera]
-                                     (let [pos (orthographic-camera/position camera)]
-                                       (vector3/set-y! pos (- (vector3/y pos) 1))
-                                       (orthographic-camera/update! camera)))}]
-           (when (key-pressed? k)
-             (f (viewport/camera viewport))))
-         (stage/act! stage)
-         (stage/draw! stage)))
+     (fn [_cap]
+       ((:render! @state)))
 
      :resize!
      (fn [width height]
-       (let [{:keys [stage viewport]} @state]
-         (viewport/update! (stage/viewport stage) width height true)
-         (viewport/update! viewport width height false)))
+       ((:resize! @state) width height))
      }))
 
 (defn map-form-k->properties
