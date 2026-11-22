@@ -2673,18 +2673,20 @@
                                       :effect/target hit-entity}
                                      entity-effects)))))
 
-(defn projectile-effect [v effect-ctx create-projectile]
+(defn projectile-effect [v effect-ctx generate-id! create-timer]
   (let [source (:effect/source effect-ctx)
         source* @source
         direction (:effect/target-direction effect-ctx)
         size (:projectile/size v)]
-    [[:tx/spawn-entity (create-projectile
-                         {:position (mapv + (:entity/position source*)
+    [[:tx/spawn-entity (spawn-projectile
+                         {:id (generate-id!)
+                          :position (mapv + (:entity/position source*)
                                           (v2-scale direction
                                                     (+ (/ (:entity/width source*) 2) size 0.1)))
                           :direction direction
                           :faction (:entity/faction source*)}
-                         v)]]))
+                         v
+                         create-timer)]]))
 
 (defn- double-ray-endpositions
   [[start-x start-y]
@@ -2860,10 +2862,10 @@
     :effects.target/stun (and (:effect/target effect-ctx)
                               (:entity/fsm @(:effect/target effect-ctx)))))
 
-(defn effects->txs [foo** effect-ctx effects create-projectile game-db fsms generate-id! create-timer tx-event-txs kill-txs affected-targets*]
+(defn effects->txs [foo** effect-ctx effects game-db fsms generate-id! create-timer tx-event-txs kill-txs affected-targets*]
   (mapcat (fn [[k v]]
             (case k
-              :effects/projectile (projectile-effect v effect-ctx create-projectile)
+              :effects/projectile (projectile-effect v effect-ctx generate-id! create-timer)
               :effects/spawn (spawn-effect* v effect-ctx game-db fsms generate-id!)
               :effects/target-all (target-all-effect v effect-ctx affected-targets* foo** generate-id! create-timer)
               :effects/target-entity (target-entity-effect v effect-ctx game-db foo** generate-id! create-timer)
@@ -3770,11 +3772,6 @@
         id-counter (atom 0)
         generate-id!* #(swap! id-counter inc)
 
-        create-projectile (fn [opts projectile]
-                            (spawn-projectile (assoc opts :id (generate-id!*))
-                                              projectile
-                                              create-timer*))
-
         create-entity-state (fn [[k v] entity]
                               ((safe-get (safe-get entity-states k) :create) v entity create-timer*))
         entity-state-exit! (fn [eid old-state-obj]
@@ -3795,7 +3792,7 @@
         affected-targets* (fn [entity]
                             (affected-targets @active-entities line-of-sight?* entity))
         mk-effect-txs (fn foo** [effect-ctx effects]
-                        (effects->txs foo** effect-ctx effects create-projectile game-db fsms generate-id!* create-timer* tx-event-txs kill-txs affected-targets*))
+                        (effects->txs foo** effect-ctx effects game-db fsms generate-id!* create-timer* tx-event-txs kill-txs affected-targets*))
         choose-skill (fn [& params]
                        (apply choose-skill ray-blocked?* params))
         grid (atom nil)
