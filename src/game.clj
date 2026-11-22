@@ -3847,11 +3847,14 @@
              default-font (create-default-font! internal font-params)
              shape-drawer-texture (white-pixel-texture)
              skin (create-skin! (internal skin))
+
              sounds (into {} 
                           (for [path sounds] 
                             [path (new-sound (internal path))]))
              play-sound! (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
+
+
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
              image->texture-region #(get-texture-region textures %)
@@ -4498,8 +4501,8 @@
                            (texture-region-drawable/set-min-size! (* image-scale (texture-region/region-width texture-region))
                                                                   (* image-scale (texture-region/region-height texture-region)))))
                    (actor/add-listener! (change-listener/create
-                                    (fn [event actor]
-                                      (clicked-id-fn actor (:property/id property)))))
+                                          (fn [event actor]
+                                            (clicked-id-fn actor (:property/id property)))))
                    (actor/add-listener! (text-tooltip (binding [*print-level* 2]
                                                         (with-out-str
                                                           (pprint/pprint property))))))
@@ -4866,9 +4869,6 @@
                            :display-remove-component-button? (k->optional? k)}))
     table))
 
-(defn play-sound!* [sounds sound-name]
-  (sound/play! (safe-get sounds sound-name)))
-
 (defn- property-editor-table [widget on-save on-delete skin]
   (let [table (table/create)]
     (cell/pad! (table/defaults table) 5)
@@ -4923,6 +4923,13 @@
         image->texture-region #(get-texture-region @textures %)
         skin (atom nil)
         sounds (atom nil)
+        ; ???
+        ; map-widget-table-create
+        ; create-one-to-many-widget
+        ; create-one-to-one-widget
+        ; create-sound-widget
+        ; property-overview-window
+        ; property-overview-rows
         editor {:editor/all-raw
                 (fn [property-type]
                   (all-raw @db property-type))
@@ -4952,7 +4959,8 @@
                 :editor/sound-names
                 (fn [] (keys @sounds))
                 :editor/play-sound!
-                (fn [sound-name] (play-sound!* @sounds sound-name))
+                (fn [sound-name] 
+                  (sound/play! (safe-get @sounds sound-name)))
                 }
         property-k-order-index (zipmap [:property/id
                                         :property/pretty-name
