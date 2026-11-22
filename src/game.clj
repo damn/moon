@@ -4918,7 +4918,6 @@
                                                                        :image-scale 2
                                                                        :sort-by-fn (comp name :property/id)
                                                                        :extra-info-text (constantly "")}}
-        batch (atom nil)
         textures (atom nil)
         image->texture-region #(get-texture-region @textures %)
         skin (atom nil)
@@ -5134,32 +5133,30 @@
      (fn [{:keys [new-sound 
                   internal 
                   set-input-processor!
-                  clear-screen!] :as capabilities}]
-       (reset! batch (sprite-batch/create))
-       (reset! skin (skin/create (internal (:skin editor-config))))
-       (bitmap-font-data/set-markup-enabled!
-        (bitmap-font/data (skin/font @skin "default-font"))
-        true)
-       (reset! editor-stage (stage/create (fit-viewport/create 1440 900) @batch))
-       (reset! sounds (into {}
-                            (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
-                              [path (new-sound (internal path))])))
-       (reset! textures (create-textures internal (:textures editor-config)))
-       (set-input-processor! @editor-stage)
-       (stage/add-actor! @editor-stage (main-window))
-       (reset! state {
-                      :dispose! (fn []
-                                  (run! disposable/dispose! (vals @sounds))
-                                  (disposable/dispose! @batch)
-                                  (disposable/dispose! @skin)
-                                  (run! disposable/dispose! (vals @textures)))
-                      :render! (fn []
-                                 (clear-screen! 0 0 0 0)
-                                 (stage/act! @editor-stage)
-                                 (stage/draw! @editor-stage))
-                      :resize! (fn [width height]
-                                 (viewport/update! (stage/viewport @editor-stage) width height true))
-                      }))
+                  clear-screen!]}]
+       (let [batch (sprite-batch/create)]
+         (reset! skin (skin/create (internal (:skin editor-config))))
+         (bitmap-font-data/set-markup-enabled! (bitmap-font/data (skin/font @skin "default-font")) true)
+         (reset! editor-stage (stage/create (fit-viewport/create 1440 900) batch))
+         (reset! sounds (into {}
+                              (for [path (-> (:sounds editor-config) io/resource slurp edn/read-string)]
+                                [path (new-sound (internal path))])))
+         (reset! textures (create-textures internal (:textures editor-config)))
+         (set-input-processor! @editor-stage)
+         (stage/add-actor! @editor-stage (main-window))
+         (reset! state {
+                        :dispose! (fn []
+                                    (run! disposable/dispose! (vals @sounds))
+                                    (disposable/dispose! batch)
+                                    (disposable/dispose! @skin)
+                                    (run! disposable/dispose! (vals @textures)))
+                        :render! (fn []
+                                   (clear-screen! 0 0 0 0)
+                                   (stage/act! @editor-stage)
+                                   (stage/draw! @editor-stage))
+                        :resize! (fn [width height]
+                                   (viewport/update! (stage/viewport @editor-stage) width height true))
+                        })))
      :dispose! (fn [] ((:dispose! @state)))
      :render! (fn [] ((:render! @state)))
      :resize!  (fn [width height] ((:resize! @state) width height))
