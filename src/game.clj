@@ -2434,15 +2434,12 @@
                            :none (color/float-bits 1 0 0 0.5))))))
 
 (defn clickable-draw
-  [v entity batch default-font unit-scale]
+  [v entity draw-text!]
   (let [{:keys [text]} v
         {:keys [entity/position entity/height entity/mouseover?]} entity]
     (when (and mouseover? text)
       (let [[x y] position]
-        (draw-text! batch
-                    default-font
-                    unit-scale
-                    {:text text
+        (draw-text! {:text text
                      :x x
                      :y (+ y (/ height 2))
                      :up? true})))))
@@ -2469,21 +2466,18 @@
       (assoc :entity/destroyed? true))))
 
 (defn animation-draw
-  [animation entity batch unit-scale image->texture-region]
-  (draw-texture-region! batch
-                        unit-scale
-                        (image->texture-region (current-frame animation))
-                        (:entity/position entity)
-                        {:center? true
-                         :rotation (or (:entity/rotation-angle entity) 0)}))
+  [animation entity draw-tx-rg!]
+  (draw-tx-rg! (current-frame animation)
+               (:entity/position entity)
+               {:center? true
+                :rotation (or (:entity/rotation-angle entity) 0)}))
 
 (defn image-draw
-  [image entity batch unit-scale image->texture-region]
-  (draw-texture-region! batch unit-scale
-                        (image->texture-region image)
-                        (:entity/position entity)
-                        {:center? true
-                         :rotation (or (:entity/rotation-angle entity) 0)}))
+  [image entity draw-tx-rg!]
+  (draw-tx-rg! image
+               (:entity/position entity)
+               {:center? true
+                :rotation (or (:entity/rotation-angle entity) 0)}))
 
 (defn line-render-draw
   [v entity shape-drawer]
@@ -2510,7 +2504,7 @@
                 color))))
 
 (defn stats-draw
-  [entity shape-drawer unit-scale]
+  [entity filled-rect! unit-scale]
   (let [ratio (val-max-ratio (get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [entity/position entity/width entity/height]} entity
@@ -2519,26 +2513,22 @@
             y (+ y (/ height 2))
             height (* 5 unit-scale)
             border (* 1 unit-scale)]
-        (filled-rectangle! shape-drawer x y width height (color/float-bits 0 0 0 1))
-        (filled-rectangle! shape-drawer
-                           (+ x border)
-                           (+ y border)
-                           (- (* width ratio) (* 2 border))
-                           (- height (* 2 border))
-                           (cond
-                             (> ratio 0.75) (color/float-bits 0 0.8 0 1)
-                             (> ratio 0.5) (color/float-bits 0 0.5 0 1)
-                             (> ratio 0.25) (color/float-bits 0.5 0.5 0 1)
-                             :else (color/float-bits 0.5 0 0 1)))))))
+        (filled-rect! x y width height (color/float-bits 0 0 0 1))
+        (filled-rect! (+ x border)
+                      (+ y border)
+                      (- (* width ratio) (* 2 border))
+                      (- height (* 2 border))
+                      (cond
+                        (> ratio 0.75) (color/float-bits 0 0.8 0 1)
+                        (> ratio 0.5) (color/float-bits 0 0.5 0 1)
+                        (> ratio 0.25) (color/float-bits 0.5 0.5 0 1)
+                        :else (color/float-bits 0.5 0 0 1)))))))
 
 (defn string-effect-draw
-  [v entity batch default-font unit-scale]
+  [v entity draw-text! unit-scale]
   (let [{:keys [text]} v
         [x y] (:entity/position entity)]
-    (draw-text! batch
-                default-font
-                unit-scale
-                {:text text
+    (draw-text! {:text text
                  :x x
                  :y (+ y
                        (/ (:entity/height entity) 2)
@@ -2551,13 +2541,10 @@
   (filled-circle! shape-drawer (:entity/position entity) 0.5 (color/float-bits 0.5 0.5 0.5 0.4)))
 
 (defn npc-sleeping-draw
-  [entity batch default-font unit-scale]
+  [entity draw-text!]
   (let [{:keys [entity/position entity/height]} entity
         [x y] position]
-    (draw-text! batch
-                default-font
-                unit-scale
-                {:text "zzz"
+    (draw-text! {:text "zzz"
                  :x x
                  :y (+ y (/ height 2))
                  :up? true})))
@@ -2959,7 +2946,10 @@
              (math/to-radians 90)
              (math/to-radians (* (float action-counter-ratio) 360))
              (color/float-bits 1 1 1 0.5))
-    (draw-texture-region! batch unit-scale (image->texture-region image) [(- (float x) radius) y])
+    (draw-texture-region! batch 
+                          unit-scale 
+                          (image->texture-region image)
+                          [(- (float x) radius) y])
     (effects-render! effects effect-ctx shape-drawer active-entities line-of-sight?)))
 
 (defn usable-state [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
@@ -3623,30 +3613,43 @@
    k 
    v 
    entity]
-  (case k
-    :entity/clickable
-    (clickable-draw v entity batch default-font unit-scale)
-    :entity/animation
-    (animation-draw v entity batch unit-scale image->texture-region)
-    :entity/image
-    (image-draw v entity batch unit-scale image->texture-region)
-    :entity/line-render
-    (line-render-draw v entity shape-drawer)
-    :entity/mouseover?
-    (mouseover?-draw entity shape-drawer player-entity)
-    :entity/stats
-    (stats-draw entity shape-drawer unit-scale)
-    :entity/string-effect
-    (string-effect-draw v entity batch default-font unit-scale)
-    :entity/temp-modifier
-    (temp-modifier-draw entity shape-drawer)
-    :active-skill
-    ; deepest issue
-    (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius)
-    :npc-sleeping
-    (npc-sleeping-draw entity batch default-font unit-scale)
-    :stunned
-    (stunned-draw entity shape-drawer)))
+  (let [draw-tx-rg! (fn [image position opts]
+                      (draw-texture-region! batch
+                                            unit-scale
+                                            (image->texture-region image)
+                                            position
+                                            opts))
+        draw-text! (fn [opts]
+                     (draw-text! batch
+                                 default-font
+                                 unit-scale
+                                 opts))
+        filled-rect! (fn [& params]
+                       (apply filled-rectangle! shape-drawer params))]
+    (case k
+      :entity/clickable
+      (clickable-draw v entity draw-text!)
+      :entity/animation
+      (animation-draw v entity draw-tx-rg!)
+      :entity/image
+      (image-draw v entity draw-tx-rg!)
+      :entity/line-render
+      (line-render-draw v entity shape-drawer)
+      :entity/mouseover?
+      (mouseover?-draw entity shape-drawer player-entity)
+      :entity/stats
+      (stats-draw entity filled-rect! unit-scale)
+      :entity/string-effect
+      (string-effect-draw v entity draw-text! unit-scale)
+      :entity/temp-modifier
+      (temp-modifier-draw entity shape-drawer)
+      :active-skill
+      ; deepest issue
+      (active-skill-draw v entity shape-drawer batch unit-scale image->texture-region active-entities line-of-sight? timer-ratio active-skill-radius)
+      :npc-sleeping
+      (npc-sleeping-draw entity draw-text!)
+      :stunned
+      (stunned-draw entity shape-drawer))))
 
 (defn update-mouseover-eid! [render-z-order line-of-sight? grid player-eid mouseover-eid mouseover-actor world-mouse-position]
   (let [old-mouseover-eid @mouseover-eid
