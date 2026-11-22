@@ -2882,36 +2882,6 @@
 
     true))
 
-(defn effect-render! [[k v] effect-ctx shape-drawer active-entities line-of-sight?]
-  (case k
-    :effects/target-all
-    (let [source (:effect/source effect-ctx)
-          source* @source]
-      (doseq [target* (map deref (affected-targets active-entities line-of-sight? source*))]
-        (line! shape-drawer
-               (:entity/position source*)
-               (:entity/position target*)
-               (color/float-bits 1 0 0 0.5))))
-
-    :effects/target-entity
-    (when-let [target (:effect/target effect-ctx)]
-      (let [source (:effect/source effect-ctx)
-            body        @source
-            target-body @target
-            maxrange (:maxrange v)]
-        (line! shape-drawer
-               (start-point body target-body)
-               (end-point body target-body maxrange)
-               (if (in-range? body target-body maxrange)
-                 (color/float-bits 1 0 0 0.5)
-                 (color/float-bits 1 1 0 0.5)))))
-
-    nil))
-
-(defn effects-render! [effects effect-ctx shape-drawer active-entities line-of-sight?] 
-  (doseq [effect effects]
-    (effect-render! effect effect-ctx shape-drawer active-entities line-of-sight?)))
-
 (defn effects-applicable? [effects effect-ctx]
   (seq (filter #(effect-applicable? % effect-ctx) effects)))
 
@@ -2950,7 +2920,31 @@
                           unit-scale 
                           (image->texture-region image)
                           [(- (float x) radius) y])
-    (effects-render! effects effect-ctx shape-drawer active-entities line-of-sight?)))
+    (doseq [[k v] effects]
+      (case k
+        :effects/target-all
+        (let [source (:effect/source effect-ctx)
+              source* @source]
+          (doseq [target* (map deref (affected-targets active-entities line-of-sight? source*))]
+            (line! shape-drawer
+                   (:entity/position source*)
+                   (:entity/position target*)
+                   (color/float-bits 1 0 0 0.5))))
+
+        :effects/target-entity
+        (when-let [target (:effect/target effect-ctx)]
+          (let [source (:effect/source effect-ctx)
+                body        @source
+                target-body @target
+                maxrange (:maxrange v)]
+            (line! shape-drawer
+                   (start-point body target-body)
+                   (end-point body target-body maxrange)
+                   (if (in-range? body target-body maxrange)
+                     (color/float-bits 1 0 0 0.5)
+                     (color/float-bits 1 1 0 0.5)))))
+
+        nil))))
 
 (defn usable-state [{:keys [skill/cooling-down? skill/effects] :as skill} entity effect-ctx]
   (cond
