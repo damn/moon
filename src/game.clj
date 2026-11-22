@@ -4246,7 +4246,7 @@
        ((:dispose! @state)))
 
      :render!
-     (fn [_cap]
+     (fn []
        ((:render! @state)))
 
      :resize!
@@ -4383,7 +4383,7 @@
        ((:dispose! @state)))
 
      :render!
-     (fn [_cap]
+     (fn []
        ((:render! @state)))
 
      :resize!
@@ -5153,7 +5153,7 @@
                                  (viewport/update! (stage/viewport @editor-stage) width height true))
                       }))
      :dispose! (fn [] ((:dispose! @state)))
-     :render! (fn [_cap] ((:render! @state)))
+     :render! (fn [] ((:render! @state)))
      :resize!  (fn [width height] ((:resize! @state) width height))
      }))
 
@@ -5199,7 +5199,7 @@
     (application-listener/create
       {:create! (fn [] (create! (create-capabilities)))
        :dispose! dispose!
-       :render! (fn [] (render! (create-capabilities)))
+       :render! render!
        :resize! resize!
        :pause! (fn [])
        :resume! (fn [])})
