@@ -2480,16 +2480,15 @@
                 :rotation (or (:entity/rotation-angle entity) 0)}))
 
 (defn line-render-draw
-  [v entity shape-drawer]
+  [v entity draw-line! with-line-width!]
   (let [{:keys [thick? end color]} v
         position (:entity/position entity)]
     (if thick?
-      (with-line-width shape-drawer 4
-        (line! shape-drawer position end color))
-      (line! shape-drawer position end color))))
+      (with-line-width! 4 #(draw-line! position end color))
+      (draw-line! position end color))))
 
 (defn mouseover?-draw
-  [entity shape-drawer player]
+  [entity draw-ellipse! with-line-width! player]
   (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
         color (cond (= faction (enemy (:entity/faction player)))
                     (color/float-bits 1 0 0 0.4)
@@ -2497,20 +2496,21 @@
                     (color/float-bits 0 1 0 0.4)
                     :else
                     (color/float-bits 1 1 1 0.4))]
-    (with-line-width shape-drawer 5
-      (ellipse! shape-drawer position
-                (/ width 2)
-                (/ height 2)
-                color))))
+    (with-line-width! 5
+      #(draw-ellipse! position
+                      (/ width 2)
+                      (/ height 2)
+                      color))))
 
 (defn stats-draw
-  [entity filled-rect! unit-scale]
+  [entity filled-rect! get-unit-scale]
   (let [ratio (val-max-ratio (get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [entity/position entity/width entity/height]} entity
             [x y] position
             x (- x (/ width  2))
             y (+ y (/ height 2))
+            unit-scale (get-unit-scale)
             height (* 5 unit-scale)
             border (* 1 unit-scale)]
         (filled-rect! x y width height (color/float-bits 0 0 0 1))
@@ -2525,20 +2525,20 @@
                         :else (color/float-bits 0.5 0 0 1)))))))
 
 (defn string-effect-draw
-  [v entity draw-text! unit-scale]
+  [v entity draw-text! get-unit-scale]
   (let [{:keys [text]} v
         [x y] (:entity/position entity)]
     (draw-text! {:text text
                  :x x
                  :y (+ y
                        (/ (:entity/height entity) 2)
-                       (* 5 unit-scale))
+                       (* 5 (get-unit-scale)))
                  :scale 2
                  :up? true})))
 
 (defn temp-modifier-draw
-  [entity shape-drawer]
-  (filled-circle! shape-drawer (:entity/position entity) 0.5 (color/float-bits 0.5 0.5 0.5 0.4)))
+  [entity draw-filled-circle!]
+  (draw-filled-circle! (:entity/position entity) 0.5 (color/float-bits 0.5 0.5 0.5 0.4)))
 
 (defn npc-sleeping-draw
   [entity draw-text!]
@@ -2550,8 +2550,8 @@
                  :up? true})))
 
 (defn stunned-draw
-  [entity shape-drawer]
-  (circle! shape-drawer (:entity/position entity) 0.5 (color/float-bits 1 1 1 0.6)))
+  [entity draw-circle!]
+  (draw-circle! (:entity/position entity) 0.5 (color/float-bits 1 1 1 0.6)))
 
 (defn- draw-entity-rectangle!
   [shape-drawer entity color-float-bits]
@@ -2891,15 +2891,15 @@
        (some (fn [e] (effect-useful? e effect-ctx raycaster-blocked?)))))
 
 (defn active-skill-draw
-  [{:keys [skill effect-ctx counter]} 
-   entity 
-   shape-drawer 
-   batch 
-   unit-scale 
-   image->texture-region 
-   active-entities 
-   line-of-sight? 
-   timer-ratio 
+  [{:keys [skill effect-ctx counter]}
+   entity
+   draw-filled-circle!
+   draw-sector!
+   draw-tx-rg!
+   draw-line!
+   active-entities
+   line-of-sight?
+   timer-ratio
    active-skill-radius]
   (let [{:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -2909,27 +2909,22 @@
              (float (/ (:entity/height entity) 2))
              (float 0.15))
         center [x (+ y radius)]]
-    (filled-circle! shape-drawer center radius (color/float-bits 1 1 1 0.125))
-    (sector! shape-drawer
-             center
-             radius
-             (math/to-radians 90)
-             (math/to-radians (* (float action-counter-ratio) 360))
-             (color/float-bits 1 1 1 0.5))
-    (draw-texture-region! batch 
-                          unit-scale 
-                          (image->texture-region image)
-                          [(- (float x) radius) y])
+    (draw-filled-circle! center radius (color/float-bits 1 1 1 0.125))
+    (draw-sector! center
+                  radius
+                  (math/to-radians 90)
+                  (math/to-radians (* (float action-counter-ratio) 360))
+                  (color/float-bits 1 1 1 0.5))
+    (draw-tx-rg! image [(- (float x) radius) y] {})
     (doseq [[k v] effects]
       (case k
         :effects/target-all
         (let [source (:effect/source effect-ctx)
               source* @source]
           (doseq [target* (map deref (affected-targets active-entities line-of-sight? source*))]
-            (line! shape-drawer
-                   (:entity/position source*)
-                   (:entity/position target*)
-                   (color/float-bits 1 0 0 0.5))))
+            (draw-line! (:entity/position source*)
+                        (:entity/position target*)
+                        (color/float-bits 1 0 0 0.5))))
 
         :effects/target-entity
         (when-let [target (:effect/target effect-ctx)]
@@ -2937,12 +2932,11 @@
                 body        @source
                 target-body @target
                 maxrange (:maxrange v)]
-            (line! shape-drawer
-                   (start-point body target-body)
-                   (end-point body target-body maxrange)
-                   (if (in-range? body target-body maxrange)
-                     (color/float-bits 1 0 0 0.5)
-                     (color/float-bits 1 1 0 0.5)))))
+            (draw-line! (start-point body target-body)
+                        (end-point body target-body maxrange)
+                        (if (in-range? body target-body maxrange)
+                          (color/float-bits 1 0 0 0.5)
+                          (color/float-bits 1 1 0 0.5)))))
 
         nil))))
 
@@ -4053,6 +4047,19 @@
                                       opts))
              filled-rect! (fn [& params]
                             (apply filled-rectangle! shape-drawer params))
+             draw-line! (fn [from to color]
+                          (line! shape-drawer from to color))
+             draw-ellipse! (fn [position radius-x radius-y color]
+                             (ellipse! shape-drawer position radius-x radius-y color))
+             draw-circle! (fn [position radius color]
+                            (circle! shape-drawer position radius color))
+             draw-filled-circle! (fn [position radius color]
+                                   (filled-circle! shape-drawer position radius color))
+             draw-sector! (fn [center radius start-radians radians color]
+                            (sector! shape-drawer center radius start-radians radians color))
+             with-line-width! (fn [width f]
+                                (with-line-width shape-drawer width
+                                  (f)))
              draw-component** (fn [k v entity]
                                 (case k
                                   :entity/clickable
@@ -4062,21 +4069,29 @@
                                   :entity/image
                                   (image-draw v entity draw-tx-rg!)
                                   :entity/line-render
-                                  (line-render-draw v entity shape-drawer)
+                                  (line-render-draw v entity draw-line! with-line-width!)
                                   :entity/mouseover?
-                                  (mouseover?-draw entity shape-drawer @(player-eid))
+                                  (mouseover?-draw entity draw-ellipse! with-line-width! @(player-eid))
                                   :entity/stats
-                                  (stats-draw entity filled-rect! @unit-scale)
+                                  (stats-draw entity filled-rect! get-unit-scale)
                                   :entity/string-effect
-                                  (string-effect-draw v entity draw-text! @unit-scale)
+                                  (string-effect-draw v entity draw-text! get-unit-scale)
                                   :entity/temp-modifier
-                                  (temp-modifier-draw entity shape-drawer)
+                                  (temp-modifier-draw entity draw-filled-circle!)
                                   :active-skill
-                                  (active-skill-draw v entity shape-drawer batch @unit-scale image->texture-region @active-entities line-of-sight?* timer-ratio active-skill-radius)
+                                  (active-skill-draw v entity
+                                                     draw-filled-circle!
+                                                     draw-sector!
+                                                     draw-tx-rg!
+                                                     draw-line!
+                                                     @active-entities
+                                                     line-of-sight?*
+                                                     timer-ratio
+                                                     active-skill-radius)
                                   :npc-sleeping
                                   (npc-sleeping-draw entity draw-text!)
                                   :stunned
-                                  (stunned-draw entity shape-drawer)))
+                                  (stunned-draw entity draw-circle!)))
              world-unit-scale-draw-operations (fn []
                                                 (when @show-tile-grid?
                                                   (draw-tile-grid shape-drawer viewport))
