@@ -151,7 +151,7 @@
          1)))})
 
 (defn safe-get [m k]
-  {:pre [(contains? m k)]}
+  (assert (contains? m k) (str "Cannot find key " (pr-str k)))
   (get m k))
 
 (defn- sort-ops [ops]
@@ -3245,33 +3245,42 @@
   (when (:entity/collides? @eid)
     (remove-from-occupied-cells! grid eid)))
 
-(defn create-entity-state [[k v] entity create-timer]
-  (case k
-    :active-skill
-    (let [[skill effect-ctx] v]
-      {:skill skill
-       :effect-ctx effect-ctx
-       :counter (create-timer (/ (:skill/action-time skill)
-                                 (or (get-value (:entity/stats entity)
-                                                (:skill/action-time-modifier-key skill))
-                                     1)))})
-
-    :stunned
-    {:counter (create-timer v)}
-
-    :player-moving
-    {:direction v
-     :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
-                0)}
-
-    :npc-moving
-    {:direction v
-     :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
-                0)
-     :timer (create-timer (* (get-value (:entity/stats entity) :stats/reaction-time)
-                             0.016))}
-
-    v))
+; initial npc-idle npc-sleeping player-idle no create here
+(def entity-states
+  {
+   :player-dead  {:create (fn [v _entity _create-timer] v)}
+   :npc-dead     {:create (fn [v _entity _create-timer] v)}
+   :npc-idle     {:create (fn [v _entity _create-timer] v)}
+   :npc-sleeping {:create (fn [v _entity _create-timer] v)}
+   :player-idle  {:create (fn [v _entity _create-timer] v)}
+   :active-skill {:create 
+                  (fn [[skill effect-ctx] entity create-timer]
+                    {:skill skill
+                     :effect-ctx effect-ctx
+                     :counter (create-timer (/ (:skill/action-time skill)
+                                               (or (get-value (:entity/stats entity)
+                                                              (:skill/action-time-modifier-key skill))
+                                                   1)))})
+                  }
+   :stunned {:create 
+             (fn [v _entity create-timer]
+               {:counter (create-timer v)})
+             }
+   :player-moving {:create 
+                   (fn [v entity _create-timer]
+                     {:direction v
+                      :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
+                                 0)})
+                   }
+   :npc-moving {:create 
+                (fn [v entity create-timer]
+                  {:direction v
+                   :speed (or (get-value (:entity/stats entity) :stats/movement-speed)
+                              0)
+                   :timer (create-timer (* (get-value (:entity/stats entity) :stats/reaction-time)
+                                           0.016))})
+                }
+   })
 
 (defn construct-entity [entity create-timer minimum-size z-orders]
   (let [entity (reduce (fn [m [k v]]
@@ -3777,8 +3786,8 @@
         create-projectile (fn [foo bar]
                             (entity* (spawn-projectile foo bar)))
 
-        create-entity-state (fn [state-args entity]
-                                (create-entity-state state-args entity create-timer*))
+        create-entity-state (fn [[k v] entity]
+                              ((safe-get (safe-get entity-states k) :create) v entity create-timer*))
         entity-state-exit! (fn [eid old-state-obj]
                              (entity-state-exit! eid old-state-obj create-timer* entity*))
         tx-event-txs (fn [& params]
