@@ -3686,21 +3686,15 @@
     :items [{:label controls-info}]}])
 
 (defn when-not-paused-updates!* 
-  [timer-stopped?
-   paused? 
+  [paused? 
    max-delta
    tick-main-timer!
    factions-iterations
    grid
    potential-field-cache
    active-entities
-   tx-event-txs 
-   mk-effect-txs
-   max-speed
-   create-timer*
-   choose-skill
-   line-of-sight?*
-   delta-time]
+   delta-time
+   entity-tick-txs]
   (when-not @paused?
     (let [delta-time (min delta-time max-delta)]
       (tick-main-timer! delta-time)
@@ -3711,19 +3705,7 @@
                  @active-entities
                  max-iterations))
       (mapcat (fn [eid] 
-                (mapcat (fn [component]
-                          (tick-component-txs component 
-                                              eid 
-                                              delta-time 
-                                              timer-stopped? 
-                                              @grid 
-                                              tx-event-txs 
-                                              mk-effect-txs
-                                              max-speed
-                                              create-timer*
-                                              choose-skill
-                                              line-of-sight?*)) 
-                        @eid))
+                (entity-tick-txs eid delta-time))
               @active-entities))))
 
 (defn game-update-labels [frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom] 
@@ -4107,6 +4089,20 @@
                                                             (image->texture-region (:entity/image item))
                                                             (unproject (stage/viewport stage) (get-input-position))
                                                             {:center? true})))
+             entity-tick-txs (fn [eid delta-time]
+                               (mapcat (fn [component]
+                                         (tick-component-txs component 
+                                                             eid 
+                                                             delta-time 
+                                                             timer-stopped*? 
+                                                             @grid 
+                                                             tx-event-txs 
+                                                             mk-effect-txs
+                                                             max-speed
+                                                             create-timer*
+                                                             choose-skill
+                                                             line-of-sight?*)) 
+                                       @eid))
              draw-player-message! (fn []
                                     (when-let [text (:text @player-message)]
                                       (draw-text! batch
@@ -4243,21 +4239,15 @@
                                                          create-timer*
                                                          capabilities)
                                    (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
-                                   (handle-txs! capabilities (when-not-paused-updates!* timer-stopped*?
-                                                                                        paused?
+                                   (handle-txs! capabilities (when-not-paused-updates!* paused?
                                                                                         max-delta
                                                                                         tick-main-timer!
                                                                                         factions-iterations
                                                                                         grid
                                                                                         potential-field-cache
                                                                                         active-entities
-                                                                                        tx-event-txs 
-                                                                                        mk-effect-txs
-                                                                                        max-speed
-                                                                                        create-timer*
-                                                                                        choose-skill
-                                                                                        line-of-sight?*
-                                                                                        (get-delta-time)))
+                                                                                        (get-delta-time)
+                                                                                        entity-tick-txs))
                                    (handle-txs! capabilities (destroy-entities game-db entity-ids entity*))
                                    (key-pressed-checks! controls viewport key-pressed?)
                                    (key-just-pressed-checks! controls stage key-just-pressed?)
