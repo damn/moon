@@ -4043,11 +4043,12 @@
              ui-mouse-info-text (fn []
                                   (mapv int (unproject (stage/viewport stage) (get-input-position))))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
+             game-update-labels (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom)
              update-labels (map (fn [item]
                                   (if (:icon item)
                                     (update item :icon #(get textures %))
                                     item))
-                                (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom))
+                                game-update-labels)
              dev-menu (create-dev-menu {:menus (game-menus show-tile-grid?
                                                            show-cell-entities?
                                                            show-cell-occupied?
