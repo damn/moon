@@ -3982,13 +3982,47 @@
              action-bar (create-action-bar)
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
+             ui-viewport-width (viewport/world-width (stage/viewport stage))
+             ui-viewport-height (viewport/world-height (stage/viewport stage))
+             ui-viewport-mouse-position #(unproject (stage/viewport stage) (get-input-position))
+             ui-mouse-info-text (fn []
+                                  (mapv int (unproject (stage/viewport stage) (get-input-position))))
              stage-act! #(stage/act! stage)
              stage-draw! #(stage/draw! stage)
+             show-modal! (fn [opts]
+                           (show-modal! skin stage opts))
+             actionbar-add-skill! (fn [skill-id image tooltip-text]
+                                    (-> (stage/root stage)
+                                        (group/find-actor "moon.ui.action-bar")
+                                        (add-skill! {:skill-id skill-id
+                                                     :texture-region (image->texture-region image)
+                                                     :tooltip-text tooltip-text}
+                                                    skin)))
+             get-selected-skill #(-> (stage/root stage)
+                                     (group/find-actor "moon.ui.action-bar")
+                                     selected-skill)
              close-windows! #(close-windows! stage)
              toggle-inventory-visible! #(toggle-inventory-visible! stage)
+             inventory-visible? #(-> (stage/root stage)
+                                     (group/find-actor "moon.ui.windows.inventory")
+                                     actor/visible?)
+             inventory-window-set-item! (fn [cell image tooltip-text]
+                                          (-> (stage/root stage)
+                                              (group/find-actor "moon.ui.windows.inventory")
+                                              (set-item!* cell
+                                                          {:texture-region (image->texture-region image)
+                                                           :tooltip-text tooltip-text}
+                                                          skin)))
+             inventory-window-remove-item! (fn [cell] 
+                                             (remove-item! stage cell))
              toggle-entity-info! #(toggle-entity-info! stage)
              resize-stage! (fn [width height]
                              (viewport/update! (stage/viewport stage) width height true))
+             get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
+                                    (stage/hit stage x y))
+             mouseover-actor-info #(if-let [actor (get-mouseover-actor)]
+                                     (mouseover-actor-info actor)
+                                     nil)
              key-just-pressed-checks! (fn []
                                         (key-just-pressed-checks! key-just-pressed? close-windows! toggle-inventory-visible! toggle-entity-info!))
 
@@ -3999,9 +4033,6 @@
                                       (disposable/dispose! pixmap)
                                       cursor)))
              dispose-cursors! #(run! disposable/dispose! (vals cursors))
-
-             get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
-                                    (stage/hit stage x y))
 
              viewport (create-viewport! 1440 900 world-unit-scale)
              set-projection-matrix! #(batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
@@ -4021,38 +4052,17 @@
                            :get-delta-time get-delta-time
                            :key-pressed? key-pressed?
                            :button-just-pressed? button-just-pressed?
-                           :inventory-visible? #(-> (stage/root stage)
-                                                    (group/find-actor "moon.ui.windows.inventory")
-                                                    actor/visible?)
-                           :mouseover-actor-info #(if-let [actor (get-mouseover-actor)]
-                                                    (mouseover-actor-info actor)
-                                                    nil)
+                           :inventory-visible? inventory-visible?
+                           :mouseover-actor-info mouseover-actor-info
                            :world-mouse-position #(unproject viewport (get-input-position))
                            :set-cursor! #(set-cursor! (safe-get cursors %)) 
-                           :get-selected-skill #(-> (stage/root stage)
-                                                    (group/find-actor "moon.ui.action-bar")
-                                                    selected-skill)
+                           :get-selected-skill get-selected-skill
                            :play-sound! play-sound!
-                           :show-modal! (fn [opts]
-                                          (show-modal! skin stage opts))
-                           :set-item! (fn [cell image tooltip-text]
-                                        (-> (stage/root stage)
-                                            (group/find-actor "moon.ui.windows.inventory")
-                                            (set-item!* cell
-                                                        {:texture-region (image->texture-region image)
-                                                         :tooltip-text tooltip-text}
-                                                        skin)))
-
-                           :remove-item! (fn [cell] 
-                                           (remove-item! stage cell))
+                           :show-modal! show-modal!
+                           :set-item! inventory-window-set-item!
+                           :remove-item! inventory-window-remove-item!
                            :toggle-inventory-visible! toggle-inventory-visible!
-                           :set-skill! (fn [skill-id image tooltip-text]
-                                         (-> (stage/root stage)
-                                             (group/find-actor "moon.ui.action-bar")
-                                             (add-skill! {:skill-id skill-id
-                                                          :texture-region (image->texture-region image)
-                                                          :tooltip-text tooltip-text}
-                                                         skin)))
+                           :set-skill! actionbar-add-skill!
                            }
              update-message-counter! #(update-message-counter! capabilities)
              shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
@@ -4060,10 +4070,6 @@
              get-unit-scale (fn [] @unit-scale)
              unproject-viewport #(unproject viewport %)
              camera-zoom (fn [] (orthographic-camera/zoom (viewport/camera viewport)))
-             ui-viewport-width (viewport/world-width (stage/viewport stage))
-             ui-viewport-height (viewport/world-height (stage/viewport stage))
-             ui-mouse-info-text (fn []
-                                  (mapv int (unproject (stage/viewport stage) (get-input-position))))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
 
              game-update-labels (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom)
@@ -4178,12 +4184,12 @@
                                     :position [ui-viewport-width ui-viewport-height]
                                     :slot->texture-region slot->texture-region*
                                     :cell-size inventory-cell-size}
-             draw-item-on-cursor! (fn []
+             draw-item-on-cursor! (fn [ui-viewport-mouse-position]
                                     (when-let [item (:entity/item-on-cursor @(player-eid))]
                                       (draw-texture-region! batch
                                                             (get-unit-scale)
                                                             (image->texture-region (:entity/image item))
-                                                            (unproject (stage/viewport stage) (get-input-position))
+                                                            ui-viewport-mouse-position
                                                             {:center? true})))
              entity-tick-txs (fn [eid delta-time]
                                (mapcat (fn [component]
@@ -4339,7 +4345,7 @@ ui-windows (doto (group/create)
              (actor/set-name! "moon.ui.windows"))
 item-on-cursor-actor (actor/create {:act! (fn [_this _delta])
                                     :draw! (fn [_this _batch _parent-alpha]
-                                             (draw-item-on-cursor!))})
+                                             (draw-item-on-cursor! (ui-viewport-mouse-position)))})
 player-message-actor (actor/create {:act! (fn [_this _delta])
                                     :draw! (fn [_this _batch _parent-alpha]
                                              (draw-player-message! draw-text! ui-viewport-width ui-viewport-height))})
