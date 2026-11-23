@@ -86,74 +86,6 @@
   (:import
    (clojure RayCaster)))
 
-(def float-rounding-error (double 0.000001))
-
-(def transition-idxvalues [2 8 1 4])
-
-(def slots #{:inventory.slot/bag
-             :inventory.slot/weapon
-             :inventory.slot/shield
-             :inventory.slot/helm
-             :inventory.slot/chest
-             :inventory.slot/leg
-             :inventory.slot/glove
-             :inventory.slot/boot
-             :inventory.slot/cloak
-             :inventory.slot/necklace
-             :inventory.slot/rings})
-
-(def val-max-schema
-  (m/schema
-   [:and
-    [:vector {:min 2 :max 2} [:int {:min 0}]]
-    [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
-                      (when (< mx v)
-                        (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
-     (fn [[^int a ^int b]] (<= a b))]]))
-
-(def k->adj-num
-  {:wide
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       (case (int (* 3 (random/next-float random)))
-         0 1
-         2)
-       (case (int (* 4 (random/next-float random)))
-         0 1
-         1 2
-         2 3
-         3 4
-         1)))
-   :thin
-   ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       1
-       (case (int (* 7 (random/next-float random)))
-         0 0
-         1 2
-         1)))
-   :default
-   ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
-   (fn [open-paths random]
-     (if (= open-paths 1)
-       (case (int (* 4 (random/next-float random)))
-         0 1
-         1 1
-         2 1
-         3 2
-         1)
-       (case (int (* 4 (random/next-float random)))
-         0 0
-         1 1
-         2 1
-         3 2
-         1)))})
-
-(defn safe-get [m k]
-  (assert (contains? m k) (str "Cannot find key " (pr-str k)))
-  (get m k))
-
 (defn- sort-ops [ops]
   (sort-by (fn [[k]]
              (case k
@@ -168,12 +100,10 @@
               :op/mult (* base-value (inc (/ value 100)))))
           base-value
           (sort-ops ops)))
-
 (defn mods-get-value [base-value modifiers modifier-k]
   {:pre [(= "modifier" (namespace modifier-k))]}
   (apply-ops (modifier-k modifiers)
              base-value))
-
 (defn mods-format-text
   [mods]
   (when (seq mods)
@@ -193,7 +123,14 @@
                                                (str/capitalize (name k)))))
                                       (sort-ops modifier-ops))))
                     mods))))
-
+(def val-max-schema
+  (m/schema
+   [:and
+    [:vector {:min 2 :max 2} [:int {:min 0}]]
+    [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
+                      (when (< mx v)
+                        (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
+     (fn [[^int a ^int b]] (<= a b))]]))
 (defn- valid-val-max? [val-max]
   (m/validate val-max-schema val-max))
 
@@ -256,6 +193,30 @@
 (defn mods-remove [mods other-mods]
   (merge-with remove-ops mods other-mods))
 
+#_(:require [clojure.test :refer :all])
+
+#_(deftest add-and-remove
+  (is (= (mods/add {:modifier/x {:+ 6}}
+                   {:modifier/x {:* -5 :+ -1}})
+         {:modifier/x {:+ 5, :* -5}}))
+
+  (is (= (mods/remove {:modifier/x {:+ 6 :* -50}}
+                      {:modifier/x {:+ 2 :* -50}})
+         {:modifier/x {:+ 4, :* 0}})))
+
+#_(deftest apply-test
+  (is (= (mods/get-value 10
+                         {:modifier/x {:op/inc 6
+                                       :op/mult 50}}
+                         :modifier/x)
+         24))
+
+  (is (= (mods/get-value 10
+                         {:modifier/x {:op/inc -5
+                                       :op/mult 20}}
+                         :modifier/x)
+         6)))
+
 (defn remove-mods [stats mods]
   (update stats :stats/modifiers mods-remove mods))
 
@@ -277,6 +238,22 @@
   (max (- (or (get-value source-stats :stats/armor-save) 0)
           (or (get-value target-stats :stats/armor-pierce) 0))
        0))
+
+(comment
+
+  ; TODO first of all can I have tests next to the function (or inside the function?)
+  ; then that test.check? or what jan used at stylefruits?
+  ; then I have to define what is stuff
+  ; that means i want pre post conditions and state space validation
+  ; that means i must make a simpler game first
+
+  (stats/effective-armor-save {} {:stats/modifiers {:modifiers/armor-save {:op/inc 10}}
+                                  :stats/armor-save 0})
+  ; broken
+  (let [source* {:stats/armor-pierce 0.4}
+        target* {:stats/armor-save   0.5}]
+    (stats/effective-armor-save source* target*))
+  )
 
 (defn melee-damage [{:keys [entity/stats]}]
   (let [strength (or (get-value stats :stats/strength) 0)]
@@ -527,6 +504,9 @@
                         (map #(str/replace-first % folder "")))]
           [path (texture/create (internal path))])))
 
+(defn safe-get [m k]
+  (assert (contains? m k) (str "Cannot find key " (pr-str k)))
+  (get m k))
 (defn get-texture-region
   [textures {:keys [image/file image/bounds]}]
   (assert file)
@@ -648,47 +628,8 @@
                         int-height
                         bool-arr))
 
-(defn line-of-sight?
-  [raycaster source target]
-  (not (raycaster-blocked? raycaster
-                           (:entity/position source)
-                           (:entity/position target))))
 
-(defn nearly-equal?
-  ([x y]
-   (nearly-equal? x y float-rounding-error))
-  ([a b epsilon]
-   (<= (Math/abs (double (- a b)))
-       epsilon)))
 
-(defn round-n [^double x n]
-  (let [z (math/pow 10 n)]
-    (float
-     (/
-      (math/round (* x z))
-      z))))
-
-(defn readable [^double x]
-  {:pre [(number? x)]}
-  (if (or
-       (> x 5)
-       (nearly-equal? x (int x) 0.001))
-    (int x)
-    (round-n x 2)))
-
-(let [offsets [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]]]
-  (defn get-8-neighbours [position]
-    (mapv #(mapv + position %) offsets)))
-
-(defn get-4-neighbours [[x y]]
-  [[(inc x) y]
-   [(dec x) y]
-   [x (inc y)]
-   [x (dec y)]])
-
-(defn diagonal? [[x1 y1] [x2 y2]]
-  (and (not= x1 x2)
-       (not= y1 y2)))
 
 (defn- set-label-text-actor [label-widget text-fn]
   (actor/create
@@ -698,7 +639,6 @@
          (label/set-text! label-widget (text-fn))))
      :draw!
      (fn [_this _batch _parent-alpha])}))
-
 (defn- add-upd-label!
   ([skin tbl text-fn icon]
    (let [lbl (label/create "" skin)
@@ -718,7 +658,6 @@
      (doto (table/add! tbl lbl)
        (cell/right!)
        (cell/expand-x!)))))
-
 (defn- main-table [skin menus update-labels]
   (let [table (table/create)]
     (doseq [cell (for [{:keys [label items]} menus]
@@ -751,7 +690,6 @@
           (add-upd-label! skin table update-fn icon)
           (add-upd-label! skin table update-fn))))
     table))
-
 (defn create-dev-menu
   [{:keys [menus update-labels skin]}]
   (let [table (table/create)]
@@ -796,6 +734,27 @@
            (doall (concat result nads)))) ; doall else stackoverflow error
         result))))
 
+(comment
+  (def found (atom false))
+
+  (defn search-buggy-nads []
+    (println "searching buggy nads")
+    (doseq [n (range 100000)
+            :when (not @found)]
+      (println "try " n)
+      (let [grid (cellular-automata-gridgen 100 80 :fillprob 62 :generations 0 :wall-borders true)
+            nads (get-nads grid)
+            fixed-grid (mark-nads grid nads :ground)]
+        (when
+          (and
+            (not (zero? (count nads)))
+            (not (zero? (count (get-nads fixed-grid)))))
+          (println "found!")
+          (reset! found [grid fixed-grid]))))
+    (println "found buggy nads? " @found))
+
+  )
+
 (defn- get-tiles-needing-fix-for-nad [grid [[fromx fromy] [tox toy]]]
   (let [xstep (- tox fromx)
         ystep (- toy fromy)
@@ -828,6 +787,9 @@
           (mapcat #(get-tiles-needing-fix-for-nad grid %)
                   (get-nads grid))))
 
+(let [offsets [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]]]
+  (defn get-8-neighbours [position]
+    (mapv #(mapv + position %) offsets)))
 (defn flood-fill [grid start walk-on-position?]
   (loop [next-positions [start]
          filled []
@@ -1037,6 +999,11 @@
            (range w))
      convert]))
 
+(defn get-4-neighbours [[x y]]
+  [[(inc x) y]
+   [(dec x) y]
+   [x (inc y)]
+   [x (dec y)]])
 ;  Cave Algorithmus.
 ;  http://properundead.com/2009/03/cave-generator.html
 ;  http://properundead.com/2009/07/procedural-generation-3-cave-source.html
@@ -1083,7 +1050,44 @@
                    current-order)
             ; TODO here min-cells check ?
             (finished grid (last posi-seq) cell-cnt)))))))
-
+(def k->adj-num
+  {:wide
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       (case (int (* 3 (random/next-float random)))
+         0 1
+         2)
+       (case (int (* 4 (random/next-float random)))
+         0 1
+         1 2
+         2 3
+         3 4
+         1)))
+   :thin
+   ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       1
+       (case (int (* 7 (random/next-float random)))
+         0 0
+         1 2
+         1)))
+   :default
+   ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       (case (int (* 4 (random/next-float random)))
+         0 1
+         1 1
+         2 1
+         3 2
+         1)
+       (case (int (* 4 (random/next-float random)))
+         0 0
+         1 1
+         2 1
+         3 2
+         1)))})
 (defn create-caves [random min-cells max-cells adjnum-type]
   (generate-caves random min-cells max-cells (k->adj-num adjnum-type)))
 
@@ -1097,6 +1101,7 @@
           y (range start-y (+ start-y modules-height))]
       [x y])))
 
+(def transition-idxvalues [2 8 1 4])
 (defn- transition-idx-value [position position->transition?]
   (->> position
        get-4-neighbours
@@ -1436,7 +1441,17 @@
     (add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
-
+(def slots #{:inventory.slot/bag
+             :inventory.slot/weapon
+             :inventory.slot/shield
+             :inventory.slot/helm
+             :inventory.slot/chest
+             :inventory.slot/leg
+             :inventory.slot/glove
+             :inventory.slot/boot
+             :inventory.slot/cloak
+             :inventory.slot/necklace
+             :inventory.slot/rings})
 (defn- known-slot? [slot]
   (slots slot))
 
@@ -1850,6 +1865,32 @@
         (when-not (inside-cell? grid @eid target-cell)
           (v2-direction position (:middle @target-cell)))))))
 
+(comment
+ (clear-marked-cells! :good (get @faction->marked-cells :good))
+
+ (defn- faction->tiles->entities-map* [entities]
+   (into {}
+         (for [[faction entities] (->> entities
+                                       (filter   #(:entity/faction @%))
+                                       (group-by #(:entity/faction @%)))]
+           [faction
+            (zipmap (map #(mapv int (:entity/position @%)) entities)
+                    entities)])))
+
+ (def max-iterations 1)
+
+ (let [entities (map ids->eids [140 110 91])
+       tl->es (:good (faction->tiles->entities-map* entities))]
+   tl->es
+   (def last-marked-cells (generate-potential-field :good tl->es)))
+ (println *1)
+ (def marked *2)
+ (step/f :good *1)
+ )
+
+(defn diagonal? [[x1 y1] [x2 y2]]
+  (and (not= x1 x2)
+       (not= y1 y2)))
 (defn- potential-field-step [grid faction last-marked-cells]
   (let [marked-cells (transient [])
         distance #(nearest-entity-distance % faction)
@@ -2053,6 +2094,19 @@
       :else
       [:mouseover-actor/unspecified])))
 
+(comment
+  (def ^:private count-rays? false)
+
+  (def ray-positions (atom []))
+  (def do-once (atom true))
+
+  (count @ray-positions)
+  2256
+  (count (distinct @ray-positions))
+  608
+  (* 608 4)
+  2432
+  )
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
            explored-tile-corners
@@ -2263,6 +2317,24 @@
                             (if (neg? angle)
                               (+ angle 360)
                               angle))
+   #_(comment
+
+     (clojure.pprint/pprint
+       (for [v [[0 1]
+                [1 1]
+                [1 0]
+                [1 -1]
+                [0 -1]
+                [-1 -1]
+                [-1 0]
+                [-1 1]]]
+         [v
+          (let [angle (clojure.math/to-degrees
+                        (clojure.math/atan2 (v2/crs [0 1] v)
+                                            (v2/dot [0 1] v)))]
+            (if (neg? angle) (+ angle 360) angle))]))
+
+     )
    :entity/image image
    :entity/faction faction
    :entity/delete-after-duration (create-timer (/ max-range speed))
@@ -3052,6 +3124,13 @@
       (tx-event-txs eid :movement-direction (or (find-direction grid eid)
                                                 [0 0])))))
 
+(def float-rounding-error (double 0.000001))
+(defn nearly-equal?
+  ([x y]
+   (nearly-equal? x y float-rounding-error))
+  ([a b epsilon]
+   (<= (Math/abs (double (- a b)))
+       epsilon)))
 (defn movement-tick
   [v eid delta-time grid max-speed]
   (let [{:keys [direction
@@ -3689,6 +3768,19 @@
     :update-fn camera-zoom 
     :icon "images/zoom.png"}])
 
+(defn round-n [^double x n]
+  (let [z (math/pow 10 n)]
+    (float
+     (/
+      (math/round (* x z))
+      z))))
+(defn readable [^double x]
+  {:pre [(number? x)]}
+  (if (or
+       (> x 5)
+       (nearly-equal? x (int x) 0.001))
+    (int x)
+    (round-n x 2)))
 (defn draw-bar! [rahmenw rahmenh rahmen-file default-font image->texture-region get-unit-scale batch x y content-file minmaxval name]
   (draw-texture-region! batch
                         (get-unit-scale)
@@ -3719,6 +3811,11 @@
     (draw-operations)
     (reset! unit-scale 1)))
 
+(defn line-of-sight?
+  [raycaster source target]
+  (not (raycaster-blocked? raycaster
+                           (:entity/position source)
+                           (:entity/position target))))
 (defn game-listener 
   [{:keys [game-db
            build-property
@@ -3857,6 +3954,8 @@
 
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
+             resize-stage! (fn [width height]
+                             (viewport/update! (stage/viewport stage) width height true))
              image->texture-region #(get-texture-region textures %)
              cursors (update-vals cursors
                                   (fn [[path [hotspot-x hotspot-y]]]
@@ -3867,6 +3966,8 @@
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
              viewport (create-viewport! 1440 900 world-unit-scale)
+             resize-viewport! (fn [width height]
+                                (viewport/update! viewport width height false))
              capabilities {
                            :get-delta-time get-delta-time
                            :key-pressed? key-pressed?
@@ -4198,8 +4299,8 @@
                                     (run! disposable/dispose! (vals textures))
                                     (disposable/dispose! @tiled-map*))
                         :resize! (fn [width height]
-                                   (viewport/update! (stage/viewport stage) width height true)
-                                   (viewport/update! viewport width height false))
+                                   (resize-stage! width height)
+                                   (resize-viewport! width height))
                         :render! (fn []
                                    (update-mouseover-eid! render-z-order 
                                                           line-of-sight?* 
@@ -5598,7 +5699,7 @@
                                               "Leftmouse click - use skill/drop item on cursor"])
                     :z-orders z-orders
                     :minimum-size minimum-size
-                    :game-schemas game-schemas
+                    ;:game-schemas game-schemas
                     :game-db game-db
                     :build-property (fn [property-id]
                                       (build-values (safe-get game-db property-id)))
