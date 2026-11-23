@@ -3909,6 +3909,7 @@
         tiled-map* (atom nil)
         dispose-tiled-map! #(disposable/dispose! @tiled-map*)
         content-grid (atom nil)
+        update-active-entities! #(update-active-entities! active-entities content-grid player-eid)
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -3974,6 +3975,14 @@
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
              viewport (create-viewport! 1440 900 world-unit-scale)
+             set-camera-position! #(set-camera-position! viewport (:entity/position @(player-eid)))
+             update-mouseover-eid! #(update-mouseover-eid! render-z-order 
+                                                           line-of-sight?* 
+                                                           grid 
+                                                           player-eid 
+                                                           mouseover-eid 
+                                                           (get-mouseover-actor)
+                                                           (unproject viewport (get-input-position)))
              resize-viewport! (fn [width height]
                                 (viewport/update! viewport width height false))
              capabilities {
@@ -4077,6 +4086,13 @@
                                       (throw (ex-info "handle-txs! error" 
                                                       {:k k :params params}
                                                       t)))))))
+             primary-interaction! #(primary-interaction! handle-txs!  
+                                                         (player-eid)
+                                                         @mouseover-eid
+                                                         tx-event-txs
+                                                         generate-id!*
+                                                         create-timer*
+                                                         capabilities)
              inventory-window-opts {:get-mouse-position get-input-position
                                     :on-click-cell (fn [_event cell]
                                                      (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
@@ -4310,22 +4326,10 @@
                                    (resize-stage! width height)
                                    (resize-viewport! width height))
                         :render! (fn []
-                                   (update-mouseover-eid! render-z-order 
-                                                          line-of-sight?* 
-                                                          grid 
-                                                          player-eid 
-                                                          mouseover-eid 
-                                                          (get-mouseover-actor)
-                                                          (unproject viewport (get-input-position)))
-                                   (update-active-entities! active-entities content-grid player-eid)
-                                   (set-camera-position! viewport (:entity/position @(player-eid)))
-                                   (primary-interaction! handle-txs! 
-                                                         (player-eid)
-                                                         @mouseover-eid
-                                                         tx-event-txs
-                                                         generate-id!*
-                                                         create-timer*
-                                                         capabilities)
+                                   (update-mouseover-eid!)
+                                   (update-active-entities!)
+                                   (set-camera-position!)
+                                   (primary-interaction!)
                                    (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
                                    (handle-txs! capabilities (when-not-paused-updates!* paused?
                                                                                         max-delta
