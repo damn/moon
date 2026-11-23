@@ -4122,8 +4122,63 @@
                                   (mapv int (unproject stage-viewport (get-input-position))))
              resize-stage! (fn [width height]
                              (viewport/update! stage-viewport width height true))
+             draw-item-on-cursor! (fn [ui-viewport-mouse-position]
+                                    (when-let [item (:entity/item-on-cursor @(player-eid))]
+                                      (draw-texture-region! batch
+                                                            (get-unit-scale)
+                                                            (image->texture-region (:entity/image item))
+                                                            ui-viewport-mouse-position
+                                                            {:center? true})))
 
              action-bar (create-action-bar)
+             item-on-cursor-actor (actor/create {:act! (fn [_this _delta])
+                                                 :draw! (fn [_this _batch _parent-alpha]
+                                                          (draw-item-on-cursor! (ui-viewport-mouse-position)))})
+             player-message-actor (actor/create {:act! (fn [_this _delta])
+                                                 :draw! (fn [_this _batch _parent-alpha]
+                                                          (draw-player-message! draw-text! ui-viewport-width ui-viewport-height))})
+             info-window-opts {:title "Entity Info"
+                               :actor-name "moon.ui.windows.entity-info"
+                               :visible? false
+                               :position [ui-viewport-width 0]
+                               :set-label-text! (fn []
+                                                  (if-let [eid @mouseover-eid]
+                                                    (info-text (apply dissoc @eid [:entity/skills
+                                                                                   :entity/faction
+                                                                                   :active-skill])
+                                                               timer-ratio-txt)
+                                                    ""))
+                               :skin skin}
+             hp-mana-bars (actor/create {:act!
+                                         (fn [_this _delta])
+                                         :draw!
+                                         (fn [_this batch _parent-alpha]
+                                           (let [stats (:entity/stats @(player-eid))
+                                                 bar-x (- (/ ui-viewport-width 2) (/ rahmenw 2))]
+                                             (draw-bar! rahmenw 
+                                                        rahmenh 
+                                                        rahmen-file 
+                                                        default-font 
+                                                        image->texture-region 
+                                                        get-unit-scale 
+                                                        batch 
+                                                        bar-x 
+                                                        y-hp 
+                                                        hpcontent-file 
+                                                        (get-hitpoints stats) 
+                                                        "HP")
+                                             (draw-bar! rahmenw 
+                                                        rahmenh 
+                                                        rahmen-file 
+                                                        default-font 
+                                                        image->texture-region 
+                                                        get-unit-scale 
+                                                        batch 
+                                                        bar-x 
+                                                        y-mana 
+                                                        manacontent-file 
+                                                        (get-mana stats)
+                                                        "MP")))})
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
              stage-act! #(stage/act! stage)
@@ -4201,36 +4256,8 @@
                            :toggle-inventory-visible! toggle-inventory-visible!
                            :set-skill! actionbar-add-skill!
                            }
-             update-message-counter! #(update-message-counter! (get-delta-time))
-             unproject-viewport #(unproject viewport %)
-             camera-zoom (fn [] (orthographic-camera/zoom (viewport/camera viewport)))
+
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
-
-             game-update-labels (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom)
-             update-labels (map (fn [item]
-                                  (if (:icon item)
-                                    (update item :icon #(get textures %))
-                                    item))
-                                game-update-labels)
-             dev-menu (create-dev-menu {:menus game-menus
-                                        :update-labels update-labels 
-                                        :skin skin})
-
-             info-window-opts {:title "Entity Info"
-                               :actor-name "moon.ui.windows.entity-info"
-                               :visible? false
-                               :position [ui-viewport-width 0]
-                               :set-label-text! (fn []
-                                                  (if-let [eid @mouseover-eid]
-                                                    (info-text (apply dissoc @eid [:entity/skills
-                                                                                   :entity/faction
-                                                                                   :active-skill])
-                                                               timer-ratio-txt)
-                                                    ""))
-                               :skin skin}
-             init-game-state! #(init-game-state! capabilities textures image->texture-region)
-             remove-destroyed-entities! #(remove-destroyed-entities! capabilities)
-             primary-interaction! #(primary-interaction! capabilities)
              inventory-window-opts {:get-mouse-position get-input-position
                                     :on-click-cell (fn [_event cell]
                                                      (clicked-inventory-cell! capabilities cell))
@@ -4247,13 +4274,34 @@
                                     :position [ui-viewport-width ui-viewport-height]
                                     :slot->texture-region slot->texture-region*
                                     :cell-size inventory-cell-size}
-             draw-item-on-cursor! (fn [ui-viewport-mouse-position]
-                                    (when-let [item (:entity/item-on-cursor @(player-eid))]
-                                      (draw-texture-region! batch
-                                                            (get-unit-scale)
-                                                            (image->texture-region (:entity/image item))
-                                                            ui-viewport-mouse-position
-                                                            {:center? true})))
+             ui-windows (doto (group/create)
+                          (add-actors! [(create-info-window info-window-opts)
+                                        (build-inventory-window inventory-window-opts)])
+                          (actor/set-name! "moon.ui.windows"))
+             update-message-counter! #(update-message-counter! (get-delta-time))
+             unproject-viewport #(unproject viewport %)
+             camera-zoom (fn [] (orthographic-camera/zoom (viewport/camera viewport)))
+
+             game-update-labels (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom)
+             update-labels (map (fn [item]
+                                  (if (:icon item)
+                                    (update item :icon #(get textures %))
+                                    item))
+                                game-update-labels)
+             dev-menu (create-dev-menu {:menus game-menus
+                                        :update-labels update-labels 
+                                        :skin skin})
+             _ (doseq [actor [action-bar 
+                              dev-menu
+                              hp-mana-bars
+                              ui-windows
+                              item-on-cursor-actor
+                              player-message-actor]]
+                 (stage/add-actor! stage actor))
+
+             init-game-state! #(init-game-state! capabilities textures image->texture-region)
+             remove-destroyed-entities! #(remove-destroyed-entities! capabilities)
+             primary-interaction! #(primary-interaction! capabilities)
              
              when-not-paused-updates! #(when-not-paused-updates! capabilities (get-delta-time))
              draw-tiled-map! (fn []
@@ -4325,56 +4373,7 @@
                                                            world-unit-scale
                                                            unit-scale
                                                            world-unit-scale-draw-operations)
-hp-mana-bars (actor/create {:act!
-                                       (fn [_this _delta])
-                                       :draw!
-                                       (fn [_this batch _parent-alpha]
-                                         (let [stats (:entity/stats @(player-eid))
-                                               bar-x (- (/ ui-viewport-width 2) (/ rahmenw 2))]
-                                           (draw-bar! rahmenw 
-                                                      rahmenh 
-                                                      rahmen-file 
-                                                      default-font 
-                                                      image->texture-region 
-                                                      get-unit-scale 
-                                                      batch 
-                                                      bar-x 
-                                                      y-hp 
-                                                      hpcontent-file 
-                                                      (get-hitpoints stats) 
-                                                      "HP")
-                                           (draw-bar! rahmenw 
-                                                      rahmenh 
-                                                      rahmen-file 
-                                                      default-font 
-                                                      image->texture-region 
-                                                      get-unit-scale 
-                                                      batch 
-                                                      bar-x 
-                                                      y-mana 
-                                                      manacontent-file 
-                                                      (get-mana stats)
-                                                      "MP")))})
-ui-windows (doto (group/create)
-             (add-actors! [(create-info-window info-window-opts)
-                           (build-inventory-window inventory-window-opts)])
-             (actor/set-name! "moon.ui.windows"))
-item-on-cursor-actor (actor/create {:act! (fn [_this _delta])
-                                    :draw! (fn [_this _batch _parent-alpha]
-                                             (draw-item-on-cursor! (ui-viewport-mouse-position)))})
-player-message-actor (actor/create {:act! (fn [_this _delta])
-                                    :draw! (fn [_this _batch _parent-alpha]
-                                             (draw-player-message! draw-text! ui-viewport-width ui-viewport-height))})
              ]
-        ; TODO create togehter with stage?
-         (doseq [actor [action-bar 
-                        dev-menu
-                        hp-mana-bars
-                        ui-windows
-                        item-on-cursor-actor
-                        player-message-actor
-                        ]]
-           (stage/add-actor! stage actor))
          (set-input-processor! stage)
          (init-game-state!)
          (reset! state {:dispose! (fn []
