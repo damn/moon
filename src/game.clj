@@ -3907,6 +3907,7 @@
         paused? (atom false)
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
+        dispose-tiled-map! #(disposable/dispose! @tiled-map*)
         content-grid (atom nil)
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
@@ -3940,14 +3941,20 @@
              cursors (:cursors game-config)
 
              batch (sprite-batch/create)
+             dispose-batch! #(disposable/dispose! batch)
              textures (create-textures internal textures)
+             dispose-textures! #(run! disposable/dispose! (vals textures))
              default-font (create-default-font! internal font-params)
+             dispose-default-font! #(disposable/dispose! default-font)
              shape-drawer-texture (white-pixel-texture)
+             dispose-shape-drawer-teture! #(disposable/dispose! shape-drawer-texture)
              skin (create-skin! (internal skin))
+             dispose-skin! #(disposable/dispose! skin)
 
              sounds (into {} 
                           (for [path sounds] 
                             [path (new-sound (internal path))]))
+             dispose-sounds! #(run! disposable/dispose! (vals sounds))
              play-sound! (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
 
@@ -3963,6 +3970,7 @@
                                           cursor (new-cursor pixmap hotspot-x hotspot-y)]
                                       (disposable/dispose! pixmap)
                                       cursor)))
+             dispose-cursors! #(run! disposable/dispose! (vals cursors))
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
              viewport (create-viewport! 1440 900 world-unit-scale)
@@ -4290,14 +4298,14 @@
                                   (player-ui-txs #(info-text % timer-ratio-txt) entity)
                                   (spawn-map-creatures build-property @tiled-map* start-position fsms generate-id!*)))))
          (reset! state {:dispose! (fn []
-                                    (disposable/dispose! batch)
-                                    (run! disposable/dispose! (vals cursors))
-                                    (disposable/dispose! default-font)
-                                    (disposable/dispose! shape-drawer-texture)
-                                    (disposable/dispose! skin)
-                                    (run! disposable/dispose! (vals sounds))
-                                    (run! disposable/dispose! (vals textures))
-                                    (disposable/dispose! @tiled-map*))
+                                    (dispose-batch!)
+                                    (dispose-cursors!)
+                                    (dispose-default-font!)
+                                    (dispose-shape-drawer-teture!)
+                                    (dispose-skin!)
+                                    (dispose-sounds!)
+                                    (dispose-textures!)
+                                    (dispose-tiled-map!))
                         :resize! (fn [width height]
                                    (resize-stage! width height)
                                    (resize-viewport! width height))
