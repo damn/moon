@@ -4073,6 +4073,37 @@
              shape-drawer-texture (white-pixel-texture)
              dispose-shape-drawer-teture! #(disposable/dispose! shape-drawer-texture)
 
+             shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
+             unit-scale (atom 1)
+             get-unit-scale (fn [] @unit-scale)
+
+             draw-tx-rg! (fn [image position opts]
+                           (draw-texture-region! batch
+                                                 @unit-scale
+                                                 (image->texture-region image)
+                                                 position
+                                                 opts))
+             draw-text! (fn [opts]
+                          (draw-text! batch
+                                      default-font
+                                      @unit-scale
+                                      opts))
+             filled-rect! (fn [& params]
+                            (apply filled-rectangle! shape-drawer params))
+             draw-line! (fn [from to color]
+                          (line! shape-drawer from to color))
+             draw-ellipse! (fn [position radius-x radius-y color]
+                             (ellipse! shape-drawer position radius-x radius-y color))
+             draw-circle! (fn [position radius color]
+                            (circle! shape-drawer position radius color))
+             draw-filled-circle! (fn [position radius color]
+                                   (filled-circle! shape-drawer position radius color))
+             draw-sector! (fn [center radius start-radians radians color]
+                            (sector! shape-drawer center radius start-radians radians color))
+             with-line-width! (fn [width f]
+                                (with-line-width shape-drawer width
+                                  (f)))
+
              skin (create-skin! (internal skin))
              dispose-skin! #(disposable/dispose! skin)
 
@@ -4171,9 +4202,6 @@
                            :set-skill! actionbar-add-skill!
                            }
              update-message-counter! #(update-message-counter! (get-delta-time))
-             shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
-             unit-scale (atom 1)
-             get-unit-scale (fn [] @unit-scale)
              unproject-viewport #(unproject viewport %)
              camera-zoom (fn [] (orthographic-camera/zoom (viewport/camera viewport)))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
@@ -4242,32 +4270,6 @@
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
-             draw-tx-rg! (fn [image position opts]
-                           (draw-texture-region! batch
-                                                 @unit-scale
-                                                 (image->texture-region image)
-                                                 position
-                                                 opts))
-             draw-text! (fn [opts]
-                          (draw-text! batch
-                                      default-font
-                                      @unit-scale
-                                      opts))
-             filled-rect! (fn [& params]
-                            (apply filled-rectangle! shape-drawer params))
-             draw-line! (fn [from to color]
-                          (line! shape-drawer from to color))
-             draw-ellipse! (fn [position radius-x radius-y color]
-                             (ellipse! shape-drawer position radius-x radius-y color))
-             draw-circle! (fn [position radius color]
-                            (circle! shape-drawer position radius color))
-             draw-filled-circle! (fn [position radius color]
-                                   (filled-circle! shape-drawer position radius color))
-             draw-sector! (fn [center radius start-radians radians color]
-                            (sector! shape-drawer center radius start-radians radians color))
-             with-line-width! (fn [width f]
-                                (with-line-width shape-drawer width
-                                  (f)))
              draw-component** (fn [k v entity]
                                 (case k
                                   :entity/clickable
