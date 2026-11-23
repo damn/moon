@@ -4036,6 +4036,8 @@
                                show-potential-field-colors?
                                show-potential-field-colors?
                                controls-info)
+        update-paused-state! (fn [key-just-pressed? key-pressed?]
+                               (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?))
         state (atom nil)
         ]
     {
@@ -4054,7 +4056,7 @@
                   new-cursor]}]
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [clear-screen! #(clear-screen! 0 0 0 0)
-             update-paused-state! #(update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
+             update-paused-state! #(update-paused-state! key-just-pressed? key-pressed?)
              batch (sprite-batch/create)
              batch-begin! #(batch/begin batch) 
              batch-end! #(batch/end batch)
@@ -4081,14 +4083,18 @@
              play-sound! (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
 
+             stage-viewport (fit-viewport/create (:width stage) (:height stage))
+             ui-viewport-width (viewport/world-width stage-viewport) ; changes?
+             ui-viewport-height (viewport/world-height stage-viewport) ; changes?
+             ui-viewport-mouse-position #(unproject stage-viewport (get-input-position))
+             ui-mouse-info-text (fn []
+                                  (mapv int (unproject stage-viewport (get-input-position))))
+             resize-stage! (fn [width height]
+                             (viewport/update! stage-viewport width height true))
+
              action-bar (create-action-bar)
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
-             ui-viewport-width (viewport/world-width (stage/viewport stage))
-             ui-viewport-height (viewport/world-height (stage/viewport stage))
-             ui-viewport-mouse-position #(unproject (stage/viewport stage) (get-input-position))
-             ui-mouse-info-text (fn []
-                                  (mapv int (unproject (stage/viewport stage) (get-input-position))))
              stage-act! #(stage/act! stage)
              stage-draw! #(stage/draw! stage)
              show-modal! (fn [opts]
@@ -4118,9 +4124,7 @@
              inventory-window-remove-item! (fn [cell] 
                                              (remove-item! stage cell))
              toggle-entity-info! #(toggle-entity-info! stage)
-             resize-stage! (fn [width height]
-                             (viewport/update! (stage/viewport stage) width height true))
-             get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
+             get-mouseover-actor #(let [[x y] (ui-viewport-mouse-position)]
                                     (stage/hit stage x y))
              mouseover-actor-info #(if-let [actor (get-mouseover-actor)]
                                      (mouseover-actor-info actor)
@@ -4360,12 +4364,14 @@ player-message-actor (actor/create {:act! (fn [_this _delta])
                                     :draw! (fn [_this _batch _parent-alpha]
                                              (draw-player-message! draw-text! ui-viewport-width ui-viewport-height))})
              ]
+        ; TODO create togehter with stage?
          (doseq [actor [action-bar 
                         dev-menu
                         hp-mana-bars
                         ui-windows
                         item-on-cursor-actor
-                        player-message-actor]]
+                        player-message-actor
+                        ]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
          (init-game-state!)
