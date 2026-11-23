@@ -3906,6 +3906,13 @@
                        eid))
         mouseover-eid (atom nil)
         player-message (atom nil)
+        draw-player-message! (fn [draw-text! ui-viewport-width ui-viewport-height]
+                               (when-let [text (:text @player-message)]
+                                 (draw-text! {:x (/ ui-viewport-width 2)
+                                              :y (+ (/ ui-viewport-height 2) 200)
+                                              :text text
+                                              :scale 2.5
+                                              :up? true})))
         message-duration-seconds 0.5
         update-message-counter! (fn [{:keys [get-delta-time]}]
                                   (message-counter-update! player-message message-duration-seconds (get-delta-time)))
@@ -4057,6 +4064,7 @@
              ui-mouse-info-text (fn []
                                   (mapv int (unproject (stage/viewport stage) (get-input-position))))
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
+
              game-update-labels (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom)
              update-labels (map (fn [item]
                                   (if (:icon item)
@@ -4066,6 +4074,7 @@
              dev-menu (create-dev-menu {:menus game-menus
                                         :update-labels update-labels 
                                         :skin skin})
+
              info-window-opts {:title "Entity Info"
                                :actor-name "moon.ui.windows.entity-info"
                                :visible? false
@@ -4198,16 +4207,6 @@
                                                                                             active-entities
                                                                                             (get-delta-time)
                                                                                             entity-tick-txs))
-             draw-player-message! (fn []
-                                    (when-let [text (:text @player-message)]
-                                      (draw-text! batch
-                                                  default-font
-                                                  (get-unit-scale)
-                                                  {:x (/ ui-viewport-width 2)
-                                                   :y (+ (/ ui-viewport-height 2) 200)
-                                                   :text text
-                                                   :scale 2.5
-                                                   :up? true})))
              draw-tiled-map! (fn []
                                 (draw-tiled-map! @tiled-map*
                                                  batch
@@ -4342,7 +4341,7 @@ item-on-cursor-actor (actor/create {:act! (fn [_this _delta])
                                              (draw-item-on-cursor!))})
 player-message-actor (actor/create {:act! (fn [_this _delta])
                                     :draw! (fn [_this _batch _parent-alpha]
-                                             (draw-player-message!))})
+                                             (draw-player-message! draw-text! ui-viewport-width ui-viewport-height))})
              ]
          (doseq [actor [action-bar 
                         dev-menu
