@@ -3848,6 +3848,11 @@
            ]
     :as game-config}]
   (let [
+        textures (:textures game-config)
+        skin (:skin game-config)
+        sounds (:sounds game-config)
+        stage (:stage game-config)
+        cursors (:cursors game-config)
         active-skill-radius (let [tile-size 48
                                   image-width 32]
                               (/ (/ image-width tile-size) 2))
@@ -3942,24 +3947,22 @@
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
        (let [clear-screen! #(clear-screen! 0 0 0 0)
              update-paused-state! #(update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
-             
-             textures (:textures game-config)
-             skin (:skin game-config)
-             sounds (:sounds game-config)
-             stage (:stage game-config)
-             cursors (:cursors game-config)
-
              batch (sprite-batch/create)
              batch-begin! #(batch/begin batch) 
              batch-end! #(batch/end batch)
              set-batch-color! #(batch/set-color! batch 1 1 1 1)  ; hotfix for tooltips they set the color every creature flashes
              dispose-batch! #(disposable/dispose! batch)
+
              textures (create-textures internal textures)
+             image->texture-region #(get-texture-region textures %)
              dispose-textures! #(run! disposable/dispose! (vals textures))
+
              default-font (create-default-font! internal font-params)
              dispose-default-font! #(disposable/dispose! default-font)
+
              shape-drawer-texture (white-pixel-texture)
              dispose-shape-drawer-teture! #(disposable/dispose! shape-drawer-texture)
+
              skin (create-skin! (internal skin))
              dispose-skin! #(disposable/dispose! skin)
 
@@ -3970,15 +3973,16 @@
              play-sound! (fn [sound-name]
                             (sound/play! (safe-get sounds sound-name)))
 
-
+             action-bar (create-action-bar)
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
              stage-act! #(stage/act! stage)
              stage-draw! #(stage/draw! stage)
              resize-stage! (fn [width height]
                              (viewport/update! (stage/viewport stage) width height true))
+
              key-just-pressed-checks! #(key-just-pressed-checks! controls stage key-just-pressed?)
-             image->texture-region #(get-texture-region textures %)
+
              cursors (update-vals cursors
                                   (fn [[path [hotspot-x hotspot-y]]]
                                     (let [pixmap (pixmap/create (internal path))
@@ -3986,8 +3990,10 @@
                                       (disposable/dispose! pixmap)
                                       cursor)))
              dispose-cursors! #(run! disposable/dispose! (vals cursors))
+
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
+
              viewport (create-viewport! 1440 900 world-unit-scale)
              set-projection-matrix! #(batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
              key-pressed-checks! #(key-pressed-checks! controls viewport key-pressed?)
@@ -4001,6 +4007,7 @@
                                                            (unproject viewport (get-input-position)))
              resize-viewport! (fn [width height]
                                 (viewport/update! viewport width height false))
+
              capabilities {
                            :get-delta-time get-delta-time
                            :key-pressed? key-pressed?
@@ -4296,7 +4303,6 @@
                                                            world-unit-scale
                                                            unit-scale
                                                            world-unit-scale-draw-operations)
-action-bar (create-action-bar)
 hp-mana-bars (actor/create {:act!
                                        (fn [_this _delta])
                                        :draw!
@@ -4338,7 +4344,7 @@ player-message-actor (actor/create {:act! (fn [_this _delta])
                                     :draw! (fn [_this _batch _parent-alpha]
                                              (draw-player-message!))})
              ]
-         (doseq [actor [action-bar
+         (doseq [actor [action-bar 
                         dev-menu
                         hp-mana-bars
                         ui-windows
