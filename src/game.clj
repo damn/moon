@@ -3915,6 +3915,13 @@
         show-cell-occupied? (atom false)
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
+        game-menus (game-menus show-tile-grid?
+                               show-cell-entities?
+                               show-cell-occupied?
+                               show-body-bounds?
+                               show-potential-field-colors?
+                               show-potential-field-colors?
+                               controls-info)
         potential-field-cache (atom nil)
         state (atom nil)
         ]
@@ -4049,13 +4056,7 @@
                                     (update item :icon #(get textures %))
                                     item))
                                 game-update-labels)
-             dev-menu (create-dev-menu {:menus (game-menus show-tile-grid?
-                                                           show-cell-entities?
-                                                           show-cell-occupied?
-                                                           show-body-bounds?
-                                                           show-potential-field-colors?
-                                                           show-potential-field-colors?
-                                                           controls-info)
+             dev-menu (create-dev-menu {:menus game-menus
                                         :update-labels update-labels 
                                         :skin skin})
              info-window-opts {:title "Entity Info"
