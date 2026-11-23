@@ -4048,6 +4048,15 @@
                                     (update item :icon #(get textures %))
                                     item))
                                 (game-update-labels frames-per-second timer-info mouseover-eid paused? ui-mouse-info-text get-input-position unproject-viewport camera-zoom))
+             dev-menu (create-dev-menu {:menus (game-menus show-tile-grid?
+                                                           show-cell-entities?
+                                                           show-cell-occupied?
+                                                           show-body-bounds?
+                                                           show-potential-field-colors?
+                                                           show-potential-field-colors?
+                                                           controls-info)
+                                        :update-labels update-labels 
+                                        :skin skin})
              info-window-opts {:title "Entity Info"
                                :actor-name "moon.ui.windows.entity-info"
                                :visible? false
@@ -4285,18 +4294,8 @@
                                                            world-unit-scale
                                                            unit-scale
                                                            world-unit-scale-draw-operations)
-             ]
-         (doseq [actor [(create-action-bar)
-                        (create-dev-menu {:menus (game-menus show-tile-grid?
-                                                             show-cell-entities?
-                                                             show-cell-occupied?
-                                                             show-body-bounds?
-                                                             show-potential-field-colors?
-                                                             show-potential-field-colors?
-                                                             controls-info)
-                                          :update-labels update-labels 
-                                          :skin skin})
-                        (actor/create {:act!
+action-bar (create-action-bar)
+hp-mana-bars (actor/create {:act!
                                        (fn [_this _delta])
                                        :draw!
                                        (fn [_this batch _parent-alpha]
@@ -4326,16 +4325,23 @@
                                                       manacontent-file 
                                                       (get-mana stats)
                                                       "MP")))})
-                        (doto (group/create)
-                          (add-actors! [(create-info-window info-window-opts)
-                                        (build-inventory-window inventory-window-opts)])
-                          (actor/set-name! "moon.ui.windows"))
-                        (actor/create {:act! (fn [_this _delta])
-                                       :draw! (fn [_this _batch _parent-alpha]
-                                                (draw-item-on-cursor!))})
-                        (actor/create {:act! (fn [_this _delta])
-                                       :draw! (fn [_this _batch _parent-alpha]
-                                                (draw-player-message!))})]]
+ui-windows (doto (group/create)
+             (add-actors! [(create-info-window info-window-opts)
+                           (build-inventory-window inventory-window-opts)])
+             (actor/set-name! "moon.ui.windows"))
+item-on-cursor-actor (actor/create {:act! (fn [_this _delta])
+                                    :draw! (fn [_this _batch _parent-alpha]
+                                             (draw-item-on-cursor!))})
+player-message-actor (actor/create {:act! (fn [_this _delta])
+                                    :draw! (fn [_this _batch _parent-alpha]
+                                             (draw-player-message!))})
+             ]
+         (doseq [actor [action-bar
+                        dev-menu
+                        hp-mana-bars
+                        ui-windows
+                        item-on-cursor-actor
+                        player-message-actor]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
          (init-game-state!)
