@@ -3852,6 +3852,10 @@
                                   image-width 32]
                               (/ (/ image-width tile-size) 2))
 
+        key-just-pressed-checks! (fn [key-just-pressed? close-windows! toggle-inventory-visible! toggle-entity-info!]
+                                   (key-just-pressed-checks! key-just-pressed? {(:close-windows-key controls) close-windows!
+                                                                                (:toggle-inventory controls) toggle-inventory-visible!
+                                                                                (:toggle-entity-info controls) toggle-entity-info!}))
         elapsed-time (atom 0)
         create-timer* (fn [duration]
                         (timer-create duration @elapsed-time))
@@ -3985,10 +3989,8 @@
              toggle-entity-info! #(toggle-entity-info! stage)
              resize-stage! (fn [width height]
                              (viewport/update! (stage/viewport stage) width height true))
-             key-just-pressed-mapping {(:close-windows-key controls) close-windows!
-                                       (:toggle-inventory controls) toggle-inventory-visible!
-                                       (:toggle-entity-info controls) toggle-entity-info!}
-             key-just-pressed-checks! #(key-just-pressed-checks! key-just-pressed? key-just-pressed-mapping)
+             key-just-pressed-checks! (fn []
+                                        (key-just-pressed-checks! key-just-pressed? close-windows! toggle-inventory-visible! toggle-entity-info!))
 
              cursors (update-vals cursors
                                   (fn [[path [hotspot-x hotspot-y]]]
