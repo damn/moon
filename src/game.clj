@@ -3957,6 +3957,73 @@
                                  (throw (ex-info "handle-txs! error" 
                                                  {:k k :params params}
                                                  t)))))))
+        clicked-inventory-cell! (fn [capabilities cell]
+                                  (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
+        primary-interaction! (fn [capabilities]
+                               (primary-interaction! handle-txs!  
+                                                     (player-eid)
+                                                     @mouseover-eid
+                                                     tx-event-txs
+                                                     generate-id!*
+                                                     create-timer*
+                                                     capabilities))
+        remove-destroyed-entities! (fn [capabilities]
+                                     (handle-txs! capabilities (destroy-entities game-db entity-ids generate-id!*)))
+        init-game-state! (fn [capabilities textures image->texture-region]
+                           (let [{:keys [tiled-map
+                                         start-position]} (create-level! textures image->texture-region)]
+                             (reset! tiled-map* tiled-map)
+                             (reset! entity-ids {})
+                             (let [props (tiled-map/properties tiled-map)
+                                   width (map-properties/get props "width")
+                                   height (map-properties/get props "height")
+                                   g (create-grid tiled-map)]
+                               (reset! grid g) 
+                               (reset! content-grid (create-content-grid width height 16))
+                               (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
+                                                                                 (range height)))
+                                                                   (range width)))
+                               (init-raycaster! g))
+                             (reset! player-id (generate-id!*))
+                             (let [entity (spawn-creature {:id @player-id
+                                                           :position (mapv (partial + 0.5) start-position)
+                                                           :creature-property (build-property :creatures/vampire)
+                                                           :components {:entity/fsm {:fsm (:player fsms)
+                                                                                     :initial-state :player-idle}
+                                                                        :entity/faction :good
+                                                                        :entity/player? true
+                                                                        :entity/free-skill-points 3
+                                                                        :entity/clickable {:type :clickable/player}
+                                                                        :entity/click-distance-tiles 1.5}})]
+                               (handle-txs! capabilities 
+                                            (concat [[:tx/spawn-entity entity]]
+                                                    (player-ui-txs #(info-text % timer-ratio-txt) entity)
+                                                    (spawn-map-creatures build-property @tiled-map* start-position fsms generate-id!*))))))
+        potential-field-cache (atom nil)
+        entity-tick-txs (fn [eid delta-time]
+                               (mapcat (fn [component]
+                                         (tick-component-txs component 
+                                                             eid 
+                                                             delta-time 
+                                                             timer-stopped*? 
+                                                             @grid 
+                                                             tx-event-txs 
+                                                             mk-effect-txs
+                                                             max-speed
+                                                             create-timer*
+                                                             choose-skill
+                                                             line-of-sight?*)) 
+                                       @eid))
+        when-not-paused-updates! (fn [capabilities delta-time]
+                                   (handle-txs! capabilities (when-not-paused-updates!* paused?
+                                                                                       max-delta
+                                                                                       tick-main-timer!
+                                                                                       factions-iterations
+                                                                                       grid
+                                                                                       potential-field-cache
+                                                                                       active-entities
+                                                                                       delta-time
+                                                                                       entity-tick-txs)))
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -3969,7 +4036,6 @@
                                show-potential-field-colors?
                                show-potential-field-colors?
                                controls-info)
-        potential-field-cache (atom nil)
         state (atom nil)
         ]
     {
@@ -4130,47 +4196,12 @@
                                                                timer-ratio-txt)
                                                     ""))
                                :skin skin}
-             init-game-state! (fn []
-                                (let [{:keys [tiled-map
-                                            start-position]} (create-level! textures image->texture-region)]
-                                (reset! tiled-map* tiled-map)
-                                (reset! entity-ids {})
-                                (let [props (tiled-map/properties tiled-map)
-                                      width (map-properties/get props "width")
-                                      height (map-properties/get props "height")
-                                      g (create-grid tiled-map)]
-                                  (reset! grid g) 
-                                  (reset! content-grid (create-content-grid width height 16))
-                                  (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
-                                                                                    (range height)))
-                                                                      (range width)))
-                                  (init-raycaster! g))
-                                (reset! player-id (generate-id!*))
-                                (let [entity (spawn-creature {:id @player-id
-                                                              :position (mapv (partial + 0.5) start-position)
-                                                              :creature-property (build-property :creatures/vampire)
-                                                              :components {:entity/fsm {:fsm (:player fsms)
-                                                                                        :initial-state :player-idle}
-                                                                           :entity/faction :good
-                                                                           :entity/player? true
-                                                                           :entity/free-skill-points 3
-                                                                           :entity/clickable {:type :clickable/player}
-                                                                           :entity/click-distance-tiles 1.5}})]
-                                  (handle-txs! capabilities 
-                                               (concat [[:tx/spawn-entity entity]]
-                                                       (player-ui-txs #(info-text % timer-ratio-txt) entity)
-                                                       (spawn-map-creatures build-property @tiled-map* start-position fsms generate-id!*))))))
-             remove-destroyed-entities! #(handle-txs! capabilities (destroy-entities game-db entity-ids generate-id!*))
-             primary-interaction! #(primary-interaction! handle-txs!  
-                                                         (player-eid)
-                                                         @mouseover-eid
-                                                         tx-event-txs
-                                                         generate-id!*
-                                                         create-timer*
-                                                         capabilities)
+             init-game-state! #(init-game-state! capabilities textures image->texture-region)
+             remove-destroyed-entities! #(remove-destroyed-entities! capabilities)
+             primary-interaction! #(primary-interaction! capabilities)
              inventory-window-opts {:get-mouse-position get-input-position
                                     :on-click-cell (fn [_event cell]
-                                                     (handle-txs! capabilities (handle-clicked-inventory-cell (player-eid) cell)))
+                                                     (clicked-inventory-cell! capabilities cell))
                                     :draw-cell-rect! (fn [x y mouseover? cell]
                                                        (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (color/float-bits 0.5 0.5 0.5 1))
                                                        (let [player-entity @(player-eid)]
@@ -4191,29 +4222,8 @@
                                                             (image->texture-region (:entity/image item))
                                                             ui-viewport-mouse-position
                                                             {:center? true})))
-             entity-tick-txs (fn [eid delta-time]
-                               (mapcat (fn [component]
-                                         (tick-component-txs component 
-                                                             eid 
-                                                             delta-time 
-                                                             timer-stopped*? 
-                                                             @grid 
-                                                             tx-event-txs 
-                                                             mk-effect-txs
-                                                             max-speed
-                                                             create-timer*
-                                                             choose-skill
-                                                             line-of-sight?*)) 
-                                       @eid))
-             when-not-paused-updates! #(handle-txs! capabilities (when-not-paused-updates!* paused?
-                                                                                            max-delta
-                                                                                            tick-main-timer!
-                                                                                            factions-iterations
-                                                                                            grid
-                                                                                            potential-field-cache
-                                                                                            active-entities
-                                                                                            (get-delta-time)
-                                                                                            entity-tick-txs))
+             
+             when-not-paused-updates! #(when-not-paused-updates! capabilities (get-delta-time))
              draw-tiled-map! (fn []
                                 (draw-tiled-map! @tiled-map*
                                                  batch
