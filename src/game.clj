@@ -3666,13 +3666,8 @@
     (when (key-pressed? k)
       (f))))
 
-(defn key-just-pressed-checks! [controls stage key-just-pressed?]
-  (doseq [[k f] {(:close-windows-key controls) (fn []
-                                                 (close-windows! stage))
-                 (:toggle-inventory controls) (fn []
-                                                (toggle-inventory-visible! stage))
-                 (:toggle-entity-info controls) (fn []
-                                                  (toggle-entity-info! stage))}]
+(defn key-just-pressed-checks! [key-just-pressed? key-just-pressed-mapping]
+  (doseq [[k f] key-just-pressed-mapping]
     (when (key-just-pressed? k)
       (f))))
 
@@ -3987,8 +3982,13 @@
              stage-draw! #(stage/draw! stage)
              resize-stage! (fn [width height]
                              (viewport/update! (stage/viewport stage) width height true))
-
-             key-just-pressed-checks! #(key-just-pressed-checks! controls stage key-just-pressed?)
+             key-just-pressed-mapping {(:close-windows-key controls) (fn []
+                                                                       (close-windows! stage))
+                                       (:toggle-inventory controls) (fn []
+                                                                      (toggle-inventory-visible! stage))
+                                       (:toggle-entity-info controls) (fn []
+                                                                        (toggle-entity-info! stage))}
+             key-just-pressed-checks! #(key-just-pressed-checks! key-just-pressed? key-just-pressed-mapping)
 
              cursors (update-vals cursors
                                   (fn [[path [hotspot-x hotspot-y]]]
