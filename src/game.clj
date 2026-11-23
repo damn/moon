@@ -4096,6 +4096,36 @@
                                       (throw (ex-info "handle-txs! error" 
                                                       {:k k :params params}
                                                       t)))))))
+             init-game-state! (fn []
+                                (let [{:keys [tiled-map
+                                            start-position]} (create-level! textures image->texture-region)]
+                                (reset! tiled-map* tiled-map)
+                                (reset! entity-ids {})
+                                (let [props (tiled-map/properties tiled-map)
+                                      width (map-properties/get props "width")
+                                      height (map-properties/get props "height")
+                                      g (create-grid tiled-map)]
+                                  (reset! grid g) 
+                                  (reset! content-grid (create-content-grid width height 16))
+                                  (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
+                                                                                    (range height)))
+                                                                      (range width)))
+                                  (init-raycaster! g))
+                                (reset! player-id (generate-id!*))
+                                (let [entity (spawn-creature {:id @player-id
+                                                              :position (mapv (partial + 0.5) start-position)
+                                                              :creature-property (build-property :creatures/vampire)
+                                                              :components {:entity/fsm {:fsm (:player fsms)
+                                                                                        :initial-state :player-idle}
+                                                                           :entity/faction :good
+                                                                           :entity/player? true
+                                                                           :entity/free-skill-points 3
+                                                                           :entity/clickable {:type :clickable/player}
+                                                                           :entity/click-distance-tiles 1.5}})]
+                                  (handle-txs! capabilities 
+                                               (concat [[:tx/spawn-entity entity]]
+                                                       (player-ui-txs #(info-text % timer-ratio-txt) entity)
+                                                       (spawn-map-creatures build-property @tiled-map* start-position fsms generate-id!*))))))
              remove-destroyed-entities! #(handle-txs! capabilities (destroy-entities game-db entity-ids generate-id!*))
              primary-interaction! #(primary-interaction! handle-txs!  
                                                          (player-eid)
@@ -4308,35 +4338,7 @@
                                                 (draw-player-message!))})]]
            (stage/add-actor! stage actor))
          (set-input-processor! stage)
-         (let [{:keys [tiled-map
-                       start-position]} (create-level! textures image->texture-region)]
-           (reset! tiled-map* tiled-map)
-           (reset! entity-ids {})
-           (let [props (tiled-map/properties tiled-map)
-                 width (map-properties/get props "width")
-                 height (map-properties/get props "height")
-                 g (create-grid tiled-map)]
-             (reset! grid g) 
-             (reset! content-grid (create-content-grid width height 16))
-             (reset! explored-tile-corners (mapv (fn [x] (mapv (fn [y] false)
-                                                               (range height)))
-                                                 (range width)))
-             (init-raycaster! g))
-           (reset! player-id (generate-id!*))
-           (let [entity (spawn-creature {:id @player-id
-                                         :position (mapv (partial + 0.5) start-position)
-                                         :creature-property (build-property :creatures/vampire)
-                                         :components {:entity/fsm {:fsm (:player fsms)
-                                                                   :initial-state :player-idle}
-                                                      :entity/faction :good
-                                                      :entity/player? true
-                                                      :entity/free-skill-points 3
-                                                      :entity/clickable {:type :clickable/player}
-                                                      :entity/click-distance-tiles 1.5}})]
-             (handle-txs! capabilities 
-                          (concat [[:tx/spawn-entity entity]]
-                                  (player-ui-txs #(info-text % timer-ratio-txt) entity)
-                                  (spawn-map-creatures build-property @tiled-map* start-position fsms generate-id!*)))))
+         (init-game-state!)
          (reset! state {:dispose! (fn []
                                     (dispose-batch!)
                                     (dispose-cursors!)
