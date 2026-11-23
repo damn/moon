@@ -3913,8 +3913,8 @@
                                               :scale 2.5
                                               :up? true})))
         message-duration-seconds 0.5
-        update-message-counter! (fn [{:keys [get-delta-time]}]
-                                  (message-counter-update! player-message message-duration-seconds (get-delta-time)))
+        update-message-counter! (fn [delta-time]
+                                  (message-counter-update! player-message message-duration-seconds delta-time))
         paused? (atom false)
         explored-tile-corners (atom nil)
         tiled-map* (atom nil)
@@ -4064,7 +4064,7 @@
                            :toggle-inventory-visible! toggle-inventory-visible!
                            :set-skill! actionbar-add-skill!
                            }
-             update-message-counter! #(update-message-counter! capabilities)
+             update-message-counter! #(update-message-counter! (get-delta-time))
              shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
              get-unit-scale (fn [] @unit-scale)
