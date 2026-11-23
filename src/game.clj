@@ -3921,6 +3921,42 @@
         dispose-tiled-map! #(disposable/dispose! @tiled-map*)
         content-grid (atom nil)
         update-active-entities! #(update-active-entities! active-entities content-grid player-eid)
+        handle-txs! (fn [{:keys [play-sound!
+                                 show-modal!
+                                 set-item!
+                                 remove-item!
+                                 toggle-inventory-visible!
+                                 set-skill!]} 
+                         txs]
+                      (let [k->txs {
+                                    :tx/swap swap!
+                                    :tx/spawn-entity 
+                                    (fn [entity]
+                                      (spawn-entity! entity-ids @content-grid @grid entity minimum-size z-orders))
+                                    :tx/update-position
+                                    (fn [eid]
+                                      (update-entity-position! @content-grid @grid eid))
+                                    :tx/remove-entity
+                                    (fn [eid]
+                                      (remove-entity!* entity-ids @content-grid @grid eid))
+                                    :tx/modal show-modal!
+                                    :tx/set-item 
+                                    (fn [cell item]
+                                      (set-item! cell (:entity/image item) (item-info-text item)))
+                                    :tx/sound play-sound! 
+                                    :tx/remove-item remove-item!
+                                    :tx/toggle-inventory-visible toggle-inventory-visible!
+                                    :tx/show-message
+                                    (fn [message]
+                                      (reset! player-message {:text message :counter 0}))
+                                    :tx/set-skill set-skill!
+                                    }]
+                        (doseq [[k & params] txs]
+                          (try (apply (safe-get k->txs k) params)
+                               (catch Throwable t
+                                 (throw (ex-info "handle-txs! error" 
+                                                 {:k k :params params}
+                                                 t)))))))
         show-potential-field-colors? (atom nil)
         show-cell-entities? (atom false)
         show-cell-occupied? (atom false)
@@ -4094,42 +4130,6 @@
                                                                timer-ratio-txt)
                                                     ""))
                                :skin skin}
-             handle-txs! (fn [{:keys [play-sound!
-                                      show-modal!
-                                      set-item!
-                                      remove-item!
-                                      toggle-inventory-visible!
-                                      set-skill!]} 
-                              txs]
-                           (let [k->txs {
-                                         :tx/swap swap!
-                                         :tx/spawn-entity 
-                                         (fn [entity]
-                                           (spawn-entity! entity-ids @content-grid @grid entity minimum-size z-orders))
-                                         :tx/update-position
-                                         (fn [eid]
-                                           (update-entity-position! @content-grid @grid eid))
-                                         :tx/remove-entity
-                                         (fn [eid]
-                                           (remove-entity!* entity-ids @content-grid @grid eid))
-                                         :tx/modal show-modal!
-                                         :tx/set-item 
-                                         (fn [cell item]
-                                           (set-item! cell (:entity/image item) (item-info-text item)))
-                                         :tx/sound play-sound! 
-                                         :tx/remove-item remove-item!
-                                         :tx/toggle-inventory-visible toggle-inventory-visible!
-                                         :tx/show-message
-                                         (fn [message]
-                                           (reset! player-message {:text message :counter 0}))
-                                         :tx/set-skill set-skill!
-                                         }]
-                             (doseq [[k & params] txs]
-                               (try (apply (safe-get k->txs k) params)
-                                    (catch Throwable t
-                                      (throw (ex-info "handle-txs! error" 
-                                                      {:k k :params params}
-                                                      t)))))))
              init-game-state! (fn []
                                 (let [{:keys [tiled-map
                                             start-position]} (create-level! textures image->texture-region)]
