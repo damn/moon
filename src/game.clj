@@ -3980,14 +3980,14 @@
                                  batch)
              stage-act! #(stage/act! stage)
              stage-draw! #(stage/draw! stage)
+             close-windows! #(close-windows! stage)
+             toggle-inventory-visible! #(toggle-inventory-visible! stage)
+             toggle-entity-info! #(toggle-entity-info! stage)
              resize-stage! (fn [width height]
                              (viewport/update! (stage/viewport stage) width height true))
-             key-just-pressed-mapping {(:close-windows-key controls) (fn []
-                                                                       (close-windows! stage))
-                                       (:toggle-inventory controls) (fn []
-                                                                      (toggle-inventory-visible! stage))
-                                       (:toggle-entity-info controls) (fn []
-                                                                        (toggle-entity-info! stage))}
+             key-just-pressed-mapping {(:close-windows-key controls) close-windows!
+                                       (:toggle-inventory controls) toggle-inventory-visible!
+                                       (:toggle-entity-info controls) toggle-entity-info!}
              key-just-pressed-checks! #(key-just-pressed-checks! key-just-pressed? key-just-pressed-mapping)
 
              cursors (update-vals cursors
@@ -4043,8 +4043,7 @@
 
                            :remove-item! (fn [cell] 
                                            (remove-item! stage cell))
-                           :toggle-inventory-visible! (fn []
-                                                        (toggle-inventory-visible! stage))
+                           :toggle-inventory-visible! toggle-inventory-visible!
                            :set-skill! (fn [skill-id image tooltip-text]
                                          (-> (stage/root stage)
                                              (group/find-actor "moon.ui.action-bar")
