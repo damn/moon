@@ -3933,7 +3933,8 @@
                   frames-per-second
                   new-cursor]}]
        (tooltip-manager/set-initial-time! (tooltip-manager/instance) 0)
-       (let [
+       (let [clear-screen! #(clear-screen! 0 0 0 0)
+             update-paused-state! #(update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
              
              textures (:textures game-config)
              skin (:skin game-config)
@@ -3942,6 +3943,9 @@
              cursors (:cursors game-config)
 
              batch (sprite-batch/create)
+             batch-begin! #(batch/begin batch) 
+             batch-end! #(batch/end batch)
+             set-batch-color! #(batch/set-color! batch 1 1 1 1)  ; hotfix for tooltips they set the color every creature flashes
              dispose-batch! #(disposable/dispose! batch)
              textures (create-textures internal textures)
              dispose-textures! #(run! disposable/dispose! (vals textures))
@@ -3962,8 +3966,11 @@
 
              stage (stage/create (fit-viewport/create (:width stage) (:height stage))
                                  batch)
+             stage-act! #(stage/act! stage)
+             stage-draw! #(stage/draw! stage)
              resize-stage! (fn [width height]
                              (viewport/update! (stage/viewport stage) width height true))
+             key-just-pressed-checks! #(key-just-pressed-checks! controls stage key-just-pressed?)
              image->texture-region #(get-texture-region textures %)
              cursors (update-vals cursors
                                   (fn [[path [hotspot-x hotspot-y]]]
@@ -3975,6 +3982,8 @@
              get-mouseover-actor #(let [[x y] (unproject (stage/viewport stage) (get-input-position))]
                                     (stage/hit stage x y))
              viewport (create-viewport! 1440 900 world-unit-scale)
+             set-projection-matrix! #(batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
+             key-pressed-checks! #(key-pressed-checks! controls viewport key-pressed?)
              set-camera-position! #(set-camera-position! viewport (:entity/position @(player-eid)))
              update-mouseover-eid! #(update-mouseover-eid! render-z-order 
                                                            line-of-sight?* 
@@ -4023,6 +4032,7 @@
                                                           :tooltip-text tooltip-text}
                                                          skin)))
                            }
+             update-message-counter! #(update-message-counter! capabilities)
              shape-drawer (shape-drawer/create batch (texture-region/create shape-drawer-texture 1 0 1 1))
              unit-scale (atom 1)
              get-unit-scale (fn [] @unit-scale)
@@ -4086,6 +4096,7 @@
                                       (throw (ex-info "handle-txs! error" 
                                                       {:k k :params params}
                                                       t)))))))
+             remove-destroyed-entities! #(handle-txs! capabilities (destroy-entities game-db entity-ids generate-id!*))
              primary-interaction! #(primary-interaction! handle-txs!  
                                                          (player-eid)
                                                          @mouseover-eid
@@ -4130,6 +4141,15 @@
                                                              choose-skill
                                                              line-of-sight?*)) 
                                        @eid))
+             when-not-paused-updates! #(handle-txs! capabilities (when-not-paused-updates!* paused?
+                                                                                            max-delta
+                                                                                            tick-main-timer!
+                                                                                            factions-iterations
+                                                                                            grid
+                                                                                            potential-field-cache
+                                                                                            active-entities
+                                                                                            (get-delta-time)
+                                                                                            entity-tick-txs))
              draw-player-message! (fn []
                                     (when-let [text (:text @player-message)]
                                       (draw-text! batch
@@ -4140,7 +4160,7 @@
                                                    :text text
                                                    :scale 2.5
                                                    :up? true})))
-             draw-tiled-map!* (fn []
+             draw-tiled-map! (fn []
                                 (draw-tiled-map! @tiled-map*
                                                  batch
                                                  (camera-view-bounds (viewport/camera viewport))
@@ -4231,6 +4251,10 @@
                                                                 render-z-order
                                                                 render-layers)
                                                 (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid))
+             draw-with-world-unit-scale! #(draw-world-unit-scale! shape-drawer
+                                                           world-unit-scale
+                                                           unit-scale
+                                                           world-unit-scale-draw-operations)
              ]
          (doseq [actor [(create-action-bar)
                         (create-dev-menu {:menus (game-menus show-tile-grid?
@@ -4330,32 +4354,21 @@
                                    (update-active-entities!)
                                    (set-camera-position!)
                                    (primary-interaction!)
-                                   (update-paused-state! pausing? paused? state->pause-game? controls @(player-eid) key-just-pressed? key-pressed?)
-                                   (handle-txs! capabilities (when-not-paused-updates!* paused?
-                                                                                        max-delta
-                                                                                        tick-main-timer!
-                                                                                        factions-iterations
-                                                                                        grid
-                                                                                        potential-field-cache
-                                                                                        active-entities
-                                                                                        (get-delta-time)
-                                                                                        entity-tick-txs))
-                                   (handle-txs! capabilities (destroy-entities game-db entity-ids generate-id!*))
-                                   (key-pressed-checks! controls viewport key-pressed?)
-                                   (key-just-pressed-checks! controls stage key-just-pressed?)
-                                   (update-message-counter! capabilities)
-                                   (stage/act! stage)
-                                   (clear-screen! 0 0 0 0)
-                                   (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/camera viewport)))
-                                   (batch/set-color! batch 1 1 1 1) ; hotfix for tooltips they set the color every creature flashes
-                                   (batch/begin batch)
-                                   (draw-tiled-map!*)
-                                   (draw-world-unit-scale! shape-drawer
-                                                           world-unit-scale
-                                                           unit-scale
-                                                           world-unit-scale-draw-operations)
-                                   (batch/end batch)
-                                   (stage/draw! stage))})))
+                                   (update-paused-state!)
+                                   (when-not-paused-updates!)
+                                   (remove-destroyed-entities!)
+                                   (key-pressed-checks!)
+                                   (key-just-pressed-checks!)
+                                   (update-message-counter!)
+                                   (stage-act!)
+                                   (clear-screen!)
+                                   (set-projection-matrix!)
+                                   (set-batch-color!) 
+                                   (batch-begin!)
+                                   (draw-tiled-map!)
+                                   (draw-with-world-unit-scale!)
+                                   (batch-end!)
+                                   (stage-draw!))})))
 
      :dispose!
      (fn []
