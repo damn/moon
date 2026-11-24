@@ -3811,6 +3811,56 @@
   (not (raycaster-blocked? raycaster
                            (:entity/position source)
                            (:entity/position target))))
+
+(defn draw-component**
+  [k v entity
+   draw-text!
+   draw-tx-rg!
+   draw-line!
+   with-line-width!
+   draw-ellipse!
+   filled-rect!
+   get-unit-scale
+   draw-filled-circle!
+   draw-sector!
+   draw-circle!
+   player-entity
+   active-entities
+   line-of-sight?
+   timer-ratio
+   active-skill-radius]
+  (case k
+    :entity/clickable
+    (clickable-draw v entity draw-text!)
+    :entity/animation
+    (animation-draw v entity draw-tx-rg!)
+    :entity/image
+    (image-draw v entity draw-tx-rg!)
+    :entity/line-render
+    (line-render-draw v entity draw-line! with-line-width!)
+    :entity/mouseover?
+    (mouseover?-draw entity draw-ellipse! with-line-width! player-entity)
+    :entity/stats
+    (stats-draw entity filled-rect! get-unit-scale)
+    :entity/string-effect
+    (string-effect-draw v entity draw-text! get-unit-scale)
+    :entity/temp-modifier
+    (temp-modifier-draw entity draw-filled-circle!)
+    :active-skill
+    (active-skill-draw v entity
+                       draw-filled-circle!
+                       draw-sector!
+                       draw-tx-rg!
+                       draw-line!
+                       active-entities
+                       line-of-sight?
+                       timer-ratio
+                       active-skill-radius)
+    :npc-sleeping
+    (npc-sleeping-draw entity draw-text!)
+    :stunned
+    (stunned-draw entity draw-circle!)))
+
 (defn game-listener 
   [{:keys [game-db
            build-property
@@ -4317,38 +4367,6 @@
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
-             draw-component** (fn [k v entity]
-                                (case k
-                                  :entity/clickable
-                                  (clickable-draw v entity draw-text!)
-                                  :entity/animation
-                                  (animation-draw v entity draw-tx-rg!)
-                                  :entity/image
-                                  (image-draw v entity draw-tx-rg!)
-                                  :entity/line-render
-                                  (line-render-draw v entity draw-line! with-line-width!)
-                                  :entity/mouseover?
-                                  (mouseover?-draw entity draw-ellipse! with-line-width! @(player-eid))
-                                  :entity/stats
-                                  (stats-draw entity filled-rect! get-unit-scale)
-                                  :entity/string-effect
-                                  (string-effect-draw v entity draw-text! get-unit-scale)
-                                  :entity/temp-modifier
-                                  (temp-modifier-draw entity draw-filled-circle!)
-                                  :active-skill
-                                  (active-skill-draw v entity
-                                                     draw-filled-circle!
-                                                     draw-sector!
-                                                     draw-tx-rg!
-                                                     draw-line!
-                                                     @active-entities
-                                                     line-of-sight?*
-                                                     timer-ratio
-                                                     active-skill-radius)
-                                  :npc-sleeping
-                                  (npc-sleeping-draw entity draw-text!)
-                                  :stunned
-                                  (stunned-draw entity draw-circle!)))
              world-unit-scale-draw-operations (fn []
                                                 (when @show-tile-grid?
                                                   (draw-tile-grid shape-drawer viewport))
@@ -4359,7 +4377,23 @@
                                                                  @show-cell-occupied?
                                                                  @show-potential-field-colors?
                                                                  @grid)
-                                                (draw-entities! draw-component**
+                                                (draw-entities! (fn [k v entity]
+                                                                  (draw-component** k v entity
+                                                                                    draw-text!
+                                                                                    draw-tx-rg!
+                                                                                    draw-line!
+                                                                                    with-line-width!
+                                                                                    draw-ellipse!
+                                                                                    filled-rect!
+                                                                                    get-unit-scale
+                                                                                    draw-filled-circle!
+                                                                                    draw-sector!
+                                                                                    draw-circle!
+                                                                                    @(player-eid)
+                                                                                    @active-entities
+                                                                                    line-of-sight?*
+                                                                                    timer-ratio
+                                                                                    active-skill-radius))
                                                                 shape-drawer
                                                                 line-of-sight?*
                                                                 @active-entities
