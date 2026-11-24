@@ -856,67 +856,38 @@
 (defn add-actors! [g actors]
   (run! #(group/add-actor! g %) actors))
 
-(defn- inv-window-cell [get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
-  (let [cell [slot (or position [0 0])]
-        background-drawable (slot->drawable slot)]
-    (doto (stack/create)
-      (add-actors! [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-mouse-position)
-                    (inventory-window-cell-image-widget background-drawable cell-size)])
-      (actor/add-listener! (click-listener/create
-                             (fn [event _x _y]
-                               (on-click-cell event cell))))
-      (actor/set-name! "inventory-cell")
-      (actor/set-user-object! cell))))
+(defn- inv-window-cell [actors name cell on-click-cell]
+  (doto (stack/create)
+    (add-actors! actors)
+    (actor/add-listener! (click-listener/create
+                           (fn [event _x _y]
+                             (on-click-cell event cell))))
+    (actor/set-name! name)
+    (actor/set-user-object! cell)))
 
 (defn toggle-visible! [obj]
   (actor/set-visible! obj (not (actor/visible? obj))))
 
-(defn- build-inventory-window
-  [{:keys [get-mouse-position
-           on-click-cell
-           draw-cell-rect!
-           skin
-           position
-           slot->texture-region
-           cell-size]}]
-  (let [slot->drawable (fn [slot]
-                         (doto (texture-region-drawable/create (slot->texture-region slot))
-                           (texture-region-drawable/set-min-size! cell-size cell-size)
-                           (texture-region-drawable/tint (color/create 1 1 1 0.4))))
-        ->cell (partial inv-window-cell get-mouse-position on-click-cell slot->drawable draw-cell-rect! cell-size)
-        cell-table (table/create)
-        window (window/create "Inventory" skin)]
-    (doseq [row (concat [[nil 
-                          nil
-                          (->cell :inventory.slot/helm)
-                          (->cell :inventory.slot/necklace)]
-                         [nil
-                          (->cell :inventory.slot/weapon)
-                          (->cell :inventory.slot/chest)
-                          (->cell :inventory.slot/cloak)
-                          (->cell :inventory.slot/shield)]
-                         [nil 
-                          nil
-                          (->cell :inventory.slot/leg)]
-                         [nil
-                          (->cell :inventory.slot/glove)
-                          (->cell :inventory.slot/rings :position [0 0])
-                          (->cell :inventory.slot/rings :position [1 0])
-                          (->cell :inventory.slot/boot)]]
-                        (for [y (range 4)]
-                          (for [x (range 6)]
-                            (->cell :inventory.slot/bag :position [x y]))))]
+(defn- build-inventory-cell-table [rows name]
+  (let [cell-table (table/create)]
+    (doseq [row rows]
       (doseq [actor row]
         (table/add! cell-table actor))
       (table/row! cell-table))
     (layout/pack! cell-table)
-    (actor/set-name! cell-table "inventory-cell-table")
-    (let [c (table/add! window cell-table)]
-      (cell/pad! c 4))
+    (actor/set-name! cell-table name)
+    cell-table))
+
+(defn- build-inventory-window
+  [cell-table
+   {:keys [skin position title pad name visible?]}]
+  (let [window (window/create title skin)]
+    (doto (table/add! window cell-table)
+      (cell/pad! pad))
     (table/row! window)
     (layout/pack! window)
-    (actor/set-name! window "moon.ui.windows.inventory")
-    (actor/set-visible! window false)
+    (actor/set-name! window name)
+    (actor/set-visible! window visible?)
     (let [[x y] position]
       (actor/set-position! window x y))
     window))
@@ -4371,25 +4342,61 @@
                                 }
 
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
-             inventory-window-opts {:get-mouse-position get-input-position
-                                    :on-click-cell (fn [_event cell]
-                                                     (clicked-inventory-cell! capabilities cell))
-                                    :draw-cell-rect! (fn [x y mouseover? cell]
-                                                       (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (color/float-bits 0.5 0.5 0.5 1))
-                                                       (let [player-entity @(player-eid)]
-                                                         (when (and mouseover? (:entity/item-on-cursor player-entity))
-                                                           (let [item (:entity/item-on-cursor player-entity)
-                                                                 color (if (valid-slot? cell item)
-                                                                         (color/float-bits 0 0.6 0 0.8)
-                                                                         (color/float-bits 0.6 0 0 0.8))]
-                                                             (filled-rectangle! shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
-                                    :skin skin
-                                    :position [ui-viewport-width ui-viewport-height]
-                                    :slot->texture-region slot->texture-region*
-                                    :cell-size inventory-cell-size}
+             slot->drawable (fn [slot]
+                              (doto (texture-region-drawable/create (slot->texture-region* slot))
+                                (texture-region-drawable/set-min-size! inventory-cell-size inventory-cell-size)
+                                (texture-region-drawable/tint (color/create 1 1 1 0.4))))
+             draw-cell-rect! (fn [x y mouseover? cell]
+                               (rectangle! shape-drawer x y inventory-cell-size inventory-cell-size (color/float-bits 0.5 0.5 0.5 1))
+                               (let [player-entity @(player-eid)]
+                                 (when (and mouseover? (:entity/item-on-cursor player-entity))
+                                   (let [item (:entity/item-on-cursor player-entity)
+                                         color (if (valid-slot? cell item)
+                                                 (color/float-bits 0 0.6 0 0.8)
+                                                 (color/float-bits 0.6 0 0 0.8))]
+                                     (filled-rectangle! shape-drawer (inc x) (inc y) (- inventory-cell-size 2) (- inventory-cell-size 2) color)))))
+             on-click-cell (fn [_event cell]
+                             (clicked-inventory-cell! capabilities cell))
+             ->inventory-cell (fn [slot & {:keys [position]}]
+                                (let [cell [slot (or position [0 0])]
+                                      background-drawable (slot->drawable slot)]
+                                  (inv-window-cell
+                                    [(inventory-window-cell-highlight-widget cell draw-cell-rect! get-input-position)
+                                     (inventory-window-cell-image-widget background-drawable inventory-cell-size)]
+                                    "inventory-cell"
+                                    cell
+                                    on-click-cell)))
+             inventory-cell-table (build-inventory-cell-table
+                                    (concat [[nil
+                                              nil
+                                              (->inventory-cell :inventory.slot/helm)
+                                              (->inventory-cell :inventory.slot/necklace)]
+                                             [nil
+                                              (->inventory-cell :inventory.slot/weapon)
+                                              (->inventory-cell :inventory.slot/chest)
+                                              (->inventory-cell :inventory.slot/cloak)
+                                              (->inventory-cell :inventory.slot/shield)]
+                                             [nil
+                                              nil
+                                              (->inventory-cell :inventory.slot/leg)]
+                                             [nil
+                                              (->inventory-cell :inventory.slot/glove)
+                                              (->inventory-cell :inventory.slot/rings :position [0 0])
+                                              (->inventory-cell :inventory.slot/rings :position [1 0])
+                                              (->inventory-cell :inventory.slot/boot)]]
+                                            (for [y (range 4)]
+                                              (for [x (range 6)]
+                                                (->inventory-cell :inventory.slot/bag :position [x y]))))
+                                    "inventory-cell-table")
              ui-windows (doto (group/create)
                           (add-actors! [(create-info-window info-window-opts)
-                                        (build-inventory-window inventory-window-opts)])
+                                        (build-inventory-window inventory-cell-table
+                                                                {:skin skin
+                                                                 :position [ui-viewport-width ui-viewport-height]
+                                                                 :title "Inventory"
+                                                                 :pad 4
+                                                                 :name "moon.ui.windows.inventory"
+                                                                 :visible? false})])
                           (actor/set-name! "moon.ui.windows"))
              update-message-counter! #(update-message-counter! (get-delta-time))
              unproject-viewport #(unproject viewport %)
