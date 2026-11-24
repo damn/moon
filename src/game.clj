@@ -2453,7 +2453,7 @@
        [:tx/set-item cell item-on-cursor]])))
 
 (defn draw-cell-debug
-  [factions-iterations shape-drawer viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
+  [factions-iterations filled-rect! viewport show-cell-entities? show-cell-occupied? show-potential-field-colors? grid]
   (let [camera (viewport/camera viewport)
         plane-points (mapv (fn [v3]
                              [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
@@ -2469,29 +2469,29 @@
             :when cell-atom
             :let [cell* @cell-atom]]
       (when (and show-cell-entities? (seq (:entities cell*)))
-        (filled-rectangle! shape-drawer x y 1 1 (color/float-bits 1 0 0 0.6)))
+        (filled-rect! x y 1 1 (color/float-bits 1 0 0 0.6)))
       (when (and show-cell-occupied? (seq (:occupied cell*)))
-        (filled-rectangle! shape-drawer x y 1 1 (color/float-bits 0 0 1 0.6)))
+        (filled-rect! x y 1 1 (color/float-bits 0 0 1 0.6)))
       (when-let [faction show-potential-field-colors?]
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
-              (filled-rectangle! shape-drawer x y 1 1 (color/float-bits ratio (- 1 ratio) ratio 0.6)))))))))
+              (filled-rect! x y 1 1 (color/float-bits ratio (- 1 ratio) ratio 0.6)))))))))
 
-(defn- draw-fn-grid [shape-drawer leftx bottomy gridw gridh cellw cellh color-float-bits]
+(defn- draw-fn-grid [draw-line! leftx bottomy gridw gridh cellw cellh color-float-bits]
   (let [w (* (float gridw) (float cellw))
         h (* (float gridh) (float cellh))
         topy (+ (float bottomy) (float h))
         rightx (+ (float leftx) (float w))]
     (doseq [idx (range (inc (float gridw)))
             :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (line! shape-drawer [linex topy] [linex bottomy] color-float-bits))
+      (draw-line! [linex topy] [linex bottomy] color-float-bits))
     (doseq [idx (range (inc (float gridh)))
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (line! shape-drawer [leftx liney] [rightx liney] color-float-bits))))
+      (draw-line! [leftx liney] [rightx liney] color-float-bits))))
 
 (defn draw-tile-grid
-  [shape-drawer viewport]
+  [draw-line! viewport]
   (let [camera (viewport/camera viewport)
         plane-points (mapv (fn [v3]
                              [(vector3/x v3) (vector3/y v3) (vector3/z v3)])
@@ -2499,7 +2499,7 @@
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         bottom-y (apply min (map second frustum-points))]
-    (draw-fn-grid shape-drawer
+    (draw-fn-grid draw-line!
                   (int left-x)
                   (int bottom-y)
                   (inc (int (viewport/world-width viewport)))
@@ -2509,15 +2509,15 @@
                   (color/float-bits 1 1 1 0.8))))
 
 (defn highlight-mouseover-tile
-  [shape-drawer world-mouse-position grid]
+  [draw-rect! world-mouse-position grid]
   (let [[x y] (mapv int world-mouse-position)
         cell (when-let [cell-atom (get-in grid [x y])]
                @cell-atom)]
     (when (and cell (#{:air :none} (:movement cell)))
-      (rectangle! shape-drawer x y 1 1
-                         (case (:movement cell)
-                           :air (color/float-bits 1 1 0 0.5)
-                           :none (color/float-bits 1 0 0 0.5))))))
+      (draw-rect! x y 1 1
+                  (case (:movement cell)
+                    :air (color/float-bits 1 1 0 0.5)
+                    :none (color/float-bits 1 0 0 0.5))))))
 
 (defn clickable-draw
   [v entity draw-text!]
@@ -2640,14 +2640,14 @@
   (draw-circle! (:entity/position entity) 0.5 (color/float-bits 1 1 1 0.6)))
 
 (defn- draw-entity-rectangle!
-  [shape-drawer entity color-float-bits]
+  [draw-rect! entity color-float-bits]
   (let [{:keys [entity/position entity/width entity/height]} entity
         [x y] [(- (position 0) (/ width 2))
                (- (position 1) (/ height 2))]]
-    (rectangle! shape-drawer x y width height color-float-bits)))
+    (draw-rect! x y width height color-float-bits)))
 
 (defn draw-entities!
-  [draw-component! shape-drawer line-of-sight? active-entities player-entity show-body-bounds? render-z-order render-layers]
+  [draw-component! draw-rect! line-of-sight? active-entities player-entity show-body-bounds? render-z-order render-layers]
   (doseq [[z-order entities] (sort-by (comp render-z-order key) <
                                       (group-by :entity/z-order (map deref active-entities)))
           render-layer render-layers
@@ -2655,7 +2655,7 @@
           :when (or (= z-order :z-order/effect)
                     (line-of-sight? player-entity entity))]
     (when show-body-bounds?
-      (draw-entity-rectangle! shape-drawer
+      (draw-entity-rectangle! draw-rect!
                               entity
                               (if (:entity/collides? entity)
                                 (color/float-bits 1 1 1 1)
@@ -3800,11 +3800,11 @@
                :up? true}))
 
 (defn draw-world-unit-scale! 
-  [shape-drawer world-unit-scale unit-scale draw-operations]
-  (with-line-width shape-drawer world-unit-scale
-    (reset! unit-scale world-unit-scale)
-    (draw-operations)
-    (reset! unit-scale 1)))
+  [with-line-width! world-unit-scale unit-scale draw-operations]
+  (with-line-width! world-unit-scale
+    #(do (reset! unit-scale world-unit-scale)
+         (draw-operations)
+         (reset! unit-scale 1))))
 
 (defn line-of-sight?
   [raycaster source target]
@@ -4140,6 +4140,8 @@
                                       opts))
              filled-rect! (fn [& params]
                             (apply filled-rectangle! shape-drawer params))
+             draw-rect! (fn [x y w h color]
+                          (rectangle! shape-drawer x y w h color))
              draw-line! (fn [from to color]
                           (line! shape-drawer from to color))
              draw-ellipse! (fn [position radius-x radius-y color]
@@ -4369,9 +4371,9 @@
                                                  world-unit-scale))
              world-unit-scale-draw-operations (fn []
                                                 (when @show-tile-grid?
-                                                  (draw-tile-grid shape-drawer viewport))
+                                                  (draw-tile-grid draw-line! viewport))
                                                 (draw-cell-debug factions-iterations
-                                                                 shape-drawer 
+                                                                 filled-rect!
                                                                  viewport
                                                                  @show-cell-entities?
                                                                  @show-cell-occupied?
@@ -4394,18 +4396,18 @@
                                                                                     line-of-sight?*
                                                                                     timer-ratio
                                                                                     active-skill-radius))
-                                                                shape-drawer
+                                                                draw-rect!
                                                                 line-of-sight?*
                                                                 @active-entities
                                                                 @(player-eid)
                                                                 @show-body-bounds?
                                                                 render-z-order
                                                                 render-layers)
-                                                (highlight-mouseover-tile shape-drawer (unproject viewport (get-input-position)) @grid))
-             draw-with-world-unit-scale! #(draw-world-unit-scale! shape-drawer
-                                                           world-unit-scale
-                                                           unit-scale
-                                                           world-unit-scale-draw-operations)
+                                                (highlight-mouseover-tile draw-rect! (unproject viewport (get-input-position)) @grid))
+             draw-with-world-unit-scale! #(draw-world-unit-scale! with-line-width!
+                                                                  world-unit-scale
+                                                                  unit-scale
+                                                                  world-unit-scale-draw-operations)
              ]
          (set-input-processor! stage)
          (init-game-state!)
