@@ -4079,6 +4079,54 @@
         show-cell-occupied? (atom false)
         show-body-bounds? (atom false)
         show-tile-grid? (atom false)
+        world-unit-scale-draw-operations
+        (fn [{:keys [draw-line!
+                     filled-rect!
+                     draw-rect!
+                     draw-text!
+                     draw-tx-rg!
+                     with-line-width!
+                     draw-ellipse!
+                     get-unit-scale
+                     draw-filled-circle!
+                     draw-sector!
+                     draw-circle!
+                     world-mouse-position]}
+              viewport]
+          (when @show-tile-grid?
+            (draw-tile-grid draw-line! viewport))
+          (draw-cell-debug factions-iterations
+                           filled-rect!
+                           viewport
+                           @show-cell-entities?
+                           @show-cell-occupied?
+                           @show-potential-field-colors?
+                           @grid)
+          (draw-entities! (fn [k v entity]
+                            (draw-component** k v entity
+                                              draw-text!
+                                              draw-tx-rg!
+                                              draw-line!
+                                              with-line-width!
+                                              draw-ellipse!
+                                              filled-rect!
+                                              get-unit-scale
+                                              draw-filled-circle!
+                                              draw-sector!
+                                              draw-circle!
+                                              @(player-eid)
+                                              @active-entities
+                                              line-of-sight?*
+                                              timer-ratio
+                                              active-skill-radius))
+                          draw-rect!
+                          line-of-sight?*
+                          @active-entities
+                          @(player-eid)
+                          @show-body-bounds?
+                          render-z-order
+                          render-layers)
+          (highlight-mouseover-tile draw-rect! (world-mouse-position) @grid))
         game-menus (game-menus show-tile-grid?
                                show-cell-entities?
                                show-cell-occupied?
@@ -4307,6 +4355,20 @@
                            :toggle-inventory-visible! toggle-inventory-visible!
                            :set-skill! actionbar-add-skill!
                            }
+             draw-capabilities {
+                                :draw-line! draw-line!
+                                :filled-rect! filled-rect!
+                                :draw-rect! draw-rect!
+                                :draw-text! draw-text!
+                                :draw-tx-rg! draw-tx-rg!
+                                :with-line-width! with-line-width!
+                                :draw-ellipse! draw-ellipse!
+                                :get-unit-scale get-unit-scale
+                                :draw-filled-circle! draw-filled-circle!
+                                :draw-sector! draw-sector!
+                                :draw-circle! draw-circle!
+                                :world-mouse-position #(unproject viewport (get-input-position))
+                                }
 
              slot->texture-region* (fn [slot] (image->texture-region (slot->texture-region slot)))
              inventory-window-opts {:get-mouse-position get-input-position
@@ -4369,45 +4431,10 @@
                                                     :visible-tile-color (color/float-bits 1 1 1 1)
                                                     :invisible-tile-color (color/float-bits 0 0 0 1)})
                                                  world-unit-scale))
-             world-unit-scale-draw-operations (fn []
-                                                (when @show-tile-grid?
-                                                  (draw-tile-grid draw-line! viewport))
-                                                (draw-cell-debug factions-iterations
-                                                                 filled-rect!
-                                                                 viewport
-                                                                 @show-cell-entities?
-                                                                 @show-cell-occupied?
-                                                                 @show-potential-field-colors?
-                                                                 @grid)
-                                                (draw-entities! (fn [k v entity]
-                                                                  (draw-component** k v entity
-                                                                                    draw-text!
-                                                                                    draw-tx-rg!
-                                                                                    draw-line!
-                                                                                    with-line-width!
-                                                                                    draw-ellipse!
-                                                                                    filled-rect!
-                                                                                    get-unit-scale
-                                                                                    draw-filled-circle!
-                                                                                    draw-sector!
-                                                                                    draw-circle!
-                                                                                    @(player-eid)
-                                                                                    @active-entities
-                                                                                    line-of-sight?*
-                                                                                    timer-ratio
-                                                                                    active-skill-radius))
-                                                                draw-rect!
-                                                                line-of-sight?*
-                                                                @active-entities
-                                                                @(player-eid)
-                                                                @show-body-bounds?
-                                                                render-z-order
-                                                                render-layers)
-                                                (highlight-mouseover-tile draw-rect! (unproject viewport (get-input-position)) @grid))
              draw-with-world-unit-scale! #(draw-world-unit-scale! with-line-width!
                                                                   world-unit-scale
                                                                   unit-scale
-                                                                  world-unit-scale-draw-operations)
+                                                                  (fn [] (world-unit-scale-draw-operations draw-capabilities viewport)))
              ]
          (set-input-processor! stage)
          (init-game-state!)
