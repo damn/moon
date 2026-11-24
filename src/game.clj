@@ -4179,8 +4179,7 @@
                                                         manacontent-file 
                                                         (get-mana stats)
                                                         "MP")))})
-             stage (stage/create (fit-viewport/create (:width stage) (:height stage))
-                                 batch)
+             stage (stage/create stage-viewport batch)
              stage-act! #(stage/act! stage)
              stage-draw! #(stage/draw! stage)
              show-modal! (fn [opts]
