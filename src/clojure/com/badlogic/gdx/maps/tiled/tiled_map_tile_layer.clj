@@ -1,48 +1,93 @@
 (ns clojure.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
+  "@brief Layer for a TiledMap"
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell))
   (:refer-clojure :exclude [name]))
 
-(defn create [width height tilewidth tileheight]
+(defn create
+  "Creates TiledMap layer
+  
+  - `width`: layer width in tiles
+  
+  - `height`: layer height in tiles
+  
+  - `tileWidth`: tile width in pixels
+  
+  - `tileHeight`: tile height in pixels"
+  [width height tilewidth tileheight]
   (TiledMapTileLayer. (int width)
                       (int height)
                       (int tilewidth)
                       (int tileheight)))
 
-(defn properties [^TiledMapTileLayer layer]
+(defn properties
+  "Returns layer's set of properties"
+  [^TiledMapTileLayer layer]
   (.getProperties layer))
 
-(defn width [^TiledMapTileLayer layer]
+(defn width
+  "Returns layer's width in tiles"
+  [^TiledMapTileLayer layer]
   (.getWidth layer))
 
-(defn height [^TiledMapTileLayer layer]
+(defn height
+  "Returns layer's height in tiles"
+  [^TiledMapTileLayer layer]
   (.getHeight layer))
 
-(defn name [^TiledMapTileLayer layer]
+(defn name
+  "Returns layer's name"
+  [^TiledMapTileLayer layer]
   (.getName layer))
 
-(defn set-name! [^TiledMapTileLayer layer name]
+(defn set-name!
+  "- `name`: new name for the layer"
+  [^TiledMapTileLayer layer name]
   (.setName layer name))
 
-(defn visible? [^TiledMapTileLayer layer]
+(defn visible?
+  "Returns whether the layer is visible or not"
+  [^TiledMapTileLayer layer]
   (.isVisible layer))
 
 (defn set-visible! [^TiledMapTileLayer layer v]
   (.setVisible layer v))
 
-(defn get-cell [^TiledMapTileLayer layer x y]
+(defn get-cell
+  "- `x`: X coordinate
+  
+  - `y`: Y coordinate
+  
+  Returns [[clojure.com.badlogic.gdx.scenes.scene2d.ui.cell]] at (x, y)"
+  [^TiledMapTileLayer layer x y]
   (.getCell layer (int x) (int y)))
 
-(defn set-cell! [^TiledMapTileLayer layer x y ^TiledMapTileLayer$Cell cell]
+(defn set-cell!
+  "Sets the [[clojure.com.badlogic.gdx.scenes.scene2d.ui.cell]] at the given coordinates.
+  
+  - `x`: X coordinate
+  
+  - `y`: Y coordinate
+  
+  - `cell`: the [[clojure.com.badlogic.gdx.scenes.scene2d.ui.cell]] to set at the given coordinates."
+  [^TiledMapTileLayer layer x y ^TiledMapTileLayer$Cell cell]
   (.setCell layer (int x) (int y) cell))
 
-(defn tile-width [^TiledMapTileLayer layer]
+(defn tile-width
+  "Returns tiles' width in pixels"
+  [^TiledMapTileLayer layer]
   (.getTileWidth layer))
 
-(defn tile-height [^TiledMapTileLayer layer]
+(defn tile-height
+  "Returns tiles' height in pixels"
+  [^TiledMapTileLayer layer]
   (.getTileHeight layer))
 
-(defn render-offset-x [^TiledMapTileLayer layer]
+(defn render-offset-x
+  "Returns the layer's x render offset, this takes into consideration all parent layers' offsets"
+  [^TiledMapTileLayer layer]
   (.getRenderOffsetX layer))
 
-(defn render-offset-y [^TiledMapTileLayer layer]
+(defn render-offset-y
+  "Returns the layer's y render offset, this takes into consideration all parent layers' offsets"
+  [^TiledMapTileLayer layer]
   (.getRenderOffsetY layer))

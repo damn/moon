@@ -1,4 +1,24 @@
 (ns clojure.com.badlogic.gdx.graphics.g2d.batch
+  "A batch is used to draw 2D rectangles that reference a texture (region). The class will batch the drawing commands and
+  optimize them for processing by the GPU.
+  
+  To draw something with a Batch one has to first call the [begin] method which will setup appropriate render
+  states. When you are done with drawing you have to call [end] which will actually draw the things you specified.
+  
+  All drawing commands of the Batch operate in screen coordinates. The screen coordinate system has an x-axis pointing to the
+  right, an y-axis pointing upwards and the origin is in the lower left corner of the screen. You can also provide your own
+  transformation and projection matrices if you so wish.
+  
+  A batch is managed. In case the OpenGL context is lost all OpenGL resources a Batch uses internally get invalidated. A context
+  is lost when a user switches to another application or receives an incoming call on Android. A batch will be automatically
+  reloaded after the OpenGL context is restored.
+  
+  A batch is a pretty heavy object so you should only ever have one in your program.
+  
+  A batch works with OpenGL ES 2.0. It will use its own custom shader to draw all provided sprites. You can set your own custom
+  shader via set shader.
+  
+  A batch has to be disposed if it is no longer used."
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
            (com.badlogic.gdx.math Matrix4)))
@@ -24,22 +44,38 @@
 (def U4 Batch/U4)
 (def V4 Batch/V4)
 
-(defn color [^Batch batch]
+(defn color
+  "Returns the rendering color of this Batch. If the returned instance is manipulated, [set-color!] must be called
+   afterward."
+  [^Batch batch]
   (.getColor batch))
 
 (defn set-color! [^Batch batch r g b a]
   (.setColor batch (float r) (float g) (float b) (float a)))
 
-(defn begin [^Batch batch]
+(defn begin
+  "Sets up the Batch for drawing. This will disable depth buffer writing. It enables blending and texturing. If you have more
+  texture units enabled than the first one you have to disable them before calling this. Uses a screen coordinate system by
+  default where everything is given in pixels. You can specify your own projection and modelview matrices via
+  [set-projection-matrix!] and set transform matrix."
+  [^Batch batch]
   (.begin batch))
 
-(defn end [^Batch batch]
+(defn end
+  "Finishes off rendering. Enables depth writes, disables blending and texturing. Must always be called after a call to
+  [begin]"
+  [^Batch batch]
   (.end batch))
 
-(defn set-projection-matrix! [^Batch batch ^Matrix4 matrix]
+(defn set-projection-matrix!
+  "Sets the projection matrix to be used by this Batch. If this is called inside a [begin]/[end] block, the
+  current batch is flushed to the gpu."
+  [^Batch batch ^Matrix4 matrix]
   (.setProjectionMatrix batch matrix))
 
 (defn draw
+  "Draws a rectangle using the given vertices. There must be 4 vertices, each made up of 5 elements in this order: x, y,
+  color, u, v. The [color] from the Batch is not applied."
   ([^Batch batch ^Texture texture verts offset count]
    (.draw batch texture ^floats verts (int offset) (int count)))
   ([^Batch batch ^TextureRegion texture-region x y w h]
